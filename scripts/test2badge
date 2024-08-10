@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Produces a tests summary badge for README
+
+label="e2e%20tests"
+passingColor="brightGreen"
+failingColor="orange"
+lastLog="test/log/last.log"
+lastTextLog="test/log/lastText.log"
+
+cat "$lastLog" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g" > "$lastTextLog"
+
+passing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*passing\s*.*/\1/p'`
+failing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*failing\s*.*/\1/p'`
+
+#echo "PASSING: $passing"
+#echo "FAILING: $failing"
+
+if [ -z "$failing" ]; then
+  total=$passing
+  curl --silent "https://img.shields.io/badge/${label}-${passing}%2F${total}-${passingColor}" -o public/badges/mocha.svg
+else
+  total=$(($passing + $failing))
+  curl --silent "https://img.shields.io/badge/${label}-${passing}%2F${total}-${failingColor}" -o public/badges/mocha.svg
+fi
+
+#qiv test/badges/mocha.svg
+exit 0

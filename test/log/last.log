@@ -1,0 +1,254 @@
+
+[0m[0m
+[0m  API tests - Auth routes[0m
+[0mPOST /api/auth/signup [32m201[0m 146.825 ms - 145[0m
+  [32m  [32m✔[39m[0m[90m should register user[0m[31m (160ms)[0m
+[0mPOST /api/auth/signup [33m401[0m 2.237 ms - 136[0m
+  [32m  [32m✔[39m[0m[90m should not register user without confirmation[0m
+[0mPOST /api/auth/signup [33m400[0m 1.676 ms - 41[0m
+  [32m  [32m✔[39m[0m[90m should not register user with invalid email[0m
+[0mPOST /api/auth/signup [33m400[0m 3.893 ms - 43[0m
+  [32m  [32m✔[39m[0m[90m should not register user forcing invalid plan[0m
+[0mPOST /api/auth/signup [33m400[0m 3.180 ms - 43[0m
+  [32m  [32m✔[39m[0m[90m should not register user forcing invalid role[0m
+[0mPOST /api/auth/signin [33m401[0m 7.399 ms - 136[0m
+  [32m  [32m✔[39m[0m[90m should not login user before confirmation[0m
+[0mPOST /api/auth/resendSignupCode [32m200[0m 4.720 ms - 105[0m
+  [32m  [32m✔[39m[0m[90m should resend register code[0m
+[0mPOST /api/auth/signupVerification [33m400[0m 0.764 ms - 31[0m
+  [32m  [32m✔[39m[0m[90m should not confirm user without code[0m
+[0mPOST /api/auth/signupVerification [33m400[0m 2.105 ms - 55[0m
+  [32m  [32m✔[39m[0m[90m should not confirm user with invalid code[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 13.321 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should confirm user[0m
+[0mPOST /api/auth/signupVerification [33m400[0m 3.324 ms - 52[0m
+  [32m  [32m✔[39m[0m[90m should not confirm user twice[0m
+[0mPOST /api/auth/resendSignupCode [33m400[0m 2.366 ms - 68[0m
+  [32m  [32m✔[39m[0m[90m should not resend register code for already confirmed user[0m
+[0mPOST /api/auth/resendSignupCode [33m401[0m 1.990 ms - 119[0m
+  [32m  [32m✔[39m[0m[90m should not resend register code without email[0m
+[0mPOST /api/auth/resetPassword [33m400[0m 1.009 ms - 42[0m
+  [32m  [32m✔[39m[0m[90m should not reset password without email[0m
+[0mPOST /api/auth/resetPassword [32m200[0m 8.136 ms - 148[0m
+  [32m  [32m✔[39m[0m[90m should start reset password[0m
+[0mPOST /api/auth/resetPasswordConfirm [32m200[0m 59.658 ms - 44[0m
+  [32m  [32m✔[39m[0m[90m should confirm reset password[0m[33m (61ms)[0m
+[0mPOST /api/auth/resetPasswordConfirm [33m400[0m 1.723 ms - 73[0m
+  [32m  [32m✔[39m[0m[90m should not confirm reset password with wrong email[0m
+[0mPOST /api/auth/resetPasswordConfirm [33m400[0m 0.567 ms - 57[0m
+  [32m  [32m✔[39m[0m[90m should not confirm reset password with no code[0m
+[0mPOST /api/auth/resetPasswordConfirm [33m400[0m 1.512 ms - 73[0m
+  [32m  [32m✔[39m[0m[90m should not confirm reset password with wrong code[0m
+[0mPOST /api/auth/resendResetPasswordCode [33m401[0m 1.464 ms - 128[0m
+  [32m  [32m✔[39m[0m[90m should not resend reset password code to invalid email[0m
+[0mPOST /api/auth/resendResetPasswordCode [32m200[0m 4.516 ms - 129[0m
+  [32m  [32m✔[39m[0m[90m should resend reset password code[0m
+[0mPOST /api/auth/signin [33m400[0m 0.605 ms - 32[0m
+  [32m  [32m✔[39m[0m[90m should not login user with invalid email[0m
+[0mPOST /api/auth/signin [33m401[0m 1.654 ms - 28[0m
+  [32m  [32m✔[39m[0m[90m should not login user with unregistered email[0m
+[0mPOST /api/auth/signin [32m200[0m 64.126 ms - 513[0m
+  [32m  [32m✔[39m[0m[90m should login user[0m[33m (66ms)[0m
+[0mPOST /api/auth/signin [32m200[0m 59.076 ms - 513[0m
+  [32m  [32m✔[39m[0m[90m should login user with passepartout password[0m[33m (60ms)[0m
+[0mPOST /api/auth/signin [33m401[0m 57.087 ms - 47[0m
+  [32m  [32m✔[39m[0m[90m should not login user with invalid password[0m[33m (59ms)[0m
+[0mPOST /api/auth/signup [32m201[0m 59.287 ms - 147[0m
+  [32m  [32m✔[39m[0m[90m should register admin user[0m[33m (60ms)[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 3.653 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should confirm admin user[0m
+[0mPOST /api/auth/signin [32m200[0m 64.177 ms - 517[0m
+  [32m  [32m✔[39m[0m[90m should login admin user[0m[33m (66ms)[0m
+[0mPOST /api/auth/refreshtoken [33m401[0m 0.614 ms - 46[0m
+  [32m  [32m✔[39m[0m[90m should not refresh token without refresh token[0m
+[0mPOST /api/auth/refreshtoken [33m401[0m 0.522 ms - 46[0m
+  [32m  [32m✔[39m[0m[90m should not refresh token with invalid refresh token[0m
+[0mPOST /api/auth/refreshtoken [32m200[0m 1.931 ms - 243[0m
+  [32m  [32m✔[39m[0m[90m should refresh token[0m
+
+[0m  API tests - Payment routes[0m
+[0mPOST /api/auth/signup [32m201[0m 61.346 ms - 145[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 4.019 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should register normal user[0m[33m (68ms)[0m
+[0mPOST /api/auth/signin [32m200[0m 58.982 ms - 513[0m
+  [32m  [32m✔[39m[0m[90m should login normal user[0m[33m (60ms)[0m
+[0mGET /api/payment/mode [32m200[0m 1.159 ms - 15[0m
+  [32m  [32m✔[39m[0m[90m should get payment mode, and it should be in a set of values[0m
+[0mPOST /api/payment/createCheckoutSession [33m401[0m 0.683 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not create a checkout session without authentication[0m
+[0mPOST /api/payment/createCheckoutSession [33m400[0m 990.563 ms - 168[0m
+  [32m  [32m✔[39m[0m[90m should not create a checkout session for a 0 cost product[0m[31m (992ms)[0m
+[0mPOST /api/payment/createCheckoutSession [33m400[0m 375.402 ms - 95[0m
+  [32m  [32m✔[39m[0m[90m should not create a checkout session for a non-existent product[0m[31m (378ms)[0m
+[0mPOST /api/payment/createCheckoutSession [32m200[0m 720.124 ms - -[0m
+  [32m  [32m✔[39m[0m[90m should create a checkout session for a standard product[0m[31m (726ms)[0m
+[0mGET /api/payment/paymentSuccess?session_id=cs_test_a1F2J3oLuH35kzns5YxazL21mODyQtobTSDLuDeUCHp3Y7r7bkO5BOgeN9 [36m302[0m 839.577 ms - 76[0m
+  [32m  [32m✔[39m[0m[90m should redirect on a payment success call[0m[31m (843ms)[0m
+[0mGET /api/payment/paymentCancel?session_id=cs_test_a1F2J3oLuH35kzns5YxazL21mODyQtobTSDLuDeUCHp3Y7r7bkO5BOgeN9 [36m302[0m 744.856 ms - 75[0m
+  [32m  [32m✔[39m[0m[90m should redirect on a payment canceled call[0m[31m (749ms)[0m
+
+[0m  API tests - User routes[0m
+[0mPOST /api/auth/signup [32m201[0m 60.009 ms - 145[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 3.488 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should register normal user[0m[33m (66ms)[0m
+[0mPOST /api/auth/signin [32m200[0m 59.936 ms - 513[0m
+  [32m  [32m✔[39m[0m[90m should login normal user[0m[33m (61ms)[0m
+[0mPOST /api/auth/signup [32m201[0m 58.550 ms - 147[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 3.159 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should register admin user[0m[33m (64ms)[0m
+[0mPOST /api/auth/signin [32m200[0m 59.850 ms - 532[0m
+  [32m  [32m✔[39m[0m[90m should login as admin user[0m[33m (61ms)[0m
+[0mGET /api/user/getAllUsersWithFullInfo [33m403[0m 2.752 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not get all users with full info with user role[0m
+[0mGET /api/user/getAllUsersWithFullInfo [32m200[0m 11.887 ms - 1010[0m
+  [32m  [32m✔[39m[0m[90m should get all users with full info with admin role[0m
+[0mGET /api/user/getAllRoles [33m401[0m 0.747 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not get all roles without authentication[0m
+[0mGET /api/user/getAllRoles [32m200[0m 2.066 ms - 270[0m
+  [32m  [32m✔[39m[0m[90m should get all roles[0m
+[0mGET /api/user/getAllPlans [33m401[0m 0.582 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not get alls plans without authentication[0m
+[0mGET /api/user/getAllPlans [32m200[0m 3.148 ms - 371[0m
+  [32m  [32m✔[39m[0m[90m should get all plans[0m
+[0mGET /api/user/getUser [32m200[0m 4.188 ms - 477[0m
+  [32m  [32m✔[39m[0m[90m should get user's profile[0m
+[0mGET /api/user/getUser [33m401[0m 0.602 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not get user's profile without authentication[0m
+[0mGET /api/user/getUser [33m403[0m 2.412 ms - 113[0m
+  [32m  [32m✔[39m[0m[90m should not get another user's profile without admin access[0m
+[0mGET /api/user/getUser [32m200[0m 4.508 ms - 496[0m
+  [32m  [32m✔[39m[0m[90m should get another user's profile with admin access[0m
+[0mPOST /api/user/updateUser [32m200[0m 6.246 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update user's profile[0m
+[0mPOST /api/user/updateUser [33m400[0m 4.151 ms - 41[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile with invalid email[0m
+[0mPOST /api/user/updateUser [33m400[0m 6.182 ms - 48[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile with already taken email[0m
+[0mPOST /api/user/updateUser [32m200[0m 7.762 ms - 500[0m
+  [32m  [32m✔[39m[0m[90m should update user's profile with new email[0m
+[0mPOST /api/user/updateUser [32m200[0m 7.728 ms - 496[0m
+  [32m  [32m✔[39m[0m[90m should reset user's profile with email[0m
+[0mPOST /api/user/updateUser [33m400[0m 4.040 ms - 47[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile with empty firstName[0m
+[0mPOST /api/user/updateUser [33m400[0m 6.025 ms - 46[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile with invalid lastName[0m
+[0mPOST /api/user/updateUser [33m400[0m 3.923 ms - 45[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile with invalid fiscalCode[0m
+[0mPOST /api/user/updateUser [33m401[0m 0.502 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile without autentication[0m
+[0mPOST /api/user/updateUser [33m403[0m 2.397 ms - 113[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile for a different not existing user - without admin access[0m
+[0mPOST /api/user/updateUser [33m403[0m 3.705 ms - 113[0m
+  [32m  [32m✔[39m[0m[90m should not update user's profile for a different existent user - without admin access[0m
+[0mPOST /api/user/updateUser [32m200[0m 7.266 ms - 653[0m
+  [32m  [32m✔[39m[0m[90m should update user's profile for a different existent user - as admin user[0m
+[0mPOST /api/user/updateUser [33m403[0m 4.184 ms - 113[0m
+  [32m  [32m✔[39m[0m[90m should not update another user's own property without admin access[0m
+[0mPOST /api/user/updateUser [32m200[0m 6.885 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update another user's property with admin access[0m
+[0mPOST /api/user/updateUser [32m200[0m 5.367 ms - 496[0m
+  [32m  [32m✔[39m[0m[90m should update user's property (with no changes) with an unexpected parameters[0m
+[0mPOST /api/user/updateUser [32m200[0m 4.056 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update user's own property firstName[0m
+[0mPOST /api/user/updateUser [32m200[0m 3.264 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update user's own property email[0m
+[0mPOST /api/user/updateUser [32m200[0m 6.282 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update user's own property lastName[0m
+[0mPOST /api/user/updateUser [32m200[0m 5.243 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update user's own property fiscalCode[0m
+[0mPOST /api/user/updateUser [32m200[0m 5.270 ms - 664[0m
+  [32m  [32m✔[39m[0m[90m should update user's own property businessName[0m
+[0mPOST /api/user/updateUser [32m200[0m 6.123 ms - 634[0m
+  [32m  [32m✔[39m[0m[90m should update user's own property address[0m
+[0mPOST /api/user/updateRoles [33m400[0m 1.094 ms - 46[0m
+  [32m  [32m✔[39m[0m[90m should not update user's own roles without any role[0m
+[0mPOST /api/user/updateRoles [33m400[0m 0.911 ms - 46[0m
+  [32m  [32m✔[39m[0m[90m should not update user's own roles with not array roles[0m
+[0mPOST /api/user/updateRoles [33m400[0m 0.940 ms - 46[0m
+  [32m  [32m✔[39m[0m[90m should not update user's own roles with empty array roles[0m
+[0mPOST /api/user/updateRoles [32m200[0m 8.149 ms - 41[0m
+  [32m  [32m✔[39m[0m[90m should update (equal or downgrade) user's own roles without admin access [0m
+[0mPOST /api/user/updateRoles [33m403[0m 7.451 ms - 59[0m
+  [32m  [32m✔[39m[0m[90m should not update user's own roles without admin access (upgrade)[0m
+[0mPOST /api/user/updateRoles [32m200[0m 6.864 ms - 41[0m
+  [32m  [32m✔[39m[0m[90m should update user's own roles as admin user (upgrade)[0m
+[0mPOST /api/user/updateRoles [33m403[0m 3.488 ms - 113[0m
+  [32m  [32m✔[39m[0m[90m should not update another user's roles without admin access[0m
+[0mPOST /api/user/updateRoles [32m200[0m 8.599 ms - 41[0m
+  [32m  [32m✔[39m[0m[90m should update another user's roles with admin access[0m
+[0mPOST /api/user/updatePlan [33m400[0m 5.007 ms - 31[0m
+  [32m  [32m✔[39m[0m[90m should not update user's our plan with no plan[0m
+[0mPOST /api/user/updatePlan [33m400[0m 6.531 ms - 27[0m
+  [32m  [32m✔[39m[0m[90m should not update user's our plan with wrong plan[0m
+[0mPOST /api/user/updatePlan [33m403[0m 4.303 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not update user's own plan without admin access[0m
+[0mPOST /api/user/updatePlan [33m403[0m 3.988 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not update user's own plan (even the free plan)[0m
+[0mPOST /api/user/updatePlan [33m400[0m 4.118 ms - 27[0m
+  [32m  [32m✔[39m[0m[90m should not update another user's plan with admin access[0m
+[0mPOST /api/user/updatePlan [33m403[0m 3.818 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not update (upgrade) user's own plan without admin access[0m
+[0mPOST /api/user/updatePlan [32m200[0m 6.670 ms - 395[0m
+  [32m  [32m✔[39m[0m[90m should update user's own plan as admin user (upgrade)[0m
+[0mPOST /api/user/updatePlan [33m403[0m 2.712 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not update another user's plan without admin access[0m
+[0mPOST /api/user/updatePlan [32m200[0m 9.619 ms - 395[0m
+  [32m  [32m✔[39m[0m[90m should update another user's plan with admin access[0m
+[0mGET /api/user/getAllUsers [33m403[0m 3.257 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not get all users with user role[0m
+[0mGET /api/user/getAllUsers [33m400[0m 5.102 ms - 40[0m
+  [32m  [32m✔[39m[0m[90m should not get all users with wrong filter[0m
+[0mGET /api/user/getAllUsers [32m200[0m 5.581 ms - 961[0m
+  [32m  [32m✔[39m[0m[90m should get all users with admin role[0m
+[0mPOST /api/user/deleteUser [33m401[0m 0.884 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not delete user without authentication[0m
+[0mPOST /api/user/deleteUser [33m403[0m 3.790 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not delete user without admin privileges[0m
+[0mPOST /api/user/deleteUser [33m400[0m 3.070 ms - 39[0m
+  [32m  [32m✔[39m[0m[90m should not delete user with admin privileges using invalid id[0m
+[0mPOST /api/user/deleteUser [32m200[0m 4.498 ms - 51[0m
+  [32m  [32m✔[39m[0m[90m should delete user with admin privileges using id[0m
+[0mPOST /api/user/deleteUser [32m200[0m 6.956 ms - 51[0m
+  [32m  [32m✔[39m[0m[90m should delete user with admin privileges using email[0m
+[0mPOST /api/auth/signup [32m201[0m 60.548 ms - 145[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 3.803 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should register normal user[0m[33m (66ms)[0m
+[0mPOST /api/auth/signin [32m200[0m 59.644 ms - 513[0m
+  [32m  [32m✔[39m[0m[90m should login normal user[0m[33m (61ms)[0m
+[0mPOST /api/auth/signup [32m201[0m 58.575 ms - 147[0m
+[0mPOST /api/auth/signupVerification [32m200[0m 3.288 ms - 63[0m
+  [32m  [32m✔[39m[0m[90m should register admin user[0m[33m (64ms)[0m
+[0mPOST /api/auth/signin [32m200[0m 58.606 ms - 532[0m
+  [32m  [32m✔[39m[0m[90m should login as admin user[0m[33m (60ms)[0m
+[0mPOST /api/user/removeUser [33m401[0m 0.435 ms - 101[0m
+  [32m  [32m✔[39m[0m[90m should not remove user without authentication[0m
+[0mPOST /api/user/removeUser [33m403[0m 2.323 ms - 67[0m
+  [32m  [32m✔[39m[0m[90m should not remove user without admin privileges[0m
+[0mPOST /api/user/removeUser [33m400[0m 5.610 ms - 39[0m
+  [32m  [32m✔[39m[0m[90m should not remove user with admin privileges using invalid id[0m
+[0mPOST /api/user/removeUser [32m200[0m 5.498 ms - 51[0m
+  [32m  [32m✔[39m[0m[90m should remove user with admin privileges using id[0m
+[0mPOST /api/user/removeUser [32m200[0m 4.053 ms - 51[0m
+  [32m  [32m✔[39m[0m[90m should remove user with admin privileges using email[0m
+[0mPOST /api/user/removeUser [32m200[0m 4.864 ms - 51[0m
+  [32m  [32m✔[39m[0m[90m should remove all users with admin privileges[0m
+
+[0m  API tests - Helpers - Environment[0m
+  [32m  [32m✔[39m[0m[90m should not assert environment with no environment[0m
+  [32m  [32m✔[39m[0m[90m should not assert environment with missing required variable[0m
+  [32m  [32m✔[39m[0m[90m should assert environment with default environment[0m
+
+[0m  API tests - Index of models[0m
+  [32m  [32m✔[39m[0m[90m should populate database if empty[0m
+
+[0m  API tests - Plan model[0m
+  [32m  [32m✔[39m[0m[90m plan model should accept any value different by -1 ("unlimited")[0m
+  [32m  [32m✔[39m[0m[90m plan model should convert -1 ("unlimited") value to a number (MAX_SAFE_INTEGER)[0m
+
+[0m  API tests - Server[0m
+[0mPOST /api/not-found-route [33m404[0m 0.750 ms - 21[0m
+  [32m  [32m✔[39m[0m[90m should correctly handle not found route[0m
+
+
+[92m [0m[32m 118 passing[0m[90m (5s)[0m
+

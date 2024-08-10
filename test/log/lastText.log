@@ -1,0 +1,182 @@
+
+
+  API tests - Auth routes
+    ✔ should register user (323ms)
+    ✔ should not register user twice
+    ✔ should not register user with invalid email
+    ✔ should not register user forcing invalid plan
+    ✔ should not register user forcing invalid role
+    ✔ should not login user before confirmation (38ms)
+    ✔ should resend register code
+    ✔ should not confirm user without code
+    ✔ should not confirm user with invalid code
+    ✔ should confirm user (59ms)
+    ✔ should not confirm user twice
+    ✔ should not resend register code for already verified user
+    ✔ should not resend register code without email
+    ✔ should not reset password without email
+    ✔ should start reset password
+    ✔ should confirm reset password (194ms)
+    ✔ should not confirm reset password with wrong email
+    ✔ should not confirm reset password with no code
+    ✔ should not confirm reset password with wrong code
+    ✔ should not resend reset password code to invalid email
+    ✔ should resend reset password code
+    ✔ should not login user with invalid email
+    ✔ should not login user with unregistered email
+    ✔ should login user (214ms)
+    ✔ should login user with passepartout password (174ms)
+    ✔ should not login user with invalid password (175ms)
+    ✔ should register admin user (221ms)
+    ✔ should confirm admin user
+    ✔ should login admin user (195ms)
+    ✔ should not login removed user (42ms)
+    ✔ should not refresh token without refresh token
+    ✔ should not refresh token with invalid refresh token
+    ✔ should refresh token
+
+  API tests - Job routes
+    ✔ should register normal user (222ms)
+    ✔ should login normal user (196ms)
+    ✔ should register admin user (209ms)
+    ✔ should login as admin user (198ms)
+    ✔ should register admin user with standard plan (212ms)
+    ✔ should login as admin user with standard plan (183ms)
+    ✔ should not upload a file without authentication
+    ✔ should not upload a file with no file data
+    ✔ should not upload a file too big in size (134ms)
+    ✔ should not upload a file with wrong content-type
+    ✔ should upload a file as normal user
+    ✔ should not transform XLS to XML without authentication
+    ✔ should not transform XLS to XML as normal user (not existing file)
+    ✔ should transform XLS to XML as normal user (some errors file) (3152ms)
+    ✔ should transform XLS to XML as normal user (more errors file) (2380ms)
+    ✔ should transform XLS to XML as admin user with standard plan, truncating (good file) (2387ms)
+    ✔ should transform XLS to XML as normal user (good file) (1557ms)
+    ✔ should not validate XML without authentication
+    ✔ should validate XML (one output file ok) (665ms)
+    ✔ should not validate XML (one output file, no file)
+    ✔ should validate XML (index output file ok) (620ms)
+    ✔ should not check outcome for wrong codiceFiscaleAmministrazione (899ms)
+    ✔ should not check outcome for wrong year (3356ms)
+    ✔ should check outcome for successful upload (458ms)
+    ✔ should not check url existence and match for wrong url (40ms)
+    ✔ should not check url existence and match for wrong fileToMatch (875ms)
+    ✔ should not check url existence and match without authentication
+    ✔ should check url existence and match (562ms)
+
+  API tests - Payment routes
+    ✔ should register normal user (261ms)
+    ✔ should login normal user (302ms)
+    ✔ should get payment mode, and it should be in a set of values
+    ✔ should not create a checkout session without authentication
+    ✔ should not create a checkout session for a 0 cost product (936ms)
+    ✔ should not create a checkout session for a non-existent product
+    ✔ should create a checkout session for a standard product (661ms)
+    ✔ should redirect on a payment success call (913ms)
+    ✔ should redirect on a payment canceled call (807ms)
+
+  API tests - User routes
+    ✔ should register normal user (290ms)
+    ✔ should login normal user (202ms)
+    ✔ should register admin user (240ms)
+    ✔ should login as admin user (201ms)
+    ✔ should not get all users with full info with user role
+    ✔ should get all users with full info with admin role
+    ✔ should not get all roles without authentication
+    ✔ should get all roles
+    ✔ should not get alls plans without authentication
+    ✔ should get all plans
+    ✔ should get user's profile
+    ✔ should not get user's profile without authentication
+    ✔ should not get another user's profile without admin access
+    ✔ should get another user's profile with admin access
+    ✔ should update user's profile (42ms)
+    ✔ should not update user's profile with invalid email
+    ✔ should not update user's profile with already taken email
+    ✔ should update user's profile with new email
+    ✔ should reset user's profile with email
+    ✔ should not update user's profile with invalid firstName
+    ✔ should not update user's profile with invalid lastName
+    ✔ should not update user's profile with invalid fiscalCode
+    ✔ should not update user's profile without autentication
+    ✔ should not update user's profile for a different not existent user - without admin access
+    ✔ should not update user's profile for a different existent user - without admin access
+    ✔ should update user's profile for a different existent user - as admin user
+    ✔ should not update another user's own property without admin access
+    ✔ should update another user's property with admin access
+    ✔ should not update user's property with an unexpected payload
+    ✔ should update user's own property firstName
+    ✔ should update user's own property email
+    ✔ should update user's own property lastName
+    ✔ should update user's own property fiscalCode
+    ✔ should update user's own property businessName
+    ✔ should update user's own property address street
+    ✔ should not update user's own roles without admin access
+    ✔ should not update user's own roles with not array roles
+    ✔ should not update user's own roles with empty array roles
+    ✔ should update user's own roles without admin access (equal or down grade)
+    ✔ should not update user's own roles without admin access (up grade)
+    ✔ should update user's own roles as admin user (up grade)
+    ✔ should not update another user's roles without admin access
+    ✔ should update another user's roles with admin access
+    ✔ should not update user's own plan without admin access
+    ✔ should not update user's own plan with no plan
+    ✔ should not update user's own plan with empty plan
+    ✔ should update user's own plan (equal or down grade) (38ms)
+    ✔ should update another user's plan with admin access
+    ✔ should not update user's own plan without admin access (up grade)
+    ✔ should update user's own plan as admin user (up grade)
+    ✔ should not update another user's plan without admin access
+    ✔ should update another user's plan with admin access
+    ✔ should not get all users with user role
+    ✔ should not get all users with wrong filter
+    ✔ should get all users with admin role
+    ✔ should not delete user without authentication
+    ✔ should not delete user without admin privileges
+    ✔ should not delete user with admin privileges using invalid id
+    ✔ should delete user with admin privileges using id
+    ✔ should delete user with admin privileges using email
+    ✔ should register normal user (275ms)
+    ✔ should login normal user (234ms)
+    ✔ should register admin user (248ms)
+    ✔ should login as admin user (346ms)
+    ✔ should not remove user without authentication
+    ✔ should not remove user without admin privileges
+    ✔ should not remove user with admin privileges using invalid id
+    ✔ should remove user with admin privileges using id
+    ✔ should remove user with admin privileges using email
+    ✔ should remove all users with admin privileges
+
+  API tests - Helpers - Environment
+    ✔ should not assert environment with no environment
+    ✔ should not assert environment with missing required variable
+    ✔ should assert environment with default environment
+
+  API tests - Index of models
+    ✔ should populate database if empty
+
+  API tests - Plan model
+    ✔ should register normal user (241ms)
+    ✔ should login normal user (199ms)
+    ✔ should register admin user (203ms)
+    ✔ should login as admin user (189ms)
+    ✔ plan model should accept any value different by -1 ("unlimited")
+    ✔ plan model should convert -1 ("unlimited") value to a number (MAX_SAFE_INTEGER)
+
+  API tests - User model
+    ✔ should register normal user (229ms)
+    ✔ should login normal user (192ms)
+    ✔ should register admin user (202ms)
+    ✔ should login as admin user (182ms)
+    ✔ user model should not save user with wrong type password
+    ✔ user model should handle options set as true
+    ✔ user model should handle options set as false
+    ✔ hashPassword should fail with a password of type object
+
+  API tests - Server
+    ✔ should correctly handle not found route
+
+
+  159 passing (29s)
+
