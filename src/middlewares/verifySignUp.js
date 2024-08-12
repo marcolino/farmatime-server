@@ -9,9 +9,9 @@ const checkDuplicateEmail = (req, res, next) => {
       return res.status(500).json({ message: err });
     }
     if (user) {
-      if (!user.isVerified) { // notify user did already register, but we are waiting for 2nd channel verification
+      if (!user.isVerified) { // notify user did already register, but we are waiting for  2nd channel verification
         return res.status(401).json({
-          message: req.t("This email is waiting for a verification; if you did register it, check your emails"),
+          message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
           code: "AccountWaitingForVerification",
         });
       }
@@ -39,9 +39,7 @@ const checkRolesExisted = (req, res, next) => {
   next();
 };
 
-const verifySignUp = {
+module.exports = {
   checkDuplicateEmail,
   checkRolesExisted
 };
-
-module.exports = verifySignUp;

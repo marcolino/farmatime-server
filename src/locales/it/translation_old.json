@@ -101,7 +101,7 @@
   "The property has been updated": "La proprietà è stata aggiornata",
   "The user must be authenticated": "L'utente deve essere autenticato",
   "The user must have a plan": "L'utente deve avere un piano",
-  "This email is waiting for a verification; check your emails if you did register it": "Questa email è in attesa di verifica; controlla le tue email, se lo hai registrato tu",
+  "This account is waiting for a verification; check your emails if you did register it": "Questa email è in attesa di verifica; controlla le tue email, se lo hai registrato tu",
   "This user has already been verified": "Questo utente è già stato verificato",
   "to verify your account": "to verify your account",
   "Too Early": "",

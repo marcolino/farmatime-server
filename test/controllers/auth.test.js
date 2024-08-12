@@ -122,7 +122,7 @@ describe("API tests - Auth routes", function() {
       .then(res => {
         res.should.have.status(401);
         res.body.should.have.property("message");
-        expect(res.body.message).to.equal("This email is waiting for a verification; if you did register it, check your emails");
+        expect(res.body.message).to.equal("This account is waiting for a verification; if you did register it, check your emails");
         done();
       })
       .catch((err) => {

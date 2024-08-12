@@ -1,4 +1,4 @@
-
+const apiName = "ACME";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const serverBaseUrl = `${process.env.NODE_ENV === "production" ?
   "https://acme.herokuapp.com" :
@@ -13,14 +13,20 @@ const clientShowcaseBaseUrl = `${process.env.NODE_ENV === "production" ?
   "http://localhost:8080"
 }`;
 
-module.exports = {
+module.exports = { // TODO: merge with client config file (?)
+  company: {
+    name: "Sistemi Solari Rossi s.r.l",
+    title: "Sistemi Solari Rossi",
+    mailto: "mailto:marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+    copyright: `© ${new Date().getFullYear()} Sistemi Solari Rossi. All rights reserved.`,
+  },
   api: {
-    name: "ACME",
+    name: apiName,
     port: 5000,
     payloadLimit: "100mb",
     rateLimit: {
-      maxRequestsPerMinute: 1, // 100 // limit requests per minute (use 1 to throttle all requests)
-      delayAfterMaxRequestsMilliseconds: 2.5 * 1000,
+      maxRequestsPerMinute: 1000, // limit requests per minute (use 1 to throttle all requests)
+      delayAfterMaxRequestsMilliseconds: 2.5 * 1000, // delay after limit is reached
     }
   },
   publicBasePath: null, // use for example as "/public/" if a puglic folder on server is needed
@@ -142,13 +148,22 @@ module.exports = {
       paymentCancelUrlShowcase: `${clientShowcaseBaseUrl}/payment-cancel`,
     },
   },
-  emailAdministration: {
-    from: "marcosolari@gmail.com",
-    //from: acme@arsistemi.it", // this does not avoid SPAM marks by gmail...
-    to: "marcosolari@gmail.com",
-  },
-  emailSupport: {
-    to: "marcosolari@gmail.com",
+  email: {
+    subject: {
+      prefix: apiName,
+    },
+    administration: {
+      from: "sistemisolarirossi@gmail.com",
+      fromName: "Sistemi Solari Rossi backend server",
+      to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+      toName: "ACME admin",
+    },
+    support: {
+      to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+      toName: "ACME support",
+    },
+    templatesPath: "../assets/templates/email",
+    templatesExtension: ".html",
   },
   defaultUsers: {
     admin: {
@@ -165,8 +180,10 @@ module.exports = {
     "MONGO_DB",
     "MONGO_USER",
     "MONGO_PASS",
-    "FROM_EMAIL",
-    "SENDGRID_API_KEY",
+  //"FROM_EMAIL",
+  //"SENDGRID_API_KEY",
+    "SENDMAIL_API_KEY",
+    "SENDMAIL_FROM_EMAIL",
     "STRIPE_MODE",
     "STRIPE_API_KEY_TEST",
     "STRIPE_API_KEY_LIVE",

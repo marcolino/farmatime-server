@@ -1,6 +1,6 @@
 const emailValidate = require("email-validator");
 const codiceFiscaleValidate = require("codice-fiscale-js");
-const i18n = require("i18next");
+//const i18n = require("i18next");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
@@ -37,7 +37,7 @@ const getAllUsersWithFullInfo = (req, res) => {
     res.status(200).json({users});
   }).catch(err => {
     logger.error("Error getting all users with full info:", err.message);
-    return res.status(500).json({err: err.message});
+    return res.status(500).json({ message: err.message });
   });
 };
 
@@ -57,7 +57,7 @@ const getAllUsers = async(req, res) => {
     res.status(200).json({users});
   } catch(err) {
     logger.error("Error getting all users with:", err.message);
-    return res.status(500).json({err: err.message});
+    return res.status(500).json({ message: err.message });
   };
 };
 

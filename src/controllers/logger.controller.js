@@ -42,7 +42,8 @@ try {
         winston.format.printf(info => {
           const timestamp = info.timestamp.trim();
           const level = info.level;
-          const message = (info.message || "").trim();
+          //const message = (info.message || "").trim();
+          const message = (typeof info?.message === "string" ? info.message : "").trim();
           const args = info[Symbol.for("splat")];
           const strArgs = (args || []).map(arg => {
             return util.inspect(arg, { colors: colorize });

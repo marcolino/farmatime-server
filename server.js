@@ -9,9 +9,10 @@ const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
 const db = require("./src/models");
 const { assertEnvironment } = require("./src/helpers/environment");
-const { setupEmail, notification } = require("./src/helpers/notification");
+const { audit } = require("./src/helpers/messaging");
+const emailService = require("./src/services/email.service");
 const { nowLocaleDateTime } = require("./src/helpers/misc");
-const { rateLimitMiddleware }  = require("./src/middlewares/rateLimit");
+const rateLimitMiddleware  = require("./src/middlewares/rateLimit");
 const config = require("./src/config");
 
 const production = (process.env.NODE_ENV === "production");
@@ -32,12 +33,6 @@ i18next
 ;
     
 const app = express();
-
-//setTimeout(() => { // debug throttling (REMOVEME)
-//}, 2500); // debug throttling (REMOVEME)   
-
-// apply rate limiting middleware globally
-//app.use(rateLimitMiddleware);
 
 // use compression
 app.use(compression());
@@ -85,6 +80,9 @@ app.use((req, res, next) => {
 // use i18n
 app.use(i18nextMiddleware.handle(i18next));
 
+// apply rate limiting middleware globally
+app.use(rateLimitMiddleware);
+
 // environment configuration
 logger.info("-----");
 if (production) { // load environment variables from .env file
@@ -95,8 +93,8 @@ if (production) { // load environment variables from .env file
   require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
 }
 
-// setup email
-setupEmail();
+// setup the email service
+emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 
 // assert environment to be fully compliant with expectations
 assertEnvironment();
@@ -155,26 +153,15 @@ app.use(express.static(rootClient));
 // handle errors in API routes
 app.use((err, req, res, next) => {
   res.locals.error = err;
-  const status = err.status || 500;
-  const error = err.message || "Internal server error";
-  res.status(status);
-  logger.error({ error });
-  //if (req.accepts("json")) {
-  return res.json({ error });
-  //}
-  //return res.type("txt").send(error);
+  return res.status(err.status || 500).json({ message: err.message || "Internal server error" });
 });
 
 // handle not found API routes
 app.all("/api/*", (req, res, next) => {
-  if ((req.method !== "GET") && (req.method !== "POST")) { // check verb is allowed
-    return res.status(405).json({ error: "Method Not Allowed" });
+  if ((req.method !== "GET") && (req.method !== "POST")) { // check verb is allowed # TODO: make a list of accetted API methods in config.api
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
-  res.status(404);
-  //if (req.accepts("json")) {
-  return res.json({ error: "Not found" });
-  //}
-  //return res.type("txt").send("Not found");
+  return res.status(404).json({ message: "Not found" });
 })
 
 // handle not found client routes
@@ -187,7 +174,14 @@ if (require.main === module) { // avoid listening while testing
   const PORT = process.env.PORT || config.api.port;
   app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
-    notification({subject: "Startup", html: `Server is running on port ${PORT} on ${nowLocaleDateTime()}`});
+    audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${nowLocaleDateTime()}` });
+    // emailService.send({
+    //   to: "marcosolari@gmail.com",
+    //   subject: `debug template`,
+    //   //htmlContent: "Hello, ${name}! You have ${count} new messages. Name again is ${name}.",
+    //   templateFilename: "generic",
+    //   templateParams: { name: "Alice", count: 5 },
+    // });
   });
 } else { // export app for testing
   module.exports = app;

@@ -21,6 +21,7 @@ TODO:
 - usare Authentication Bearer insted of x-auth-toksn (on client too) - OK
 - invece di module.exports = { ... } nei moduli, usare exports individuali - OK
 - verificare che ./public/badges serva (usato in coverage) - OK
+- attivare repository git - OK
 
 - gestire invio email con smtp di gmail (account: sistemisolari@gmail.com)
 - sendemail FROM
@@ -36,6 +37,7 @@ TODO:
 - nei controllers, uniformare catch return 500 + json + err.message
 - gestire il downgrade del piano: chiedere conferma, e specificare che non ci saranno rimborsi
 - testare sempre le interazioni col database (i.e.: user.save(err => { ...}))
+- aggiungere `next(err); // pass the error to the error handling middleware` alle catch di tutte le routes (come in signup)
 
 NEWFEATURE:
 - decidere come gestire le notifiche in produzione (acquistare un piano su papertrail.com?)

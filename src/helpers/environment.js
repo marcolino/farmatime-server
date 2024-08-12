@@ -1,6 +1,6 @@
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
-const { assertionsCheckFailure } = require("../helpers/notification");
+const { audit } = require("../helpers/messaging");
 
 const assertEnvironment = () => {
   if (!process.env) {
@@ -19,6 +19,10 @@ const assertEnvironment = () => {
   }
 
   return true;
+};
+
+const assertionsCheckFailure = async(htmlContent) => {
+  return audit({subject: "Assertion check failed", htmlContent});
 };
 
 module.exports = {

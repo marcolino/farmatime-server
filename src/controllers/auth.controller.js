@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const validateEmail = require("email-validator");
-const { sendEmail, notification } = require("../helpers/notification");
+const { audit } = require("../helpers/messaging");
+// const { sendEmail } = require("../services/email.service");
+const emailService = require("../services/email.service");
 const { normalizeEmail, nowLocaleDateTime, remoteAddress } = require("../helpers/misc");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
@@ -11,7 +13,7 @@ const VerificationCode = require("../models/verificationCode.model");
 
 const config = require("../config");
 
-const signup = async(req, res) => {
+const signup = async(req, res, next) => {
   let roleName = "user";
   let planName = "free";
   let role, plan;
@@ -35,7 +37,8 @@ const signup = async(req, res) => {
     role = await Role.findOne({name: roleName});
   } catch(err) {
     logger.error(`Error finding role ${roleName}:`, err);
-    return res.status(err.code).json({ message: err });
+    //return res.status(err.code).json({ message: err });
+    return next(err);
   }
   if (!role) {
     return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName })});
@@ -47,7 +50,8 @@ const signup = async(req, res) => {
     plan = await Plan.findOne({name: planName});
   } catch(err) {
     logger.error(`Error finding plan ${planName}:`, err);
-    return res.status(err.code).json({ message: err });
+    //return res.status(err.code).json({ message: err });
+    return next(err);
   }
   if (!plan) {
     return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName })});
@@ -66,7 +70,8 @@ const signup = async(req, res) => {
     if (err) {
       // we don't check duplicated user email (err.code === 11000) as it is done already as a route middleware
       logger.error("New user creation error:", err);
-      return res.status(err.code).json({ message: err });
+      //return res.status(err.code).json({ message: err });
+      next(err);
     }
 
     // send verification code
@@ -74,21 +79,30 @@ const signup = async(req, res) => {
       const signupVerification = user.generateSignupVerification(user._id);
       await signupVerification.save(); // save the verification code
   
-      //logger.info("VERIFICATION CODE:", signupVerification.code);
+      logger.info("VERIFICATION CODE:", signupVerification.code);
       
-      const subject = req.t("Signup Verification Code");
-      const to = user.email;
-      const from = process.env.FROM_EMAIL;
-      const html = `
-<p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.<p>
-<p>${req.t("The code to verify your registration is")} <b>${signupVerification.code}</b>.</p>
-<p><i>${req.t("If you did not request this, please ignore this email")}.</i></p>
-      `;
-      logger.info("Sending email:", to, from, subject);
-      (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
-      await sendEmail({to, from, subject, html});
-
-      res.status(201).json({
+//       const subject = req.t("Signup Verification Code");
+//       const to = user.email;
+//       const from = process.env.FROM_EMAIL;
+//       const html = `
+// <p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.<p>
+// <p>${req.t("The code to verify your registration is")} <b>${signupVerification.code}</b>.</p>
+// <p><i>${req.t("If you did not request this, please ignore this email")}.</i></p>
+//       `;
+//       logger.info("Sending email:", to, from, subject);
+//       (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
+//       await sendEmail({to, from, subject, html});
+      await emailService.send({
+        to: user.email,
+        subject: req.t("Signup Verification Code"),
+        templateFilename: "signupVerificationCodeSent",
+        templateParams: {
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          signupVerificationCode: signupVerification.code,
+        },
+      })
+      return res.status(201).json({
         message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
         codeDeliveryMedium: config.auth.codeDeliveryMedium,
         codeDeliveryEmail: user.email,
@@ -96,7 +110,7 @@ const signup = async(req, res) => {
       });
     } catch(err) {
       logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}:`, err);
-      res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + req.t(err.message) + ".\n" + req.t("Please contact support at {{email}}", {email: config.emailSupport.to})});
+      return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + req.t(err.message) + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
     }
   });
 };
@@ -116,17 +130,28 @@ const resendSignupCode = async(req, res) => {
     const signupVerification = await user.generateSignupVerification(user._id);
     await signupVerification.save(); // save the verification code
 
-    const subject = req.t("Signup Verification Code Resent");
-    const to = user.email;
-    const from = process.env.FROM_EMAIL;
-    const html = `
-<p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.<p>
-<p>${req.t("The code to verify your registration is")} <b>${signupVerification.code}</b>.</p>
-<p><i>${req.t("If you did not request this, please ignore this email")}.</i></p>
-    `;
-    logger.info("Sending email:", to, from, subject);
-    (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
-    await sendEmail({to, from, subject, html});
+//     const subject = req.t("Signup Verification Code Resent");
+//     const to = user.email;
+//     const from = process.env.FROM_EMAIL;
+//     const html = `
+// <p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.<p>
+// <p>${req.t("The code to verify your registration is")} <b>${signupVerification.code}</b>.</p>
+// <p><i>${req.t("If you did not request this, please ignore this email")}.</i></p>
+//     `;
+//     logger.info("Sending email:", to, from, subject);
+//     (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
+//     await sendEmail({ to, from, subject, html });
+    
+    await notification({
+      to: user.email,
+      subject: req.t("Signup Verification Code Resent"),
+      htmlTemplateFile: "signupVerificationCodeSent",
+      htmlTemplateParams: {
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
+        signupVerificationCode: signupVerification.code,
+      },
+    });
 
     res.status(200).json({ message: req.t("A verification code has been resent to {{to}} via {{codeDeliveryMedium}}", {to: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium}), codeDeliveryMedium: config.auth.codeDeliveryMedium });
 
@@ -177,7 +202,7 @@ const signupVerification = async(req, res) => {
             return res.status(err.code).json({ message: err.message });
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
-          notification({subject: `User ${user.email} signup completed`, html: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${nowLocaleDateTime()}`});
+          audit({subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${nowLocaleDateTime()}`});
           res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
         });
       }
@@ -223,7 +248,7 @@ const signin = async(req, res) => {
     // check email is verified
     if (!user.isVerified) {
       return res.status(401).json({
-        code: "AccountWaitingForVerification", message: req.t("This email is waiting for a verification; if you did register it, check your emails"),
+        code: "AccountWaitingForVerification", message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
       });
     }
 
@@ -253,7 +278,7 @@ const signin = async(req, res) => {
 
     logger.info(`User signin: ${user.email}`);
     // notify administration about logins
-    notification({subject: `User ${user.email} signin`, html: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${nowLocaleDateTime()}`});
+    audit({subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${nowLocaleDateTime()}`});
   
     res.status(200).json({
       id: user._id,

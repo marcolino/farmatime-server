@@ -79,7 +79,7 @@
   "This account has already been verified, you can log in": "This account has already been verified, you can log in",
   "This code is not valid, it may be expired": "This code is not valid, it may be expired",
   "This email is already taken, sorry": "This email is already taken, sorry",
-  "This email is waiting for a verification; if you did register it, check your emails": "This email is waiting for a verification; if you did register it, check your emails",
+  "This account is waiting for a verification; if you did register it, check your emails": "This account is waiting for a verification; if you did register it, check your emails",
   "Too many requests": "",
   "Unauthorized": "",
   "unlimited": "unlimited",

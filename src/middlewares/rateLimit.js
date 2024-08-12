@@ -3,7 +3,7 @@ const config = require("../config");
 let requestCount = 0;
 let lastResetTime = Date.now();
 
-const rateLimit = (req, res, next) => {
+const rateLimitMiddleware = (req, res, next) => {
   const currentTime = Date.now();
 
   // reset request count every minute
@@ -19,10 +19,6 @@ const rateLimit = (req, res, next) => {
   } else {
     next(); // proceed immediately
   }
-};
-
-const rateLimitMiddleware = {
-  rateLimit,
 };
 
 module.exports = rateLimitMiddleware;

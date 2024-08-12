@@ -80,7 +80,7 @@
   "This account has already been verified, you can log in": "Ce compte a déjà été vérifié, vous pouvez vous connecter",
   "This code is not valid, it may be expired": "Ce code n'est pas valide, il est peut-être expiré",
   "This email is already taken, sorry": "Cet email est déjà pris, désolé",
-  "This email is waiting for a verification; if you did register it, check your emails": "Cet email attend une vérification; si vous l'avez enregistré, vérifiez vos emails",
+  "This account is waiting for a verification; if you did register it, check your emails": "Cet email attend une vérification; si vous l'avez enregistré, vérifiez vos emails",
   "Too many requests": "Trop de demandes",
   "Unauthorized": "Non autorisé",
   "unlimited": "illimité",
@@ -91,5 +91,6 @@
   "You must be authenticated for this action": "Vous devez être authentifié pour cette action",
   "You must be authorized for this action": "Vous devez être autorisé pour cette action",
   "You must have admin role for this action": "Vous devez avoir un rôle d'administrateur pour cette action",
-  "You must have admin role to update another user": "Vous devez avoir un rôle d'administrateur pour mettre à jour un autre utilisateur"
+  "You must have admin role to update another user": "Vous devez avoir un rôle d'administrateur pour mettre à jour un autre utilisateur",
+  "Your password has been updated": "__STRING_NOT_TRANSLATED__"
 }
