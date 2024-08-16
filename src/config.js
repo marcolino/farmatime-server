@@ -1,5 +1,8 @@
 const apiName = "ACME";
+const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
+const company = "Sistemi Solari Rossi";
+  
 const serverBaseUrl = `${process.env.NODE_ENV === "production" ?
   "https://acme.herokuapp.com" :
   "http://localhost:5000"
@@ -13,13 +16,7 @@ const clientShowcaseBaseUrl = `${process.env.NODE_ENV === "production" ?
   "http://localhost:8080"
 }`;
 
-module.exports = { // TODO: merge with client config file (?)
-  company: {
-    name: "Sistemi Solari Rossi s.r.l",
-    title: "Sistemi Solari Rossi",
-    mailto: "mailto:marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
-    copyright: `© ${new Date().getFullYear()} Sistemi Solari Rossi. All rights reserved.`,
-  },
+module.exports = { // TODO: pass to client only some of api, app, company...
   api: {
     name: apiName,
     port: 5000,
@@ -27,7 +24,7 @@ module.exports = { // TODO: merge with client config file (?)
     rateLimit: {
       maxRequestsPerMinute: 1000, // limit requests per minute (use 1 to throttle all requests)
       delayAfterMaxRequestsMilliseconds: 2.5 * 1000, // delay after limit is reached
-    }
+    },
   },
   publicBasePath: null, // use for example as "/public/" if a puglic folder on server is needed
   auth: { // NEWFEATURE: put into environment (?)
@@ -36,7 +33,6 @@ module.exports = { // TODO: merge with client config file (?)
     verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
     passepartout: "passaquì,passalà", // passepartout password
-    factors: 2, // 1: single factor (password), 2: multi factor (password, email/sms) authentication
   },
   roles: [
     {
@@ -51,7 +47,7 @@ module.exports = { // TODO: merge with client config file (?)
     }, {
       name: "admin",
       priority: 100,
-    }
+    },
   ],
   plans: [
     {
@@ -123,7 +119,7 @@ module.exports = { // TODO: merge with client config file (?)
           name: "Prodotto Illimitato LIVEKBJ",
           price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
         },
-      } : { // development
+      } : { // stripe mode is development
         free: {
           name: "Prodotto Gratuito (test)",
           product_id: "prod_LC4q54jgFITE0U",
@@ -168,13 +164,14 @@ module.exports = { // TODO: merge with client config file (?)
   defaultUsers: {
     admin: {
       email: "marcosolari@gmail.com",
-      password: "SuperSecret!123",
+      password: process.env.ADMIN_USER_DEFAULT_PASSWORD,
       firstName: "admin name",
       lastName: "admin surname",
     },
   },
   envRequiredVariables: [
     "JWT_TOKEN_SECRET",
+    "ADMIN_USER_DEFAULT_PASSWORD",
     "MONGO_SCHEME",
     "MONGO_URL",
     "MONGO_DB",
@@ -192,4 +189,100 @@ module.exports = { // TODO: merge with client config file (?)
   //"FACEBOOK_OAUTH_CLIENT_ID",
   //"FACEBOOK_OAUTH_SECRET_KEY",
   ],
+  app: {
+    name: appName, // app name
+    title: apiName, // app title
+    siteUrl: serverBaseUrl, // site url
+    serviceWorkerRegistration: (process.env.NODE_ENV === "production"), // use in production (if really needed...)
+    company: {
+      name: `${company} s.r.l.`,
+      title: `${company}`,
+      mailto: "mailto:marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+      copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
+      homeSite: {
+        name: "sistemisolarirossi.it",
+        url: serverBaseUrl,
+      },
+      owner: {
+        name: "Marco Solari",
+        fiscalCode: "SLRMRC61M31L219Y",
+        streetAddress: "Via Felisio, 19",
+        city: "Rivoli",
+        province: "TO",
+        zipCode: "10098",
+        phone: "+39 333 6480983",
+        email: "marcosolari@gmail.com",
+      },
+    },
+    api: { // API settings for clients
+      version: 1, // use this as a default for all API calls which do not specify any specific version (in headers["Accept-Version"])
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+    },
+    legal: {
+      termsValidityStartDate: "01-01-2025", // start date of terms validity
+      cookieConsentExpirationDays: 365, // days after which cookie with privacy consent does expire
+    },
+    manifest: {
+      // if PWA is hosted at the root of domain (https://example.com/), and it always starts from the root
+      // regardless of where the manifest.json is located, use: "start_url": "/";
+      // if instead PWA is within a subdirectory (https://example.com/app), and it starts from that subdirectory,
+      // use: "start_url": "/"
+      startUrl: "./", // start_url value in manifest
+      display: "standalone", // display value in manifest
+    },
+    auth: {
+      clientSessionExpirationSeconds: 60 * 60 * 2, // client session expiration seconds (should be less than auth.refreshTokenExpirationSeconds)
+      warnBeforeSessionExpirationSeconds: 60 * 2, // seconds before client session expiration warning
+    },
+    spinner: { // loading spinner
+      // choose one in type in:
+      // Audio, Comment, Grid, Hearts, Hourglass, Oval,
+      // RotatingLines, RotatingSquare, ThreeDots, Watch
+      type: "Watch",
+      delay: 500,
+      height: 200,
+      width: 200,
+      opacity: .50,
+      color: "midnightBlue",
+      secondaryColor: "darkBlue",
+      strokeWidth: 10,
+      strokeWidthSecondary: 8,
+    },
+    i18n: {
+      country: "it",
+      phonePrefix: "+39",
+      languages: {
+        supported: {
+          "en": { icon: "🇬🇧" },
+          "it": { icon: "🇮🇹" },
+        },
+        fallback: "it",
+      },
+    },
+    ui: {
+      footerHeight: "1.5rem",
+      extraSmallWatershed: 600,
+      // mobileDesktopWatershed: 900,
+      // sounds: {
+      //   buttonClick,
+      // },
+      usePlans: true, // if we do use plans in the app
+      toastAutoCloseSeconds: 7,
+    },
+    oauth: {
+      domain: "auth.sistemisolari.com",
+      // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
+      scope: [ "email", "openid", "aws.cognito.signin.user.admin" ],
+      responseType: "code",
+      redirectSignIn: serverBaseUrl,
+      redirectSignOut: serverBaseUrl,
+      federatedSigninProviders: [ // we currently handle "Facebook", "Google"
+        //"Facebook",
+        //"Google",
+      ],
+    },
+  },
 };

@@ -9890,3 +9890,967 @@ info: 2024-08-12 18:49:49 audit: {
   htmlContent: 'Server is running on port 5000 on 12/8/2024, 18:49:49 CEST'
 }
 info: 2024-08-12 18:49:49 Successfully connected to MongoDB 
+info: 2024-08-16 15:00:39 ----- 
+info: 2024-08-16 15:00:39 Loading test environment 
+info: 2024-08-16 15:00:39 Server is running on port 5000 
+info: 2024-08-16 15:00:39 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:00:39 CEST'
+}
+info: 2024-08-16 15:00:39 Successfully connected to MongoDB 
+info: 2024-08-16 15:17:45 ----- 
+info: 2024-08-16 15:17:45 Loading test environment 
+info: 2024-08-16 15:17:45 Server is running on port 5000 
+info: 2024-08-16 15:17:45 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:17:45 CEST'
+}
+info: 2024-08-16 15:17:45 Successfully connected to MongoDB 
+info: 2024-08-16 15:20:47 ----- 
+info: 2024-08-16 15:20:47 Loading test environment 
+info: 2024-08-16 15:20:47 Server is running on port 5000 
+info: 2024-08-16 15:20:47 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:20:47 CEST'
+}
+info: 2024-08-16 15:20:47 Successfully connected to MongoDB 
+info: 2024-08-16 15:23:18 ----- 
+info: 2024-08-16 15:23:18 Loading test environment 
+info: 2024-08-16 15:23:18 Server is running on port 5000 
+info: 2024-08-16 15:23:18 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:23:18 CEST'
+}
+info: 2024-08-16 15:23:18 Successfully connected to MongoDB 
+info: 2024-08-16 15:24:44 ----- 
+info: 2024-08-16 15:24:44 Loading test environment 
+info: 2024-08-16 15:24:45 Server is running on port 5000 
+info: 2024-08-16 15:24:45 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:24:45 CEST'
+}
+info: 2024-08-16 15:24:45 Successfully connected to MongoDB 
+info: 2024-08-16 15:31:20 ----- 
+info: 2024-08-16 15:31:20 Loading test environment 
+info: 2024-08-16 15:31:20 Server is running on port 5000 
+info: 2024-08-16 15:31:20 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:31:20 CEST'
+}
+info: 2024-08-16 15:31:20 Successfully connected to MongoDB 
+info: 2024-08-16 15:31:23 ----- 
+info: 2024-08-16 15:31:23 Loading test environment 
+info: 2024-08-16 15:31:23 Server is running on port 5000 
+info: 2024-08-16 15:31:23 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:31:23 CEST'
+}
+info: 2024-08-16 15:31:23 Successfully connected to MongoDB 
+info: 2024-08-16 15:37:11 ----- 
+info: 2024-08-16 15:37:11 Loading test environment 
+info: 2024-08-16 15:37:12 Server is running on port 5000 
+info: 2024-08-16 15:37:12 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:37:12 CEST'
+}
+info: 2024-08-16 15:37:12 Successfully connected to MongoDB 
+info: 2024-08-16 15:41:18 ----- 
+info: 2024-08-16 15:41:18 Loading test environment 
+info: 2024-08-16 15:41:18 Server is running on port 5000 
+info: 2024-08-16 15:41:18 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:41:18 CEST'
+}
+info: 2024-08-16 15:41:18 Successfully connected to MongoDB 
+info: 2024-08-16 15:45:57 ----- 
+info: 2024-08-16 15:45:57 Loading test environment 
+info: 2024-08-16 15:45:57 Server is running on port 5000 
+info: 2024-08-16 15:45:57 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:45:57 CEST'
+}
+info: 2024-08-16 15:45:57 Successfully connected to MongoDB 
+info: 2024-08-16 15:46:49 ----- 
+info: 2024-08-16 15:46:49 Loading test environment 
+info: 2024-08-16 15:46:49 Server is running on port 5000 
+info: 2024-08-16 15:46:49 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:46:49 CEST'
+}
+info: 2024-08-16 15:46:49 Successfully connected to MongoDB 
+info: 2024-08-16 15:47:10 User signin: marcosolari@gmail.com 
+info: 2024-08-16 15:47:10 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  User marcosolari@gmail.com signin',
+  htmlContent: 'User: marcosolari@gmail.com, IP: 1, on 16/8/2024, 15:47:10 CEST'
+}
+info: 2024-08-16 15:58:20 ----- 
+info: 2024-08-16 15:58:20 Loading test environment 
+info: 2024-08-16 15:58:20 Server is running on port 5000 
+info: 2024-08-16 15:58:20 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 15:58:20 CEST'
+}
+info: 2024-08-16 15:58:20 Successfully connected to MongoDB 
+info: 2024-08-16 16:19:24 ----- 
+info: 2024-08-16 16:19:24 Loading test environment 
+info: 2024-08-16 16:19:24 Server is running on port 5000 
+info: 2024-08-16 16:19:24 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:19:24 CEST'
+}
+info: 2024-08-16 16:19:24 Successfully connected to MongoDB 
+info: 2024-08-16 16:25:18 ----- 
+info: 2024-08-16 16:25:18 Loading test environment 
+info: 2024-08-16 16:25:18 Server is running on port 5000 
+info: 2024-08-16 16:25:18 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:25:18 CEST'
+}
+info: 2024-08-16 16:25:18 Successfully connected to MongoDB 
+info: 2024-08-16 16:25:43 ----- 
+info: 2024-08-16 16:25:43 Loading test environment 
+info: 2024-08-16 16:25:43 Server is running on port 5000 
+info: 2024-08-16 16:25:43 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:25:43 CEST'
+}
+info: 2024-08-16 16:25:43 Successfully connected to MongoDB 
+info: 2024-08-16 16:25:49 ----- 
+info: 2024-08-16 16:25:49 Loading test environment 
+info: 2024-08-16 16:25:49 Server is running on port 5000 
+info: 2024-08-16 16:25:49 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:25:49 CEST'
+}
+info: 2024-08-16 16:25:49 Successfully connected to MongoDB 
+info: 2024-08-16 16:30:47 ----- 
+info: 2024-08-16 16:30:47 Loading test environment 
+info: 2024-08-16 16:30:47 Server is running on port 5000 
+info: 2024-08-16 16:30:47 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:30:47 CEST'
+}
+info: 2024-08-16 16:30:47 Successfully connected to MongoDB 
+info: 2024-08-16 16:45:53 ----- 
+info: 2024-08-16 16:45:53 Loading test environment 
+info: 2024-08-16 16:45:54 Server is running on port 5000 
+info: 2024-08-16 16:45:54 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:45:54 CEST'
+}
+info: 2024-08-16 16:45:54 Successfully connected to MongoDB 
+info: 2024-08-16 16:46:34 ----- 
+info: 2024-08-16 16:46:34 Loading test environment 
+info: 2024-08-16 16:46:34 Server is running on port 5000 
+info: 2024-08-16 16:46:34 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:46:34 CEST'
+}
+info: 2024-08-16 16:46:34 Successfully connected to MongoDB 
+info: 2024-08-16 16:48:52 ----- 
+info: 2024-08-16 16:48:52 Loading test environment 
+info: 2024-08-16 16:48:52 Server is running on port 5000 
+info: 2024-08-16 16:48:52 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:48:52 CEST'
+}
+info: 2024-08-16 16:48:52 Successfully connected to MongoDB 
+info: 2024-08-16 16:51:58 ----- 
+info: 2024-08-16 16:51:58 Loading test environment 
+info: 2024-08-16 16:51:58 Server is running on port 5000 
+info: 2024-08-16 16:51:58 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:51:58 CEST'
+}
+info: 2024-08-16 16:51:58 Successfully connected to MongoDB 
+info: 2024-08-16 16:55:48 ----- 
+info: 2024-08-16 16:55:48 Loading test environment 
+info: 2024-08-16 16:55:48 Server is running on port 5000 
+info: 2024-08-16 16:55:48 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:55:48 CEST'
+}
+info: 2024-08-16 16:55:48 Successfully connected to MongoDB 
+info: 2024-08-16 16:57:24 ----- 
+info: 2024-08-16 16:57:24 Loading test environment 
+info: 2024-08-16 16:57:24 Server is running on port 5000 
+info: 2024-08-16 16:57:24 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 16:57:24 CEST'
+}
+info: 2024-08-16 16:57:24 Successfully connected to MongoDB 
+info: 2024-08-16 17:00:45 ----- 
+info: 2024-08-16 17:00:45 Loading test environment 
+info: 2024-08-16 17:00:45 Server is running on port 5000 
+info: 2024-08-16 17:00:45 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:00:45 CEST'
+}
+info: 2024-08-16 17:00:45 Successfully connected to MongoDB 
+info: 2024-08-16 17:02:57 ----- 
+info: 2024-08-16 17:02:57 Loading test environment 
+info: 2024-08-16 17:02:57 Server is running on port 5000 
+info: 2024-08-16 17:02:57 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:02:57 CEST'
+}
+info: 2024-08-16 17:02:57 Successfully connected to MongoDB 
+info: 2024-08-16 17:07:50 ----- 
+info: 2024-08-16 17:07:50 Loading test environment 
+info: 2024-08-16 17:07:50 Server is running on port 5000 
+info: 2024-08-16 17:07:50 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:07:50 CEST'
+}
+info: 2024-08-16 17:07:50 Successfully connected to MongoDB 
+info: 2024-08-16 17:09:58 ----- 
+info: 2024-08-16 17:09:58 Loading test environment 
+info: 2024-08-16 17:09:58 Server is running on port 5000 
+info: 2024-08-16 17:09:58 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:09:58 CEST'
+}
+info: 2024-08-16 17:09:58 Successfully connected to MongoDB 
+info: 2024-08-16 17:13:11 ----- 
+info: 2024-08-16 17:13:11 Loading test environment 
+info: 2024-08-16 17:13:11 Server is running on port 5000 
+info: 2024-08-16 17:13:11 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:13:11 CEST'
+}
+info: 2024-08-16 17:13:11 Successfully connected to MongoDB 
+info: 2024-08-16 17:13:34 ----- 
+info: 2024-08-16 17:13:34 Loading test environment 
+info: 2024-08-16 17:13:34 Server is running on port 5000 
+info: 2024-08-16 17:13:34 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:13:34 CEST'
+}
+info: 2024-08-16 17:13:34 Successfully connected to MongoDB 
+info: 2024-08-16 17:13:38 ----- 
+info: 2024-08-16 17:13:38 Loading test environment 
+info: 2024-08-16 17:13:38 Server is running on port 5000 
+info: 2024-08-16 17:13:38 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:13:38 CEST'
+}
+info: 2024-08-16 17:13:38 Successfully connected to MongoDB 
+info: 2024-08-16 17:14:29 ----- 
+info: 2024-08-16 17:14:29 Loading test environment 
+info: 2024-08-16 17:14:30 Server is running on port 5000 
+info: 2024-08-16 17:14:30 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:14:30 CEST'
+}
+info: 2024-08-16 17:14:30 Successfully connected to MongoDB 
+info: 2024-08-16 17:15:19 ----- 
+info: 2024-08-16 17:15:19 Loading test environment 
+info: 2024-08-16 17:15:20 Server is running on port 5000 
+info: 2024-08-16 17:15:20 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:15:20 CEST'
+}
+info: 2024-08-16 17:15:20 Successfully connected to MongoDB 
+info: 2024-08-16 17:19:37 ----- 
+info: 2024-08-16 17:19:37 Loading test environment 
+info: 2024-08-16 17:19:37 Server is running on port 5000 
+info: 2024-08-16 17:19:37 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:19:37 CEST'
+}
+info: 2024-08-16 17:19:37 Successfully connected to MongoDB 
+info: 2024-08-16 17:19:44 ----- 
+info: 2024-08-16 17:19:44 Loading test environment 
+info: 2024-08-16 17:19:44 Server is running on port 5000 
+info: 2024-08-16 17:19:44 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:19:44 CEST'
+}
+info: 2024-08-16 17:19:44 Successfully connected to MongoDB 
+info: 2024-08-16 17:23:43 ----- 
+info: 2024-08-16 17:23:43 Loading test environment 
+info: 2024-08-16 17:23:43 Server is running on port 5000 
+info: 2024-08-16 17:23:43 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:23:43 CEST'
+}
+info: 2024-08-16 17:23:43 Successfully connected to MongoDB 
+info: 2024-08-16 17:23:51 ----- 
+info: 2024-08-16 17:23:51 Loading test environment 
+info: 2024-08-16 17:23:51 Server is running on port 5000 
+info: 2024-08-16 17:23:51 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:23:51 CEST'
+}
+info: 2024-08-16 17:23:51 Successfully connected to MongoDB 
+info: 2024-08-16 17:26:21 ----- 
+info: 2024-08-16 17:26:21 Loading test environment 
+info: 2024-08-16 17:26:22 Server is running on port 5000 
+info: 2024-08-16 17:26:22 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:26:22 CEST'
+}
+info: 2024-08-16 17:26:22 Successfully connected to MongoDB 
+info: 2024-08-16 17:26:45 ----- 
+info: 2024-08-16 17:26:45 Loading test environment 
+info: 2024-08-16 17:26:45 Server is running on port 5000 
+info: 2024-08-16 17:26:45 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:26:45 CEST'
+}
+info: 2024-08-16 17:26:45 Successfully connected to MongoDB 
+info: 2024-08-16 17:28:20 ----- 
+info: 2024-08-16 17:28:20 Loading test environment 
+info: 2024-08-16 17:28:20 Server is running on port 5000 
+info: 2024-08-16 17:28:20 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:28:20 CEST'
+}
+info: 2024-08-16 17:28:20 Successfully connected to MongoDB 
+info: 2024-08-16 17:28:26 ----- 
+info: 2024-08-16 17:28:26 Loading test environment 
+info: 2024-08-16 17:28:26 Server is running on port 5000 
+info: 2024-08-16 17:28:26 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:28:26 CEST'
+}
+info: 2024-08-16 17:28:26 Successfully connected to MongoDB 
+info: 2024-08-16 17:31:02 ----- 
+info: 2024-08-16 17:31:02 Loading test environment 
+info: 2024-08-16 17:31:02 Server is running on port 5000 
+info: 2024-08-16 17:31:02 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:31:02 CEST'
+}
+info: 2024-08-16 17:31:02 Successfully connected to MongoDB 
+info: 2024-08-16 17:36:51 ----- 
+info: 2024-08-16 17:36:51 Loading test environment 
+info: 2024-08-16 17:36:51 Server is running on port 5000 
+info: 2024-08-16 17:36:51 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:36:51 CEST'
+}
+info: 2024-08-16 17:36:52 Successfully connected to MongoDB 
+info: 2024-08-16 17:43:46 ----- 
+info: 2024-08-16 17:43:46 Loading test environment 
+info: 2024-08-16 17:43:46 Server is running on port 5000 
+info: 2024-08-16 17:43:46 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:43:46 CEST'
+}
+info: 2024-08-16 17:43:46 Successfully connected to MongoDB 
+info: 2024-08-16 17:44:32 ----- 
+info: 2024-08-16 17:44:32 Loading test environment 
+info: 2024-08-16 17:44:32 Server is running on port 5000 
+info: 2024-08-16 17:44:32 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:44:32 CEST'
+}
+info: 2024-08-16 17:44:32 Successfully connected to MongoDB 
+info: 2024-08-16 17:45:19 ----- 
+info: 2024-08-16 17:45:19 Loading test environment 
+info: 2024-08-16 17:45:19 Server is running on port 5000 
+info: 2024-08-16 17:45:19 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:45:19 CEST'
+}
+info: 2024-08-16 17:45:19 Successfully connected to MongoDB 
+info: 2024-08-16 17:46:00 ----- 
+info: 2024-08-16 17:46:00 Loading test environment 
+info: 2024-08-16 17:46:00 Server is running on port 5000 
+info: 2024-08-16 17:46:00 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:46:00 CEST'
+}
+info: 2024-08-16 17:46:00 Successfully connected to MongoDB 
+info: 2024-08-16 17:46:18 ----- 
+info: 2024-08-16 17:46:18 Loading test environment 
+info: 2024-08-16 17:46:18 Server is running on port 5000 
+info: 2024-08-16 17:46:18 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:46:18 CEST'
+}
+info: 2024-08-16 17:46:18 Successfully connected to MongoDB 
+info: 2024-08-16 17:48:37 ----- 
+info: 2024-08-16 17:48:37 Loading test environment 
+info: 2024-08-16 17:48:37 Server is running on port 5000 
+info: 2024-08-16 17:48:37 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:48:37 CEST'
+}
+info: 2024-08-16 17:48:37 Successfully connected to MongoDB 
+info: 2024-08-16 17:48:40 ----- 
+info: 2024-08-16 17:48:40 Loading test environment 
+info: 2024-08-16 17:48:40 Server is running on port 5000 
+info: 2024-08-16 17:48:40 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:48:40 CEST'
+}
+info: 2024-08-16 17:48:40 Successfully connected to MongoDB 
+error: 2024-08-16 17:57:50 uncaughtException: Cannot read properties of undefined (reading 'name')
+TypeError: Cannot read properties of undefined (reading 'name')
+    at new EmailService (/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js:14:44)
+    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js:187:18)
+    at Module._compile (node:internal/modules/cjs/loader:1254:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1308:10)
+    at Module.load (node:internal/modules/cjs/loader:1117:32)
+    at Module._load (node:internal/modules/cjs/loader:958:12)
+    at Module.require (node:internal/modules/cjs/loader:1141:19)
+    at require (node:internal/modules/cjs/helpers:110:18)
+    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/helpers/messaging.js:2:22)
+    at Module._compile (node:internal/modules/cjs/loader:1254:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1308:10)
+    at Module.load (node:internal/modules/cjs/loader:1117:32)
+    at Module._load (node:internal/modules/cjs/loader:958:12)
+    at Module.require (node:internal/modules/cjs/loader:1141:19)
+    at require (node:internal/modules/cjs/helpers:110:18)
+    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/helpers/environment.js:3:19) 
+{"date":"Fri Aug 16 2024 17:57:50 GMT+0200 (Central European Summer Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: Cannot read properties of undefined (reading 'name')\nTypeError: Cannot read properties of undefined (reading 'name')\n    at new EmailService (/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js:14:44)\n    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js:187:18)\n    at Module._compile (node:internal/modules/cjs/loader:1254:14)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1308:10)\n    at Module.load (node:internal/modules/cjs/loader:1117:32)\n    at Module._load (node:internal/modules/cjs/loader:958:12)\n    at Module.require (node:internal/modules/cjs/loader:1141:19)\n    at require (node:internal/modules/cjs/helpers:110:18)\n    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/helpers/messaging.js:2:22)\n    at Module._compile (node:internal/modules/cjs/loader:1254:14)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1308:10)\n    at Module.load (node:internal/modules/cjs/loader:1117:32)\n    at Module._load (node:internal/modules/cjs/loader:958:12)\n    at Module.require (node:internal/modules/cjs/loader:1141:19)\n    at require (node:internal/modules/cjs/helpers:110:18)\n    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/helpers/environment.js:3:19)","os":{"loadavg":[0.61,0.97,0.96],"uptime":21207.02},"process":{"argv":["/home/marco/.nvm/versions/node/v18.16.0/bin/node","/home/marco/apps/sistemisolari/acme-server/server.js"],"cwd":"/home/marco/apps/sistemisolari/acme-server","execPath":"/home/marco/.nvm/versions/node/v18.16.0/bin/node","gid":1000,"memoryUsage":{"arrayBuffers":18399572,"external":19330969,"heapTotal":62816256,"heapUsed":32153960,"rss":107618304},"pid":36950,"uid":1000,"version":"v18.16.0"},"stack":"TypeError: Cannot read properties of undefined (reading 'name')\n    at new EmailService (/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js:14:44)\n    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js:187:18)\n    at Module._compile (node:internal/modules/cjs/loader:1254:14)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1308:10)\n    at Module.load (node:internal/modules/cjs/loader:1117:32)\n    at Module._load (node:internal/modules/cjs/loader:958:12)\n    at Module.require (node:internal/modules/cjs/loader:1141:19)\n    at require (node:internal/modules/cjs/helpers:110:18)\n    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/helpers/messaging.js:2:22)\n    at Module._compile (node:internal/modules/cjs/loader:1254:14)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1308:10)\n    at Module.load (node:internal/modules/cjs/loader:1117:32)\n    at Module._load (node:internal/modules/cjs/loader:958:12)\n    at Module.require (node:internal/modules/cjs/loader:1141:19)\n    at require (node:internal/modules/cjs/helpers:110:18)\n    at Object.<anonymous> (/home/marco/apps/sistemisolari/acme-server/src/helpers/environment.js:3:19)","trace":[{"column":44,"file":"/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js","function":"new EmailService","line":14,"method":null,"native":false},{"column":18,"file":"/home/marco/apps/sistemisolari/acme-server/src/services/email.service.js","function":null,"line":187,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1254,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Module._extensions..js","line":1308,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1117,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module._load","line":958,"method":"_load","native":false},{"column":19,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1141,"method":"require","native":false},{"column":18,"file":"node:internal/modules/cjs/helpers","function":"require","line":110,"method":null,"native":false},{"column":22,"file":"/home/marco/apps/sistemisolari/acme-server/src/helpers/messaging.js","function":null,"line":2,"method":null,"native":false},{"column":14,"file":"node:internal/modules/cjs/loader","function":"Module._compile","line":1254,"method":"_compile","native":false},{"column":10,"file":"node:internal/modules/cjs/loader","function":"Module._extensions..js","line":1308,"method":".js","native":false},{"column":32,"file":"node:internal/modules/cjs/loader","function":"Module.load","line":1117,"method":"load","native":false},{"column":12,"file":"node:internal/modules/cjs/loader","function":"Module._load","line":958,"method":"_load","native":false},{"column":19,"file":"node:internal/modules/cjs/loader","function":"Module.require","line":1141,"method":"require","native":false},{"column":18,"file":"node:internal/modules/cjs/helpers","function":"require","line":110,"method":null,"native":false},{"column":19,"file":"/home/marco/apps/sistemisolari/acme-server/src/helpers/environment.js","function":null,"line":3,"method":null,"native":false}]}
+info: 2024-08-16 17:58:06 ----- 
+info: 2024-08-16 17:58:06 Loading test environment 
+info: 2024-08-16 17:58:06 Server is running on port 5000 
+info: 2024-08-16 17:58:06 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 17:58:06 CEST'
+}
+info: 2024-08-16 17:58:06 Successfully connected to MongoDB 
+info: 2024-08-16 18:03:06 ----- 
+info: 2024-08-16 18:03:06 Loading test environment 
+info: 2024-08-16 18:03:06 Server is running on port 5000 
+info: 2024-08-16 18:03:06 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:03:06 CEST'
+}
+info: 2024-08-16 18:03:06 Successfully connected to MongoDB 
+info: 2024-08-16 18:08:51 ----- 
+info: 2024-08-16 18:08:51 Loading test environment 
+info: 2024-08-16 18:08:51 Server is running on port 5000 
+info: 2024-08-16 18:08:51 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:08:51 CEST'
+}
+info: 2024-08-16 18:08:51 Successfully connected to MongoDB 
+info: 2024-08-16 18:09:43 ----- 
+info: 2024-08-16 18:09:43 Loading test environment 
+info: 2024-08-16 18:09:43 Server is running on port 5000 
+info: 2024-08-16 18:09:43 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:09:43 CEST'
+}
+info: 2024-08-16 18:09:43 Successfully connected to MongoDB 
+info: 2024-08-16 18:10:11 ----- 
+info: 2024-08-16 18:10:11 Loading test environment 
+info: 2024-08-16 18:10:11 Server is running on port 5000 
+info: 2024-08-16 18:10:11 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:10:11 CEST'
+}
+info: 2024-08-16 18:10:11 Successfully connected to MongoDB 
+info: 2024-08-16 18:12:11 ----- 
+info: 2024-08-16 18:12:11 Loading test environment 
+error: 2024-08-16 18:12:11 Missing in env: [ 'ADMIN_USER_DEFAULT_PASSWORD' ]
+info: 2024-08-16 18:12:11 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  Assertion check failed',
+  htmlContent: 'Missing in env: ["ADMIN_USER_DEFAULT_PASSWORD"]'
+}
+info: 2024-08-16 18:12:11 Server is running on port 5000 
+info: 2024-08-16 18:12:11 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:12:11 CEST'
+}
+info: 2024-08-16 18:12:11 Successfully connected to MongoDB 
+info: 2024-08-16 18:17:28 ----- 
+info: 2024-08-16 18:17:28 Loading test environment 
+info: 2024-08-16 18:17:28 Server is running on port 5000 
+info: 2024-08-16 18:17:28 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:17:28 CEST'
+}
+info: 2024-08-16 18:17:28 Successfully connected to MongoDB 
+info: 2024-08-16 18:18:07 ----- 
+info: 2024-08-16 18:18:07 Loading test environment 
+info: 2024-08-16 18:18:07 Server is running on port 5000 
+info: 2024-08-16 18:18:07 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:18:07 CEST'
+}
+info: 2024-08-16 18:18:07 Successfully connected to MongoDB 
+info: 2024-08-16 18:18:53 ----- 
+info: 2024-08-16 18:18:53 Loading test environment 
+info: 2024-08-16 18:18:53 Server is running on port 5000 
+info: 2024-08-16 18:18:53 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:18:53 CEST'
+}
+info: 2024-08-16 18:18:53 Successfully connected to MongoDB 
+info: 2024-08-16 18:19:24 ----- 
+info: 2024-08-16 18:19:24 Loading test environment 
+info: 2024-08-16 18:19:24 Server is running on port 5000 
+info: 2024-08-16 18:19:24 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:19:24 CEST'
+}
+info: 2024-08-16 18:19:24 Successfully connected to MongoDB 
+info: 2024-08-16 18:26:08 ----- 
+info: 2024-08-16 18:26:08 Loading test environment 
+info: 2024-08-16 18:26:08 Server is running on port 5000 
+info: 2024-08-16 18:26:08 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:26:08 CEST'
+}
+info: 2024-08-16 18:26:08 Successfully connected to MongoDB 
+info: 2024-08-16 18:30:58 ----- 
+info: 2024-08-16 18:30:58 Loading test environment 
+info: 2024-08-16 18:30:58 Server is running on port 5000 
+info: 2024-08-16 18:30:58 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:30:58 CEST'
+}
+info: 2024-08-16 18:30:58 Successfully connected to MongoDB 
+info: 2024-08-16 18:31:07 ----- 
+info: 2024-08-16 18:31:07 Loading test environment 
+info: 2024-08-16 18:31:07 Server is running on port 5000 
+info: 2024-08-16 18:31:07 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:31:07 CEST'
+}
+info: 2024-08-16 18:31:07 Successfully connected to MongoDB 
+info: 2024-08-16 18:32:41 ----- 
+info: 2024-08-16 18:32:41 Loading test environment 
+info: 2024-08-16 18:32:41 Server is running on port 5000 
+info: 2024-08-16 18:32:41 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:32:41 CEST'
+}
+info: 2024-08-16 18:32:41 Successfully connected to MongoDB 
+info: 2024-08-16 18:33:28 ----- 
+info: 2024-08-16 18:33:28 Loading test environment 
+info: 2024-08-16 18:33:28 Server is running on port 5000 
+info: 2024-08-16 18:33:28 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:33:28 CEST'
+}
+info: 2024-08-16 18:33:28 Successfully connected to MongoDB 
+info: 2024-08-16 18:41:14 ----- 
+info: 2024-08-16 18:41:14 Loading test environment 
+info: 2024-08-16 18:41:14 Server is running on port 5000 
+info: 2024-08-16 18:41:14 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:41:14 CEST'
+}
+info: 2024-08-16 18:41:14 Successfully connected to MongoDB 
+info: 2024-08-16 18:42:55 ----- 
+info: 2024-08-16 18:42:55 Loading test environment 
+info: 2024-08-16 18:42:56 Server is running on port 5000 
+info: 2024-08-16 18:42:56 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:42:56 CEST'
+}
+info: 2024-08-16 18:42:56 Successfully connected to MongoDB 
+info: 2024-08-16 18:43:31 ----- 
+info: 2024-08-16 18:43:31 Loading test environment 
+info: 2024-08-16 18:43:32 Server is running on port 5000 
+info: 2024-08-16 18:43:32 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:43:32 CEST'
+}
+info: 2024-08-16 18:43:32 Successfully connected to MongoDB 
+info: 2024-08-16 18:44:30 ----- 
+info: 2024-08-16 18:44:30 Loading test environment 
+info: 2024-08-16 18:44:35 Server is running on port 5000 
+info: 2024-08-16 18:44:35 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:44:35 CEST'
+}
+info: 2024-08-16 18:44:35 Successfully connected to MongoDB 
+info: 2024-08-16 18:45:04 ----- 
+info: 2024-08-16 18:45:04 Loading test environment 
+info: 2024-08-16 18:45:16 Server is running on port 5000 
+info: 2024-08-16 18:45:16 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:45:16 CEST'
+}
+info: 2024-08-16 18:45:16 Successfully connected to MongoDB 
+info: 2024-08-16 18:45:38 ----- 
+info: 2024-08-16 18:45:38 Loading test environment 
+info: 2024-08-16 18:45:53 Server is running on port 5000 
+info: 2024-08-16 18:45:53 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:45:53 CEST'
+}
+info: 2024-08-16 18:45:53 Successfully connected to MongoDB 
+info: 2024-08-16 18:46:20 ----- 
+info: 2024-08-16 18:46:20 Loading test environment 
+info: 2024-08-16 18:46:20 Server is running on port 5000 
+info: 2024-08-16 18:46:21 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:46:20 CEST'
+}
+info: 2024-08-16 18:46:21 Successfully connected to MongoDB 
+info: 2024-08-16 18:46:37 ----- 
+info: 2024-08-16 18:46:37 Loading test environment 
+info: 2024-08-16 18:46:37 Server is running on port 5000 
+info: 2024-08-16 18:46:37 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:46:37 CEST'
+}
+info: 2024-08-16 18:46:37 Successfully connected to MongoDB 
+info: 2024-08-16 18:47:09 ----- 
+info: 2024-08-16 18:47:09 Loading test environment 
+info: 2024-08-16 18:47:09 Server is running on port 5000 
+info: 2024-08-16 18:47:09 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:47:09 CEST'
+}
+info: 2024-08-16 18:47:09 Successfully connected to MongoDB 
+info: 2024-08-16 18:49:36 ----- 
+info: 2024-08-16 18:49:36 Loading test environment 
+info: 2024-08-16 18:49:40 Server is running on port 5000 
+info: 2024-08-16 18:49:40 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:49:40 CEST'
+}
+info: 2024-08-16 18:49:40 Successfully connected to MongoDB 
+info: 2024-08-16 18:50:17 ----- 
+info: 2024-08-16 18:50:17 Loading test environment 
+info: 2024-08-16 18:50:17 Server is running on port 5000 
+info: 2024-08-16 18:50:17 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:50:17 CEST'
+}
+info: 2024-08-16 18:50:17 Successfully connected to MongoDB 
+info: 2024-08-16 18:50:32 ----- 
+info: 2024-08-16 18:50:32 Loading test environment 
+info: 2024-08-16 18:50:32 Server is running on port 5000 
+info: 2024-08-16 18:50:32 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:50:32 CEST'
+}
+info: 2024-08-16 18:50:32 Successfully connected to MongoDB 
+info: 2024-08-16 18:53:41 ----- 
+info: 2024-08-16 18:53:41 Loading test environment 
+info: 2024-08-16 18:53:41 Server is running on port 5000 
+info: 2024-08-16 18:53:41 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:53:41 CEST'
+}
+info: 2024-08-16 18:53:41 Successfully connected to MongoDB 
+info: 2024-08-16 18:55:02 ----- 
+info: 2024-08-16 18:55:02 Loading test environment 
+info: 2024-08-16 18:55:02 Server is running on port 5000 
+info: 2024-08-16 18:55:02 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:55:02 CEST'
+}
+info: 2024-08-16 18:55:02 Successfully connected to MongoDB 
+info: 2024-08-16 18:57:44 ----- 
+info: 2024-08-16 18:57:44 Loading test environment 
+info: 2024-08-16 18:57:45 Server is running on port 5000 
+info: 2024-08-16 18:57:45 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:57:45 CEST'
+}
+info: 2024-08-16 18:57:45 Successfully connected to MongoDB 
+info: 2024-08-16 18:58:34 ----- 
+info: 2024-08-16 18:58:34 Loading test environment 
+info: 2024-08-16 18:58:34 Server is running on port 5000 
+info: 2024-08-16 18:58:34 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:58:34 CEST'
+}
+info: 2024-08-16 18:58:34 Successfully connected to MongoDB 
+info: 2024-08-16 18:59:35 ----- 
+info: 2024-08-16 18:59:35 Loading test environment 
+info: 2024-08-16 18:59:35 Server is running on port 5000 
+info: 2024-08-16 18:59:35 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 18:59:35 CEST'
+}
+info: 2024-08-16 18:59:35 Successfully connected to MongoDB 
+info: 2024-08-16 19:00:00 ----- 
+info: 2024-08-16 19:00:00 Loading test environment 
+info: 2024-08-16 19:00:00 Server is running on port 5000 
+info: 2024-08-16 19:00:00 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:00:00 CEST'
+}
+info: 2024-08-16 19:00:00 Successfully connected to MongoDB 
+info: 2024-08-16 19:00:18 ----- 
+info: 2024-08-16 19:00:18 Loading test environment 
+info: 2024-08-16 19:00:18 Server is running on port 5000 
+info: 2024-08-16 19:00:18 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:00:18 CEST'
+}
+info: 2024-08-16 19:00:18 Successfully connected to MongoDB 
+error: 2024-08-16 19:00:25 uncaughtException: res is not defined
+ReferenceError: res is not defined
+    at /home/marco/apps/sistemisolari/acme-server/server.js:218:5
+    at FSReqCallback.readFileAfterClose [as oncomplete] (node:internal/fs/read_file_context:68:3)
+    at FSReqCallback.callbackTrampoline (node:internal/async_hooks:130:17) 
+{"date":"Fri Aug 16 2024 19:00:25 GMT+0200 (Central European Summer Time)","error":{},"exception":true,"level":"error","message":"uncaughtException: res is not defined\nReferenceError: res is not defined\n    at /home/marco/apps/sistemisolari/acme-server/server.js:218:5\n    at FSReqCallback.readFileAfterClose [as oncomplete] (node:internal/fs/read_file_context:68:3)\n    at FSReqCallback.callbackTrampoline (node:internal/async_hooks:130:17)","os":{"loadavg":[0.86,0.62,0.68],"uptime":24962.12},"process":{"argv":["/home/marco/.nvm/versions/node/v18.16.0/bin/node","/home/marco/apps/sistemisolari/acme-server/server.js"],"cwd":"/home/marco/apps/sistemisolari/acme-server","execPath":"/home/marco/.nvm/versions/node/v18.16.0/bin/node","gid":1000,"memoryUsage":{"arrayBuffers":19302083,"external":20251901,"heapTotal":67440640,"heapUsed":46686352,"rss":129015808},"pid":48938,"uid":1000,"version":"v18.16.0"},"stack":"ReferenceError: res is not defined\n    at /home/marco/apps/sistemisolari/acme-server/server.js:218:5\n    at FSReqCallback.readFileAfterClose [as oncomplete] (node:internal/fs/read_file_context:68:3)\n    at FSReqCallback.callbackTrampoline (node:internal/async_hooks:130:17)","trace":[{"column":5,"file":"/home/marco/apps/sistemisolari/acme-server/server.js","function":null,"line":218,"method":null,"native":false},{"column":3,"file":"node:internal/fs/read_file_context","function":"FSReqCallback.readFileAfterClose [as oncomplete]","line":68,"method":"readFileAfterClose [as oncomplete]","native":false},{"column":17,"file":"node:internal/async_hooks","function":"FSReqCallback.callbackTrampoline","line":130,"method":"callbackTrampoline","native":false}]}
+info: 2024-08-16 19:01:23 ----- 
+info: 2024-08-16 19:01:23 Loading test environment 
+info: 2024-08-16 19:01:23 Server is running on port 5000 
+info: 2024-08-16 19:01:23 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:01:23 CEST'
+}
+info: 2024-08-16 19:01:23 Successfully connected to MongoDB 
+info: 2024-08-16 19:02:55 ----- 
+info: 2024-08-16 19:02:55 Loading test environment 
+info: 2024-08-16 19:02:55 Server is running on port 5000 
+info: 2024-08-16 19:02:55 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:02:55 CEST'
+}
+info: 2024-08-16 19:02:55 Successfully connected to MongoDB 
+info: 2024-08-16 19:04:35 ----- 
+info: 2024-08-16 19:04:35 Loading test environment 
+info: 2024-08-16 19:04:35 Server is running on port 5000 
+info: 2024-08-16 19:04:35 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:04:35 CEST'
+}
+info: 2024-08-16 19:04:35 Successfully connected to MongoDB 
+info: 2024-08-16 19:34:59 ----- 
+info: 2024-08-16 19:34:59 Loading test environment 
+info: 2024-08-16 19:34:59 Server is running on port 5000 
+info: 2024-08-16 19:34:59 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:34:59 CEST'
+}
+info: 2024-08-16 19:34:59 Successfully connected to MongoDB 
+info: 2024-08-16 19:35:12 ----- 
+{"date":"Fri Aug 16 2024 19:35:12 GMT+0200 (Central European Summer Time)","error":"Error reading iindex.html: Error: ENOENT: no such file or directory, open '/home/marco/apps/sistemisolari/acme-server/client/build/iindex.html'","exception":true,"level":"error","message":"uncaughtException: Error reading iindex.html: Error: ENOENT: no such file or directory, open '/home/marco/apps/sistemisolari/acme-server/client/build/iindex.html'\n  No stack trace","os":{"loadavg":[0.41,0.43,0.37],"uptime":27049.04},"process":{"argv":["/home/marco/.nvm/versions/node/v18.16.0/bin/node","/home/marco/apps/sistemisolari/acme-server/server.js"],"cwd":"/home/marco/apps/sistemisolari/acme-server","execPath":"/home/marco/.nvm/versions/node/v18.16.0/bin/node","gid":1000,"memoryUsage":{"arrayBuffers":19241041,"external":20190859,"heapTotal":66392064,"heapUsed":43896096,"rss":125992960},"pid":51351,"uid":1000,"version":"v18.16.0"},"trace":[]}
+info: 2024-08-16 19:35:12 Loading test environment 
+info: 2024-08-16 19:35:12 Server is running on port 5000 
+info: 2024-08-16 19:35:12 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:35:12 CEST'
+}
+error: 2024-08-16 19:35:12 uncaughtException: Error reading iindex.html: Error: ENOENT: no such file or directory, open '/home/marco/apps/sistemisolari/acme-server/client/build/iindex.html'
+  No stack trace 
+info: 2024-08-16 19:37:06 ----- 
+info: 2024-08-16 19:37:06 Loading test environment 
+info: 2024-08-16 19:37:06 Server is running on port 5000 
+info: 2024-08-16 19:37:06 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:37:06 CEST'
+}
+info: 2024-08-16 19:37:06 Successfully connected to MongoDB 
+info: 2024-08-16 19:38:24 ----- 
+info: 2024-08-16 19:38:24 Loading test environment 
+info: 2024-08-16 19:38:25 Server is running on port 5000 
+info: 2024-08-16 19:38:25 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:38:25 CEST'
+}
+info: 2024-08-16 19:38:25 Successfully connected to MongoDB 
+info: 2024-08-16 19:38:50 ----- 
+info: 2024-08-16 19:38:50 Loading test environment 
+info: 2024-08-16 19:38:50 Server is running on port 5000 
+info: 2024-08-16 19:38:50 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:38:50 CEST'
+}
+info: 2024-08-16 19:38:50 Successfully connected to MongoDB 
+info: 2024-08-16 19:39:04 ----- 
+info: 2024-08-16 19:39:04 Loading test environment 
+info: 2024-08-16 19:39:05 Server is running on port 5000 
+info: 2024-08-16 19:39:05 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:39:05 CEST'
+}
+info: 2024-08-16 19:39:05 Successfully connected to MongoDB 
+info: 2024-08-16 19:39:24 ----- 
+info: 2024-08-16 19:39:24 Loading test environment 
+info: 2024-08-16 19:39:24 Server is running on port 5000 
+info: 2024-08-16 19:39:24 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:39:24 CEST'
+}
+info: 2024-08-16 19:39:24 Successfully connected to MongoDB 
+info: 2024-08-16 19:39:37 ----- 
+info: 2024-08-16 19:39:37 Loading test environment 
+info: 2024-08-16 19:39:37 Server is running on port 5000 
+info: 2024-08-16 19:39:37 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:39:37 CEST'
+}
+info: 2024-08-16 19:39:37 Successfully connected to MongoDB 
+info: 2024-08-16 19:40:27 ----- 
+info: 2024-08-16 19:40:27 Loading test environment 
+info: 2024-08-16 19:40:27 Server is running on port 5000 
+info: 2024-08-16 19:40:27 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:40:27 CEST'
+}
+info: 2024-08-16 19:40:27 Successfully connected to MongoDB 
+info: 2024-08-16 19:44:34 ----- 
+info: 2024-08-16 19:44:34 Loading test environment 
+info: 2024-08-16 19:44:34 Server is running on port 5000 
+info: 2024-08-16 19:44:35 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:44:34 CEST'
+}
+info: 2024-08-16 19:44:35 Successfully connected to MongoDB 
+info: 2024-08-16 19:44:55 ----- 
+info: 2024-08-16 19:44:55 Loading test environment 
+info: 2024-08-16 19:44:56 Server is running on port 5000 
+info: 2024-08-16 19:44:56 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:44:56 CEST'
+}
+info: 2024-08-16 19:44:56 Successfully connected to MongoDB 
+info: 2024-08-16 19:45:35 ----- 
+info: 2024-08-16 19:45:35 Loading test environment 
+info: 2024-08-16 19:45:35 Server is running on port 5000 
+info: 2024-08-16 19:45:35 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:45:35 CEST'
+}
+info: 2024-08-16 19:45:35 Successfully connected to MongoDB 
+info: 2024-08-16 19:46:16 ----- 
+info: 2024-08-16 19:46:16 Loading test environment 
+info: 2024-08-16 19:46:16 Server is running on port 5000 
+info: 2024-08-16 19:46:16 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:46:16 CEST'
+}
+info: 2024-08-16 19:46:16 Successfully connected to MongoDB 
+info: 2024-08-16 19:48:16 ----- 
+info: 2024-08-16 19:48:16 Loading test environment 
+info: 2024-08-16 19:48:16 Server is running on port 5000 
+info: 2024-08-16 19:48:16 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:48:16 CEST'
+}
+info: 2024-08-16 19:48:16 Successfully connected to MongoDB 
+info: 2024-08-16 19:48:49 ----- 
+info: 2024-08-16 19:48:49 Loading test environment 
+info: 2024-08-16 19:48:49 Server is running on port 5000 
+info: 2024-08-16 19:48:49 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:48:49 CEST'
+}
+info: 2024-08-16 19:48:49 Successfully connected to MongoDB 
+info: 2024-08-16 19:49:06 Loading test environment 
+info: 2024-08-16 19:49:06 Server is running on port 5000 
+info: 2024-08-16 19:49:06 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:49:06 CEST'
+}
+info: 2024-08-16 19:49:06 Successfully connected to MongoDB 
+info: 2024-08-16 19:49:27 Loading test environment 
+info: 2024-08-16 19:49:27 Server is running on port 5000 
+info: 2024-08-16 19:49:27 audit: {
+  to: 'marcosolari@gmail.com',
+  subject: 'ACME -  server startup',
+  htmlContent: 'Server is running on port 5000 on 16/8/2024, 19:49:27 CEST'
+}
+info: 2024-08-16 19:49:27 Successfully connected to MongoDB 

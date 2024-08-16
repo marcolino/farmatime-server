@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const i18next = require("i18next");
@@ -17,6 +18,9 @@ const config = require("./src/config");
 
 const production = (process.env.NODE_ENV === "production");
 const testing = typeof global.it === "function"; // testing (mocha/chai/...)
+
+const index = "index.html";
+const indexInjected = "index-injected.html";
 
 // setup I18N
 i18next
@@ -54,12 +58,10 @@ app.use(express.json({
 
 // add default headers
 app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
   res.header(
-    "access-control-allow-headers",
-    "origin",
-    "content-type",
-    "accept",
-    "authorization",
+    "Access-Control-Allow-Headers",
+    "Origin, Content-Type, Accept, Authorization"
   );
   next();
 });
@@ -84,7 +86,6 @@ app.use(i18nextMiddleware.handle(i18next));
 app.use(rateLimitMiddleware);
 
 // environment configuration
-logger.info("-----");
 if (production) { // load environment variables from .env file
   logger.info("Loading production environment");
   require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
@@ -146,10 +147,6 @@ if (config.publicBasePath) {
   app.use(express.static(path.join(__dirname, config.publicBasePath)));
 }
 
-// serve the static files from the client - "client/build" is a folder with the frontend site
-const rootClient = path.join(__dirname, "client", "build");
-app.use(express.static(rootClient));
-
 // handle errors in API routes
 app.use((err, req, res, next) => {
   res.locals.error = err;
@@ -164,10 +161,54 @@ app.all("/api/*", (req, res, next) => {
   return res.status(404).json({ message: "Not found" });
 })
 
-// handle not found client routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(rootClient, "index.html"));
+// "client/build" is the client root: a folder with the frontend site
+const rootClient = path.join(__dirname, "client", "build");
+
+// handle client route for base urls
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(rootClient, "index-injected.html"));
 });
+
+// handle static routes
+app.use(express.static(rootClient));
+
+// handle client routes for all other urls
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(rootClient, "index-injected.html"));
+});
+
+const inject = (rootClient, inputFile, outputFile, dataToInject) => {
+  // inject config into index.html meta tag "config"
+  const inputFilepath = path.resolve(rootClient, inputFile);
+    
+  // read the input file
+  return fs.readFile(inputFilepath, "utf8", (err, data) => {
+    if (err) {
+      throw `Error reading ${inputFilepath}: ${err}`;
+    }
+
+    // inject the config.app into the meta tag
+    const injectedData = data.replace(
+      /<meta name="config" content="">/,
+      `<meta name="config" content='${JSON.stringify(dataToInject)}'>`
+    );
+
+    // // send the modified HTML
+    const outputFilepath = path.resolve(rootClient, outputFile);
+    fs.writeFile(outputFilepath, injectedData, (err) => {
+      if (err) {
+        throw `Error writing ${outputFilepath}: ${err}`;
+      }
+    });
+  });
+}
+
+try {
+  inject(rootClient, index, indexInjected, config.app);
+} catch(err) {
+  logger.error("Error injecting config app data into index file:", err);
+  throw err;
+} 
 
 // set port and listen for requests
 if (require.main === module) { // avoid listening while testing
@@ -175,13 +216,6 @@ if (require.main === module) { // avoid listening while testing
   app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
     audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${nowLocaleDateTime()}` });
-    // emailService.send({
-    //   to: "marcosolari@gmail.com",
-    //   subject: `debug template`,
-    //   //htmlContent: "Hello, ${name}! You have ${count} new messages. Name again is ${name}.",
-    //   templateFilename: "generic",
-    //   templateParams: { name: "Alice", count: 5 },
-    // });
   });
 } else { // export app for testing
   module.exports = app;

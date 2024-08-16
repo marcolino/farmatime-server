@@ -11,10 +11,10 @@ class EmailService {
     this.apiInstance = null;
     this.regexPlaceholder = /\$\{([A-Za-z0-9_@./#&+-]+)\}/g;
     this.systemPlaceholders = {
-      "_.company.name": config.company.name,
-      "_.company.title": config.company.title,
-      "_.company.mailto": config.company.mailto,
-      "_.company.copyright": config.company.copyright,
+      "_.company.name": config.app.company.name,
+      "_.company.title": config.app.company.title,
+      "_.company.mailto": config.app.company.mailto,
+      "_.company.copyright": config.app.company.copyright,
       "_.company.logo": "http://localhost:5000/favicon.ico", // TODO: inline image, for standard emails...
     };
   }

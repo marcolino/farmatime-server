@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>${_.company.name}</title>
+    <title>${_.app.company.name}</title>
     <style>
       /* general reset */
       body, table, td, a {
@@ -107,8 +107,8 @@
       <tr>
         <td class="email-header">
           <!-- logo image -->
-          <img src="${_.company.logo}" alt="${_.company.name} logo">
-          <h1>${_.company.title}</h1>
+          <img src="${_.app.company.logo}" alt="${_.app.company.name} logo">
+          <h1>${_.app.company.title}</h1>
         </td>
       </tr>
       <tr>
@@ -122,14 +122,14 @@
           <p><i>If you did not request this, please ignore this email.</i>.</p>
           <p><i>
             If you have any questions, feel free to
-            <a href="${_.company.mailto}">contact us</a>
+            <a href="${_.app.company.mailto}">contact us</a>
             at any time.
           </i></p>
         </td>
       </tr>
       <tr>
         <td class="email-footer">
-          <p>${_.company.copyright}</p>
+          <p>${_.app.company.copyright}</p>
         </td>
       </tr>
     </table>
