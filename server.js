@@ -16,11 +16,10 @@ const { nowLocaleDateTime } = require("./src/helpers/misc");
 const rateLimitMiddleware  = require("./src/middlewares/rateLimit");
 const config = require("./src/config");
 
-const production = (process.env.NODE_ENV === "production");
+const production = (process.env.NODE_ENV === "production"); // production mode
 const testing = typeof global.it === "function"; // testing (mocha/chai/...)
-
-const index = "index.html";
-const indexInjected = "index-injected.html";
+const index = "index.html"; // index file name to be injected
+const indexInjected = "index-injected.html"; // injected index file name
 
 // setup I18N
 i18next
@@ -35,7 +34,8 @@ i18next
     preload: [config.languages.default]
   })
 ;
-    
+
+// instantiate express app
 const app = express();
 
 // use compression
