@@ -2,7 +2,10 @@
 const fs = require("fs");
 const path = require("path");
 const Brevo = require("sib-api-v3-sdk");
+const ejs = require("ejs");
+//const i18next = require("i18next");
 const { logger } = require("../controllers/logger.controller");
+const i18n = require("../middlewares/i18n");
 const config = require("../config");
 
 // the email service class
@@ -11,6 +14,7 @@ class EmailService {
     this.apiInstance = null;
     this.regexPlaceholder = /\$\{([A-Za-z0-9_@./#&+-]+)\}/g;
     this.systemPlaceholders = {
+      "_.language": config.app.company.name,
       "_.company.name": config.app.company.name,
       "_.company.title": config.app.company.title,
       "_.company.mailto": config.app.company.mailto,
@@ -48,7 +52,7 @@ class EmailService {
    * 
    * Note: htmlContent and templateFilename parameters are alternative
    */
-  async send(params) {
+  async send(req, params) {
     try {
       if (!this.apiInstance) {
         logger.error("Email service is not initialized, please call setup() first");
@@ -63,19 +67,12 @@ class EmailService {
       if (!params.htmlContent && !params.templateFilename) return logger.error("Parameter 'htmlContent' or 'templateFilename' is mandatory to send email");
       if (params.htmlContent && params.templateFilename) return logger.error("Parameters 'htmlContent' and 'templateFilename' are alternative to send email");
 
-      // handle templates in files
-      try {
-        params.htmlContent = params.htmlContent = this.readTemplateFile(params.templateFilename);
-      } catch (err) {
-        logger.error(`Error reading template ${params.templateFilename}:`, err);
-        throw err;
-      }
-
       // handle templates
+      params.language = req.language;  //"it";
       try {
-        params.htmlContent = this.substituteTemplateParams(params.htmlContent, params.templateParams);
+        params.htmlContent = this.renderTemplate(params.templateFilename, params.language, params.templateParams);
       } catch (err) {
-        logger.error("Error in parameters:", err);
+        logger.error(`Error rendering template ${params.templateFilename}:`, err);
         throw err;
       }
 
@@ -95,9 +92,14 @@ class EmailService {
       };
    
       // send transactional email with email object
-      const response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.info("Email sent successfully:", response);
-      logger.info("Email sent successfully");
+      
+      // TODO: skip real email send, DEBUG ONLY, just log sendSmtpEmail
+      console.log("sendSmtpEmail:", sendSmtpEmail);
+
+      //const response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      const response = "email virtually sent;"
+      
+      logger.info("Email sent successfully:", response);
       return true;
     } catch (err) {
       logger.error("Error sending email:", err);
@@ -105,74 +107,32 @@ class EmailService {
     }
   }
 
-  /**
-   * replaces placeholders in the template string with corresponding values from the parameters object
-   * 
-   * @param {string} template - the template string containing placeholders in the form of ${key}
-   * @param {Object} params - an object containing key-value pairs to replace in the template
-   * @returns {string} the formatted string with placeholders replaced by corresponding values
-   */
-  substituteTemplateParams(template, params) {
-    if (typeof template !== "string") {
-      throw new Error("Template must be a string");
+  renderTemplate(templateName, locale, data) {
+    // set the locale for this rendering
+    i18n.changeLanguage(locale);
+  
+    // load the template file
+    try {
+      const templateContent = this.readTemplate(templateName); 
+      //console.log("template content:", templateContent);
+    
+      return ejs.render(templateContent, {
+        t: i18n.t.bind(i18n),
+        ...data
+      });
+    } catch (err) {
+      logger.error(`Error reading template ${templateName}:`, err);
+      throw err;
     }
-    if (typeof params !== "object" || params === null) {
-      throw new Error("Params must be an object");
-    }
-
-    // replace placeholders using a function to access params
-    return template.replace(this.regexPlaceholder, (match, placeholderName) => {
-      // check if the placeholder exists in params
-      // if (params.hasOwnProperty(placeholderName)) {
-      //   return params[placeholderName]; // return the value for replacement
-      // }
-      let placeholders = null;
-      if (params.hasOwnProperty(placeholderName)) { // look for placeholder name in the params, to start with
-        placeholders = params;
-      } else
-      if (this.systemPlaceholders.hasOwnProperty(placeholderName)) { // then look for placeholder name in the system placeholders
-        placeholders = this.systemPlaceholders;
-      }
-      if (!placeholders) {
-        throw new Error(`Placeholder '${placeholderName}' not specified in parameters nor in system placeholders`);
-      }
-      return placeholders[placeholderName]; // return the value for replacement
-      //return match; // return the original match if not found
-    });
-
-    // let match;
-    // while ((match = this.regexPlaceholder.exec(template)) !== null) {
-    //   const placeholder = match[0];
-    //   //let startIndex = match.index;
-    //   //let endIndex = startIndex + placeholder.length;
-    //   //let placeholderName = placeholder.replace(/^\$\{/, "").replace(/\}$/, "");
-    //   const placeholderName = match[1]; // get the name of the placeholder
-    //   const placeholderValue = params[placeholderName];
-    //   //console.log(`found ${placeholderName} start=${startIndex} end=${endIndex}`);
-    //   let placeholders = null;
-    //   if (params.hasOwnProperty(placeholderName)) { // look for placeholder name in the params, to start with
-    //     placeholders = params;
-    //   } else
-    //   if (this.systemPlaceholders.hasOwnProperty(placeholderName)) { // then look for placeholder name in the system placeholders
-    //     placeholders = this.systemPlaceholders;
-    //   }
-    //   if (!placeholders) {
-    //     throw new Error(`Placeholder '${placeholderName}' not specified in parameters nor in system placeholders`);
-    //   }
-
-    //   template = template.replace(placeholder, placeholderValue); // replace in template
-    // }
-    // return template;
   }
 
   /**
    * reads a template from file system
    * 
-   * @param {string} template - the template string containing placeholders in the form of ${key}
-   * @param {Object} params - an object containing key-value pairs to replace in the template
-   * @returns {string} the formatted string with placeholders replaced by corresponding values
+   * @param {string} name - the template name
+   * @returns {string} the template contents
    */
-  readTemplateFile(name) {
+  readTemplate(name) {
     try {
       const templatePath = path.join(__dirname, config.email.templatesPath, name + config.email.templatesExtension);
       return fs.readFileSync(templatePath, { encoding: "utf-8" });

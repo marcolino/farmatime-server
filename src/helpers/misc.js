@@ -1,4 +1,6 @@
 const url = require("url");
+const fs = require("fs");
+const path = require("path");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const logger = require("../controllers/logger.controller");
@@ -145,6 +147,34 @@ const cleanDomain = (domain) => {
   return domain;
 };
 
+/**
+ * inject data into index.html meta tag "config"
+ */
+const inject = (rootClient, inputFile, outputFile, dataToInject) => {
+  const inputFilepath = path.resolve(rootClient, inputFile);
+    
+  // read the input file
+  try {
+    let data = fs.readFileSync(inputFilepath, "utf8");
+    
+    // inject the config.app into the meta tag
+    const injectedData = data.replace(
+      /<meta name="config" content="">/,
+      `<meta name="config" content='${JSON.stringify(dataToInject)}'>`
+    );
+
+    // write the injected output file
+    const outputFilepath = path.resolve(rootClient, outputFile);
+    try {
+      fs.writeFileSync(outputFilepath, injectedData);
+    } catch (err) {
+      throw `Error writing ${outputFilepath}: ${err}`;
+    }
+  } catch (err) {
+    throw `Error reading ${inputFilepath}: ${err}`;
+  }
+}
+
 module.exports = {
   objectContains,
   normalizeEmail,
@@ -152,4 +182,5 @@ module.exports = {
   remoteAddress,
   isAdministrator,
   arraysContainSameObjects,
+  inject,
 };

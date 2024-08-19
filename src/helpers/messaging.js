@@ -1,4 +1,3 @@
-//const sgMail = require("@sendgrid/mail");
 const emailService = require("../services/email.service");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
@@ -6,10 +5,10 @@ const config = require("../config");
 const audit = async ({ subject, htmlContent }) => {
   const to = config.email.administration.to;
   const toName = config.email.administration.toName;
-  subject = `${config.email.subject.prefix ? config.email.subject.prefix + " - " : ""} ${subject}`;
+  subject = `${(config.email.subject.prefix ? config.email.subject.prefix + " - " : "")}${subject}`;
   
   if (process.env.NODE_ENV !== "production") { // just log audit in development
-     logger.info("audit:", { to, subject, htmlContent })
+    logger.info(`audit: to: ${to}, subject: ${subject}`)
   } else { // really notify via email only in production
     await emailService.send({ to, toName, subject, htmlContent });
   }

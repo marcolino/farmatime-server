@@ -84,7 +84,7 @@ module.exports = { // TODO: pass to client only some of api, app, company...
       port: 18466,
     },
   },
-  languages: {
+  languages: { // toto mix into app.languages ...
     supported: [ // list of backend supported languages; the last one is the fallback, and is mandatory here
       "en",
       "fr",
@@ -158,8 +158,8 @@ module.exports = { // TODO: pass to client only some of api, app, company...
       to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
       toName: "ACME support",
     },
-    templatesPath: "../assets/templates/email",
-    templatesExtension: ".html",
+    templatesPath: "../templates",
+    templatesExtension: ".ejs",
   },
   defaultUsers: {
     admin: {
@@ -179,15 +179,16 @@ module.exports = { // TODO: pass to client only some of api, app, company...
     "MONGO_PASS",
   //"FROM_EMAIL",
   //"SENDGRID_API_KEY",
-    "SENDMAIL_API_KEY",
-    "SENDMAIL_FROM_EMAIL",
+  //"SENDMAIL_API_KEY",
+    "BREVO_EMAIL_API_KEY",
+  //"SENDMAIL_FROM_EMAIL",
     "STRIPE_MODE",
     "STRIPE_API_KEY_TEST",
     "STRIPE_API_KEY_LIVE",
-  //"GOOGLE_OAUTH_CLIENT_ID",
-  //"GOOGLE_OAUTH_CLIENT_SECRET",
-  //"FACEBOOK_OAUTH_CLIENT_ID",
-  //"FACEBOOK_OAUTH_SECRET_KEY",
+    "GOOGLE_OAUTH_CLIENT_ID",
+    "GOOGLE_OAUTH_CLIENT_SECRET",
+    "FACEBOOK_OAUTH_CLIENT_ID",
+    "FACEBOOK_OAUTH_SECRET_KEY",
   ],
   app: {
     name: appName, // app name

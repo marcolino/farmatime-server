@@ -2,9 +2,8 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
-//const i18next = require("i18next");
-//const backend = require("i18next-node-fs-backend");
-//const backend = require("i18next-fs-backend");
+const i18next = require("i18next");
+const backend = require("i18next-node-fs-backend");
 const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 const compression = require("compression");
@@ -13,9 +12,8 @@ const db = require("./src/models");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
 const emailService = require("./src/services/email.service");
-const { nowLocaleDateTime, inject } = require("./src/helpers/misc");
-const rateLimitMiddleware = require("./src/middlewares/rateLimit");
-const i18n = require("./src/middlewares/i18n");
+const { nowLocaleDateTime } = require("./src/helpers/misc");
+const rateLimitMiddleware  = require("./src/middlewares/rateLimit");
 const config = require("./src/config");
 
 const production = (process.env.NODE_ENV === "production"); // production mode
@@ -23,22 +21,21 @@ const testing = typeof global.it === "function"; // testing (mocha/chai/...)
 const index = "index.html"; // index file name to be injected
 const indexInjected = "index-injected.html"; // injected index file name
 
-// // setup I18N
-// i18next
-//   //.use(backend)
-//   .use(backend)
-//   .use(i18nextMiddleware.LanguageDetector)
-//   .init({
-//     debug: false,
-//     backend: {
-//       loadPath: __dirname + "/src/locales/{{lng}}/{{ns}}.json"
-//     },
-//     lng: 'en', // default language
-//     fallbackLng: config.languages.default,
-//     //preload: [config.languages.default],
-//     preload: config.languages.supported, // preload all supported languages
-//   })
-// ;
+// setup I18N
+i18next
+  .use(backend)
+  .use(i18nextMiddleware.LanguageDetector)
+  .init({
+    debug: false,
+    backend: {
+      loadPath: __dirname + "/src/locales/{{lng}}/{{ns}}.json"
+    },
+    lng: 'en', // default language
+    fallbackLng: config.languages.default,
+    //preload: [config.languages.default],
+    preload: config.languages.supported, // preload all supported languages
+  })
+;
 
 // instantiate express app
 const app = express();
@@ -85,7 +82,7 @@ app.use((req, res, next) => {
 });
 
 // use i18n
-app.use(i18nextMiddleware.handle(i18n/*ext*/));
+app.use(i18nextMiddleware.handle(i18next));
 
 // apply rate limiting middleware globally
 app.use(rateLimitMiddleware);
@@ -146,7 +143,6 @@ require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
 require("./src/routes/articles.routes")(app);
 require("./src/routes/payment.routes")(app);
-require("./src/routes/misc.routes")(app);
 
 // expose a /public folder on server
 if (config.publicBasePath) {
@@ -173,9 +169,8 @@ const rootClient = path.join(__dirname, "client", "build");
 const rootCoverage = path.join(__dirname, "coverage");
 
 // handle client route for base urls
-app.get("/", async (req, res) => {
-  injectIndexIfNotPresent();
-  res.sendFile(path.resolve(rootClient, indexInjected));
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(rootClient, "index-injected.html"));
 });
 
 // handle static routes
@@ -184,21 +179,44 @@ app.use("/", express.static(rootClient)); // base client root
 
 // handle client routes for all other urls
 app.get("*", (req, res) => {
-  injectIndexIfNotPresent();
-  res.sendFile(path.resolve(rootClient, indexInjected));
+  res.sendFile(path.resolve(rootClient, "index-injected.html"));
 });
 
-// inject index file with client app config in indexInjected file
-const injectIndexIfNotPresent = () => {
-  if (!fs.existsSync(path.resolve(rootClient, indexInjected))) {
-    try {
-      inject(rootClient, index, indexInjected, config.app);
-    } catch (err) {
-      logger.error("Error injecting config app data into index file:", err);
-      throw err;
+/**
+ * inject config into index.html meta tag "config"
+ */
+const inject = (rootClient, inputFile, outputFile, dataToInject) => {
+  const inputFilepath = path.resolve(rootClient, inputFile);
+    
+  // read the input file
+  return fs.readFile(inputFilepath, "utf8", (err, data) => {
+    if (err) {
+      throw `Error reading ${inputFilepath}: ${err}`;
     }
-  }
-};
+
+    // inject the config.app into the meta tag
+    const injectedData = data.replace(
+      /<meta name="config" content="">/,
+      `<meta name="config" content='${JSON.stringify(dataToInject)}'>`
+    );
+
+    // write the injected output file
+    const outputFilepath = path.resolve(rootClient, outputFile);
+    fs.writeFile(outputFilepath, injectedData, (err) => {
+      if (err) {
+        throw `Error writing ${outputFilepath}: ${err}`;
+      }
+    });
+  });
+}
+
+// inject index file with client app config in indexInjected file
+try {
+  inject(rootClient, index, indexInjected, config.app);
+} catch(err) {
+  logger.error("Error injecting config app data into index file:", err);
+  throw err;
+} 
 
 // set port and listen for requests
 if (require.main === module) { // avoid listening while testing

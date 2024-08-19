@@ -92,7 +92,11 @@ const signup = async(req, res, next) => {
 //       logger.info("Sending email:", to, from, subject);
 //       (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
 //       await sendEmail({to, from, subject, html});
+
+      
+      // TODO: pass also req, to let emailService to read the req.language...
       await emailService.send({
+        req,
         to: user.email,
         subject: req.t("Signup Verification Code"),
         templateFilename: "signupVerificationCodeSent",
@@ -101,7 +105,7 @@ const signup = async(req, res, next) => {
           userLastName: user.lastName,
           signupVerificationCode: signupVerification.code,
         },
-      })
+      });
       return res.status(201).json({
         message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
         codeDeliveryMedium: config.auth.codeDeliveryMedium,
@@ -213,7 +217,7 @@ const signupVerification = async(req, res) => {
   }
 }
 
-const signin = async(req, res) => {
+const signin = async (req, res) => {
   const email = normalizeEmail(req.parameters.email);
 
   User.findOne(
@@ -310,19 +314,21 @@ const resetPassword = async(req, res) => {
     await user.save();
 
     // send email
-    const subject = req.t("Password change request");
-    const to = user.email;
-    const from = process.env.FROM_EMAIL;
-    //const link = "//" + req.headers.host + "/api/auth/reset/" + user.resetPasswordCode;
-    const html = `
-<p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.</p>
-<p>${req.t("The code to reset your password is")} <b>${user.resetPasswordCode}</b>.</p>
-<p><i>${req.t("If you did not request this, please ignore this email and your password will remain unchanged")}.</i></p>
-    `;
+     const subject = req.t("Password change request");
+     const to = user.email;
+     const from = process.env.FROM_EMAIL;
+//     //const link = "//" + req.headers.host + "/api/auth/reset/" + user.resetPasswordCode;
+//     const html = `
+// <p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.</p>
+// <p>${req.t("The code to reset your password is")} <b>${user.resetPasswordCode}</b>.</p>
+// <p><i>${req.t("If you did not request this, please ignore this email and your password will remain unchanged")}.</i></p>
+//     `;
     logger.info("Sending email:", to, from, subject);
     (process.env.NODE_ENV !== "production") && logger.info(`Reset password code: ${user.resetPasswordCode}`);
-    await sendEmail({to, from, subject, html});
+//     await sendEmail({to, from, subject, html});
 
+    // TODO: emailService ...
+    
     res.status(200).json({
       message: req.t("A reset code has been sent to {{email}} via {{codeDeliveryMedium}}", {email: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium}),
       codeDeliveryMedium: config.auth.codeDeliveryMedium,
@@ -397,14 +403,16 @@ const resendResetPasswordCode = async(req, res) => {
     const subject = req.t("Reset Password Verification Code");
     const to = user.email;
     const from = process.env.FROM_EMAIL;
-    const html = `
-<p>Hi, ${user.firstName} ${user.lastName}.<p>
-<p>The code to reset your password is <b>${user.resetPasswordCode}</b>.</p>
-<p><i>If you did not request this, please ignore this email.</i></p>
-    `;
+//     const html = `
+// <p>Hi, ${user.firstName} ${user.lastName}.<p>
+// <p>The code to reset your password is <b>${user.resetPasswordCode}</b>.</p>
+// <p><i>If you did not request this, please ignore this email.</i></p>
+//     `;
     logger.info("Sending email:", to, from, subject);
     (process.env.NODE_ENV !== "production") && logger.info(`Reset password code: ${user.resetPasswordCode}`);
-    await sendEmail({to, from, subject, html});
+//     await sendEmail({to, from, subject, html});
+
+    // TODO: emailService ...
 
     res.status(200).json({
       message: `A verification code has been sent to ${user.email}`,

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+    <title>Your SAAS Name - audit</title>
+  </head>
+
+  <body>
+    <table role="presentation" class="email-container" width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td class="email-header">
+          <img rc="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/256px-LEGO_logo.svg.png" alt="Your SAAS Logo">
+          <h1>Your SAAS Name</h1>
+        </td>
+      </tr>
+      <tr>
+        <td class="email-body">
+          <%= t('hello') %>, <%= t('welcome_message', { name: userFirstName }) %>
+          <p>Your order number is: <%= orderNumber %></p>
+          <p>We wanted to inform you about [specific event or update]. This is an important audit regarding your account.</p>
+          <p>If you have any questions, feel free to <a href="mailto:support@yourcompany.com">contact us</a> at any time.</p>
+          <a href="[Action Link]" class="email-button"><%= t('Take Action1') %></a>
+        </td>
+      </tr>
+      <tr>
+        <td class="email-footer">
+          <p>&copy; 2024 Your SAAS Name. All rights reserved.</p>
+          <p><a href="[unsubscribe-link]">Unsubscribe</a> | <a href="[preferences-link]">Manage Preferences</a></p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

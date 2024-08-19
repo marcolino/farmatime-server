@@ -4,7 +4,11 @@ const config = require("../config");
 require("winston-syslog");
 
 const localhost = require("os").hostname;
-const test = (require.main === module);
+
+ // TODO: set testing and production globally...
+const testing = (require.main === module);
+const production = (process.env.NODE_ENV === "production"); // production mode
+
 const colors = {
   Reset: "\x1b[0m",
   Bright: "\x1b[1m",
@@ -76,6 +80,7 @@ try {
     );
   }
 
+  console.log("env:", process.env.NODE_ENV);
   if (process.env.NODE_ENV !== "production") { // if we're not in production then also log to the `Console` transport
     transports.push(new winston.transports.Console({
       format: winston.format.combine(
@@ -85,14 +90,13 @@ try {
           const level = info.level;
           const message = (info.message || "").trim();
           const args = info[Symbol.for("splat")];
-          // const strArgs = (args || []).map(arg => {
-          //   return util.inspect(arg, { colors: colorize });
-          // }).join(" ");
           const strArgs = (args || []).map(arg => arg).join(" ");
           return `${level}: ${timestamp} ${message} ${strArgs}`;
         })
       ),
-      level: test ? "debug" : "warning", // if we are in test skip logging upper than warning levels (notice, info, debug)
+      // if we are in test skip console logging for levels lower than warning (notice, info, debug)
+      // if we are in production mode skip console logging for levels lower than warning (notice, info, debug)
+      level: (testing ? "warning" : (production ? "error" : "debug")),
       handleExceptions: true,
       prettyPrint: true,
       colorize: colorize,

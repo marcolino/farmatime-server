@@ -1,4 +1,4 @@
-// i18next-parser.config.js
+const CustomHtmlLexer = require("./src/helpers/customHtmlLexer");
 
 module.exports = {
   contextSeparator: "_",
@@ -36,16 +36,13 @@ module.exports = {
   lexers: {
     hbs: ["HandlebarsLexer"],
     handlebars: ["HandlebarsLexer"],
-
     htm: ["HTMLLexer"],
-    html: ["HTMLLexer"],
-
+    html: [CustomHtmlLexer],
     mjs: ["JavascriptLexer"],
     js: ["JavascriptLexer"], // if you're writing jsx inside .js files, change this to JsxLexer
     ts: ["JavascriptLexer"],
     jsx: ["JsxLexer"],
     tsx: ["JsxLexer"],
-
     default: ["JavascriptLexer"]
   },
 
