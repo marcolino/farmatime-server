@@ -1,6 +1,6 @@
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/acme-server?style=flat)](version)
 [![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/acme-server?style=flat)](license)
-[![Mocha tests ok](https://raw.githubusercontent.com/marcolino/acme-server/main/public/badges/mocha.svg)](tests)
+[![Mocha tests ok](https://github.com/marcolino/acme-server/blob/main/public/badges/mocha.svg)](tests)
 
 [acme-server](https://github.com/marcolino/acme-server/) is an open‑source server side project for a general-purpose web app implementing a generic SAAS.
 
