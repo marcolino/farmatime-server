@@ -4,7 +4,7 @@ let defaultClient = SibApiV3Sdk.ApiClient.instance;
 
 // Configure API key authorization: api-key
 let apiKey = defaultClient.authentications["api-key"];
-apiKey.apiKey = "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";
+apiKey.apiKey = process.env.BREVO_EMAIL_API_KEY;
 
 let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
