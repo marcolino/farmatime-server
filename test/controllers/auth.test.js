@@ -17,7 +17,8 @@ chai.use(chaiHttp); // use chai-http to make the actual HTTP requests
 chai.use(spies); // use chai-spies to spy on errors for example
 chai.should(); // make the `should` syntax available throughout this module
 
-let accessTokenUser, accessTokenAdmin;
+let accessTokenUser, refreshTokenUser;
+let accessTokenAdmin, refreshTokenAdmin;
 
 describe("API tests - Auth routes", function() {
 

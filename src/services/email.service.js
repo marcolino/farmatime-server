@@ -12,14 +12,13 @@ const config = require("../config");
 class EmailService {
   constructor() {
     this.apiInstance = null;
-    this.regexPlaceholder = /\$\{([A-Za-z0-9_@./#&+-]+)\}/g;
     this.systemPlaceholders = {
       "_.language": config.app.company.name,
       "_.company.name": config.app.company.name,
       "_.company.title": config.app.company.title,
       "_.company.mailto": config.app.company.mailto,
       "_.company.copyright": config.app.company.copyright,
-      "_.company.logo": "http://localhost:5000/favicon.ico", // TODO: inline image, for standard emails...
+      "_.company.logo": "http://localhost:5000/favicon.ico", // TODO: use a public image, after first deploy...
     };
   }
 
@@ -67,14 +66,15 @@ class EmailService {
       if (!params.htmlContent && !params.templateFilename) return logger.error("Parameter 'htmlContent' or 'templateFilename' is mandatory to send email");
       if (params.htmlContent && params.templateFilename) return logger.error("Parameters 'htmlContent' and 'templateFilename' are alternative to send email");
 
+      params.templateParams.sys_language = req.language;
+      params.templateParams.sys_company_name = config.app.company.name;
+      params.templateParams.sys_company_title = config.app.company.title;
+      params.templateParams.sys_company_mailto = config.app.company.mailto;
+      params.templateParams.sys_company_copyright = config.app.company.copyright;
+      params.templateParams.sys_company_logo = "http://localhost:5000/favicon.ico";
+
       // handle templates
-      params.language = req.language;  //"it";
-      try {
-        params.htmlContent = this.renderTemplate(params.templateFilename, params.language, params.templateParams);
-      } catch (err) {
-        logger.error(`Error rendering template ${params.templateFilename}:`, err);
-        throw err;
-      }
+      params.htmlContent = this.renderTemplate(params.templateFilename, req.language, params.templateParams);
 
       // create smtp email object
       let sendSmtpEmail = new Brevo.SendSmtpEmail();
@@ -91,15 +91,18 @@ class EmailService {
         htmlContent: params.htmlContent,
       };
    
-      // send transactional email with email object
-      
-      // TODO: skip real email send, DEBUG ONLY, just log sendSmtpEmail
-      console.log("sendSmtpEmail:", sendSmtpEmail);
+      // send transactional email with sendSmtpEmail object
+      logger.info("SMTP email:", JSON.stringify(sendSmtpEmail));
 
-      //const response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
-      const response = "email virtually sent;"
+      // if requested in config.email.dryrun, skip real email send, just log sendSmtpEmail
+      let response;
+      if (config.email.dryrun) {
+        response = {}; response.messageId = "virtual-send-message-id";
+      } else {
+        response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      }
       
-      logger.info("Email sent successfully:", response);
+      logger.info("Email send:", response.messageId);
       return true;
     } catch (err) {
       logger.error("Error sending email:", err);
@@ -108,14 +111,56 @@ class EmailService {
   }
 
   renderTemplate(templateName, locale, data) {
-    // set the locale for this rendering
-    i18n.changeLanguage(locale);
+    i18n.changeLanguage(locale); // set the locale for this rendering
   
     // load the template file
     try {
       const templateContent = this.readTemplate(templateName); 
-      //console.log("template content:", templateContent);
     
+      // detect template variables missing in data
+      const regex = /<%=\s?([\s\S]+?)\s?%>/g; // ejs variables regex
+      const regexVariable = /\b[a-zA-Z_$][0-9a-zA-Z_$]*\b/g;
+      const regexI18n = /\bt\(\s*['"]/;
+      const regexI18nVariable = /([a-zA-Z_$][0-9a-zA-Z_$]+)\s*:\s*([a-zA-Z_$][0-9a-zA-Z_$]+)\s*[,}]/g;
+
+      let match;
+      const templateVariables = new Set();
+      while ((match = regex.exec(templateContent)) !== null) {
+        const code = match[1].trim();
+        
+        // only apply the detailed variableRegex if the code is a translation string
+        if (regexI18n.exec(code) !== null) {
+          let varMatch;
+          while ((varMatch = regexI18nVariable.exec(code)) !== null) {
+            const variable = varMatch[2];
+            templateVariables.add(variable);
+          }
+        } else {
+          // use a simpler regex for other cases
+          let varMatch;
+          while ((varMatch = regexVariable.exec(code)) !== null) {
+            const variable = varMatch[0];
+            templateVariables.add(variable);
+          }
+        }
+      }
+
+      // detect template variables missing in data
+      const missingVariables = Array.from(templateVariables).filter(variable => !(variable in data));
+      if (missingVariables.length > 0) {
+        throw new Error(`The following variables are used in the template but not provided in the data: ${missingVariables}`);
+      } else {
+        //logger.info("All variables used in template are provided in the data");
+      }
+    
+      // detect if data variables are in excess respect to template
+      const excessVariables = Object.keys(data).filter(variable => !Array.from(templateVariables).includes(variable));
+      if (excessVariables.length > 0) {
+        throw new Error(`The following variables are provided in data but not used in the template: ${excessVariables}`);
+      } else {
+        //logger.info("All variables provided in data are used in the template");
+      }
+
       return ejs.render(templateContent, {
         t: i18n.t.bind(i18n),
         ...data

@@ -105,10 +105,17 @@ UserSchema.pre("save", function(next) {
 UserSchema.methods.hashPassword = async(password, callback) => {
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return callback(err);
+    if (!password)
+  console.log("hashPassword, password:", password);
+console.log("hashPassword, salt:", salt);
+    try {
       bcrypt.hash(password, salt, (err, hash) => {
-      if (err) return callback(err);
-      return callback(null, hash);
-    });
+        if (err) return callback(err);
+        return callback(null, hash);
+      });
+    } catch(err) {
+      console.error("bcrypt.hash error:", err);
+    }
   });
 };
 

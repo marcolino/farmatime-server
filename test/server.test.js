@@ -23,8 +23,8 @@ describe("API tests - Server", async function() {
       .post("/api/not-found-route")
       .then(res => {
         res.should.have.status(404);
-        res.body.should.have.property("error");
-        expect(res.body.error).to.equal("Not found");
+        res.body.should.have.property("message");
+        expect(res.body.message).to.equal("Not found");
         done();
       })
       .catch((err) => {

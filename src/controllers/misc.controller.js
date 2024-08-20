@@ -1,28 +1,28 @@
 const emailService = require("../services/email.service");
 const config = require("../config");
 
-const sendEmail = (req, res) => {
+const sendTestEmail = async(req, res, next) => {
   try {
     req.language = "it"; // TODO: REMOVEME (force italian language also for english browsers)
-    emailService.send(req, {
-      to: "marco.solari@gmail.com",
+    await emailService.send(req, {
+      to: "marcosolari@gmail.com",
       toName: "ACME Administrator",
       subject: "TEST SUBJECT 1",
       templateFilename: "generic",
       language: "it",
       templateParams: {
         userFirstName: "Marco",
-        name: "John",
-        orderNumber: 456,
+        orderNumber: 123,
       }
     });
-    console.log("Email sent successfully");
+    res.send(true);
   } catch (err) {
-    console.error("Error sending email:", err);
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   };
-  res.send(true);
 };
 
 module.exports = {
-  sendEmail,
+  sendTestEmail,
 };

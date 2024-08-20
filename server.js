@@ -18,8 +18,8 @@ const rateLimitMiddleware = require("./src/middlewares/rateLimit");
 const i18n = require("./src/middlewares/i18n");
 const config = require("./src/config");
 
-const production = (process.env.NODE_ENV === "production"); // production mode
-const testing = typeof global.it === "function"; // testing (mocha/chai/...)
+// const production = (process.env.NODE_ENV === "production"); // production mode
+// const testing = typeof global.it === "function"; // testing (mocha/chai/...)
 const index = "index.html"; // index file name to be injected
 const indexInjected = "index-injected.html"; // injected index file name
 
@@ -47,7 +47,7 @@ const app = express();
 app.use(compression());
 
 // log requests to express output, while developing
-if (!production) {
+if (!config.mode.production) {
   app.use(morgan("dev"));
 }
 
@@ -91,11 +91,11 @@ app.use(i18nextMiddleware.handle(i18n/*ext*/));
 app.use(rateLimitMiddleware);
 
 // environment configuration
-if (production) { // load environment variables from .env file
+if (config.mode.production) { // load environment variables from .env file
   logger.info("Loading production environment");
   require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 } else { // load environment variables from .env.dev file
-  logger.info("Loading test environment");
+  logger.info("Loading development environment");
   require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
 }
 
@@ -107,10 +107,10 @@ assertEnvironment();
 
 // set up database connection uri
 const connUri =
-  production ?
+  config.mode.production ?
     // production db uri
     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
-  testing ?
+  config.mode.test ?
     // test db uri
     `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB_TEST}`
   :
@@ -180,7 +180,7 @@ app.get("/", async (req, res) => {
 
 // handle static routes
 app.use("/", express.static(rootClient)); // base client root
-(!production) && app.use("/coverage", express.static(rootCoverage)); // coverage root
+/*(!config.mode.production) && */ app.use("/coverage", express.static(rootCoverage)); // coverage root
 
 // handle client routes for all other urls
 app.get("*", (req, res) => {
@@ -201,7 +201,8 @@ const injectIndexIfNotPresent = () => {
 };
 
 // set port and listen for requests
-if (require.main === module) { // avoid listening while testing
+//if (require.main === module) { // avoid listening while testing
+if (!config.mode.test) { // avoid listening while testing
   const PORT = process.env.PORT || config.api.port;
   app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);

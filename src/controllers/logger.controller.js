@@ -5,9 +5,8 @@ require("winston-syslog");
 
 const localhost = require("os").hostname;
 
- // TODO: set testing and production globally...
-const testing = (require.main === module);
-const production = (process.env.NODE_ENV === "production"); // production mode
+// const testing = (require.main === module);
+// const production = (process.env.NODE_ENV === "production"); // production mode
 
 const colors = {
   Reset: "\x1b[0m",
@@ -69,7 +68,7 @@ try {
     new winston.transports.File({ filename: config.logs.file })
   ];
 
-  if (process.env.NODE_ENV === "production") { // use syslog transport on papertrail only in production
+  if (config.mode.production) { // use syslog transport on papertrail only in production
     exceptionHandlers.push(
       new winston.transports.Syslog({
         host: config.logs.papertrail.host,
@@ -80,8 +79,7 @@ try {
     );
   }
 
-  console.log("env:", process.env.NODE_ENV);
-  if (process.env.NODE_ENV !== "production") { // if we're not in production then also log to the `Console` transport
+  if (!config.mode.production) { // if we're not in production then also log to the `Console` transport
     transports.push(new winston.transports.Console({
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -96,7 +94,7 @@ try {
       ),
       // if we are in test skip console logging for levels lower than warning (notice, info, debug)
       // if we are in production mode skip console logging for levels lower than warning (notice, info, debug)
-      level: (testing ? "warning" : (production ? "error" : "debug")),
+      level: (config.mode.test ? "warning" : (config.mode.production ? "error" : "debug")),
       handleExceptions: true,
       prettyPrint: true,
       colorize: colorize,

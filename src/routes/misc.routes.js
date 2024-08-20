@@ -1,7 +1,8 @@
 const controller = require("../controllers/misc.controller");
-//const emailService = require("../services/email.service");
-//const { authJwt } = require("../middlewares");
+const config = require("../config");
 
 module.exports = app => {
-  app.get("/api/misc/sendEmail", /*authJwt.verifyToken, */controller.sendEmail);
+  if (!config.mode.production) {
+    app.get("/api/misc/sendTestEmail", controller.sendTestEmail); // TODO: only while developing
+  }
 };

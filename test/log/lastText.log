@@ -1,151 +1,244 @@
 
 
   API tests - Auth routes
-    ✔ should register user (323ms)
-    ✔ should not register user twice
+hashPassword, salt: $2a$10$4QT4zSepUDH8u2VIHW0afu
+POST /api/auth/signup 201 84.750 ms - 145
+    ✔ should register user (98ms)
+POST /api/auth/signup 401 2.756 ms - 138
+    ✔ should not register user without confirmation
+POST /api/auth/signup 400 1.954 ms - 41
     ✔ should not register user with invalid email
+POST /api/auth/signup 400 4.385 ms - 43
     ✔ should not register user forcing invalid plan
+POST /api/auth/signup 400 6.490 ms - 43
     ✔ should not register user forcing invalid role
-    ✔ should not login user before confirmation (38ms)
+POST /api/auth/signin 401 13.372 ms - 138
+    ✔ should not login user before confirmation
+POST /api/auth/resendSignupCode 200 3.847 ms - 105
     ✔ should resend register code
+POST /api/auth/signupVerification 400 0.799 ms - 31
     ✔ should not confirm user without code
+POST /api/auth/signupVerification 400 2.128 ms - 55
     ✔ should not confirm user with invalid code
-    ✔ should confirm user (59ms)
+POST /api/auth/signupVerification 200 14.171 ms - 63
+    ✔ should confirm user
+POST /api/auth/signupVerification 400 6.333 ms - 52
     ✔ should not confirm user twice
-    ✔ should not resend register code for already verified user
+POST /api/auth/resendSignupCode 400 4.206 ms - 68
+    ✔ should not resend register code for already confirmed user
+POST /api/auth/resendSignupCode 401 5.793 ms - 119
     ✔ should not resend register code without email
+POST /api/auth/resetPassword 400 1.689 ms - 42
     ✔ should not reset password without email
+POST /api/auth/resetPassword 200 6.167 ms - 148
     ✔ should start reset password
-    ✔ should confirm reset password (194ms)
+hashPassword, salt: $2a$10$wpMLu/bgwwwNkQ9d61yF5.
+POST /api/auth/resetPasswordConfirm 200 66.849 ms - 44
+    ✔ should confirm reset password (69ms)
+POST /api/auth/resetPasswordConfirm 400 1.563 ms - 73
     ✔ should not confirm reset password with wrong email
+POST /api/auth/resetPasswordConfirm 400 0.641 ms - 57
     ✔ should not confirm reset password with no code
+POST /api/auth/resetPasswordConfirm 400 1.694 ms - 73
     ✔ should not confirm reset password with wrong code
+POST /api/auth/resendResetPasswordCode 401 1.744 ms - 128
     ✔ should not resend reset password code to invalid email
+POST /api/auth/resendResetPasswordCode 200 5.058 ms - 129
     ✔ should resend reset password code
+POST /api/auth/signin 400 0.932 ms - 32
     ✔ should not login user with invalid email
+POST /api/auth/signin 401 1.646 ms - 28
     ✔ should not login user with unregistered email
-    ✔ should login user (214ms)
-    ✔ should login user with passepartout password (174ms)
-    ✔ should not login user with invalid password (175ms)
-    ✔ should register admin user (221ms)
+POST /api/auth/signin 200 61.788 ms - 513
+    ✔ should login user (63ms)
+POST /api/auth/signin 200 58.466 ms - 513
+    ✔ should login user with passepartout password (60ms)
+POST /api/auth/signin 401 58.793 ms - 47
+    ✔ should not login user with invalid password (60ms)
+hashPassword, salt: $2a$10$Mkx8o76wCtN..wbBdzu0h.
+POST /api/auth/signup 201 61.082 ms - 147
+    ✔ should register admin user (62ms)
+POST /api/auth/signupVerification 200 3.767 ms - 63
     ✔ should confirm admin user
-    ✔ should login admin user (195ms)
-    ✔ should not login removed user (42ms)
+POST /api/auth/signin 200 61.256 ms - 517
+    ✔ should login admin user (62ms)
+POST /api/auth/refreshtoken 401 0.620 ms - 46
     ✔ should not refresh token without refresh token
+POST /api/auth/refreshtoken 401 0.458 ms - 46
     ✔ should not refresh token with invalid refresh token
+POST /api/auth/refreshtoken 200 2.080 ms - 243
     ✔ should refresh token
 
-  API tests - Job routes
-    ✔ should register normal user (222ms)
-    ✔ should login normal user (196ms)
-    ✔ should register admin user (209ms)
-    ✔ should login as admin user (198ms)
-    ✔ should register admin user with standard plan (212ms)
-    ✔ should login as admin user with standard plan (183ms)
-    ✔ should not upload a file without authentication
-    ✔ should not upload a file with no file data
-    ✔ should not upload a file too big in size (134ms)
-    ✔ should not upload a file with wrong content-type
-    ✔ should upload a file as normal user
-    ✔ should not transform XLS to XML without authentication
-    ✔ should not transform XLS to XML as normal user (not existing file)
-    ✔ should transform XLS to XML as normal user (some errors file) (3152ms)
-    ✔ should transform XLS to XML as normal user (more errors file) (2380ms)
-    ✔ should transform XLS to XML as admin user with standard plan, truncating (good file) (2387ms)
-    ✔ should transform XLS to XML as normal user (good file) (1557ms)
-    ✔ should not validate XML without authentication
-    ✔ should validate XML (one output file ok) (665ms)
-    ✔ should not validate XML (one output file, no file)
-    ✔ should validate XML (index output file ok) (620ms)
-    ✔ should not check outcome for wrong codiceFiscaleAmministrazione (899ms)
-    ✔ should not check outcome for wrong year (3356ms)
-    ✔ should check outcome for successful upload (458ms)
-    ✔ should not check url existence and match for wrong url (40ms)
-    ✔ should not check url existence and match for wrong fileToMatch (875ms)
-    ✔ should not check url existence and match without authentication
-    ✔ should check url existence and match (562ms)
-
   API tests - Payment routes
-    ✔ should register normal user (261ms)
-    ✔ should login normal user (302ms)
+hashPassword, salt: $2a$10$JtJQ/bT/cfHY8TI/qw6b3.
+POST /api/auth/signup 201 61.697 ms - 145
+POST /api/auth/signupVerification 200 3.660 ms - 63
+    ✔ should register normal user (68ms)
+POST /api/auth/signin 200 63.045 ms - 513
+    ✔ should login normal user (64ms)
+GET /api/payment/mode 200 1.269 ms - 15
     ✔ should get payment mode, and it should be in a set of values
+POST /api/payment/createCheckoutSession 401 0.706 ms - 101
     ✔ should not create a checkout session without authentication
-    ✔ should not create a checkout session for a 0 cost product (936ms)
-    ✔ should not create a checkout session for a non-existent product
-    ✔ should create a checkout session for a standard product (661ms)
-    ✔ should redirect on a payment success call (913ms)
-    ✔ should redirect on a payment canceled call (807ms)
+POST /api/payment/createCheckoutSession 400 818.966 ms - 168
+    ✔ should not create a checkout session for a 0 cost product (821ms)
+POST /api/payment/createCheckoutSession 400 403.529 ms - 95
+    ✔ should not create a checkout session for a non-existent product (406ms)
+POST /api/payment/createCheckoutSession 200 1022.335 ms - -
+    ✔ should create a checkout session for a standard product (1030ms)
+GET /api/payment/paymentSuccess?session_id=cs_test_a1KbtCcf2bQvqDBRfKHQbnaLyttRFQER22QoorZWqADtbzassXusYsLU6k 302 810.334 ms - 76
+    ✔ should redirect on a payment success call (814ms)
+GET /api/payment/paymentCancel?session_id=cs_test_a1KbtCcf2bQvqDBRfKHQbnaLyttRFQER22QoorZWqADtbzassXusYsLU6k 302 815.262 ms - 75
+    ✔ should redirect on a payment canceled call (818ms)
 
   API tests - User routes
-    ✔ should register normal user (290ms)
-    ✔ should login normal user (202ms)
-    ✔ should register admin user (240ms)
-    ✔ should login as admin user (201ms)
+hashPassword, salt: $2a$10$GRkVG4XauOXMiWjF8aVvcu
+POST /api/auth/signup 201 65.223 ms - 145
+POST /api/auth/signupVerification 200 3.504 ms - 63
+    ✔ should register normal user (71ms)
+POST /api/auth/signin 200 59.250 ms - 513
+    ✔ should login normal user (60ms)
+hashPassword, salt: $2a$10$qHt0pagaKF8.jaFAMUjsF.
+POST /api/auth/signup 201 61.681 ms - 147
+POST /api/auth/signupVerification 200 4.124 ms - 63
+    ✔ should register admin user (68ms)
+POST /api/auth/signin 200 60.419 ms - 532
+    ✔ should login as admin user (61ms)
+GET /api/user/getAllUsersWithFullInfo 403 2.713 ms - 67
     ✔ should not get all users with full info with user role
+GET /api/user/getAllUsersWithFullInfo 200 7.742 ms - 1010
     ✔ should get all users with full info with admin role
+GET /api/user/getAllRoles 401 0.969 ms - 101
     ✔ should not get all roles without authentication
+GET /api/user/getAllRoles 200 4.091 ms - 270
     ✔ should get all roles
+GET /api/user/getAllPlans 401 0.623 ms - 101
     ✔ should not get alls plans without authentication
+GET /api/user/getAllPlans 200 2.280 ms - 371
     ✔ should get all plans
+GET /api/user/getUser 200 5.002 ms - 477
     ✔ should get user's profile
+GET /api/user/getUser 401 0.576 ms - 101
     ✔ should not get user's profile without authentication
+GET /api/user/getUser 403 3.482 ms - 113
     ✔ should not get another user's profile without admin access
+GET /api/user/getUser 200 4.047 ms - 496
     ✔ should get another user's profile with admin access
-    ✔ should update user's profile (42ms)
+POST /api/user/updateUser 200 7.482 ms - 664
+    ✔ should update user's profile
+POST /api/user/updateUser 400 5.740 ms - 41
     ✔ should not update user's profile with invalid email
+POST /api/user/updateUser 400 8.044 ms - 48
     ✔ should not update user's profile with already taken email
+POST /api/user/updateUser 200 8.472 ms - 500
     ✔ should update user's profile with new email
+POST /api/user/updateUser 200 8.399 ms - 496
     ✔ should reset user's profile with email
-    ✔ should not update user's profile with invalid firstName
+POST /api/user/updateUser 400 6.941 ms - 47
+    ✔ should not update user's profile with empty firstName
+POST /api/user/updateUser 400 5.591 ms - 46
     ✔ should not update user's profile with invalid lastName
+POST /api/user/updateUser 400 4.515 ms - 45
     ✔ should not update user's profile with invalid fiscalCode
+POST /api/user/updateUser 401 0.601 ms - 101
     ✔ should not update user's profile without autentication
-    ✔ should not update user's profile for a different not existent user - without admin access
+POST /api/user/updateUser 403 2.710 ms - 113
+    ✔ should not update user's profile for a different not existing user - without admin access
+POST /api/user/updateUser 403 3.035 ms - 113
     ✔ should not update user's profile for a different existent user - without admin access
+POST /api/user/updateUser 200 7.796 ms - 653
     ✔ should update user's profile for a different existent user - as admin user
+POST /api/user/updateUser 403 3.272 ms - 113
     ✔ should not update another user's own property without admin access
+POST /api/user/updateUser 200 6.496 ms - 664
     ✔ should update another user's property with admin access
-    ✔ should not update user's property with an unexpected payload
+POST /api/user/updateUser 200 4.681 ms - 496
+    ✔ should update user's property (with no changes) with an unexpected parameters
+POST /api/user/updateUser 200 4.228 ms - 664
     ✔ should update user's own property firstName
+POST /api/user/updateUser 200 9.581 ms - 664
     ✔ should update user's own property email
+POST /api/user/updateUser 200 9.359 ms - 664
     ✔ should update user's own property lastName
+POST /api/user/updateUser 200 8.678 ms - 664
     ✔ should update user's own property fiscalCode
+POST /api/user/updateUser 200 6.660 ms - 664
     ✔ should update user's own property businessName
-    ✔ should update user's own property address street
-    ✔ should not update user's own roles without admin access
+POST /api/user/updateUser 200 4.668 ms - 634
+    ✔ should update user's own property address
+POST /api/user/updateRoles 400 1.245 ms - 46
+    ✔ should not update user's own roles without any role
+POST /api/user/updateRoles 400 1.401 ms - 46
     ✔ should not update user's own roles with not array roles
+POST /api/user/updateRoles 400 0.828 ms - 46
     ✔ should not update user's own roles with empty array roles
-    ✔ should update user's own roles without admin access (equal or down grade)
-    ✔ should not update user's own roles without admin access (up grade)
-    ✔ should update user's own roles as admin user (up grade)
+POST /api/user/updateRoles 200 8.044 ms - 41
+    ✔ should update (equal or downgrade) user's own roles without admin access 
+POST /api/user/updateRoles 403 7.292 ms - 59
+    ✔ should not update user's own roles without admin access (upgrade)
+POST /api/user/updateRoles 200 5.510 ms - 41
+    ✔ should update user's own roles as admin user (upgrade)
+POST /api/user/updateRoles 403 3.488 ms - 113
     ✔ should not update another user's roles without admin access
+POST /api/user/updateRoles 200 7.365 ms - 41
     ✔ should update another user's roles with admin access
+POST /api/user/updatePlan 400 2.935 ms - 31
+    ✔ should not update user's our plan with no plan
+POST /api/user/updatePlan 400 4.431 ms - 27
+    ✔ should not update user's our plan with wrong plan
+POST /api/user/updatePlan 403 2.797 ms - 67
     ✔ should not update user's own plan without admin access
-    ✔ should not update user's own plan with no plan
-    ✔ should not update user's own plan with empty plan
-    ✔ should update user's own plan (equal or down grade) (38ms)
-    ✔ should update another user's plan with admin access
-    ✔ should not update user's own plan without admin access (up grade)
-    ✔ should update user's own plan as admin user (up grade)
+POST /api/user/updatePlan 403 2.263 ms - 67
+    ✔ should not update user's own plan (even the free plan)
+POST /api/user/updatePlan 400 4.286 ms - 27
+    ✔ should not update another user's plan with admin access
+POST /api/user/updatePlan 403 2.389 ms - 67
+    ✔ should not update (upgrade) user's own plan without admin access
+POST /api/user/updatePlan 200 5.528 ms - 395
+    ✔ should update user's own plan as admin user (upgrade)
+POST /api/user/updatePlan 403 3.102 ms - 67
     ✔ should not update another user's plan without admin access
+POST /api/user/updatePlan 200 8.150 ms - 395
     ✔ should update another user's plan with admin access
+GET /api/user/getAllUsers 403 2.293 ms - 67
     ✔ should not get all users with user role
+GET /api/user/getAllUsers 400 3.292 ms - 40
     ✔ should not get all users with wrong filter
+GET /api/user/getAllUsers 200 5.384 ms - 961
     ✔ should get all users with admin role
+POST /api/user/deleteUser 401 0.464 ms - 101
     ✔ should not delete user without authentication
+POST /api/user/deleteUser 403 2.590 ms - 67
     ✔ should not delete user without admin privileges
+POST /api/user/deleteUser 400 3.794 ms - 39
     ✔ should not delete user with admin privileges using invalid id
+POST /api/user/deleteUser 200 4.641 ms - 51
     ✔ should delete user with admin privileges using id
+POST /api/user/deleteUser 200 4.355 ms - 51
     ✔ should delete user with admin privileges using email
-    ✔ should register normal user (275ms)
-    ✔ should login normal user (234ms)
-    ✔ should register admin user (248ms)
-    ✔ should login as admin user (346ms)
+hashPassword, salt: $2a$10$V/TjXx3MgrbvN.h6kUvOG.
+POST /api/auth/signup 201 63.988 ms - 145
+POST /api/auth/signupVerification 200 3.883 ms - 63
+    ✔ should register normal user (71ms)
+POST /api/auth/signin 200 61.547 ms - 513
+    ✔ should login normal user (62ms)
+hashPassword, salt: $2a$10$UQhDddkZLt.tHrUmwY3UkO
+POST /api/auth/signup 201 59.573 ms - 147
+POST /api/auth/signupVerification 200 3.481 ms - 63
+    ✔ should register admin user (65ms)
+POST /api/auth/signin 200 58.671 ms - 532
+    ✔ should login as admin user (60ms)
+POST /api/user/removeUser 401 0.486 ms - 101
     ✔ should not remove user without authentication
+POST /api/user/removeUser 403 2.322 ms - 67
     ✔ should not remove user without admin privileges
+POST /api/user/removeUser 400 4.816 ms - 39
     ✔ should not remove user with admin privileges using invalid id
+POST /api/user/removeUser 200 3.467 ms - 51
     ✔ should remove user with admin privileges using id
+POST /api/user/removeUser 200 3.776 ms - 51
     ✔ should remove user with admin privileges using email
+POST /api/user/removeUser 200 4.145 ms - 51
     ✔ should remove all users with admin privileges
 
   API tests - Helpers - Environment
@@ -153,30 +246,14 @@
     ✔ should not assert environment with missing required variable
     ✔ should assert environment with default environment
 
-  API tests - Index of models
-    ✔ should populate database if empty
-
   API tests - Plan model
-    ✔ should register normal user (241ms)
-    ✔ should login normal user (199ms)
-    ✔ should register admin user (203ms)
-    ✔ should login as admin user (189ms)
     ✔ plan model should accept any value different by -1 ("unlimited")
     ✔ plan model should convert -1 ("unlimited") value to a number (MAX_SAFE_INTEGER)
 
-  API tests - User model
-    ✔ should register normal user (229ms)
-    ✔ should login normal user (192ms)
-    ✔ should register admin user (202ms)
-    ✔ should login as admin user (182ms)
-    ✔ user model should not save user with wrong type password
-    ✔ user model should handle options set as true
-    ✔ user model should handle options set as false
-    ✔ hashPassword should fail with a password of type object
-
   API tests - Server
+POST /api/not-found-route 404 0.624 ms - 23
     ✔ should correctly handle not found route
 
 
-  159 passing (29s)
+  117 passing (6s)
 

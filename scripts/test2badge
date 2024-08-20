@@ -10,8 +10,10 @@ lastTextLog="test/log/lastText.log"
 
 cat "$lastLog" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g" > "$lastTextLog"
 
-passing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*passing\s*.*/\1/p'`
-failing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*failing\s*.*/\1/p'`
+#passing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*passing\s*.*/\1/p'`
+#failing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*failing\s*.*/\1/p'`
+passing=`cat "$lastTextLog" | grep '✔' | wc -l`
+failing=`` # TODO ...
 
 #echo "PASSING: $passing"
 #echo "FAILING: $failing"
@@ -24,5 +26,5 @@ else
   curl --silent "https://img.shields.io/badge/${label}-${passing}%2F${total}-${failingColor}" -o public/badges/mocha.svg
 fi
 
-#qiv test/badges/mocha.svg
+#qiv public/badges/mocha.svg
 exit 0

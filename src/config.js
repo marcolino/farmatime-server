@@ -2,21 +2,30 @@ const apiName = "ACME";
 const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const company = "Sistemi Solari Rossi";
-  
-const serverBaseUrl = `${process.env.NODE_ENV === "production" ?
+const production = (process.env.NODE_ENV === "production"); // production mode
+const development = (process.env.NODE_ENV !== "production"); // development mode
+const test = (typeof global.it === "function"); // testing (mocha/chai/...)
+const stripeIsLive = process.env.STRIPE_MODE === "live"; // stripe mode is "live"  
+
+const serverBaseUrl = production ?
   "https://acme.herokuapp.com" :
   "http://localhost:5000"
-}`;
-const clientBaseUrl = `${process.env.NODE_ENV === "production" ?
+;
+const clientBaseUrl = production ?
   "https://acme.herokuapp.com" :
   "http://localhost:3000"
-}`;
-const clientShowcaseBaseUrl = `${process.env.NODE_ENV === "production" ?
+;
+const clientShowcaseBaseUrl = production ?
   "https://acme-showcase.herokuapp.com" :
   "http://localhost:8080"
-}`;
+;
 
-module.exports = { // TODO: pass to client only some of api, app, company...
+module.exports = {
+  mode: {
+    production,
+    development,
+    test,
+  },
   api: {
     name: apiName,
     port: 5000,
@@ -104,7 +113,7 @@ module.exports = { // TODO: pass to client only some of api, app, company...
   ],
   payment: {
     stripe: {
-      products: (process.env.STRIPE_MODE === "live") ? { // stripe mode is production
+      products: stripeIsLive ? { // stripe mode is live
         free: {
           name: "Prodotto Gratuito LIVE",
           product_id: "prod_LC4k3rwA64D45l",
@@ -119,7 +128,7 @@ module.exports = { // TODO: pass to client only some of api, app, company...
           name: "Prodotto Illimitato LIVEKBJ",
           price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
         },
-      } : { // stripe mode is development
+      } : { // stripe mode is test
         free: {
           name: "Prodotto Gratuito (test)",
           product_id: "prod_LC4q54jgFITE0U",
@@ -145,11 +154,12 @@ module.exports = { // TODO: pass to client only some of api, app, company...
     },
   },
   email: {
+    dryrun: true,
     subject: {
       prefix: apiName,
     },
     administration: {
-      from: "sistemisolarirossi@gmail.com",
+      from: "marcosolari@gmail.com",
       fromName: "Sistemi Solari Rossi backend server",
       to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
       toName: "ACME admin",

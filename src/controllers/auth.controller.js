@@ -81,22 +81,8 @@ const signup = async(req, res, next) => {
   
       logger.info("VERIFICATION CODE:", signupVerification.code);
       
-//       const subject = req.t("Signup Verification Code");
-//       const to = user.email;
-//       const from = process.env.FROM_EMAIL;
-//       const html = `
-// <p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.<p>
-// <p>${req.t("The code to verify your registration is")} <b>${signupVerification.code}</b>.</p>
-// <p><i>${req.t("If you did not request this, please ignore this email")}.</i></p>
-//       `;
-//       logger.info("Sending email:", to, from, subject);
-//       (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
-//       await sendEmail({to, from, subject, html});
-
-      
       // TODO: pass also req, to let emailService to read the req.language...
-      await emailService.send({
-        req,
+      await emailService.send(req, {
         to: user.email,
         subject: req.t("Signup Verification Code"),
         templateFilename: "signupVerificationCodeSent",
@@ -134,19 +120,7 @@ const resendSignupCode = async(req, res) => {
     const signupVerification = await user.generateSignupVerification(user._id);
     await signupVerification.save(); // save the verification code
 
-//     const subject = req.t("Signup Verification Code Resent");
-//     const to = user.email;
-//     const from = process.env.FROM_EMAIL;
-//     const html = `
-// <p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.<p>
-// <p>${req.t("The code to verify your registration is")} <b>${signupVerification.code}</b>.</p>
-// <p><i>${req.t("If you did not request this, please ignore this email")}.</i></p>
-//     `;
-//     logger.info("Sending email:", to, from, subject);
-//     (process.env.NODE_ENV !== "production") && logger.info(`Verification code: ${signupVerification.code}`);
-//     await sendEmail({ to, from, subject, html });
-    
-    await notification({
+    await emailService.send(req, {
       to: user.email,
       subject: req.t("Signup Verification Code Resent"),
       htmlTemplateFile: "signupVerificationCodeSent",
@@ -324,7 +298,7 @@ const resetPassword = async(req, res) => {
 // <p><i>${req.t("If you did not request this, please ignore this email and your password will remain unchanged")}.</i></p>
 //     `;
     logger.info("Sending email:", to, from, subject);
-    (process.env.NODE_ENV !== "production") && logger.info(`Reset password code: ${user.resetPasswordCode}`);
+    config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
 //     await sendEmail({to, from, subject, html});
 
     // TODO: emailService ...
@@ -409,8 +383,7 @@ const resendResetPasswordCode = async(req, res) => {
 // <p><i>If you did not request this, please ignore this email.</i></p>
 //     `;
     logger.info("Sending email:", to, from, subject);
-    (process.env.NODE_ENV !== "production") && logger.info(`Reset password code: ${user.resetPasswordCode}`);
-//     await sendEmail({to, from, subject, html});
+    config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
     // TODO: emailService ...
 
