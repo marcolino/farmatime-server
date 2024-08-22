@@ -38,7 +38,10 @@ const signup = async(req, res, next) => {
   } catch(err) {
     logger.error(`Error finding role ${roleName}:`, err);
     //return res.status(err.code).json({ message: err });
-    return next(err);
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
+    //return next(err);
   }
   if (!role) {
     return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName })});
@@ -51,7 +54,10 @@ const signup = async(req, res, next) => {
   } catch(err) {
     logger.error(`Error finding plan ${planName}:`, err);
     //return res.status(err.code).json({ message: err });
-    return next(err);
+    //return next(err);
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
   if (!plan) {
     return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName })});
@@ -71,7 +77,10 @@ const signup = async(req, res, next) => {
       // we don't check duplicated user email (err.code === 11000) as it is done already as a route middleware
       logger.error("New user creation error:", err);
       //return res.status(err.code).json({ message: err });
-      next(err);
+      //next(err);
+      const error = new Error(err.message);
+      error.status = 500;
+      next(error);
     }
 
     // send verification code
@@ -85,7 +94,7 @@ const signup = async(req, res, next) => {
       await emailService.send(req, {
         to: user.email,
         subject: req.t("Signup Verification Code"),
-        templateFilename: "signupVerificationCodeSent",
+        templateName: "signupVerificationCodeSent",
         templateParams: {
           userFirstName: user.firstName,
           userLastName: user.lastName,
@@ -100,12 +109,15 @@ const signup = async(req, res, next) => {
       });
     } catch(err) {
       logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}:`, err);
-      return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + req.t(err.message) + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
+      //return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + req.t(err.message) + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
+      const error = new Error(err.message);
+      error.status = 500;
+      next(error);
     }
   });
 };
 
-const resendSignupCode = async(req, res) => {
+const resendSignupCode = async(req, res, next) => {
   try {
     const email = normalizeEmail(req.parameters.email);
     const user = await User.findOne({ email });
@@ -123,8 +135,8 @@ const resendSignupCode = async(req, res) => {
     await emailService.send(req, {
       to: user.email,
       subject: req.t("Signup Verification Code Resent"),
-      htmlTemplateFile: "signupVerificationCodeSent",
-      htmlTemplateParams: {
+      templateName: "signupVerificationCodeSent",
+      templateParams: {
         userFirstName: user.firstName,
         userLastName: user.lastName,
         signupVerificationCode: signupVerification.code,
@@ -135,11 +147,14 @@ const resendSignupCode = async(req, res) => {
 
   } catch(err) {
     logger.error("Error resending signup code:", err);
-    res.status(err.code).json({ message: req.t("Error resending signup code") + ": " + err.message });
+    //res.status(err.code).json({ message: req.t("Error resending signup code") + ": " + err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 };
 
-const signupVerification = async(req, res) => {
+const signupVerification = async(req, res, next) => {
   if (!req.parameters.code) {
     return res.status(400).json({message: req.t("Code is mandatory")});
   }
@@ -187,11 +202,14 @@ const signupVerification = async(req, res) => {
     );
   } catch(err) {
     logger.error("Error verifying signup:", err);
-    res.status(err.code).json({message: err.message})
+    //res.status(err.code).json({ message: err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 }
 
-const signin = async (req, res) => {
+const signin = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
   User.findOne(
@@ -209,7 +227,10 @@ const signin = async (req, res) => {
   .exec(async(err, user) => {
     if (err) {
       logger.error("Error finding user in signin request:", err);
-      return res.status(err.code).json({ message: err });
+      //return res.status(err.code).json({ message: err });
+      const error = new Error(err.message);
+      error.status = 500;
+      next(error);
     }
 
     // check user is found
@@ -272,7 +293,7 @@ const signin = async (req, res) => {
   });
 };
 
-const resetPassword = async(req, res) => {
+const resetPassword = async(req, res, next) => {
   try {
     const { email } = req.parameters;
     if (!email) return res.status(400).json({ message: req.t("No email address to be reset")});
@@ -311,11 +332,14 @@ const resetPassword = async(req, res) => {
     });
   } catch(err) {
     logger.error("Error resetting password:", err);
-    res.status(err.code).json({message: err.message})
+    //res.status(err.code).json({ message: err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 };
 
-const resetPasswordConfirm = async(req, res) => {
+const resetPasswordConfirm = async(req, res, next) => {
   try {
     const { email } = req.parameters;
     const { password } = req.parameters;
@@ -351,7 +375,10 @@ const resetPasswordConfirm = async(req, res) => {
 
   } catch(err) {
     logger.error("Error in reset password confirme:", err);
-    res.status(err.code).json({message: err.message})
+    //res.status(err.code).json({ message: err.message })
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 };
 
@@ -360,7 +387,7 @@ const resetPasswordConfirm = async(req, res) => {
  * @desc resend password reset code
  * @access public
  */
-const resendResetPasswordCode = async(req, res) => {
+const resendResetPasswordCode = async(req, res, next) => {
   try {
     const { email } = req.parameters;
 
@@ -395,11 +422,14 @@ const resendResetPasswordCode = async(req, res) => {
 
   } catch(err) {
     logger.error("Error resending reset password code:", err);
-    res.status(err.code).json({ message: err.message })
+    //res.status(err.code).json({ message: err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 };
 
-const refreshToken = async(req, res) => {
+const refreshToken = async(req, res, next) => {
   const { token } = req.parameters;
 
   if (!token) { // refresh token is required
@@ -435,7 +465,10 @@ const refreshToken = async(req, res) => {
     });
   } catch(err) {
     logger.error("Error refreshing token:", err);
-    return res.status(err.code).json({ message: err });
+    //return res.status(err.code).json({ message: err });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 };
 

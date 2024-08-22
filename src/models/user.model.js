@@ -80,6 +80,9 @@ const UserSchema = mongoose.Schema({
     type: Boolean,
     default: true
   },
+  language: { // TODO: save this at any save request, from req.language
+    type: String,
+  },
 }, {timestamps: true});
 
 UserSchema.pre("find", function() {
@@ -105,9 +108,10 @@ UserSchema.pre("save", function(next) {
 UserSchema.methods.hashPassword = async(password, callback) => {
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return callback(err);
-    if (!password)
-  console.log("hashPassword, password:", password);
-console.log("hashPassword, salt:", salt);
+    if (!password) {
+      console.error("empty password in hashPassword");
+    }
+    //console.log("hashPassword, salt:", salt);
     try {
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return callback(err);

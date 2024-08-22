@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title><%= sys_company_name %></title>
+    <style><%= sys_style %></style>
+<!--
     <style>
       /* general reset */
       body, table, td, a {
@@ -100,7 +102,8 @@
         text-decoration: underline;
       }
     </style>
-  </head>
+  -->
+    </head>
 
   <body>
     <table role="presentation" class="email-container" width="100%" cellpadding="0" cellspacing="0">
@@ -129,7 +132,7 @@
       </tr>
       <tr>
         <td class="email-footer">
-          <p><%= sys_company_copyright %></p>
+          <p><%= sys_company_copyright %>. <%= t("All rights reserved") %>.</p>
         </td>
       </tr>
     </table>

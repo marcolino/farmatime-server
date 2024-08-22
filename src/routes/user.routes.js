@@ -12,4 +12,5 @@ module.exports = app => {
   app.post("/api/user/updatePlan", [authJwt.verifyToken, authJwt.isAdmin], controller.updatePlan);
   app.post("/api/user/deleteUser", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteUser); // be careful !
   app.post("/api/user/removeUser", [authJwt.verifyToken, authJwt.isAdmin], controller.removeUser);
+  app.post("/api/user/sendEmailToUsers", [/*authJwt.verifyToken, authJwt.isAdmin*/], controller.sendEmailToUsers);
 };

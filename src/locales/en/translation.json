@@ -1,4 +1,5 @@
 {
+  "welcome_message": "Welcome, {{name}}",
   "{{count}} user(s) have been deleted_one": "{{count}} user(s) have been deleted",
   "{{count}} user(s) have been deleted_other": "{{count}} user(s) have been deleted",
   "A filter is mandatory to delete users (use \"*\" for all users)": "A filter is mandatory to delete users (use \"*\" for all users)",

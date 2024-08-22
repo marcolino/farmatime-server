@@ -2,7 +2,7 @@ const emailService = require("../services/email.service");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
-const audit = async ({ subject, htmlContent }) => {
+const audit = async ({ subject, htmlContent }) => { // TODO: get req too...
   const to = config.email.administration.to;
   const toName = config.email.administration.toName;
   subject = `${(config.email.subject.prefix ? config.email.subject.prefix + " - " : "")}${subject}`;
@@ -14,7 +14,7 @@ const audit = async ({ subject, htmlContent }) => {
   }
 };
 
-const notification = async ({ to, subject, htmlContent }) => {
+const notification = async ({ to, subject, htmlContent }) => { // TODO: get req too...
   to = to ?? config.email.administration.to;
   subject = `${config.email.subject.prefix ? config.email.subject.prefix + " - " : ""} ${subject}`;
   

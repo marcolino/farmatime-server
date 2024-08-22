@@ -1,14 +1,16 @@
 const emailValidate = require("email-validator");
 const codiceFiscaleValidate = require("codice-fiscale-js");
+const mongoose = require("mongoose");
 //const i18n = require("i18next");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
 const Role = require("../models/role.model");
 const RefreshToken = require("../models/refreshToken.model");
-const { normalizeEmail, isAdministrator, arraysContainSameObjects } = require("../helpers/misc");
+const { isObject, isArray, normalizeEmail, isAdministrator, arraysContainSameObjects } = require("../helpers/misc");
+const emailService = require("../services/email.service");
 
-const getAllUsersWithFullInfo = (req, res) => {
+const getAllUsersWithFullInfo = (req, res, next) => {
   // get all users and refresh tokens
   Promise.all([
     User.find()
@@ -37,11 +39,14 @@ const getAllUsersWithFullInfo = (req, res) => {
     res.status(200).json({users});
   }).catch(err => {
     logger.error("Error getting all users with full info:", err.message);
-    return res.status(500).json({ message: err.message });
+    //return res.status(500).json({ message: err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   });
 };
 
-const getAllUsers = async(req, res) => {
+const getAllUsers = async(req, res, next) => {
   try {
     filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
@@ -57,12 +62,15 @@ const getAllUsers = async(req, res) => {
     res.status(200).json({users});
   } catch(err) {
     logger.error("Error getting all users with:", err.message);
-    return res.status(500).json({ message: err.message });
+    //return res.status(500).json({ message: err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   };
 };
 
 // get all plans
-const getAllPlans = async(req, res) => {
+const getAllPlans = async(req, res, next) => {
   try {
     Plan.find({})
     .select(["name", "supportTypes", "priceCurrency", "pricePerYear"])
@@ -70,7 +78,10 @@ const getAllPlans = async(req, res) => {
     .exec(async(err, docs) => {
       if (err) {
         logger.error("Error getting plans:", err);
-        return res.status(err.code).json({ message: req.t("Could not get plans"), reason: err.message });
+        //return res.status(err.code).json({ message: req.t("Could not get plans"), reason: err.message });
+        const error = new Error(err.message);
+        error.status = 500;
+        next(error);
       }
       res.status(200).json({ plans: docs });
     });
@@ -81,7 +92,7 @@ const getAllPlans = async(req, res) => {
 };
 
 // get all roles
-const getAllRoles = async(req, res) => {
+const getAllRoles = async(req, res, next) => {
   try {
     // the first element in the returned array is the "default" role
     Role.find({})
@@ -89,7 +100,10 @@ const getAllRoles = async(req, res) => {
     .exec(async(err, docs) => {
       if (err) {
         logger.error("Error getting roles:", err);
-        return res.status(err.code).json({ message: req.t("Could not get roles"), reason: err.message });
+        //return res.status(err.code).json({ message: req.t("Could not get roles"), reason: err.message });
+        const error = new Error(err.message);
+        error.status = 500;
+        next(error);
       }
       res.status(200).json({ roles: docs });
     })
@@ -99,7 +113,7 @@ const getAllRoles = async(req, res) => {
   }
 };
 
-const getUser = async(req, res) => {
+const getUser = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
@@ -118,10 +132,14 @@ const getUser = async(req, res) => {
   .exec(async(err, user) => {
     if (err) {
       logger.error("Error finding user:", err);
-      return res.status(err.code).json({ message: req.t("Could not find user"), reason: err.message });
+      //return res.status(err.code).json({ message: req.t("Could not find user"), reason: err.message });
+      const error = new Error(err.message);
+      error.status = 500;
+      next(error);
     }
     if (!user) {
       return res.status(400).json({ message: req.t("Could not find this user") });
+      
     }
     res.status(200).json({user});
   });
@@ -150,7 +168,10 @@ const updateUser = async (req, res, next) => {
   //User.findOne({ _id: userId }, async(err, user) => {
     if (err) {
       logger.error("Error finding user:", err);
-      return res.status(err.code).json({ message: req.t("Error looking for user"), reason: err.message });
+      //return res.status(err.code).json({ message: req.t("Error looking for user"), reason: err.message });
+      const error = new Error(err.message);
+      error.status = 500;
+      next(error);
     }
     if (!user) {
       return res.status(400).json({ message: req.t("User not found") });
@@ -207,7 +228,10 @@ const updateUser = async (req, res, next) => {
       if (req.parameters?.roles && !arraysContainSameObjects(req.parameters.roles, user.roles, "_id")) {
         const err = await updateRoles(req, null);
         if (err) {
-          return res.status(err.code).json({ message: err.message });
+          //return res.status(err.code).json({ message: err.message });
+          const error = new Error(err.message);
+          error.status = 500;
+          next(error);
         }
       }
       
@@ -215,7 +239,10 @@ const updateUser = async (req, res, next) => {
       if (req.parameters?.plan && !(String(req.parameters.plan._id) === String(user.plan?._id))) {
         const err = await updatePlan(req, null);
         if (err) {
-          return res.status(err.code).json({ message: err.message });
+          //return res.status(err.code).json({ message: err.message });
+          const error = new Error(err.message);
+          error.status = 500;
+          next(error);
         }
       }
 
@@ -225,7 +252,7 @@ const updateUser = async (req, res, next) => {
   });
 }
  
-const updateRoles = async(req, res) => {
+const updateRoles = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
@@ -279,8 +306,11 @@ const updateRoles = async(req, res) => {
       user.save(err => {
         if (err) {
           logger.error("Error saving user:", err);
-          const ret = { message: "Error saving user", reason: err.message };
-          return res ? res.status(err.code).json(ret) : ret;
+          // const ret = { message: "Error saving user", reason: err.message };
+          // return res ? res.status(err.code).json(ret) : ret;
+          const error = new Error(err.message);
+          error.status = 500;
+          next(error);
         }
         const ret = { message: req.t("The roles have been updated") };
         return res ? res.status(200).json(ret) : null; 
@@ -289,7 +319,7 @@ const updateRoles = async(req, res) => {
   });
 }
   
-const updatePlan = async(req, res) => {
+const updatePlan = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
@@ -338,8 +368,11 @@ const updatePlan = async(req, res) => {
       user.save(err => {
         if (err) {
           logger.error("Error saving user:", err);
-          const ret = { message: "Error saving user", reason: err.message };
-          return res ? res.status(err.code).json(ret) : ret;
+          // const ret = { message: "Error saving user", reason: err.message };
+          // return res ? res.status(err.code).json(ret) : ret;
+          const error = new Error(err.message);
+          error.status = 500;
+          next(error);
         }
         const ret = { message: req.t("The plan has been updated"), user };
         return res ? res.status(200).json(ret) : null;
@@ -349,20 +382,18 @@ const updatePlan = async(req, res) => {
 };
 
 // deletes a user: delete it from database
-const deleteUser = async(req, res) => {
-  if (!req.parameters.filter) {
-    return res.status(400).json({ message: req.t("A filter is mandatory to delete users (use \"*\" for all users)") });
-  }
-
-  if (req.parameters.filter === "*") { // we require a not null filter (string "*") to delete all users for added security reasons
+const deleteUser = async(req, res, next) => {
+  let filter = req.parameters?.filter;
+  if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
-  } else {
-    if (typeof filter !== "object") {
-      return res.status(400).json({ message: req.t("A filter must be the string \"*\" or an object") });
-    } else {
-      filter = req.parameters.filter;
-    }
-  }
+  } else
+  if (isObject(filter)) {
+    ;
+  } else
+  if (isArray(filter)) {
+    filter = { _id: { $in: filter } };
+  } else
+    return res.status(400).json({ "message": req.t("filter must be specified and be '*' or a filter object or an array of ids") });
 
   try {
     const data = await User.deleteMany(filter);
@@ -373,25 +404,26 @@ const deleteUser = async(req, res) => {
     }
   } catch (err) {
     logger.error(`Could not delete user(s) with filter ${JSON.stringify(filter)}: ${err.messgae}`);
-    res.status(err.code).json({ message: req.t("Could not delete user(s)"), reason: err.message });
+    //res.status(err.code).json({ message: req.t("Could not delete user(s)"), reason: err.message });
+    const error = new Error(err.message);
+    error.status = 500;
+    next(error);
   }
 };
 
 // removes a user: mark it as deleted, but do not delete from database
-const removeUser = async (req, res) => {
-  if (!req.parameters.filter) {;
-    return res.status(400).json({ message: req.t("A filter is mandatory to delete users (use \"*\" for all users)") });
-  }
-
-  if (req.parameters.filter === "*") { // we require a not null filter (string "*") to delete all users for added security reasons
+const removeUser = async (req, res, next) => {
+  let filter = req.parameters?.filter;
+  if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
-  } else {
-    if (typeof req.parameters.filter !== "object") {
-      return res.status(400).json({ message: req.t("A filter must be the string \"*\" or an object") });
-    } else {
-      filter = req.parameters.filter;
-    }
-  }
+  } else
+  if (isObject(filter)) {
+    ;
+  } else
+  if (isArray(filter)) {
+    filter = { _id: { $in: filter } };
+  } else
+    return res.status(400).json({ "message": req.t("filter must be specified and be '*' or a filter object or an array of ids") });
 
   const payload = { isDeleted: true };
   //let ids = ["66aca5ebca51977b636aa225"];
@@ -399,7 +431,10 @@ const removeUser = async (req, res) => {
   User.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
     if (err) {
       logger.error("Error finding user:", err);
-      return res.status(err.code).json({ message: req.t("Error looking for user"), reason: err.message });
+      //return res.status(err.code).json({ message: req.t("Error looking for user"), reason: err.message });
+      const error = new Error(err.message);
+      error.status = 500;
+      next(error);
     }
     if (data.nModified > 0) {
       res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.nModified }), count: data.nModified });
@@ -408,8 +443,56 @@ const removeUser = async (req, res) => {
     }
   });
 
-  // const result = await User.deleteMany(filter);
-  // res.status(200).json(result);
+};
+
+// send an email to a list of users
+const sendEmailToUsers = async (req, res, next) => {
+  let filter = req.parameters?.filter;
+  if (filter === "*") { // attention here, we are deleting ALL users!
+    filter = {};
+  } else
+  if (isObject(filter)) {
+    ;
+  } else
+  if (isArray(filter)) {
+    filter = { _id: { $in: filter } };
+  } else
+    return res.status(400).json({ "message": req.t("filter must be specified and be '*' or a filter object or an array of ids") });
+
+  let subject = req.parameters?.subject;
+  let body = req.parameters?.body;
+
+  User.find(filter)
+  //.populate("roles", "-__v")
+  //.populate("plan", "-__v")
+  .exec(async(err, users) => {  
+    if (err) {
+      logger.error("Error finding users:", err);
+      const ret = { message: req.t("Error looking for users"), reason: err.message };
+      return res ? res.status(err.code).json(ret) : ret;
+    }
+    if (!users || users.length === 0) {
+      return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
+    }
+    
+    for (const user of users) {
+      let to = user.email;
+      try {
+        //req.language = user.language; // TODO: get user language (when it ill be available)
+        await emailService.send(req, {
+          to: [ user.email ],
+          subject,
+          body,
+          style: "base", // this is currently fixed
+        });
+      } catch (err) {
+        const error = new Error(err.message);
+        error.status = 500;
+        next(error);
+      };
+    }
+    return res.status(200).json({ "message": req.t("All emails sent") });
+  });
 };
 
 // user properties validation
@@ -471,4 +554,5 @@ module.exports = {
   updatePlan,
   deleteUser,
   removeUser,
+  sendEmailToUsers,
 };

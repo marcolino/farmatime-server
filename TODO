@@ -38,19 +38,12 @@ TODO:
     Unused devDependencies
     * sinon
     * unbuffer
+- verificare se esiste un tool per trovare parti di codice non utilizzato, ed eliminarle - OK
+- verificare che ./public/images serva - OK
+- implementare invio email html ad una lista di utenti - OK
 
-- verificare se esiste un tool per trovare parti di codice non utilizzato, ed eliminarle
-
-- ripulire tutto il codice dalle parti commentate (disabilitate)
-- implementare invio email html ad una lista di utenti
-- verificare che ./public/images serva
-- completare il coverage dei tests
 - usare jwt sia per access che refresh tokens (?)
-- aggiungere "Please contact support at {{email}}" ai messaggi di errore bloccanti
 - completare e pulire il file README.md, e pulire NOTES
-- nei controllers, uniformare catch return 500 + json + err.message
-- testare sempre le interazioni col database (i.e.: user.save(err => { ...}))
-- aggiungere `next(err); // pass the error to the error handling middleware` alle catch di tutte le routes (come in signup)
 - in tutti i controller di routes, in caso di errore fare sempre:
     } catch (err) {
       console.error("Error BLA BLA:", err);
@@ -58,6 +51,13 @@ TODO:
       error.status = 500;
       next(error);
     };
+- testare sempre le interazioni col database (i.e.: user.save(err => { ...}))
+- aggiungere `next(err); // pass the error to the error handling middleware` alle catch di tutte le routes (come in signup)
+- aggiungere "Please contact support at {{email}}" ai messaggi di errore (500)
+- ripulire tutto il codice dalle parti commentate (disabilitate)
+- completare il coverage dei tests
+- css, logo, [unsubscribe-link] and [preferences-link] nei templates delle email
+- quando si registra un utente, accettare anche utenti in stato isDeleted (?)
 
 NEWFEATURE:
 - decidere come gestire le notifiche in produzione (acquistare un piano su papertrail.com?)

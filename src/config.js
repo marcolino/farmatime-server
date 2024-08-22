@@ -154,7 +154,7 @@ module.exports = {
     },
   },
   email: {
-    dryrun: true,
+    dryrun: true, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -201,6 +201,11 @@ module.exports = {
     "FACEBOOK_OAUTH_SECRET_KEY",
   ],
   app: {
+    mode: {
+      production,
+      development,
+      test,
+    },
     name: appName, // app name
     title: apiName, // app title
     siteUrl: serverBaseUrl, // site url

@@ -6,6 +6,13 @@ const Role = require("../models/role.model");
 const logger = require("../controllers/logger.controller");
 const config = require("../config");
 
+const isObject = (x) => {
+  return (typeof x === 'object' && !Array.isArray(x) && x !== null);
+};
+
+const isArray = (x) => {
+  return (Object.prototype.toString.call(x) === "[object Array]");
+};
 
 const objectContains = (big, small) => {
   if (big === small) return true; // if both big and small are null or undefined and exactly the same
@@ -36,6 +43,28 @@ const objectContains = (big, small) => {
     }
   }
   
+  return true;
+};
+
+// check if two arrays of objects do contain exactly
+// the same objects(comparing one property of objects)
+const arraysContainSameObjects = (a1, a2, property) => {
+  const extractProps = (array) => array.map(obj => obj[property]);
+  const sortProps = (props) => props.sort((a, b) => a - b);
+
+  const props1 = sortProps(extractProps(a1));
+  const props2 = sortProps(extractProps(a2));
+  
+  if (props1.length !== props2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < props1.length; i++) {
+    if (String(props1[i]) !== String(props2[i])) {
+      return false;
+    }
+  }
+
   return true;
 };
 
@@ -116,28 +145,6 @@ const isAdministrator = async (userId) => {
   }
 };
 
-// check if two arrays of objects do contain exactly
-// the same objects(comparing one property of objects)
-const arraysContainSameObjects = (a1, a2, property) => {
-  const extractProps = (array) => array.map(obj => obj[property]);
-  const sortProps = (props) => props.sort((a, b) => a - b);
-
-  const props1 = sortProps(extractProps(a1));
-  const props2 = sortProps(extractProps(a2));
-  
-  if (props1.length !== props2.length) {
-    return false;
-  }
-
-  for (let i = 0; i < props1.length; i++) {
-    if (String(props1[i]) !== String(props2[i])) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
 const cleanDomain = (domain) => {
   // we don't need to trim leading whitespace
   // because validation rejects it as invalid;
@@ -176,11 +183,13 @@ const inject = (rootClient, inputFile, outputFile, dataToInject) => {
 }
 
 module.exports = {
+  isObject,
+  isArray,
   objectContains,
+  arraysContainSameObjects,
   normalizeEmail,
   nowLocaleDateTime,
   remoteAddress,
   isAdministrator,
-  arraysContainSameObjects,
   inject,
 };

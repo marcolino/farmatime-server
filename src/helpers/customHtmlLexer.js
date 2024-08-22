@@ -7,7 +7,7 @@ class CustomHtmlLexer extends EventEmitter {
   }
 
   extract(content) {
-    const regex = /{{\s*t\s*"([^"]+)"\s*}}/g;
+    const regex = /{{\s*t\s*['"]([^'"]+)['"]\s*}}/g;
     let match;
     const translations = [];
     while ((match = regex.exec(content)) !== null) {

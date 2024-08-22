@@ -156,7 +156,10 @@ if (config.publicBasePath) {
 // handle errors in API routes
 app.use((err, req, res, next) => {
   res.locals.error = err;
-  return res.status(err.status || 500).json({ message: err.message || "Internal server error" });
+  logger.error(`Internal server error: ${err.message}`);
+  return res.status(err.status || 500).json(
+    { message: `${err.message || req.t("Internal server error")} - ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")})}` }
+  );
 });
 
 // handle not found API routes
@@ -190,6 +193,7 @@ app.get("*", (req, res) => {
 
 // inject index file with client app config in indexInjected file
 const injectIndexIfNotPresent = () => {
+  // TODO: check also it exists but is older of config...
   if (!fs.existsSync(path.resolve(rootClient, indexInjected))) {
     try {
       inject(rootClient, index, indexInjected, config.app);
