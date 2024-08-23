@@ -85,7 +85,7 @@ const UserSchema = mongoose.Schema({
   },
 }, {timestamps: true});
 
-UserSchema.pre("find", function() {
+UserSchema.pre(["find", "findOne"], function() {
   const user = this;
   let condition = {};
   if (!this.options.allowDeleted) condition.isDeleted = false;
@@ -111,8 +111,8 @@ UserSchema.methods.hashPassword = async(password, callback) => {
     if (!password) {
       console.error("empty password in hashPassword");
     }
-    //console.log("hashPassword, salt:", salt);
     try {
+      //console.log("hashPassword, password, salt:", password, salt);
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return callback(err);
         return callback(null, hash);

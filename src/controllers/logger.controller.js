@@ -5,9 +5,6 @@ require("winston-syslog");
 
 const localhost = require("os").hostname;
 
-// const testing = (require.main === module);
-// const production = (process.env.NODE_ENV === "production"); // production mode
-
 const colors = {
   Reset: "\x1b[0m",
   Bright: "\x1b[1m",

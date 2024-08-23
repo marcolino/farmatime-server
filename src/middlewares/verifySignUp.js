@@ -4,11 +4,22 @@ const User = require("../models/user.model");
 const checkDuplicateEmail = (req, res, next) => {
   User.findOne({
     email: req.parameters.email
+  },
+  null,
+  {
+    allowDeleted: true,
+    allowUnverified: true,
   }).exec((err, user) => {
     if (err) {
-      return res.status(500).json({ message: err });
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (user) {
+      if (user.isDeleted) { // notify user has been deleted, for the moment it is not usable
+        return res.status(400).json({
+          message: req.t("This account has been deleted, currently this email cannot be used"),
+          code: "AccountDeleted",
+        });
+      }
       if (!user.isVerified) { // notify user did already register, but we are waiting for  2nd channel verification
         return res.status(401).json({
           message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
@@ -20,7 +31,7 @@ const checkDuplicateEmail = (req, res, next) => {
         code: "EmailExistsAlready",
       });
     }
-    next();
+    return next();
   });
 };
 
@@ -36,7 +47,7 @@ const checkRolesExisted = (req, res, next) => {
     }
   }
 
-  next();
+  return next();
 };
 
 module.exports = {

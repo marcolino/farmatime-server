@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
-//const User = require("../models/user.model");
-//const Role = require("../models/role.model");
-const { isAdministrator } = require("../helpers/misc");
-//const config = require("../config");
+const { isAdministrator, localeDateTime } = require("../helpers/misc");
+const config = require("../config");
 
 const { TokenExpiredError } = jwt;
 
@@ -10,16 +8,18 @@ const verifyToken = (req, res, next) => {
   let token = req.headers["authorization"];
 
   if (!token) {
-    return res.status(401).json({ message: req.t("You must be authenticated for this action"), code: "NoToken", reason: req.t("No token provided") });
+    return res.status(401).json({ message: req.t("You must be authenticated for this action") });
   }
 
   jwt.verify(token, process.env.JWT_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       if (err instanceof TokenExpiredError) {
-        return res.status(401).json({ message: req.t("Access token expired"), code: "AuthorizationExpired", reason: req.t("Authorization was expired, please repeat login!") });
+        return res.status(401).json({ message: req.t("Access token expired") });
       }
-      return res.status(403).json({ message: req.t("You must be authorized for this action"), code: "NoAuthorization", reason: req.t("Unauthorized") });
+      return res.status(403).json({ message: req.t("You must be authorized for this action") });
     }
+    const { exp } = jwt.decode(token);
+    if (config.development) console.info("access token will expire on", localeDateTime(new Date(exp * 1000)));
     req.userId = decoded.id;
     next();
   });

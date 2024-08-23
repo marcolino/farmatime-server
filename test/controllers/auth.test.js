@@ -11,7 +11,8 @@ const server = require("../../server");
 const User = require("../../src/models/user.model");
 //const Role = require("../../src/models/role.model");
 const { config } = require("../config.test");
-const passepartoutPassword = require("../../src/config").auth.passepartout;
+
+const passepartoutPassword = process.env.PASSEPARTOUT_PASSWORD;
 
 chai.use(chaiHttp); // use chai-http to make the actual HTTP requests
 chai.use(spies); // use chai-spies to spy on errors for example

@@ -2,9 +2,9 @@ const apiName = "ACME";
 const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const company = "Sistemi Solari Rossi";
-const production = (process.env.NODE_ENV === "production"); // production mode
-const development = (process.env.NODE_ENV !== "production"); // development mode
 const test = (typeof global.it === "function"); // testing (mocha/chai/...)
+const production = (!test && (process.env.NODE_ENV === "production")); // production mode
+const development = (!test && (process.env.NODE_ENV !== "production")); // development mode
 const stripeIsLive = process.env.STRIPE_MODE === "live"; // stripe mode is "live"  
 
 const serverBaseUrl = production ?
@@ -36,12 +36,11 @@ module.exports = {
     },
   },
   publicBasePath: null, // use for example as "/public/" if a puglic folder on server is needed
-  auth: { // NEWFEATURE: put into environment (?)
-    accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL
-    refreshTokenExpirationSeconds: 60 * 60 * 24 * 7, // 1 week TTL
+  auth: {
+    accessTokenExpirationSeconds: 220, //60 * 30, // 30 minutes TTL
+    refreshTokenExpirationSeconds: 240, //60 * 60 * 24 * 7, // 1 week TTL
     verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
-    passepartout: "passaquì,passalà", // passepartout password
   },
   roles: [
     {
@@ -209,7 +208,7 @@ module.exports = {
     name: appName, // app name
     title: apiName, // app title
     siteUrl: serverBaseUrl, // site url
-    serviceWorkerRegistration: (process.env.NODE_ENV === "production"), // use in production (if really needed...)
+    serviceWorkerRegistration: production, // use in production (if really needed...)
     company: {
       name: `${company} s.r.l.`,
       title: `${company}`,

@@ -1,39 +1,20 @@
 Note tecniche:
+
 - Per deployare un modulo aggiuntivo (es.: xsd-schema-validator)
   su Heroku occorre aggiungere il buildpack associato:
     $ heroku buildpacks:add heroku/jvm
     $ heroku buildpacks:add heroku/nodejs # (se non già presente)
 
-Note applicative:
+- Per deployare su fly.io:
+  - ...
 
-Versioning:
- - Use express-routes-versioning, see in src/routes/user.routes.js
- 
 Riferimenti:
- - Pagina ufficiale adempimenti:
-    https://www.anticorruzione.it/-/adempimenti-legge-190/2012-art.-1-comma-32-7
- - Specifiche open source PloneGov:
-    https://github.com/PloneGov-IT/ospfe.singole_procedure/tree/master/ospfe/singole_procedure/browser/resources
- - Modulo PDF per la comunicazione dell'URL di pubblicazione:
-    https://www.anticorruzione.it/documents/91439/120345/Modulo+PDF+per+la+comunicazione+dell%E2%80%99URL+di+pubblicazione.pdf/a1b23f29-88c3-7eaf-7358-d8191dda08ae?t=1630577432137
- - Url per la verifica dell'esito:
-    https://dati.anticorruzione.it/#/l190
  - Uptime robot:
     https://uptimerobot.com/dashboard.php#mainDashboard
- - Node.js Authentication and CRUD API:
-    https://github.com/MosesEsan/mesan-nodejs-auth-crud-api
- - How to Build a Node.js Authentication API with Email Verification, Image Upload and Password Reset Using JWT, Passport.js and Sendgrid:
-    https://medium.com/swlh/how-to-build-a-node-js-authentication-api-with-email-verification-image-upload-and-password-reset-95e35fd46be1
  - Social login with passport tutorial:
     https://gabrieleromanato.name/nodejs-social-login-in-expressjs-using-twitter-google-facebook-and-linkedin-with-passport
- - Deploying a React app with React-Router and an Express Backend:
-    https://dev.to/nburgess/creating-a-react-app-with-react-router-and-an-express-backend-33l3
  - Build and Deploy a Web Application With React and Node.js+Express
     https://medium.com/geekculture/build-and-deploy-a-web-application-with-react-and-node-js-express-bce2c3cfec32
- - Deploy React and Express to Heroku:
-    https://daveceddia.com/deploy-react-express-app-heroku/
- - How to deploy MongoDB on Heroku:
-    https://www.mongodb.com/developer/how-to/use-atlas-on-heroku/
  - How to implement Google oauth in React and Node/express:
     https://awadieudonne.com/blog/How-to-implement-Google-oauth-in-a-React-and-Nodeexpress
  - Refresh token with JWT authentication in Node.js:
@@ -43,22 +24,9 @@ Riferimenti:
 
 Servizi:
  - Storage - Cloudinary; marcosolari+1@gmail.com / Las....0! (UNUSED ANYMORE)
- - Logs - Papertrail: https://papertrailapp.com/dashboard
-
-Heroku:
- - setup:
-   - acme
-     - settings
-       - buildpacks:
-         - heroku/jvm
-         - heroku/nodejs
-       - addons:
-         - Papertrail7
- - to close account:
-   - go to https://dashboard.heroku.com/account, at the bottom: "Close account" button
+ - Logs - Papertrail: https://papertrailapp.com/dashboard (UNUSED ANYMORE)
 
 MongoDB:
-
  - sudo apt-get install -y gnupg curl
  - curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
  - echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list

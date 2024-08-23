@@ -36,13 +36,10 @@ const getAllUsersWithFullInfo = (req, res, next) => {
       });
     });
 
-    res.status(200).json({users});
+    return res.status(200).json({users});
   }).catch(err => {
     logger.error("Error getting all users with full info:", err.message);
-    //return res.status(500).json({ message: err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   });
 };
 
@@ -59,13 +56,10 @@ const getAllUsers = async(req, res, next) => {
       .lean()
       .exec()
     ;
-    res.status(200).json({users});
+    return res.status(200).json({users});
   } catch(err) {
     logger.error("Error getting all users with:", err.message);
-    //return res.status(500).json({ message: err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   };
 };
 
@@ -78,16 +72,13 @@ const getAllPlans = async(req, res, next) => {
     .exec(async(err, docs) => {
       if (err) {
         logger.error("Error getting plans:", err);
-        //return res.status(err.code).json({ message: req.t("Could not get plans"), reason: err.message });
-        const error = new Error(err.message);
-        error.status = 500;
-        next(error);
+        return next(Object.assign(new Error(err.message), { status: 500 }));
       }
-      res.status(200).json({ plans: docs });
+      return res.status(200).json({ plans: docs });
     });
   } catch(err) {
     logger.error("Error getting all plans:", err.message);
-    res.status(500).json({ message: req.t("Error getting all plans"), reason: err.message });
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -100,16 +91,13 @@ const getAllRoles = async(req, res, next) => {
     .exec(async(err, docs) => {
       if (err) {
         logger.error("Error getting roles:", err);
-        //return res.status(err.code).json({ message: req.t("Could not get roles"), reason: err.message });
-        const error = new Error(err.message);
-        error.status = 500;
-        next(error);
+        return next(Object.assign(new Error(err.message), { status: 500 }));
       }
-      res.status(200).json({ roles: docs });
+      return res.status(200).json({ roles: docs });
     })
   } catch(err) {
     logger.error("Error getting roles:", err);
-    res.status(500).json({ message: req.t("Error getting roles"), reason: err.message });
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -117,7 +105,7 @@ const getUser = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
-      return res.status(403).json({ message: req.t("You must have admin role to update another user"), code: "MustBeAdmin", reason: req.t("Admin role required") });
+      return res.status(403).json({ message: req.t("You must have admin role to update another user") });
     } else {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
@@ -132,14 +120,10 @@ const getUser = async(req, res, next) => {
   .exec(async(err, user) => {
     if (err) {
       logger.error("Error finding user:", err);
-      //return res.status(err.code).json({ message: req.t("Could not find user"), reason: err.message });
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!user) {
       return res.status(400).json({ message: req.t("Could not find this user") });
-      
     }
     res.status(200).json({user});
   });
@@ -152,12 +136,11 @@ const updateUser = async (req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
-      return res.status(403).json({ message: req.t("You must have admin role to update another user"), code: "MustBeAdmin", reason: req.t("Admin role required") });
+      return res.status(403).json({ message: req.t("You must have admin role to update another user") });
     } else {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
   }
-  //if (!userId) return res.status(400).json({ message: req.t("User must be authenticated") });
 
   User.findOne({
     _id: userId
@@ -165,13 +148,9 @@ const updateUser = async (req, res, next) => {
   .populate({ path: "roles", select: "-__v", options: { lean: true }})
   .populate({ path: "plan", select: "-__v", options: { lean: true }})
   .exec(async(err, user) => {
-  //User.findOne({ _id: userId }, async(err, user) => {
     if (err) {
       logger.error("Error finding user:", err);
-      //return res.status(err.code).json({ message: req.t("Error looking for user"), reason: err.message });
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!user) {
       return res.status(400).json({ message: req.t("User not found") });
@@ -228,10 +207,8 @@ const updateUser = async (req, res, next) => {
       if (req.parameters?.roles && !arraysContainSameObjects(req.parameters.roles, user.roles, "_id")) {
         const err = await updateRoles(req, null);
         if (err) {
-          //return res.status(err.code).json({ message: err.message });
-          const error = new Error(err.message);
-          error.status = 500;
-          next(error);
+          logger.error("Error updating roles:", err);
+          return next(Object.assign(new Error(err.message), { status: 500 }));
         }
       }
       
@@ -239,14 +216,12 @@ const updateUser = async (req, res, next) => {
       if (req.parameters?.plan && !(String(req.parameters.plan._id) === String(user.plan?._id))) {
         const err = await updatePlan(req, null);
         if (err) {
-          //return res.status(err.code).json({ message: err.message });
-          const error = new Error(err.message);
-          error.status = 500;
-          next(error);
+          logger.error("Error updating plans:", err);
+          return next(Object.assign(new Error(err.message), { status: 500 }));
         }
       }
 
-      res.status(200).json({ user });
+      return res.status(200).json({ user });
     });
       
   });
@@ -256,13 +231,12 @@ const updateRoles = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
-      const ret = { message: req.t("You must have admin role to update another user"), code: "MustBeAdmin", reason: req.t("Admin role required") };
+      const ret = { message: req.t("You must have admin role to update another user") };
       return res ? res.status(403).json(ret) : ret; 
     } else {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
   }
-  //if (!userId) return res.status(400).json({ message: req.t("User must be authenticated") });
 
   if (req.parameters.roles === undefined || typeof req.parameters.roles !== "object" || req.parameters.roles.length <= 0) {
     const ret = { message: req.t("Please specify at least one role") };
@@ -289,7 +263,7 @@ const updateRoles = async(req, res, next) => {
       if (err) {
         logger.error("Error finding roles:", err);
         const ret = { message: req.t("Sorry, this user is not allowed elevate roles") };
-          return res ? res.status(403).json(ret) : ret;
+        return res ? res.status(403).json(ret) : ret;
       }
 
       if (!await isAdministrator(req.userId)) { // caller is not admin: check if requested roles do not require an upgrade, otherwise error out
@@ -306,14 +280,11 @@ const updateRoles = async(req, res, next) => {
       user.save(err => {
         if (err) {
           logger.error("Error saving user:", err);
-          // const ret = { message: "Error saving user", reason: err.message };
-          // return res ? res.status(err.code).json(ret) : ret;
-          const error = new Error(err.message);
-          error.status = 500;
-          next(error);
+          const ret = { message: "Error saving user", reason: err.message };
+          return next ? next(Object.assign(new Error(err.message), { status: 500 })) : ret;
         }
-        const ret = { message: req.t("The roles have been updated") };
-        return res ? res.status(200).json(ret) : null; 
+        const ret = { message: req.t("Roles updated") };
+        return res ? res.status(200).json(ret) : null;
       });
     });
   });
@@ -323,13 +294,12 @@ const updatePlan = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
-      const ret = { message: req.t("You must have admin role to update another user"), code: "MustBeAdmin", reason: req.t("Admin role required") };
+      const ret = { message: req.t("You must have admin role to update another user") };
       return res ? res.status(403).json(ret) : ret;
     } else {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
   }
-  //if (!userId) return res.status(400).json({ message: req.t("User must be authenticated") });
 
   if (!req.parameters.plan) return res.status(400).json({ message: req.t("Plan is mandatory") });
   if (!req.parameters.plan._id) return res.status(400).json({ message: req.t("Plan is wrong") });
@@ -343,7 +313,8 @@ const updatePlan = async(req, res, next) => {
       return res ? res.status(err.code).json(ret) : ret;
     }
     if (!user) {
-      return res.status(400).json({ message: req.t("User not found") });
+      const ret = { message: req.t("User not found") };
+      return res ? res.status(400).json({ message: req.t("User not found") }) : ret;
     }
 
     // search plan
@@ -356,26 +327,17 @@ const updatePlan = async(req, res, next) => {
         return res ? res.status(err.code).json(ret) : ret;
       }
 
-      // if (!await isAdministrator(req.userId)) { // caller is not admin: check if requested plan do not require an upgrade, otherwise error out
-      //   if (doc.cigNumberAllowed > user.plan.cigNumberAllowed) { // we assume cigNumberAllowed is a measure of plan priority
-      //     const ret = { message: req.t("Sorry, this user is not allowed elevate plan") };
-      //     return res ? res.status(403).json(ret) : ret;
-      //   }
-      // }
       user.plan = doc._id;
 
       // verify and save the user
       user.save(err => {
         if (err) {
           logger.error("Error saving user:", err);
-          // const ret = { message: "Error saving user", reason: err.message };
+          const ret = { message: `Error saving user: ${err.message}` };
           // return res ? res.status(err.code).json(ret) : ret;
-          const error = new Error(err.message);
-          error.status = 500;
-          next(error);
+          return next ? next(Object.assign(new Error(err.message), { status: 500 })) : ret;
         }
-        const ret = { message: req.t("The plan has been updated"), user };
-        return res ? res.status(200).json(ret) : null;
+        return res ? res.status(200).json({message: req.t("Plan updated")}) : null;
       });
     });
   });
@@ -393,21 +355,18 @@ const deleteUser = async(req, res, next) => {
   if (isArray(filter)) {
     filter = { _id: { $in: filter } };
   } else
-    return res.status(400).json({ "message": req.t("filter must be specified and be '*' or a filter object or an array of ids") });
+    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
 
   try {
     const data = await User.deleteMany(filter);
     if (data.deletedCount > 0) {
-      res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.deletedCount }), count: data.deletedCount });
+      return res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.deletedCount }), count: data.deletedCount });
     } else {
-      res.status(400).json({ message: req.t("No user have been deleted") });
+      return res.status(400).json({ message: req.t("No user have been deleted") });
     }
   } catch (err) {
     logger.error(`Could not delete user(s) with filter ${JSON.stringify(filter)}: ${err.messgae}`);
-    //res.status(err.code).json({ message: req.t("Could not delete user(s)"), reason: err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -423,23 +382,18 @@ const removeUser = async (req, res, next) => {
   if (isArray(filter)) {
     filter = { _id: { $in: filter } };
   } else
-    return res.status(400).json({ "message": req.t("filter must be specified and be '*' or a filter object or an array of ids") });
+    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
 
   const payload = { isDeleted: true };
-  //let ids = ["66aca5ebca51977b636aa225"];
-  //filter = { _id: { $in: ids } }
   User.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
     if (err) {
       logger.error("Error finding user:", err);
-      //return res.status(err.code).json({ message: req.t("Error looking for user"), reason: err.message });
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (data.nModified > 0) {
-      res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.nModified }), count: data.nModified });
+      return res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.nModified }), count: data.nModified });
     } else {
-      res.status(400).json({ message: req.t("No user have been deleted") });
+      return res.status(400).json({ message: req.t("No user have been deleted") });
     }
   });
 
@@ -457,7 +411,7 @@ const sendEmailToUsers = async (req, res, next) => {
   if (isArray(filter)) {
     filter = { _id: { $in: filter } };
   } else
-    return res.status(400).json({ "message": req.t("filter must be specified and be '*' or a filter object or an array of ids") });
+    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
 
   let subject = req.parameters?.subject;
   let body = req.parameters?.body;
@@ -486,9 +440,8 @@ const sendEmailToUsers = async (req, res, next) => {
           style: "base", // this is currently fixed
         });
       } catch (err) {
-        const error = new Error(err.message);
-        error.status = 500;
-        next(error);
+        logger.error("Error sending email to users:", err)
+        return next(Object.assign(new Error(err.message), { status: 500 }));
       };
     }
     return res.status(200).json({ "message": req.t("All emails sent") });

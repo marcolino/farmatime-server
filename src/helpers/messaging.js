@@ -7,7 +7,7 @@ const audit = async ({ subject, htmlContent }) => { // TODO: get req too...
   const toName = config.email.administration.toName;
   subject = `${(config.email.subject.prefix ? config.email.subject.prefix + " - " : "")}${subject}`;
   
-  if (!config.mode.production) { // just log audit in development
+  if (config.mode.development) { // just log audit in development
     logger.info(`audit: to: ${to}, subject: ${subject}`)
   } else { // really notify via email only in production
     await emailService.send({ to, toName, subject, htmlContent });

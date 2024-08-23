@@ -1,20 +1,13 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
 const config = require("../config");
 
-const RefreshTokenSchema = mongoose.Schema({
+const RefreshTokenSchema = new mongoose.Schema({
   token: String,
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  // expiresAt: Date,
-  // createdAt: {
-  //   type: Date,
-  //   required: "createdAt date is required in RefreshToken document",
-  //   default: Date.now,
-  //   expiresAfterSeconds: config.auth.refreshTokenExpirationSeconds,
-  // },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -30,38 +23,49 @@ const RefreshTokenSchema = mongoose.Schema({
   },
 });
 
-RefreshTokenSchema.statics.createToken = async function (user) {
-  const expiryDate = new Date();
-
-  expiryDate.setSeconds(
-    expiryDate.getSeconds() + config.auth.refreshTokenExpirationSeconds
-  );
-
-  const token = uuidv4();
-
-  const object = new this({
-    token: token,
-    user: user._id,
-    expiresAt: expiryDate.getTime(),
+RefreshTokenSchema.statics.createToken = async function(user, expirationSeconds) {
+  let token = jwt.sign({ id: user.id }, process.env.JWT_TOKEN_SECRET, {
+    expiresIn: expirationSeconds, //config.auth.accessTokenExpirationSeconds,
   });
 
-  const refreshToken = await object.save();
-
-  return refreshToken?.token;
+  const expiresAt = Date.now() + (expirationSeconds * 1000);
+  const object = new this({
+    token,
+    user: user._id,
+    expiresAt: expiresAt,
+  });
+  try {
+    await object.save();
+  } catch(err) {
+    throw new Error(err.message);
+  }
+  return token;
 };
 
 // check if token is expired
-RefreshTokenSchema.statics.verifyExpiration = (token) => {
-  return token.expiresAt.getTime() < new Date().getTime();
+RefreshTokenSchema.statics.isExpired = (token) => {
+  try {
+    const { exp } = jwt.decode(token.token);
+    if (Date.now() >= (exp * 1000)) {
+      return true; // expired
+    }
+    return false; // valid
+  } catch (err) {
+    console.error(`Error decoding token ${token}:`, err)
+    return false;
+  }
 }
 
 // get seconds to token expiration
 RefreshTokenSchema.statics.secondsToExpiration = (token) => {
-  return token.expiresAt.getTime() - new Date().getTime();
+  try {
+    const { exp } = jwt.decode(token.token);
+    return ((exp * 1000) - Date.now()) / 1000;
+  } catch (err) {
+    console.error(`Error decoding token ${token}:`, err)
+    return 0;
+  }
 }
-
-//db.tokens.createIndex({ “expires”: 1 }, { expireAfterSeconds: 0 })
-//RefreshTokenSchema.index({ "expires": 1 }, { expireAfterSeconds: config.auth.refreshTokenExpirationSeconds })
 
 const RefreshToken = mongoose.model("RefreshToken", RefreshTokenSchema);
 

@@ -1,20 +1,143 @@
 
 
   API tests - Auth routes
-hashPassword, password: undefined
-hashPassword, salt: $2a$10$hXxWj6fOYsEuaQdG4K5Gpu
-    1) should register user
-hashPassword, salt: $2a$10$KB968DpLV0l149/g1aQKP.
-[0mPOST /api/auth/signup [32m201[0m 96.076 ms - 145[0m
-    2) should register user
-hashPassword, salt: $2a$10$yo0RXPe2F9KkQr6OF9fRTe
-[0mPOST /api/auth/signup [31m500[0m 134.993 ms - 197[0m
-    3) should not register user without confirmation
-[0mPOST /api/auth/signup [33m400[0m 2.180 ms - 41[0m
+    ✔ should register user (94ms)
+    ✔ should not register user without confirmation
     ✔ should not register user with invalid email
-[0mPOST /api/auth/signup [33m400[0m 11.719 ms - 43[0m
     ✔ should not register user forcing invalid plan
-[0mPOST /api/auth/signup [33m400[0m 3.406 ms - 43[0m
     ✔ should not register user forcing invalid role
-[0mPOST /api/auth/signin [33m401[0m 7.701 ms - 138[0m
     ✔ should not login user before confirmation
+    ✔ should resend register code
+    ✔ should not confirm user without code
+    ✔ should not confirm user with invalid code
+    ✔ should confirm user
+    ✔ should not confirm user twice
+    ✔ should not resend register code for already confirmed user
+    ✔ should not resend register code without email
+    ✔ should not reset password without email
+    ✔ should start reset password
+    ✔ should confirm reset password
+    ✔ should not confirm reset password with wrong email
+    ✔ should not confirm reset password with no code
+    ✔ should not confirm reset password with wrong code
+    ✔ should not resend reset password code to invalid email
+    ✔ should resend reset password code
+    ✔ should not login user with invalid email
+    ✔ should not login user with unregistered email
+    ✔ should login user
+    ✔ should login user with passepartout password
+    ✔ should not login user with invalid password
+    ✔ should register admin user
+    ✔ should confirm admin user
+    ✔ should login admin user
+    ✔ should not refresh token without refresh token
+    ✔ should not refresh token with invalid refresh token
+    ✔ should refresh token
+
+  API tests - Payment routes
+    ✔ should register normal user
+    ✔ should login normal user
+    ✔ should get payment mode, and it should be in a set of values
+    ✔ should not create a checkout session without authentication
+    ✔ should not create a checkout session for a 0 cost product (758ms)
+    ✔ should not create a checkout session for a non-existent product (304ms)
+    ✔ should create a checkout session for a standard product (720ms)
+    ✔ should redirect on a payment success call (612ms)
+    ✔ should redirect on a payment canceled call (612ms)
+
+  API tests - User routes
+    ✔ should register normal user
+    ✔ should login normal user
+    ✔ should register admin user
+    ✔ should login as admin user
+    ✔ should not get all users with full info with user role
+    ✔ should get all users with full info with admin role
+    ✔ should not get all roles without authentication
+    ✔ should get all roles
+    ✔ should not get alls plans without authentication
+    ✔ should get all plans
+    ✔ should get user's profile
+    ✔ should not get user's profile without authentication
+    ✔ should not get another user's profile without admin access
+    ✔ should get another user's profile with admin access
+    ✔ should update user's profile
+    ✔ should not update user's profile with invalid email
+    ✔ should not update user's profile with already taken email
+    ✔ should update user's profile with new email
+    ✔ should reset user's profile with email
+    ✔ should not update user's profile with empty firstName
+    ✔ should not update user's profile with invalid lastName
+    ✔ should not update user's profile with invalid fiscalCode
+    ✔ should not update user's profile without autentication
+    ✔ should not update user's profile for a different not existing user - without admin access
+    ✔ should not update user's profile for a different existent user - without admin access
+    ✔ should update user's profile for a different existent user - as admin user
+    ✔ should not update another user's own property without admin access
+    ✔ should update another user's property with admin access
+    ✔ should update user's property (with no changes) with an unexpected parameters
+    ✔ should update user's own property firstName
+    ✔ should update user's own property email
+    ✔ should update user's own property lastName
+    ✔ should update user's own property fiscalCode
+    ✔ should update user's own property businessName
+    ✔ should update user's own property address
+    ✔ should not update user's own roles without any role
+    ✔ should not update user's own roles with not array roles
+    ✔ should not update user's own roles with empty array roles
+    ✔ should update (equal or downgrade) user's own roles without admin access 
+    ✔ should not update user's own roles without admin access (upgrade)
+    ✔ should update user's own roles as admin user (upgrade)
+    ✔ should not update another user's roles without admin access
+    ✔ should update another user's roles with admin access
+    ✔ should not update user's our plan with no plan
+    ✔ should not update user's our plan with wrong plan
+    ✔ should not update user's own plan without admin access
+    ✔ should not update user's own plan (even the free plan)
+    ✔ should not update another user's plan with admin access
+    ✔ should not update (upgrade) user's own plan without admin access
+    ✔ should update user's own plan as admin user (upgrade)
+    ✔ should not update another user's plan without admin access
+    ✔ should update another user's plan with admin access
+    ✔ should not get all users with user role
+    ✔ should not get all users with wrong filter
+    ✔ should get all users with admin role
+    ✔ should not delete user without authentication
+    ✔ should not delete user without admin privileges
+    ✔ should not delete user with admin privileges using invalid id
+    ✔ should delete user with admin privileges using id
+    ✔ should delete user with admin privileges using email
+    ✔ should register normal user
+    ✔ should login normal user
+    ✔ should register admin user
+    ✔ should login as admin user
+    ✔ should not remove user without authentication
+    ✔ should not remove user without admin privileges
+    ✔ should not remove user with admin privileges using invalid id
+    ✔ should remove user with admin privileges using id
+    ✔ should remove user with admin privileges using email
+    1) should remove all users with admin privileges
+
+  API tests - Helpers - Environment
+    ✔ should not assert environment with no environment
+    ✔ should not assert environment with missing required variable
+    ✔ should assert environment with default environment
+
+  API tests - Plan model
+    ✔ plan model should accept any value different by -1 ("unlimited")
+    ✔ plan model should convert -1 ("unlimited") value to a number (MAX_SAFE_INTEGER)
+
+  API tests - Server
+    ✔ should correctly handle not found route
+
+
+  116 passing (15s)
+  1 failing
+
+  1) API tests - User routes
+       should remove all users with admin privileges:
+     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/home/marco/apps/sistemisolari/acme-server/test/controllers/user.test.js)
+      at listOnTimeout (node:internal/timers:569:17)
+      at process.processTimers (node:internal/timers:512:7)
+
+
+

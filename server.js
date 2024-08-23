@@ -13,32 +13,13 @@ const db = require("./src/models");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
 const emailService = require("./src/services/email.service");
-const { nowLocaleDateTime, inject } = require("./src/helpers/misc");
+const { localeDateTime, inject } = require("./src/helpers/misc");
 const rateLimitMiddleware = require("./src/middlewares/rateLimit");
 const i18n = require("./src/middlewares/i18n");
 const config = require("./src/config");
 
-// const production = (process.env.NODE_ENV === "production"); // production mode
-// const testing = typeof global.it === "function"; // testing (mocha/chai/...)
 const index = "index.html"; // index file name to be injected
 const indexInjected = "index-injected.html"; // injected index file name
-
-// // setup I18N
-// i18next
-//   //.use(backend)
-//   .use(backend)
-//   .use(i18nextMiddleware.LanguageDetector)
-//   .init({
-//     debug: false,
-//     backend: {
-//       loadPath: __dirname + "/src/locales/{{lng}}/{{ns}}.json"
-//     },
-//     lng: 'en', // default language
-//     fallbackLng: config.languages.default,
-//     //preload: [config.languages.default],
-//     preload: config.languages.supported, // preload all supported languages
-//   })
-// ;
 
 // instantiate express app
 const app = express();
@@ -47,7 +28,7 @@ const app = express();
 app.use(compression());
 
 // log requests to express output, while developing
-if (!config.mode.production) {
+if (config.mode.development) {
   app.use(morgan("dev"));
 }
 
@@ -210,7 +191,7 @@ if (!config.mode.test) { // avoid listening while testing
   const PORT = process.env.PORT || config.api.port;
   app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
-    audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${nowLocaleDateTime()}` });
+    audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${localeDateTime()}` });
   });
 } else { // export app for testing
   module.exports = app;

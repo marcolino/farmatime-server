@@ -27,37 +27,25 @@ TODO:
 - verificare che dynamicStringsForTranslation funzioni e sia aggiornato - OK
 - gestire email templates con i18n - OK
 - verificare se esiste un tool per trovare dipendenze non utilizzato, ed eliminarle - OK
-    Unused dependencies
-    * axios
-    * i18next-express-middleware
-    * i18next-node-fs-backend
-    * localstorage-polyfill
-    * mongodb
-    * multer
-    * node-zip
-    Unused devDependencies
-    * sinon
-    * unbuffer
 - verificare se esiste un tool per trovare parti di codice non utilizzato, ed eliminarle - OK
 - verificare che ./public/images serva - OK
 - implementare invio email html ad una lista di utenti - OK
-
-- usare jwt sia per access che refresh tokens (?)
-- completare e pulire il file README.md, e pulire NOTES
-- in tutti i controller di routes, in caso di errore fare sempre:
-    } catch (err) {
-      console.error("Error BLA BLA:", err);
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
-    };
+- aggiungere "Please contact support at {{email}}" ai messaggi di errore (500) - OK
+- usare jwt sia per access che refresh tokens (?) - OK
+- in tutti i controller di routes, in caso di errore fare sempre: catch (err) { logger.error("Error BLA BLA:", err); return next(Object.assign(new Error(err.message), { status: 500 })); }; - OK
 - testare sempre le interazioni col database (i.e.: user.save(err => { ...}))
-- aggiungere `next(err); // pass the error to the error handling middleware` alle catch di tutte le routes (come in signup)
-- aggiungere "Please contact support at {{email}}" ai messaggi di errore (500)
-- ripulire tutto il codice dalle parti commentate (disabilitate)
-- completare il coverage dei tests
+- aggiungere `next(err); // pass the error to the error handling middleware` alle catch di tutte le routes - OK
+- ripulire tutto il codice dalle parti commentate (disabilitate) - OK
+- completare il coverage dei tests - OK
+- eliminare tutti i NODE_ENV non necessari - OK
+- default sys_dir to "ltr" ("ltr"/"rtl") for templates - OK
+- completare e pulire il file README.md, e pulire NOTES
+- verificare che i18n becchi tuttle le traduzioni nei templates - OK
+
 - css, logo, [unsubscribe-link] and [preferences-link] nei templates delle email
 - quando si registra un utente, accettare anche utenti in stato isDeleted (?)
+- aggiungere language nel doc user, settarlo in fase di login da req.language, e usarlo quando si inviano emails bulk, e testare il tutto
+- test "should remove all users with admin privileges" si blocca (tutti gli utenti isDeleted)
 
 NEWFEATURE:
 - decidere come gestire le notifiche in produzione (acquistare un piano su papertrail.com?)

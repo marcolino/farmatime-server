@@ -1,4 +1,5 @@
-const CustomHtmlLexer = require("./src/helpers/customHtmlLexer");
+//const CustomHtmlLexer = require("./src/helpers/customHtmlLexer");
+const CustomEjsLexer = require("./src/helpers/customEjsLexer");
 
 module.exports = {
   contextSeparator: "_",
@@ -34,15 +35,17 @@ module.exports = {
   
   // see below for more details
   lexers: {
-    hbs: ["HandlebarsLexer"],
-    handlebars: ["HandlebarsLexer"],
-    htm: ["HTMLLexer"],
-    html: [CustomHtmlLexer],
-    mjs: ["JavascriptLexer"],
-    js: ["JavascriptLexer"], // if you're writing jsx inside .js files, change this to JsxLexer
-    ts: ["JavascriptLexer"],
-    jsx: ["JsxLexer"],
-    tsx: ["JsxLexer"],
+    // hbs: ["HandlebarsLexer"],
+    // handlebars: ["HandlebarsLexer"],
+    // htm: ["HTMLLexer"],
+    // html: [CustomEjsHtmlLexer],
+    //ejs: [CustomEjsLexer],
+    ejs: [CustomEjsLexer],
+    // mjs: ["JavascriptLexer"],
+    // js: ["JavascriptLexer"], // if you're writing jsx inside .js files, change this to JsxLexer
+    // ts: ["JavascriptLexer"],
+    // jsx: ["JsxLexer"],
+    // tsx: ["JsxLexer"],
     default: ["JavascriptLexer"]
   },
 

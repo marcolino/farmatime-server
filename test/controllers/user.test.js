@@ -648,7 +648,7 @@ describe("API tests - User routes", async function () {
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("message");
-        expect(res.body.message).to.equal("The roles have been updated");
+        expect(res.body.message).to.equal("Roles updated");
         done();
       })
       .catch((err) => {
@@ -682,7 +682,7 @@ describe("API tests - User routes", async function () {
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("message");
-        expect(res.body.message).to.equal("The roles have been updated");
+        expect(res.body.message).to.equal("Roles updated");
         done();
       })
       .catch((err) => {
@@ -721,7 +721,7 @@ describe("API tests - User routes", async function () {
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("message");
-        expect(res.body.message).to.equal("The roles have been updated");
+        expect(res.body.message).to.equal("Roles updated");
         done();
       })
       .catch((err) => {
@@ -846,7 +846,7 @@ describe("API tests - User routes", async function () {
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("message");
-        expect(res.body.message).to.equal("The plan has been updated");
+        expect(res.body.message).to.equal("Plan updated");
         done();
       })
       .catch((err) => {
@@ -885,7 +885,7 @@ describe("API tests - User routes", async function () {
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("message");
-        expect(res.body.message).to.equal("The plan has been updated");
+        expect(res.body.message).to.equal("Plan updated");
         done();
       })
       .catch((err) => {
@@ -1105,7 +1105,6 @@ describe("API tests - User routes", async function () {
       .post("/api/user/removeUser")
       .set("authorization", accessTokenAdmin)
       .send({ filter: { email: config.admin.email } })
-      .send({})
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("count");
@@ -1122,8 +1121,7 @@ describe("API tests - User routes", async function () {
     chai.request(server)
       .post("/api/user/removeUser")
       .set("authorization", accessTokenAdmin)
-      .send({ filter: "*" })
-      .send({})
+      .send({ filter: { email: config.admin.email } })
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("count");
@@ -1135,7 +1133,7 @@ describe("API tests - User routes", async function () {
       })
     ;
   });
-
+  
 });
 
 function signupAndSigninAllUsers() {

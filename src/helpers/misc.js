@@ -98,27 +98,27 @@ const normalizeEmail = (email) => {
   return localPart + "@" + domain;
 };
 
-const nowLocaleDateTime = () => {
-  return new Date().toLocaleString(config.locale, { timeZoneName: "short" });
+const localeDateTime = (date = new Date()) => {
+  return date.toLocaleString(config.locale, { timeZoneName: "short" });
 };
 
-const nowLocaleDateTimeFilenameFormat = (date = new Date()) => {
-  let offset = new Date(date).getTimezoneOffset() / 60;
-  let d = new Date(date);
-  d.setHours(d.getHours() + offset);
-  let year = d.getFullYear();
-  let month = "" + (d.getMonth() + 1);
-  if (month.length < 2) month = "0" + month;
-  let day = "" + d.getDate();
-  if (day.length < 2) day = "0" + day;
-  let hour = "" + d.getHours();
-  if (hour.length < 2) hour = "0" + hour;
-  let minute = "" + d.getMinutes();
-  if (minute.length < 2) minute = "0" + minute;
-  let second = "" + d.getSeconds();
-  if (second.length < 2) second = "0" + second;
-  return [year, month, day].join("-") + "_" + [hour, minute, second].join(":");
-};
+// const localeDateTimeFilenameFormat = (date = new Date()) => {
+//   let offset = new Date(date).getTimezoneOffset() / 60;
+//   let d = new Date(date);
+//   d.setHours(d.getHours() + offset);
+//   let year = d.getFullYear();
+//   let month = "" + (d.getMonth() + 1);
+//   if (month.length < 2) month = "0" + month;
+//   let day = "" + d.getDate();
+//   if (day.length < 2) day = "0" + day;
+//   let hour = "" + d.getHours();
+//   if (hour.length < 2) hour = "0" + hour;
+//   let minute = "" + d.getMinutes();
+//   if (minute.length < 2) minute = "0" + minute;
+//   let second = "" + d.getSeconds();
+//   if (second.length < 2) second = "0" + second;
+//   return [year, month, day].join("-") + "_" + [hour, minute, second].join(":");
+// };
 
 const remoteAddress = (req) => {
   return (
@@ -188,7 +188,7 @@ module.exports = {
   objectContains,
   arraysContainSameObjects,
   normalizeEmail,
-  nowLocaleDateTime,
+  localeDateTime,
   remoteAddress,
   isAdministrator,
   inject,

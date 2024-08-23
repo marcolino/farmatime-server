@@ -5,7 +5,6 @@ const Plan = require("../models/plan.model");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
-// mongoose.Promise = global.Promise; // with mongoose 5+ we do not need this anymore
 
 const db = {
   users: [

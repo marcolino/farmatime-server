@@ -71,8 +71,9 @@ class EmailService {
       
       if (typeof params.to === "string") params.to = [params.to]; // accept also a single string with an email
 
-      // add language from request
+      // add language and dir from request
       params.templateParams.sys_language = req.language;
+      params.templateParams.sys_dir = "ltr"; // TODO: req.dir;
 
       // add system placeholders to template params
       params.templateParams = { ...params.templateParams, ...this.systemPlaceholders };

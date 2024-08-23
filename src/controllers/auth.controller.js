@@ -1,9 +1,8 @@
 const jwt = require("jsonwebtoken");
 const validateEmail = require("email-validator");
 const { audit } = require("../helpers/messaging");
-// const { sendEmail } = require("../services/email.service");
 const emailService = require("../services/email.service");
-const { normalizeEmail, nowLocaleDateTime, remoteAddress } = require("../helpers/misc");
+const { normalizeEmail, localeDateTime, remoteAddress } = require("../helpers/misc");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
@@ -23,7 +22,7 @@ const signup = async(req, res, next) => {
   }
   const email = normalizeEmail(req.parameters.email);
 
-  if (process.env.NODE_ENV === "test") { // in test mode we allow role and plan to be forced by client
+  if (config.mode.test) { // in test mode we allow role and plan to be forced by client
     if (req.parameters.forcerole) {
       roleName = req.parameters.forcerole;
     }
@@ -37,11 +36,7 @@ const signup = async(req, res, next) => {
     role = await Role.findOne({name: roleName});
   } catch(err) {
     logger.error(`Error finding role ${roleName}:`, err);
-    //return res.status(err.code).json({ message: err });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
-    //return next(err);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
   if (!role) {
     return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName })});
@@ -53,11 +48,7 @@ const signup = async(req, res, next) => {
     plan = await Plan.findOne({name: planName});
   } catch(err) {
     logger.error(`Error finding plan ${planName}:`, err);
-    //return res.status(err.code).json({ message: err });
-    //return next(err);
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
   if (!plan) {
     return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName })});
@@ -74,13 +65,10 @@ const signup = async(req, res, next) => {
 
   user.save(async(err, user) => {
     if (err) {
-      // we don't check duplicated user email (err.code === 11000) as it is done already as a route middleware
+      // we don't check duplicated user email (err.code === 11000)
+      // as it is done already as a route middleware
       logger.error("New user creation error:", err);
-      //return res.status(err.code).json({ message: err });
-      //next(err);
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
 
     // send verification code
@@ -105,14 +93,12 @@ const signup = async(req, res, next) => {
         message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
         codeDeliveryMedium: config.auth.codeDeliveryMedium,
         codeDeliveryEmail: user.email,
-        ...(process.env.NODE_ENV === "test") && { code: signupVerification.code } // to enble test mode to verify signup
+        ...(config.mode.test) && { code: signupVerification.code } // to enble test mode to verify signup
       });
     } catch(err) {
       logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}:`, err);
       //return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + req.t(err.message) + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
   });
 };
@@ -120,7 +106,13 @@ const signup = async(req, res, next) => {
 const resendSignupCode = async(req, res, next) => {
   try {
     const email = normalizeEmail(req.parameters.email);
-    const user = await User.findOne({ email });
+    const user = await User.findOne(
+      { email },
+      null,
+      {
+        allowUnverified: true,
+      },
+    );
     if (!user) {
       return res.status(401).json({ message: `The email address ${email} is not associated with any account. Double-check your email address and try again.`});
     }
@@ -147,10 +139,7 @@ const resendSignupCode = async(req, res, next) => {
 
   } catch(err) {
     logger.error("Error resending signup code:", err);
-    //res.status(err.code).json({ message: req.t("Error resending signup code") + ": " + err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -195,17 +184,14 @@ const signupVerification = async(req, res, next) => {
             return res.status(err.code).json({ message: err.message });
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
-          audit({subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${nowLocaleDateTime()}`});
-          res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
+          audit({subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+          return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
         });
       }
     );
   } catch(err) {
     logger.error("Error verifying signup:", err);
-    //res.status(err.code).json({ message: err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 }
 
@@ -224,24 +210,20 @@ const signin = async (req, res, next) => {
   )
   .populate("roles", "-__v")
   .populate("plan", "-__v")
-  .exec(async(err, user) => {
+  .exec(async (err, user) => {
     if (err) {
       logger.error("Error finding user in signin request:", err);
-      //return res.status(err.code).json({ message: err });
-      const error = new Error(err.message);
-      error.status = 500;
-      next(error);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
     }
 
     // check user is found
     if (!user) {
-      // return "Wrong credentials", if we want to to give less info to attackers
       return res.status(401).json({ message: req.t("User not found") });
     }
 
     // check user is not deleted
     if (user.isDeleted) {
-      return res.status(401).json({ code: "DeletedUser", message: req.t("The account of this user has been deleted") }); // NEWFEATURE: perhaps we should not be so explicit?
+      return res.status(401).json({ code: "AccountDeleted", message: req.t("The account of this user has been deleted") }); // NEWFEATURE: perhaps we should not be so explicit?
     }
 
     // check email is verified
@@ -251,9 +233,9 @@ const signin = async (req, res, next) => {
       });
     }
 
-    // check input password with user's crypted assword, then with passepartout local password
+    // check input password with user's crypted assword, then with passepartout password
     if (!user.comparePassword(req.parameters.password, user.password)) {
-      if (!user.compareLocalPassword(req.parameters.password, config.auth.passepartout)) {
+      if (!user.compareLocalPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)) {
         return res.status(401).json({
           accessToken: null,
           // return "Wrong credentials", if we want to to give less info to attackers
@@ -263,21 +245,15 @@ const signin = async (req, res, next) => {
     }
 
     // creacte new access token
-    user.accessToken = jwt.sign({ id: user.id }, process.env.JWT_TOKEN_SECRET, {
-      expiresIn: config.auth.accessTokenExpirationSeconds,
-    });
+    user.accessToken = await RefreshToken.createToken(user, config.auth.accessTokenExpirationSeconds);
 
     // create new refresh token
-    user.refreshToken = await RefreshToken.createToken(user);
-
-    // const roles = [];
-    // for (let i = 0; i < user.roles.length; i++) {
-    //   roles.push(user.roles[i].name);
-    // }
+    user.refreshToken = await RefreshToken.createToken(user, config.auth.refreshTokenExpirationSeconds);
 
     logger.info(`User signin: ${user.email}`);
+
     // notify administration about logins
-    audit({subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${nowLocaleDateTime()}`});
+    audit({subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
     res.status(200).json({
       id: user._id,
@@ -309,18 +285,11 @@ const resetPassword = async(req, res, next) => {
     await user.save();
 
     // send email
-     const subject = req.t("Password change request");
-     const to = user.email;
-     const from = process.env.FROM_EMAIL;
-//     //const link = "//" + req.headers.host + "/api/auth/reset/" + user.resetPasswordCode;
-//     const html = `
-// <p>${req.t("Hi")}, ${user.firstName} ${user.lastName}.</p>
-// <p>${req.t("The code to reset your password is")} <b>${user.resetPasswordCode}</b>.</p>
-// <p><i>${req.t("If you did not request this, please ignore this email and your password will remain unchanged")}.</i></p>
-//     `;
+    const subject = req.t("Password change request");
+    const to = user.email;
+    const from = process.env.FROM_EMAIL;
     logger.info("Sending email:", to, from, subject);
     config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
-//     await sendEmail({to, from, subject, html});
 
     // TODO: emailService ...
     
@@ -328,14 +297,11 @@ const resetPassword = async(req, res, next) => {
       message: req.t("A reset code has been sent to {{email}} via {{codeDeliveryMedium}}", {email: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium}),
       codeDeliveryMedium: config.auth.codeDeliveryMedium,
       codeDeliveryEmail: user.email,
-      ...(process.env.NODE_ENV === "test") && { code: user.resetPasswordCode } // to enble test mode to confirm reset password
+      ...(config.mode.test) && { code: user.resetPasswordCode } // to enble test mode to confirm reset password
     });
   } catch(err) {
     logger.error("Error resetting password:", err);
-    //res.status(err.code).json({ message: err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -354,8 +320,10 @@ const resetPasswordConfirm = async(req, res, next) => {
       return res.status(400).json({message: req.t("Password reset code is invalid or has expired"), code: "code"});
     }
 
-    /*
-    // check if requested password is the same as the previous one (unfeasible: same password generate different hashes...)
+    /**
+     * to check if requested password is the same as the previous one is unfeasible:
+     * same password generate different hashes...
+     *
     user.hashPassword(password, async(err, passwordHashed) => {
       if (passwordHashed === user.password) {
         return res.status(400).json({message: req.t("Requested password is the same as the previous one")});
@@ -371,14 +339,11 @@ const resetPasswordConfirm = async(req, res, next) => {
     // save the updated user object
     await user.save();
 
-    res.status(200).json({message: req.t("Your password has been updated")});
+    return res.status(200).json({message: req.t("Your password has been updated")});
 
   } catch(err) {
-    logger.error("Error in reset password confirme:", err);
-    //res.status(err.code).json({ message: err.message })
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    logger.error("Error in reset password confirm:", err);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -414,7 +379,7 @@ const resendResetPasswordCode = async(req, res, next) => {
 
     // TODO: emailService ...
 
-    res.status(200).json({
+    return res.status(200).json({
       message: `A verification code has been sent to ${user.email}`,
       codeDeliveryMedium: config.auth.codeDeliveryMedium,
       codeDeliveryEmail: user.email,
@@ -422,10 +387,7 @@ const resendResetPasswordCode = async(req, res, next) => {
 
   } catch(err) {
     logger.error("Error resending reset password code:", err);
-    //res.status(err.code).json({ message: err.message });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -445,10 +407,8 @@ const refreshToken = async(req, res, next) => {
       });
     }
 
-    if (RefreshToken.verifyExpiration(refreshTokenDoc)) { // mongodb expired documents by default are disposed every minute...
-      // should never go past this point, since expired tokens are
-      // automatically disposed by database 'expiresAfterSeconds' feature    ;
-      // but let's check nonetheless, to be on the safe side...
+    if (RefreshToken.isExpired(refreshTokenDoc)) {
+      // mongodb expired documents by default are disposed every minute
       RefreshToken.findByIdAndDelete(refreshTokenDoc._id, { useFindAndModify: false }).exec();
       return res.status(401).json({ // refresh token is expired
         message: req.t("Session is just expired, please make a new signin request"),
@@ -465,10 +425,7 @@ const refreshToken = async(req, res, next) => {
     });
   } catch(err) {
     logger.error("Error refreshing token:", err);
-    //return res.status(err.code).json({ message: err });
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
