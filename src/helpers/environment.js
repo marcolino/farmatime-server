@@ -4,8 +4,9 @@ const { audit } = require("../helpers/messaging");
 
 const assertEnvironment = () => {
   if (!process.env) {
-    logger.error("Missing env!");
-    assertionsCheckFailure(`Missing env!`);
+    let err = "Missing env!";
+    logger.error(err);
+    assertionsCheckFailure(err);
     return false;
   }
   // find missing variables in current environment
@@ -13,8 +14,9 @@ const assertEnvironment = () => {
     return !(v in process.env); // this variable doesn't exist in process.env
   });
   if (missing.length) {
-    logger.error("Missing in env:", missing);
-    assertionsCheckFailure(`Missing in env: ${JSON.stringify(missing)}`);
+    let err = `Missing in env: ${JSON.stringify(missing)}`;
+    logger.error(err);
+    assertionsCheckFailure(err);
     return false;
   }
 
@@ -22,7 +24,7 @@ const assertEnvironment = () => {
 };
 
 const assertionsCheckFailure = async(htmlContent) => {
-  return audit({subject: "Assertion check failed", htmlContent});
+  return audit({ req: null, subject: "Assertion check failed", htmlContent});
 };
 
 module.exports = {

@@ -13,6 +13,7 @@ const Plan = require("../../src/models/plan.model");
 const { config } = require("../config.test");
 
 chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
+chai.config.includeStack = true; // to include stack in errors
 
 let accessTokenUser, accessTokenAdmin;
 
@@ -39,7 +40,7 @@ describe("API tests - Index of models", async function() {
     });
   });
 
-  // TODO: enable this, correctly handling done() ...
+  // // TODO: enable this, correctly handling done() ...
   // it("should populate database if empty", function(done) {
   //   db.populate();
   //   done();

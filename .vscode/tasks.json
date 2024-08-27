@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker-run: debug",
+      "type": "shell",
+      "command": "docker run --rm -p 5000:5000 -v ${workspaceFolder}:/app -w /app node:14-alpine sh -c \"yarn install && yarn start\"",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

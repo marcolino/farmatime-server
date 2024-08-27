@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<html
-  lang="<%= sys_language %>"
-  dir="<%= sys_dir %>"
->
+<html lang="<%= sys_language %>">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +29,7 @@
       <tr>
         <td class="email-footer">
           <p><%= sys_company_copyright %></p>
-          <p><a href="[unsubscribe-link]"><%= t("Unsubscribe") %></a> | <a href="[preferences-link]"><%= t("Manage Preferences") %></a></p>
+          <p><a href="<%- sys_client_email_unsubscribe_link %>"><%= t("Unsubscribe") %></a> | <a href="<%- sys_client_email_preferences_link %>"><%= t("Manage Preferences") %></a></p>
         </td>
       </tr>
     </table>

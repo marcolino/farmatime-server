@@ -78,7 +78,6 @@ const signup = async(req, res, next) => {
   
       logger.info("VERIFICATION CODE:", signupVerification.code);
       
-      // TODO: pass also req, to let emailService to read the req.language...
       await emailService.send(req, {
         to: user.email,
         subject: req.t("Signup Verification Code"),
@@ -97,7 +96,7 @@ const signup = async(req, res, next) => {
       });
     } catch(err) {
       logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}:`, err);
-      //return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + req.t(err.message) + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
+      //return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + err.message + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
   });
@@ -184,7 +183,7 @@ const signupVerification = async(req, res, next) => {
             return res.status(err.code).json({ message: err.message });
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
-          audit({subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+          audit({req, subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
           return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
         });
       }
@@ -253,8 +252,16 @@ const signin = async (req, res, next) => {
     logger.info(`User signin: ${user.email}`);
 
     // notify administration about logins
-    audit({subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+    audit({req, subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
+    // save user's language as from request
+    User.findOneAndUpdate({ _id: user.id }, { $set: { language: req.language } }, { new: true }).then((user) => {
+      logger.info("Saved user's language:", user.language);
+    }).catch(err => {
+      logger.error("Error saving user's language:", err);
+      //res.status(500).send(err);
+    })
+
     res.status(200).json({
       id: user._id,
       email: user.email,
@@ -288,10 +295,19 @@ const resetPassword = async(req, res, next) => {
     const subject = req.t("Password change request");
     const to = user.email;
     const from = process.env.FROM_EMAIL;
-    logger.info("Sending email:", to, from, subject);
+    logger.info(`Sending email: to: ${to}, from: ${from}, subject: ${subject}`);
     config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
-    // TODO: emailService ...
+    await emailService.send(req, {
+      to: user.email,
+      subject: req.t("Reset password code"),
+      templateName: "resetPasswordCodeSent",
+      templateParams: {
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
+        resetPasswordCode: user.resetPasswordCode,
+      },
+    });
     
     res.status(200).json({
       message: req.t("A reset code has been sent to {{email}} via {{codeDeliveryMedium}}", {email: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium}),
@@ -319,17 +335,6 @@ const resetPasswordConfirm = async(req, res, next) => {
     if (!user) {
       return res.status(400).json({message: req.t("Password reset code is invalid or has expired"), code: "code"});
     }
-
-    /**
-     * to check if requested password is the same as the previous one is unfeasible:
-     * same password generate different hashes...
-     *
-    user.hashPassword(password, async(err, passwordHashed) => {
-      if (passwordHashed === user.password) {
-        return res.status(400).json({message: req.t("Requested password is the same as the previous one")});
-      }
-    });
-    */
 
     // set the new password
     user.password = password;
@@ -377,7 +382,16 @@ const resendResetPasswordCode = async(req, res, next) => {
     logger.info("Sending email:", to, from, subject);
     config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
-    // TODO: emailService ...
+    await emailService.send(req, {
+      to: user.email,
+      subject: req.t("Reset password code"),
+      templateName: "resetPasswordCodeSent",
+      templateParams: {
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
+        resetPasswordCode: user.resetPasswordCode,
+      },
+    });
 
     return res.status(200).json({
       message: `A verification code has been sent to ${user.email}`,

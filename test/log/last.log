@@ -1,7 +1,7 @@
 
 
   API tests - Auth routes
-    ✔ should register user (94ms)
+    ✔ should register user (93ms)
     ✔ should not register user without confirmation
     ✔ should not register user with invalid email
     ✔ should not register user forcing invalid plan
@@ -30,6 +30,7 @@
     ✔ should register admin user
     ✔ should confirm admin user
     ✔ should login admin user
+    ✔ should not login removed user
     ✔ should not refresh token without refresh token
     ✔ should not refresh token with invalid refresh token
     ✔ should refresh token
@@ -39,14 +40,16 @@
     ✔ should login normal user
     ✔ should get payment mode, and it should be in a set of values
     ✔ should not create a checkout session without authentication
-    ✔ should not create a checkout session for a 0 cost product (758ms)
-    ✔ should not create a checkout session for a non-existent product (304ms)
-    ✔ should create a checkout session for a standard product (720ms)
-    ✔ should redirect on a payment success call (612ms)
-    ✔ should redirect on a payment canceled call (612ms)
+error: 2024-08-27T15:07:02.262Z Payment session creation error: The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
+    ✔ should not create a checkout session for a 0 cost product (767ms)
+error: 2024-08-27T15:07:02.534Z Payment session creation error: You must provide either price or price_data for each line item when using prices.
+    ✔ should not create a checkout session for a non-existent product (272ms)
+    ✔ should create a checkout session for a standard product (867ms)
+    ✔ should redirect on a payment success call (609ms)
+    ✔ should redirect on a payment canceled call (613ms)
 
   API tests - User routes
-    ✔ should register normal user
+    ✔ should register normal user (79ms)
     ✔ should login normal user
     ✔ should register admin user
     ✔ should login as admin user
@@ -107,7 +110,7 @@
     ✔ should delete user with admin privileges using id
     ✔ should delete user with admin privileges using email
     ✔ should register normal user
-    ✔ should login normal user
+    ✔ should login normal user (82ms)
     ✔ should register admin user
     ✔ should login as admin user
     ✔ should not remove user without authentication
@@ -115,10 +118,12 @@
     ✔ should not remove user with admin privileges using invalid id
     ✔ should remove user with admin privileges using id
     ✔ should remove user with admin privileges using email
-    1) should remove all users with admin privileges
+    ✔ should remove all users with admin privileges
 
   API tests - Helpers - Environment
+error: 2024-08-27T15:07:05.461Z Missing env! 
     ✔ should not assert environment with no environment
+error: 2024-08-27T15:07:05.461Z Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
     ✔ should not assert environment with missing required variable
     ✔ should assert environment with default environment
 
@@ -130,14 +135,5 @@
     ✔ should correctly handle not found route
 
 
-  116 passing (15s)
-  1 failing
-
-  1) API tests - User routes
-       should remove all users with admin privileges:
-     Error: Timeout of 10000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/home/marco/apps/sistemisolari/acme-server/test/controllers/user.test.js)
-      at listOnTimeout (node:internal/timers:569:17)
-      at process.processTimers (node:internal/timers:512:7)
-
-
+  118 passing (5s)
 

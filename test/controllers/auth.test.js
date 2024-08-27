@@ -339,7 +339,7 @@ describe("API tests - Auth routes", function() {
       .post("/api/auth/resendResetPasswordCode")
       .send({email: "invalid email"})
       .then(res => {
-        res.should.have.status(401); // 403?
+        res.should.have.status(401);
         res.body.should.have.property("message");
         expect(res.body.message).to.equal("The email address invalid email is not associated with any account. Double-check your email address and try again.");
         done();
@@ -420,8 +420,8 @@ describe("API tests - Auth routes", function() {
         res.body.should.have.property("accessToken");
         res.body.should.have.property("refreshToken");
         res.body.should.have.property("id");
-        accessToken = res.body.accessToken;
-        refreshToken = res.body.refreshToken;
+        accessTokenUser = res.body.accessToken;
+        refreshTokenUser = res.body.refreshToken;
         done();
       })
       .catch((err) => {
@@ -535,14 +535,13 @@ describe("API tests - Auth routes", function() {
     ;
   });
 
-/*
-  it("should not login removed user", function(done) {
+  it("should not login removed user", function (done) {
     chai.request(server)
       .post("/api/user/removeUser")
+      .set("authorization", accessTokenAdmin)
       .set("X-Access-Token", accessTokenAdmin)
-      .send({
-        filter: {"email": config.user.email },
-      })
+      .send({ filter: { _id: config.user.id } })
+      //.send({ filter: { "email": config.user.email } }),
       .then(res => {
         res.should.have.status(200);
         chai.request(server)
@@ -552,7 +551,7 @@ describe("API tests - Auth routes", function() {
             "password": config.user.password,
           })
           .then(res => {
-            res.should.have.status(400);
+            res.should.have.status(401);
             done();
           })
           .catch((err) => {
@@ -565,7 +564,6 @@ describe("API tests - Auth routes", function() {
       })
     ;
   });
-*/
   
   it("should not refresh token without refresh token", function(done) {
     chai.request(server)
@@ -602,7 +600,7 @@ describe("API tests - Auth routes", function() {
   it("should refresh token", function(done) {
     chai.request(server)
       .post("/api/auth/refreshtoken")
-      .send({token: refreshToken})
+      .send({token: refreshTokenUser})
       .then(res => {
         res.should.have.status(200);
         res.body.should.have.property("accessToken");

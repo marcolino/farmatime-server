@@ -17,15 +17,16 @@
     "test_with_nyc_BROKEN": "nyc --reporter=html unbuffer mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log",
     "test": "mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log",
     "posttest": "scripts/test2badge",
-    "test-debug": "mocha --exit --timeout 10000 --debug --recursive test",
-    "test-nocoverage": "unbuffer mocha --exit --timeout 10000 --recursive test | tee test/log/last.log",
-    "testwatch": "nodemon --exec \"mocha --recursive --timeout 10000\"",
+    "test-debug": "mocha --exit --timeout 10000 --slow 150 --debug --recursive test",
+    "test-nocoverage": "unbuffer mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log",
+    "testwatch": "nodemon --exec \"mocha --recursive --timeout 10000 --slow 150\"",
     "_prepub": "yarn test",
     "_pub": "git add . && git commit -m \"$CM\" && git push && yarn push",
     "_pub-dev": "yarn pub && yarn logs",
     "_push": "git push heroku master",
     "i18n": "i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
-    "_i18n-check": "i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent --output /tmp/i18n-check-$$.json && cmp --silent /tmp/i18n-check-$$.json src/locales/en/translation.json; test $? = '1' && echo 'Some new texts to be translated!' || echo 'Translations are ok'; rm /tmp/i18n-check-$$.json",
+    "i18n-pre-check": "grep __STRING_NOT_TRANSLATED__ --quiet src/locales/*/translation.json && echo 'Some texts must be translated!'",
+    "_i18n-check": "i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent --output /tmp/i18n-check-$$.json && cmp --silent /tmp/i18n-check-$$.json src/locales/en/translation.json; test $? = '1' && echo 'Some new texts must be translated!' || echo 'Translations are ok'; rm /tmp/i18n-check-$$.json",
     "_i18n-auto": "scripts/auto-translate.js src/locales/*/translation.json",
     "_run-web": "heroku ps:scale web=1 --app acme",
     "_stop-web": "heroku ps:scale web=0 --app acme",
@@ -33,7 +34,13 @@
     "_logspt": "heroku addons:open --app acme papertrail",
     "analyze-dependencies": "npx depcheck --ignore-patterns tmp/",
     "list-deadfiles": "npx deadfile ./server.js --dir src/",
-    "find-problems": "npx eslint server.js src/"
+    "find-problems": "npx eslint server.js src/",
+    "_docker-build-args": "$(for i in $(grep -vE '^#|^$' .env); do out+=\"--build-arg $i \"; done; echo $out; out=\"\")",
+    "docker-build": "rm -f client/build/index-injected.html; export NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) PORT=$(grep PORT .env | cut -d '=' -f2); docker build -t acmeserver:latest .",
+    "docker-run": "PORT=$(grep PORT .env | cut -d '=' -f2); docker run -p ${PORT}:${PORT} --env-file .env acmeserver",
+    "fly-import-secrets": "cat .env | fly secrets import",
+    "fly-deploy": "fly deploy",
+    "fly-logs": "fly logs"
   },
   "keywords": [
     "node.js",
@@ -66,6 +73,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@flydotio/dockerfile": "latest",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "chai-spies": "^1.0.0",
@@ -75,5 +83,6 @@
     "mocha": "^9.2.2",
     "nodemon": "^2.0.15",
     "nyc": "^15.1.0"
-  }
+  },
+  "packageManager": "yarn@3.6.1"
 }

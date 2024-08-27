@@ -18,6 +18,8 @@ class EmailService {
       sys_company_mailto: config.app.company.mailto,
       sys_company_copyright: config.app.company.copyright,
       sys_company_logo: "http://localhost:5000/favicon.ico",
+      sys_client_email_unsubscribe_link: config.clientEmailUnsubscribeUrl,
+      sys_client_email_preferences_link: config.clientEmailPreferencesUrl,
     };
   }
 
@@ -57,7 +59,6 @@ class EmailService {
         logger.error("Email service is not initialized, please call setup() first");
         throw err;
       }
-
       if (!params) params = {};
       if (!params.to) return logger.error("Parameter 'to' is mandatory to send email");
       if (!params.subject) return logger.error("Parameter 'subject' is mandatory to send email");
@@ -71,29 +72,34 @@ class EmailService {
       
       if (typeof params.to === "string") params.to = [params.to]; // accept also a single string with an email
 
-      // add language and dir from request
-      params.templateParams.sys_language = req.language;
-      params.templateParams.sys_dir = "ltr"; // TODO: req.dir;
+      let htmlContent;
+      if (params.htmlContent) { // use this as htmlContent, and avoid templates
+        htmlContent = params.htmlContent;
+      } else {
+        // add language and dir from request
+        params.templateParams.sys_language = req ? req.language : config.languages.default;
 
-      // add system placeholders to template params
-      params.templateParams = { ...params.templateParams, ...this.systemPlaceholders };
+        // add system placeholders to template params
+        params.templateParams = { ...params.templateParams, ...this.systemPlaceholders };
 
-      // add system style
-      params.templateParams.sys_style = this.readTemplateStyle(params.templateParams.style);
-      delete params.templateParams.style;
+        // add system style
+        params.templateParams.sys_style = this.readTemplateStyle(params.templateParams.style);
+        delete params.templateParams.style;
 
-      if (params.body) {
-        params.templateParams.body = params.body;
-        delete params.body;
+        if (params.body) {
+          params.templateParams.body = params.body;
+          delete params.body;
+        }
+
+        // render template to htmlContent, with templateName, templateParams and language
+        htmlContent = this.renderTemplate(params.templateName, params.templateParams, req.language);
       }
-
-      // render template to htmlContent, with templateName, templateParams and language
-      const htmlContent = this.renderTemplate(params.templateName, params.templateParams, req.language);
 
       // create smtp email object
       let sendSmtpEmail = new Brevo.SendSmtpEmail();
+      const to = params.to.map(email => ({ email }));
       sendSmtpEmail = {
-        to: params.to.map(email => ({ email })),
+        to,
         sender: {
           email: params.from,
           name: params.fromName,
@@ -103,7 +109,7 @@ class EmailService {
       };
    
       // send transactional email with sendSmtpEmail object
-      logger.info("SMTP email:", JSON.stringify(sendSmtpEmail));
+      //logger.info("SMTP email:", JSON.stringify(sendSmtpEmail));
 
       // if requested in config.email.dryrun, skip real email send, just log sendSmtpEmail
       let response;
@@ -113,7 +119,7 @@ class EmailService {
         response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       }
       
-      logger.info("Email sent:", response.messageId);
+      logger.info(`Email sent to ${params.to} with message id ${response.messageId}`);
       return true;
     } catch (err) {
       throw new Error(err.message);
@@ -163,7 +169,7 @@ class EmailService {
       // detect template variables missing in template params
       const missingVariables = Array.from(templateVariables).filter(variable => !(variable in templateParams));
       if (missingVariables.length > 0) {
-        throw new Error(`The following variables are used in the template but not provided in template params: ${missingVariables}`);
+        throw new Error(`The following variables are used in template "${templateName}" but not provided in template params: ${missingVariables}`);
       } else {
         //logger.info("All variables used in template are provided in template params");
       }
@@ -171,7 +177,7 @@ class EmailService {
       // detect if template params variables are in excess respect to template (excluding system variables)
       const excessVariables = Object.keys(templateParams).filter(variable => !variable.startsWith("sys_")).filter(variable => !Array.from(templateVariables).includes(variable));
       if (excessVariables.length > 0) {
-        throw new Error(`The following variables are provided in template params but not used in the template: ${excessVariables}`);
+        throw new Error(`The following variables are provided in template params but not used in template "${templateName}": ${excessVariables}`);
       } else {
         //logger.info("All variables provided in template params are used in the template");
       }
@@ -212,7 +218,7 @@ class EmailService {
       const templatesPath = path.join(__dirname, config.email.templatesPath, "styles", name + ".css");
       return fs.readFileSync(templatesPath, { encoding: "utf-8" });
     } catch (err) {
-      logger.warn(`Can't read template style file name ${name}:`, err);
+      logger.error(`Can't read template style file name ${name}:`, err);
       return null;
     }
   }

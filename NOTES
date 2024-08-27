@@ -5,9 +5,6 @@ Note tecniche:
     $ heroku buildpacks:add heroku/jvm
     $ heroku buildpacks:add heroku/nodejs # (se non già presente)
 
-- Per deployare su fly.io:
-  - ...
-
 Riferimenti:
  - Uptime robot:
     https://uptimerobot.com/dashboard.php#mainDashboard
@@ -61,4 +58,94 @@ MongoDB client install:
  - wget https://downloads.mongodb.com/compass/mongodb-compass_1.43.4_amd64.deb
  - sudo apt install ./mongodb-compass_1.43.4_amd64.deb
  - mongodb-compass
+
+Fly.io deploy:
+
+To publish a Node.js app using Express and MongoDB on Fly.io, follow these detailed steps:
+
+### Step 1: Install Flyctl
+
+First, you need to install the Fly CLI tool (`flyctl`). This tool is necessary for deploying your application to Fly.io. Depending on your operating system, the installation command might vary. For Ubuntu, you can use:
+
+```bash
+curl -L https://fly.io/install.sh | sh
+```
+
+Refer to the Fly.io documentation for other operating systems [2].
+
+### Step 2: Log in to Fly.io
+
+Before deploying your app, you need to authenticate with Fly.io. Run the following command and follow the instructions to log in:
+
+```bash
+fly auth login
+```
+
+This command opens your default browser and directs you to the login page. After logging in, close the tab to return to your terminal [2].
+Login with email <marcosolari@gmail.com>
+
+### Step 3: Launch Your App
+
+Navigate to your project directory in the terminal. From there, initiate the deployment process by running:
+
+```bash
+fly launch
+```
+
+Fly.io will automatically detect that you're launching a Node.js app. It will prompt you to choose an app name; if you leave it blank, Fly.io will generate one for you. You'll also be asked to select a region, preferably one that's geographically close to your target audience [2].
+
+### Step 4: Configure Environment Variables
+
+After launching your app, Fly.io generates a `fly.toml` file. This file is crucial for defining environment variables and other configurations. Open the `fly.toml` file and add your environment variables under the `[env]` section. For example:
+
+```toml
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  HOST = "0.0.0.0"
+```
+
+These variables are accessible in your Node.js application via `process.env`. For instance, `process.env.PORT` would give you the port number defined above [2].
+
+### Step 5: Set Secrets
+
+If your application requires secure secrets (like API keys or passwords), you can set them using the `fly secrets set` command. For example:
+
+```bash
+fly secrets set SECRET='YourSecureSecretHere'
+```
+
+Replace `'YourSecureSecretHere'` with your actual secret. This command adds the secret to your application's environment variables securely [2].
+
+### Step 6: Deploy Your App
+
+With your environment configured, you're ready to deploy your app. Run the following command from your project directory:
+
+```bash
+fly deploy
+```
+
+This command deploys your application to Fly.io. The initial deployment might take some time. If you make changes to your code later, you can update your app by running the same command again [2].
+
+### Step 7: Access Your App
+
+Once deployed, your app will be accessible at `https://(your-app-name).fly.dev`, where `(your-app-name)` is the name of your app on Fly.io. You can test your deployment by navigating to this URL [2].
+
+### Troubleshooting
+
+If you encounter issues during deployment, such as crashes or errors, you can check the logs for more details. Use the `fly logs` command to view recent logs related to your app. Additionally, you can SSH into your app's container for further debugging with `fly ssh console` [2].
+
+By following these steps, you should be able to successfully publish your Node.js app using Express and MongoDB on Fly.io.
+
+Citations:
+[1] https://community.fly.io/t/hosting-and-connecting-to-mongodb-database/9161
+[2] https://medium.com/@kjolee/deploying-a-node-js-app-on-fly-io-3d511bbf34ac
+[3] https://stackoverflow.com/questions/76548871/problem-deploying-fly-io-app-with-express-node-mongoose
+[4] https://community.fly.io/t/cant-deploy-simple-nodejs-express-server/13757
+[5] https://community.fly.io/t/issue-deploying-nodejs-express-backend/19153
+[6] https://community.fly.io/t/how-to-self-host-mongodb-on-fly-io/13397
+[7] https://hackmd.io/@TUqoAkkuQC6CyUcM7vfotQ/HyIprOS7j
+[8] https://community.fly.io/t/unable-to-connect-to-deployed-fly-io-node-express-app/17710
+[9] https://nx.dev/recipes/node/node-server-fly-io
+
  

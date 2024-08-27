@@ -17,25 +17,37 @@ describe("API tests - Helpers - Environment", async function() {
   });
 
   it("should not assert environment with no environment", function(done) {
-    const envBackup = process.env;
-    process.env = null;
-    const res = environment.assertEnvironment();
-    expect(res).to.be.false;
-    process.env = envBackup;
-    done();
+    try {
+      const envBackup = process.env;
+      process.env = null;
+      const res = environment.assertEnvironment();
+      expect(res).to.be.false;
+      process.env = envBackup;
+      done();
+    } catch(err) {
+      done(err);
+    }
   });
   it("should not assert environment with missing required variable", function(done) {
-    const envBackup = process.env;
-    process.env = [];
-    const res = environment.assertEnvironment();
-    expect(res).to.be.false;
-    process.env = envBackup;
-    done();
+    try {
+      const envBackup = process.env;
+      process.env = [];
+      const res = environment.assertEnvironment();
+      expect(res).to.be.false;
+      process.env = envBackup;
+      done();
+    } catch(err) {
+      done(err);
+    }
   });
   it("should assert environment with default environment", function(done) {
-    const res = environment.assertEnvironment();
-    expect(res).to.be.true;
-    done();
+    try {
+      const res = environment.assertEnvironment();
+      expect(res).to.be.true;
+      done();
+    } catch(err) {
+      done(err);
+    }
   });
 
 });

@@ -1,24 +1,22 @@
+const i18n = require("./middlewares/i18n");
+
 const apiName = "ACME";
 const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const company = "Sistemi Solari Rossi";
+const portPublic = "";
+const urlPublic = `https://acme-server-lingering-brook-4120.fly.dev${portPublic}`;
+const portLocal = ":5000";
+const urlLocal = `http://localhost${portLocal}`;
 const test = (typeof global.it === "function"); // testing (mocha/chai/...)
 const production = (!test && (process.env.NODE_ENV === "production")); // production mode
 const development = (!test && (process.env.NODE_ENV !== "production")); // development mode
 const stripeIsLive = process.env.STRIPE_MODE === "live"; // stripe mode is "live"  
+const serverBaseUrl = production ? `${urlPublic}` : `${urlLocal}`;
+const clientBaseUrl = production ? `${urlPublic}` : `${urlLocal}`;
 
-const serverBaseUrl = production ?
-  "https://acme.herokuapp.com" :
-  "http://localhost:5000"
-;
-const clientBaseUrl = production ?
-  "https://acme.herokuapp.com" :
-  "http://localhost:3000"
-;
-const clientShowcaseBaseUrl = production ?
-  "https://acme-showcase.herokuapp.com" :
-  "http://localhost:8080"
-;
+clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`;
+clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`;
 
 module.exports = {
   mode: {
@@ -34,11 +32,15 @@ module.exports = {
       maxRequestsPerMinute: 1000, // limit requests per minute (use 1 to throttle all requests)
       delayAfterMaxRequestsMilliseconds: 2.5 * 1000, // delay after limit is reached
     },
+    allowedVerbs: [
+      "GET",
+      "POST",
+    ],
   },
   publicBasePath: null, // use for example as "/public/" if a puglic folder on server is needed
   auth: {
-    accessTokenExpirationSeconds: 220, //60 * 30, // 30 minutes TTL
-    refreshTokenExpirationSeconds: 240, //60 * 60 * 24 * 7, // 1 week TTL
+    accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL
+    refreshTokenExpirationSeconds: 60 * 60 * 24 * 7, // 1 week TTL
     verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
   },
@@ -88,11 +90,12 @@ module.exports = {
   logs: {
     file: "logs/acme.log", // logs and exceptions file
     papertrail: {
+      enable: false, // TODO: decide if we need papertrail logs...
       host: "logs6.papertrailapp.com",
       port: 18466,
     },
   },
-  languages: { // toto mix into app.languages ...
+  languages: { // TODO: mix into app.languages ...
     supported: [ // list of backend supported languages; the last one is the fallback, and is mandatory here
       "en",
       "fr",
@@ -108,8 +111,9 @@ module.exports = {
   serverDomain: serverBaseUrl,
   clientDomains: [
     clientBaseUrl,
-    clientShowcaseBaseUrl,
+    //clientShowcaseBaseUrl,
   ],
+  clientEmailUnsubscribeUrl,
   payment: {
     stripe: {
       products: stripeIsLive ? { // stripe mode is live
@@ -148,12 +152,12 @@ module.exports = {
       paymentCancelUrl: "http://localhost:5000/api/payment/paymentCancel",
       paymentSuccessUrlClient: `${clientBaseUrl}/payment-success`,
       paymentCancelUrlClient: `${clientBaseUrl}/payment-cancel`,
-      paymentSuccessUrlShowcase: `${clientShowcaseBaseUrl}/payment-success`,
-      paymentCancelUrlShowcase: `${clientShowcaseBaseUrl}/payment-cancel`,
+      paymentSuccessUrlShowcase: `${clientBaseUrl}/payment-success`, // was `${clientShowcaseBaseUrl}/payment-success`
+      paymentCancelUrlShowcase: `${clientBaseUrl}/payment-cancel`, // was `${clientShowcaseBaseUrl}/payment-cancel`
     },
   },
   email: {
-    dryrun: true, // if true, do not really send emails, use fake send
+    dryrun: true, // if true, do not really send emails, use fake send (TODO: automatically set according to config.mode?)
     subject: {
       prefix: apiName,
     },
@@ -186,11 +190,7 @@ module.exports = {
     "MONGO_DB",
     "MONGO_USER",
     "MONGO_PASS",
-  //"FROM_EMAIL",
-  //"SENDGRID_API_KEY",
-  //"SENDMAIL_API_KEY",
     "BREVO_EMAIL_API_KEY",
-  //"SENDMAIL_FROM_EMAIL",
     "STRIPE_MODE",
     "STRIPE_API_KEY_TEST",
     "STRIPE_API_KEY_LIVE",
@@ -212,6 +212,8 @@ module.exports = {
     company: {
       name: `${company} s.r.l.`,
       title: `${company}`,
+      phone: "+39 333 6480983",
+      address: "Via Felisio, 19 - 10098 Rivoli (TO)",
       mailto: "mailto:marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
@@ -227,6 +229,14 @@ module.exports = {
         zipCode: "10098",
         phone: "+39 333 6480983",
         email: "marcosolari@gmail.com",
+      },
+      contacts: {
+        claimsTitle: i18n.t("Our Company Claims"),
+        claimsSubtitle: i18n.t("We provide the best services in the industry, focusing on quality and customer satisfaction"),
+        map: {
+          center: [45.0708062, 7.5151672],
+          zoom: 13,
+        }
       },
     },
     api: { // API settings for clients
@@ -244,7 +254,7 @@ module.exports = {
       // if PWA is hosted at the root of domain (https://example.com/), and it always starts from the root
       // regardless of where the manifest.json is located, use: "start_url": "/";
       // if instead PWA is within a subdirectory (https://example.com/app), and it starts from that subdirectory,
-      // use: "start_url": "/"
+      // use: "start_url": "/app"
       startUrl: "./", // start_url value in manifest
       display: "standalone", // display value in manifest
     },
@@ -253,9 +263,10 @@ module.exports = {
       warnBeforeSessionExpirationSeconds: 60 * 2, // seconds before client session expiration warning
     },
     spinner: { // loading spinner
-      // choose one in type in:
-      // Audio, Comment, Grid, Hearts, Hourglass, Oval,
-      // RotatingLines, RotatingSquare, ThreeDots, Watch
+      /** choose one in type in:
+       *    Audio, Comment, Grid, Hearts, Hourglass, Oval,
+       *    RotatingLines, RotatingSquare, ThreeDots, Watch
+       */
       type: "Watch",
       delay: 500,
       height: 200,

@@ -280,7 +280,7 @@ const updateRoles = async(req, res, next) => {
       user.save(err => {
         if (err) {
           logger.error("Error saving user:", err);
-          const ret = { message: "Error saving user", reason: err.message };
+          const ret = { message: `Error saving user: ${err.message}` };
           return next ? next(Object.assign(new Error(err.message), { status: 500 })) : ret;
         }
         const ret = { message: req.t("Roles updated") };
@@ -432,9 +432,9 @@ const sendEmailToUsers = async (req, res, next) => {
     for (const user of users) {
       let to = user.email;
       try {
-        //req.language = user.language; // TODO: get user language (when it ill be available)
+        req.language = user.language; // get user language (when it ill be available)
         await emailService.send(req, {
-          to: [ user.email ],
+          to: user.email,
           subject,
           body,
           style: "base", // this is currently fixed

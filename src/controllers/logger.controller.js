@@ -65,7 +65,7 @@ try {
     new winston.transports.File({ filename: config.logs.file })
   ];
 
-  if (config.mode.production) { // use syslog transport on papertrail only in production
+  if (config.mode.production && config.logs.papertrail.enable) { // use syslog transport on papertrail only in production
     exceptionHandlers.push(
       new winston.transports.Syslog({
         host: config.logs.papertrail.host,
@@ -76,27 +76,27 @@ try {
     );
   }
 
-  if (!config.mode.production) { // if we're not in production then also log to the `Console` transport
-    transports.push(new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.printf(info => {
-          const timestamp = info.timestamp.trim();
-          const level = info.level;
-          const message = (info.message || "").trim();
-          const args = info[Symbol.for("splat")];
-          const strArgs = (args || []).map(arg => arg).join(" ");
-          return `${level}: ${timestamp} ${message} ${strArgs}`;
-        })
-      ),
-      // if we are in test skip console logging for levels lower than warning (notice, info, debug)
-      // if we are in production mode skip console logging for levels lower than warning (notice, info, debug)
-      level: (config.mode.test ? "warning" : (config.mode.production ? "error" : "debug")),
-      handleExceptions: true,
-      prettyPrint: true,
-      colorize: colorize,
-    }));
-  }
+  transports.push(new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.printf(info => {
+        const timestamp = info.timestamp.trim();
+        const level = info.level;
+        const message = (info.message || "").trim();
+        const args = info[Symbol.for("splat")];
+        const strArgs = (args || []).map(arg => arg).join(" ");
+        return `${level}: ${timestamp} ${message} ${strArgs}`;
+      })
+    ),
+    // if we are in test skip console logging for levels lower than warning (notice, info, debug)
+    // if we are in production mode skip console logging for levels lower than notice (info, debug)
+    // TODO: we currentrly consider production" as "staging"... Consider having also a staging mode...
+    //       so in staging we use level: "debug" and in production level: "warning" ... (?)
+    level: (config.mode.test ? "error" : (config.mode.production ? "debug" : "debug")),
+    handleExceptions: true,
+    prettyPrint: true,
+    colorize: colorize,
+  }));
 } catch(err) {
   console.error("Winston transports creation error:", err); // nothing better to do on errors while setting up logger...
   throw(err);

@@ -5,6 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Docker Node.js launch",
+      "type": "docker",
+      "request": "launch",
+      "preLaunchTask": "docker-run: debug",
+      "platform": "node"
+    },
+    {
       "args": [
         "-u",
         "bdd",
@@ -113,7 +120,7 @@
       "type": "node"
     },
     {
-      "type": "pwa-node",
+      "type": "node", //"pwa-node",
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": [

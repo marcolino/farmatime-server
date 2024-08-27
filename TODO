@@ -2,7 +2,6 @@ TODO:
 - tradurre le notifiche e i messaggi logger - NO
 - rivedere /api/user/updateUserProperty (e successive) come /api/user/updateUser - NO
 - cambiare nomi controllers: controllers/articles.controllers.js => controllers/articles.js - NO
-
 - gestire le traduzioni delle risposte (in base a "accept-language") - OK
 - res.status().send -> res.status().json - OK
 - cambiare "we" in una forma impersonale - OK
@@ -38,14 +37,12 @@ TODO:
 - ripulire tutto il codice dalle parti commentate (disabilitate) - OK
 - completare il coverage dei tests - OK
 - eliminare tutti i NODE_ENV non necessari - OK
-- default sys_dir to "ltr" ("ltr"/"rtl") for templates - OK
 - completare e pulire il file README.md, e pulire NOTES
 - verificare che i18n becchi tuttle le traduzioni nei templates - OK
-
-- css, logo, [unsubscribe-link] and [preferences-link] nei templates delle email
-- quando si registra un utente, accettare anche utenti in stato isDeleted (?)
-- aggiungere language nel doc user, settarlo in fase di login da req.language, e usarlo quando si inviano emails bulk, e testare il tutto
-- test "should remove all users with admin privileges" si blocca (tutti gli utenti isDeleted)
+- test "should remove all users with admin privileges" si blocca (tutti gli utenti isDeleted) - OK
+- css, logo, [unsubscribe-link] and [preferences-link] nei templates delle email - OK
+- quando si registra un utente, accettare anche utenti in stato isDeleted (attualmente no, si potrebbe poi implementare un pruning degli utenti cancellati...) - OK
+- aggiungere language nel doc user, settarlo in fase di login da req.language, e usarlo quando si inviano emails bulk, e testare il tutto - OK
 
 NEWFEATURE:
 - decidere come gestire le notifiche in produzione (acquistare un piano su papertrail.com?)

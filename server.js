@@ -2,9 +2,6 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
-//const i18next = require("i18next");
-//const backend = require("i18next-node-fs-backend");
-//const backend = require("i18next-fs-backend");
 const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 const compression = require("compression");
@@ -21,6 +18,7 @@ const config = require("./src/config");
 const index = "index.html"; // index file name to be injected
 const indexInjected = "index-injected.html"; // injected index file name
 
+
 // instantiate express app
 const app = express();
 
@@ -32,7 +30,7 @@ if (config.mode.development) {
   app.use(morgan("dev"));
 }
 
-// enable CORS, and whitelist our domains
+// enable CORS, and whitelist our urls
 app.use(cors({
   origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
 }));
@@ -70,6 +68,16 @@ app.use(i18nextMiddleware.handle(i18n/*ext*/));
 
 // apply rate limiting middleware globally
 app.use(rateLimitMiddleware);
+
+// verify if request verb is allowed
+app.use((req, res, next) => {
+  //if ((req.method !== "GET") && (req.method !== "POST")) { // check verb is allowed # TODO: make a list of accetted API methods in config.api
+  if (config.api.allowedVerbs.includes(req.method)) {
+    next();
+  } else {
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
+});
 
 // environment configuration
 if (config.mode.production) { // load environment variables from .env file
@@ -122,6 +130,7 @@ db.mongoose
   })
 ;
 
+
 // routes
 require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
@@ -145,9 +154,6 @@ app.use((err, req, res, next) => {
 
 // handle not found API routes
 app.all("/api/*", (req, res, next) => {
-  if ((req.method !== "GET") && (req.method !== "POST")) { // check verb is allowed # TODO: make a list of accetted API methods in config.api
-    return res.status(405).json({ message: "Method Not Allowed" });
-  }
   return res.status(404).json({ message: "Not found" });
 })
 
@@ -174,7 +180,7 @@ app.get("*", (req, res) => {
 
 // inject index file with client app config in indexInjected file
 const injectIndexIfNotPresent = () => {
-  // TODO: check also it exists but is older of config...
+  // TODO: check also it exists but is older than config.js ...
   if (!fs.existsSync(path.resolve(rootClient, indexInjected))) {
     try {
       inject(rootClient, index, indexInjected, config.app);
@@ -186,12 +192,12 @@ const injectIndexIfNotPresent = () => {
 };
 
 // set port and listen for requests
-//if (require.main === module) { // avoid listening while testing
 if (!config.mode.test) { // avoid listening while testing
-  const PORT = process.env.PORT || config.api.port;
+  const PORT = process.env.PORT || config.api.port; // TODO: use only process.env...
   app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
-    audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${localeDateTime()}` });
+    // TODO: restore a working audit...
+    //audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${localeDateTime()}` });
   });
 } else { // export app for testing
   module.exports = app;

@@ -80,12 +80,15 @@ const UserSchema = mongoose.Schema({
     type: Boolean,
     default: true
   },
-  language: { // TODO: save this at any save request, from req.language
+  language: {
     type: String,
   },
 }, {timestamps: true});
 
-UserSchema.pre(["find", "findOne"], function() {
+//UserSchema.pre("find", function() {
+//UserSchema.pre(["find", "findOne"], function() {
+//UserSchema.pre(/^find|^count/, function() { // TODO !!!
+UserSchema.pre("find", function() {
   const user = this;
   let condition = {};
   if (!this.options.allowDeleted) condition.isDeleted = false;
@@ -97,6 +100,7 @@ UserSchema.pre("save", function(next) {
   const user = this;
 
   if (!user.isModified("password")) return next();
+  //if (!user.password) return next();
 
   user.hashPassword(user.password, async(err, hash) => {
     if (err) return next(err);
@@ -108,17 +112,20 @@ UserSchema.pre("save", function(next) {
 UserSchema.methods.hashPassword = async(password, callback) => {
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return callback(err);
-    if (!password) {
-      console.error("empty password in hashPassword");
-    }
     try {
-      //console.log("hashPassword, password, salt:", password, salt);
+      if (!password) {
+        let err = "empty password in user static method hashPassword";
+        //console.error(err);
+        return callback(err, null);
+      }
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return callback(err);
+//console.log("hashPassword", "PASSWORD:", password, ", HASH:", hash)
         return callback(null, hash);
       });
     } catch(err) {
       console.error("bcrypt.hash error:", err);
+      return callback(err, null);
     }
   });
 };
@@ -127,7 +134,7 @@ UserSchema.methods.comparePassword = (passwordInput, passwordUser) => {
   return bcrypt.compareSync(passwordInput, passwordUser);
 };
 
-UserSchema.methods.compareLocalPassword = (passwordInput, passwordUser) => {
+UserSchema.methods.compareLocalPassword = (passwordInput, passwordUser) => { // TODO: hash passepartout password too, and compare it with comparePassword()
   return passwordInput === passwordUser;
 };
 
