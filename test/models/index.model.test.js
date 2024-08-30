@@ -40,9 +40,9 @@ describe("API tests - Index of models", async function() {
     });
   });
 
-  // // TODO: enable this, correctly handling done() ...
-  // it("should populate database if empty", function(done) {
-  //   db.populate();
-  //   done();
-  // });
+  // TODO: enable this, correctly handling done() ... See TODO-REFACTOR-DB-POPULATE ...
+  it("should populate database if empty", function(done) {
+    db.populate();
+    done();
+  });
 });

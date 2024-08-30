@@ -85,10 +85,8 @@ const UserSchema = mongoose.Schema({
   },
 }, {timestamps: true});
 
-//UserSchema.pre("find", function() {
-//UserSchema.pre(["find", "findOne"], function() {
-//UserSchema.pre(/^find|^count/, function() { // TODO !!!
-UserSchema.pre("find", function() {
+UserSchema.pre(/^find|^count/, function() {
+  const operation = this.op; // we might need the effectiove operation matched
   const user = this;
   let condition = {};
   if (!this.options.allowDeleted) condition.isDeleted = false;
@@ -100,8 +98,7 @@ UserSchema.pre("save", function(next) {
   const user = this;
 
   if (!user.isModified("password")) return next();
-  //if (!user.password) return next();
-
+  
   user.hashPassword(user.password, async(err, hash) => {
     if (err) return next(err);
     user.password = hash;
@@ -134,7 +131,7 @@ UserSchema.methods.comparePassword = (passwordInput, passwordUser) => {
   return bcrypt.compareSync(passwordInput, passwordUser);
 };
 
-UserSchema.methods.compareLocalPassword = (passwordInput, passwordUser) => { // TODO: hash passepartout password too, and compare it with comparePassword()
+UserSchema.methods.compareClearPassword = (passwordInput, passwordUser) => {
   return passwordInput === passwordUser;
 };
 

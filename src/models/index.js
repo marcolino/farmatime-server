@@ -3,6 +3,7 @@ const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
 const { logger } = require("../controllers/logger.controller");
+require("dotenv").config({path: "../.env.dev"});
 const config = require("../config");
 
 
@@ -35,7 +36,7 @@ const populate = () => { // first time populate static reference documents
             logger.error("Error saving user:", err);
             throw(err);
           }
-          logger.info(`added user ${user.name} to users collection`);
+          logger.info(`added user ${user.firstName} ${user.lastName} to users collection`);
         });
       });
     }

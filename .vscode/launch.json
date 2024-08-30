@@ -12,35 +12,37 @@
       "platform": "node"
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Mocha Tests",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["run", "mocha"],
       "args": [
         "-u",
         "bdd",
         "--timeout",
-        "60000",
+        "10000",
         "--colors",
         "${workspaceFolder}/test/**/*.js"
       ],
-      "internalConsoleOptions": "openOnSessionStart",
-      "name": "Mocha Tests",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "request": "launch",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node"
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "cwd": "${workspaceFolder}"
     },
     {
       "args": [
         "-u",
         "bdd",
         "--timeout",
-        "999999",
+        "10000",
         "--colors",
         "${workspaceFolder}/test/controllers/auth.test"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests (auth only)",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      //"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["run", "mocha"],
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
@@ -52,13 +54,15 @@
         "-u",
         "bdd",
         "--timeout",
-        "999999",
+        "10000",
         "--colors",
         "${workspaceFolder}/test/controllers/user.test"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests (user only)",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      //"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["run", "mocha"],
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
@@ -70,13 +74,15 @@
         "-u",
         "bdd",
         "--timeout",
-        "999999",
+        "10000",
         "--colors",
         "${workspaceFolder}/test/controllers/payment.test"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests (payment only)",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      //"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["run", "mocha"],
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
@@ -88,13 +94,15 @@
         "-u",
         "bdd",
         "--timeout",
-        "999999",
+        "10000",
         "--colors",
         "${workspaceFolder}/test/models/"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests (models only)",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      //"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["run", "mocha"],
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
@@ -106,13 +114,15 @@
         "-u",
         "bdd",
         "--timeout",
-        "999999",
+        "10000",
         "--colors",
         "${workspaceFolder}/test/helpers/environment"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "name": "Mocha Tests (helpers/environment only)",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      //"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["run", "mocha"],
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"

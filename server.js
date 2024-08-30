@@ -71,7 +71,6 @@ app.use(rateLimitMiddleware);
 
 // verify if request verb is allowed
 app.use((req, res, next) => {
-  //if ((req.method !== "GET") && (req.method !== "POST")) { // check verb is allowed # TODO: make a list of accetted API methods in config.api
   if (config.api.allowedVerbs.includes(req.method)) {
     next();
   } else {
@@ -180,7 +179,7 @@ app.get("*", (req, res) => {
 
 // inject index file with client app config in indexInjected file
 const injectIndexIfNotPresent = () => {
-  // TODO: check also it exists but is older than config.js ...
+  // we could also check if it exists but is older than config.js, but better speed up things here...
   if (!fs.existsSync(path.resolve(rootClient, indexInjected))) {
     try {
       inject(rootClient, index, indexInjected, config.app);
@@ -193,7 +192,7 @@ const injectIndexIfNotPresent = () => {
 
 // set port and listen for requests
 if (!config.mode.test) { // avoid listening while testing
-  const PORT = process.env.PORT || config.api.port; // TODO: use only process.env...
+  const PORT = process.env.PORT;
   app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
     // TODO: restore a working audit...

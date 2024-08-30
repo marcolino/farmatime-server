@@ -1,5 +1,4 @@
-const i18n = require("./middlewares/i18n");
-
+//const i18n = require("./middlewares/i18n");
 const apiName = "ACME";
 const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
@@ -14,6 +13,7 @@ const development = (!test && (process.env.NODE_ENV !== "production")); // devel
 const stripeIsLive = process.env.STRIPE_MODE === "live"; // stripe mode is "live"  
 const serverBaseUrl = production ? `${urlPublic}` : `${urlLocal}`;
 const clientBaseUrl = production ? `${urlPublic}` : `${urlLocal}`;
+require("dotenv").config({ path: production ? "./.env" : "./.env.dev" });
 
 clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`;
 clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`;
@@ -26,7 +26,6 @@ module.exports = {
   },
   api: {
     name: apiName,
-    port: 5000,
     payloadLimit: "100mb",
     rateLimit: {
       maxRequestsPerMinute: 1000, // limit requests per minute (use 1 to throttle all requests)
@@ -90,18 +89,20 @@ module.exports = {
   logs: {
     file: "logs/acme.log", // logs and exceptions file
     papertrail: {
-      enable: false, // TODO: decide if we need papertrail logs...
+      enable: false,
       host: "logs6.papertrailapp.com",
       port: 18466,
     },
-  },
-  languages: { // TODO: mix into app.languages ...
-    supported: [ // list of backend supported languages; the last one is the fallback, and is mandatory here
-      "en",
-      "fr",
-      "it",
-    ],
-    default: "en",
+    levelMap: { // log levels for all currently foreseen modes
+      // in test mode skip console logging for levels lower than crit (error, warning, notice, info, debug)
+      // in production mode skip console logging for levels lower than warning (notice, info, debug)
+      // in staging mode skip console logging for levels lower than debug (none)
+      // in development mode skip console logging for levels lower than info (debug)
+      test: "crit",
+      production: "warning",
+      staging: "debug",
+      development: "debug",
+    },
   },
   locale: "it", // server's locale (for dates)
   currency,
@@ -157,7 +158,7 @@ module.exports = {
     },
   },
   email: {
-    dryrun: true, // if true, do not really send emails, use fake send (TODO: automatically set according to config.mode?)
+    dryrun: !production, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -231,8 +232,8 @@ module.exports = {
         email: "marcosolari@gmail.com",
       },
       contacts: {
-        claimsTitle: i18n.t("Our Company Claims"),
-        claimsSubtitle: i18n.t("We provide the best services in the industry, focusing on quality and customer satisfaction"),
+        // claimsTitle: i18n.t("Our Company Claims"),
+        // claimsSubtitle: i18n.t("We provide the best services in the industry, focusing on quality and customer satisfaction"),
         map: {
           center: [45.0708062, 7.5151672],
           zoom: 13,
@@ -281,17 +282,18 @@ module.exports = {
       country: "it",
       phonePrefix: "+39",
       languages: {
+        initial: "it", // the initial language to use for translations: when initializing i18next, setting the lng option determines the language that i18next will attempt to use first for translations
         supported: {
           "en": { icon: "🇬🇧" },
           "it": { icon: "🇮🇹" },
         },
-        fallback: "it",
+        fallback: "it", // defines the fallback language(s) to use when a translation in the initial language (lng) is not found; this can be a single language code, an array of language codes, or even a function that dynamically determines the fallback language based on the current language code
       },
     },
     ui: {
       footerHeight: "1.5rem",
       extraSmallWatershed: 600,
-      // mobileDesktopWatershed: 900,
+      mobileDesktopWatershed: 900,
       // sounds: {
       //   buttonClick,
       // },

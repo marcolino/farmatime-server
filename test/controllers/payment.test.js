@@ -29,6 +29,7 @@ describe("API tests - Payment routes", function() {
   it("should register normal user", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
+      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": config.user.password,
@@ -39,6 +40,7 @@ describe("API tests - Payment routes", function() {
         signupVerificationCode = res.body.code;
         chai.request(server)
         .post("/api/auth/signupVerification")
+        .set("Accept-Language", config.language)
         .send({ code: signupVerificationCode })
         .then(res => {
           res.should.have.status(200);
@@ -58,6 +60,7 @@ describe("API tests - Payment routes", function() {
   it("should login normal user", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
+      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": config.user.password,
@@ -79,6 +82,7 @@ describe("API tests - Payment routes", function() {
   it("should get payment mode, and it should be in a set of values", function(done) {
     chai.request(server)
       .get("/api/payment/mode")
+      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -95,6 +99,7 @@ describe("API tests - Payment routes", function() {
   it("should not create a checkout session without authentication", function(done) {
     chai.request(server)
       .post("/api/payment/createCheckoutSession")
+      .set("Accept-Language", config.language)
       //.set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -110,6 +115,7 @@ describe("API tests - Payment routes", function() {
   it("should not create a checkout session for a 0 cost product", function(done) {
     chai.request(server)
       .post("/api/payment/createCheckoutSession")
+      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({product: "free"})
       .then(res => {
@@ -125,6 +131,7 @@ describe("API tests - Payment routes", function() {
   it("should not create a checkout session for a non-existent product", function(done) {
     chai.request(server)
       .post("/api/payment/createCheckoutSession")
+      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({ product: "not existent" })
       .then(res => {
@@ -142,6 +149,7 @@ describe("API tests - Payment routes", function() {
   it("should create a checkout session for a standard product", function(done) {
     chai.request(server)
       .post("/api/payment/createCheckoutSession")
+      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({product: "standard"})
       .then(res => {
@@ -159,6 +167,7 @@ describe("API tests - Payment routes", function() {
   it("should redirect on a payment success call", function(done) {
     chai.request(server)
       .get("/api/payment/paymentSuccess")
+      .set("Accept-Language", config.language)
       .query({session_id: stripeSessionId})
       .redirects(0)
       .then(res => {
@@ -174,6 +183,7 @@ describe("API tests - Payment routes", function() {
   it("should redirect on a payment canceled call", function(done) {
     chai.request(server)
       .get("/api/payment/paymentCancel")
+      .set("Accept-Language", config.language)
       .query({session_id: stripeSessionId})
       .redirects(0)
       .then(res => {

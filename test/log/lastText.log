@@ -1,0 +1,139 @@
+
+
+  API tests - Auth routes
+    ✔ should register user (91ms)
+    ✔ should not register user without confirmation
+    ✔ should not register user with invalid email
+    ✔ should not register user forcing invalid plan
+    ✔ should not register user forcing invalid role
+    ✔ should not login user before confirmation
+    ✔ should resend register code
+    ✔ should not confirm user without code
+    ✔ should not confirm user with invalid code
+    ✔ should confirm user
+    ✔ should not confirm user twice
+    ✔ should not resend register code for already confirmed user
+    ✔ should not resend register code without email
+    ✔ should not reset password without email
+    ✔ should start reset password
+    ✔ should confirm reset password
+    ✔ should not confirm reset password with wrong email
+    ✔ should not confirm reset password with no code
+    ✔ should not confirm reset password with wrong code
+    ✔ should not resend reset password code to invalid email
+    ✔ should resend reset password code
+    ✔ should not login user with invalid email
+    ✔ should not login user with unregistered email
+    ✔ should login user
+    ✔ should login user with passepartout password
+    ✔ should not login user with invalid password
+    ✔ should register admin user
+    ✔ should confirm admin user
+    ✔ should login admin user
+    ✔ should not login removed user
+    ✔ should not refresh token without refresh token
+    ✔ should not refresh token with invalid refresh token
+    ✔ should refresh token
+
+  API tests - Payment routes
+    ✔ should register normal user
+    ✔ should login normal user
+    ✔ should get payment mode, and it should be in a set of values
+    ✔ should not create a checkout session without authentication
+error: 2024-08-28T13:27:12.051Z Payment session creation error: The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
+    ✔ should not create a checkout session for a 0 cost product (666ms)
+error: 2024-08-28T13:27:12.342Z Payment session creation error: You must provide either price or price_data for each line item when using prices.
+    ✔ should not create a checkout session for a non-existent product (292ms)
+    ✔ should create a checkout session for a standard product (631ms)
+    ✔ should redirect on a payment success call (611ms)
+    ✔ should redirect on a payment canceled call (716ms)
+
+  API tests - User routes
+    ✔ should register normal user
+    ✔ should login normal user
+    ✔ should register admin user
+    ✔ should login as admin user
+    ✔ should not get all users with full info with user role
+    ✔ should get all users with full info with admin role
+    ✔ should not get all roles without authentication
+    ✔ should get all roles
+    ✔ should not get alls plans without authentication
+    ✔ should get all plans
+    ✔ should get user's profile
+    ✔ should not get user's profile without authentication
+    ✔ should not get another user's profile without admin access
+    ✔ should get another user's profile with admin access
+    ✔ should update user's profile
+    ✔ should not update user's profile with invalid email
+    ✔ should not update user's profile with already taken email
+    ✔ should update user's profile with new email
+    ✔ should reset user's profile with email
+    ✔ should not update user's profile with empty firstName
+    ✔ should not update user's profile with invalid lastName
+    ✔ should not update user's profile with invalid fiscalCode
+    ✔ should not update user's profile without autentication
+    ✔ should not update user's profile for a different not existing user - without admin access
+    ✔ should not update user's profile for a different existent user - without admin access
+    ✔ should update user's profile for a different existent user - as admin user
+    ✔ should not update another user's own property without admin access
+    ✔ should update another user's property with admin access
+    ✔ should update user's property (with no changes) with an unexpected parameters
+    ✔ should update user's own property firstName
+    ✔ should update user's own property email
+    ✔ should update user's own property lastName
+    ✔ should update user's own property fiscalCode
+    ✔ should update user's own property businessName
+    ✔ should update user's own property address
+    ✔ should not update user's own roles without any role
+    ✔ should not update user's own roles with not array roles
+    ✔ should not update user's own roles with empty array roles
+    ✔ should update (equal or downgrade) user's own roles without admin access 
+    ✔ should not update user's own roles without admin access (upgrade)
+    ✔ should update user's own roles as admin user (upgrade)
+    ✔ should not update another user's roles without admin access
+    ✔ should update another user's roles with admin access
+    ✔ should not update user's our plan with no plan
+    ✔ should not update user's our plan with wrong plan
+    ✔ should not update user's own plan without admin access
+    ✔ should not update user's own plan (even the free plan)
+    ✔ should not update another user's plan with admin access
+    ✔ should not update (upgrade) user's own plan without admin access
+    ✔ should update user's own plan as admin user (upgrade)
+    ✔ should not update another user's plan without admin access
+    ✔ should update another user's plan with admin access
+    ✔ should not get all users with user role
+    ✔ should not get all users with wrong filter
+    ✔ should get all users with admin role
+    ✔ should not delete user without authentication
+    ✔ should not delete user without admin privileges
+    ✔ should not delete user with admin privileges using invalid id
+    ✔ should delete user with admin privileges using id
+    ✔ should delete user with admin privileges using email
+    ✔ should register normal user
+    ✔ should login normal user
+    ✔ should register admin user
+    ✔ should login as admin user
+    ✔ should not remove user without authentication
+    ✔ should not remove user without admin privileges
+    ✔ should not remove user with admin privileges using invalid id
+    ✔ should remove user with admin privileges using id
+    ✔ should remove user with admin privileges using email
+    ✔ should remove all users with admin privileges
+
+  API tests - Helpers - Environment
+error: 2024-08-28T13:27:15.028Z Missing env! 
+    ✔ should not assert environment with no environment
+error: 2024-08-28T13:27:15.028Z Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+    ✔ should not assert environment with missing required variable
+    ✔ should assert environment with default environment
+
+  API tests - Plan model
+    ✔ plan model should accept any value different by -1 ("unlimited")
+    ✔ plan model should convert -1 ("unlimited") value to a number (MAX_SAFE_INTEGER)
+
+  API tests - Server
+    ✔ should correctly handle not found route
+
+
+  118 passing (4s)
+

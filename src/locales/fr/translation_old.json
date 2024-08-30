@@ -106,6 +106,7 @@
   "Request Header Fields Too Large": "",
   "Request Timeout": "",
   "Requested file is undefined": "Le fichier demandé n'est pas défini",
+  "Requested password is the same as the previous one": "Le mot de passe demandé est le même que le précédent",
   "Reset Content": "",
   "see other": "",
   "See Other": "",

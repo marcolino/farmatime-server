@@ -9,15 +9,8 @@ LABEL fly_launch_runtime="Node.js"
 # node.js app lives here
 WORKDIR /app
 
-# set production environment (TODO: use .env.NODE_ENV)
-ENV NODE_ENV="production"
-
-# # install yarn
-# RUN corepack enable && \
-#     yarn set version ${YARN_VERSION}
-
-# install Yarn globally and set the version to Berry (latest stable, currently 4.x)
-#RUN npm --force install -g yarn
+# set production environment
+#ENV NODE_ENV="production" # (using .env.NODE_ENV)
 
 # initialize Yarn project
 ARG YARN_VERSION=3.6.1
@@ -45,9 +38,8 @@ FROM base
 # copy built application
 COPY --from=build /app /app
 
-# expose the server port (TODO: use .env.PORT)
-EXPOSE 5000
-#EXPOSE ${PORT}
+# expose the server port (using .env.PORT)
+EXPOSE ${PORT}
 
 # start the server by default (can be overwritten at runtime)
 CMD [ "yarn", "run", "start" ]

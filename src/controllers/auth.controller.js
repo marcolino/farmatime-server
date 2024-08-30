@@ -211,13 +211,13 @@ const signin = async (req, res, next) => {
   .populate("plan", "-__v")
   .exec(async (err, user) => {
     if (err) {
-      logger.error("Error finding user in signin request:", err);
+      logger.error(req.t("Error finding user in signin request: {{err}}", { err: error.message }));
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
 
     // check user is found
     if (!user) {
-      return res.status(401).json({ message: req.t("User not found") });
+      return res.status(401).json({ message: req.t("User not found") }); // return "Wrong credentials", if we want to to give less surface to attackers
     }
 
     // check user is not deleted
@@ -234,13 +234,15 @@ const signin = async (req, res, next) => {
 
     // check input password with user's crypted assword, then with passepartout password
     if (!user.comparePassword(req.parameters.password, user.password)) {
-      if (!user.compareLocalPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)) {
-        return res.status(401).json({
-          accessToken: null,
-          // return "Wrong credentials", if we want to to give less info to attackers
-          message: req.t("Wrong password"),
-        });
-      }
+      if (!user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)) {
+      //user.hashPassword(req.parameters.password, async (err, passepartoutPasswordHashed) => {
+      //  if (!err && !user.comparePassword(req.parameters.password, passepartoutPasswordHashed)) {
+          return res.status(401).json({
+            accessToken: null,
+            message: req.t("Wrong password"), // return "Wrong credentials", if we want to to give less surface to attackers
+          });
+        }
+      //});
     }
 
     // creacte new access token

@@ -36,6 +36,8 @@
     "list-deadfiles": "npx deadfile ./server.js --dir src/",
     "find-problems": "npx eslint server.js src/",
     "_docker-build-args": "$(for i in $(grep -vE '^#|^$' .env); do out+=\"--build-arg $i \"; done; echo $out; out=\"\")",
+    "docker-build-dev": "rm -f client/build/index-injected.html; export NODE_ENV=$(grep NODE_ENV .env.dev | cut -d '=' -f2) PORT=$(grep PORT .env.dev | cut -d '=' -f2); docker build -t acmeserver:latest .",
+    "docker-run-dev": "PORT=$(grep PORT .env.dev | cut -d '=' -f2); docker run -p ${PORT}:${PORT} --env-file .env.dev acmeserver",
     "docker-build": "rm -f client/build/index-injected.html; export NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) PORT=$(grep PORT .env | cut -d '=' -f2); docker build -t acmeserver:latest .",
     "docker-run": "PORT=$(grep PORT .env | cut -d '=' -f2); docker run -p ${PORT}:${PORT} --env-file .env acmeserver",
     "fly-import-secrets": "cat .env | fly secrets import",
@@ -53,6 +55,7 @@
   ],
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cheerio": "1.0.0",
     "codice-fiscale-js": "^2.3.18",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -79,10 +82,13 @@
     "chai-spies": "^1.0.0",
     "eslint": "^9.9.0",
     "globals": "^15.9.0",
-    "i18next-parser": "^7.7.0",
+    "i18next-parser": "9.0.2",
     "mocha": "^9.2.2",
     "nodemon": "^2.0.15",
     "nyc": "^15.1.0"
   },
-  "packageManager": "yarn@3.6.1"
+  "packageManager": "yarn@3.6.1",
+  "dependenciesMetadata": {
+    "unplugged": []
+  }
 }

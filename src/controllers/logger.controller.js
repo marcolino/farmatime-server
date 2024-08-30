@@ -76,6 +76,13 @@ try {
     );
   }
 
+  const levelMap = {
+    test: 'crit',
+    production: 'warning',
+    staging: 'debug',
+    development: 'debug'
+  };
+  
   transports.push(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.timestamp(),
@@ -88,11 +95,14 @@ try {
         return `${level}: ${timestamp} ${message} ${strArgs}`;
       })
     ),
-    // if we are in test skip console logging for levels lower than warning (notice, info, debug)
-    // if we are in production mode skip console logging for levels lower than notice (info, debug)
-    // TODO: we currentrly consider production" as "staging"... Consider having also a staging mode...
-    //       so in staging we use level: "debug" and in production level: "warning" ... (?)
-    level: (config.mode.test ? "error" : (config.mode.production ? "debug" : "debug")),
+    level: config.logs.levelMap[config.mode] || "debug",
+    // level: (
+    //   config.mode.test ? "crit" :
+    //   config.mode.production ? "warning" :
+    //   config.mode.staging ? "debug" :
+    //   config.mode.development ? "debug" :
+    //   "debug" // unforeseen level
+    // ),
     handleExceptions: true,
     prettyPrint: true,
     colorize: colorize,

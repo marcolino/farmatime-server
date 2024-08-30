@@ -12,8 +12,8 @@ cat "$lastLog" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g" > "$last
 
 #passing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*passing\s*.*/\1/p'`
 #failing=`cat "$lastTextLog" | sed -n 's/^\s*\([0-9]*\)\s*failing\s*.*/\1/p'`
-passing=`cat "$lastTextLog" | grep '✔' | wc -l`
-failing=`` # TODO ...
+passing=`cat "$lastTextLog" | egrep '✔' | wc -l`
+failing=`cat "$lastTextLog" | egrep '^\s?\d+\)' | wc -l`
 
 #echo "PASSING: $passing"
 #echo "FAILING: $failing"

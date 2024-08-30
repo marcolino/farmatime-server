@@ -5,6 +5,7 @@
 process.env.NODE_ENV = "test";
 
 const config = {
+  language: "en",
   admin: {
     name: "Alice",
     surname: "Azure",

@@ -14,7 +14,7 @@ const { config } = require("./config.test");
 
 chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
 
-let accessTokenUser, accessTokenAdmin;
+//let accessTokenUser, accessTokenAdmin;
 
 describe("API tests - Server", async function() {
 
