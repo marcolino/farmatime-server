@@ -282,7 +282,7 @@ module.exports = {
       country: "it",
       phonePrefix: "+39",
       languages: {
-        initial: "it", // the initial language to use for translations: when initializing i18next, setting the lng option determines the language that i18next will attempt to use first for translations
+        initial: "it", // the initial language to use for translations: when initializing i18next, setting the lng option determines the language (lng) that i18next will attempt to use first for translations
         supported: {
           "en": { icon: "🇬🇧" },
           "it": { icon: "🇮🇹" },
