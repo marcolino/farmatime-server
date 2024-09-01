@@ -151,4 +151,3 @@ Citations:
 
 detect secrets:
  - pip intall detect-secrets
- - pip install pre-commit

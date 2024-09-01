@@ -18,4 +18,3 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 **/.env*
-.venv/
