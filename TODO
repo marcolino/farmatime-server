@@ -44,6 +44,7 @@ TODO:
 - quando si registra un utente, accettare anche utenti in stato isDeleted (attualmente no, si potrebbe poi implementare un pruning degli utenti cancellati...) - OK
 - aggiungere language nel doc user, settarlo in fase di login da req.language, e usarlo quando si inviano emails bulk, e testare il tutto - OK
 - aggiungere un tool per il controllo di secrets nel codice
+
 NEWFEATURE:
 - decidere come gestire le notifiche in produzione (acquistare un piano su papertrail.com?)
 - rimuovere gli account non confermati, periodicamente (?)

@@ -112,10 +112,10 @@ These variables are accessible in your Node.js application via `process.env`. Fo
 If your application requires secure secrets (like API keys or passwords), you can set them using the `fly secrets set` command. For example:
 
 ```bash
-fly secrets set SECRET='YourSecureSecretHere'
+fly secrets set SECRET='...'
 ```
 
-Replace `'YourSecureSecretHere'` with your actual secret. This command adds the secret to your application's environment variables securely [2].
+Replace `'...'` with your actual secret. This command adds the secret to your application's environment variables securely [2].
 
 ### Step 6: Deploy Your App
 
@@ -148,4 +148,6 @@ Citations:
 [8] https://community.fly.io/t/unable-to-connect-to-deployed-fly-io-node-express-app/17710
 [9] https://nx.dev/recipes/node/node-server-fly-io
 
- 
+
+detect secrets:
+ - pip intall detect-secrets
