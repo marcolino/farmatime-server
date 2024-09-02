@@ -148,6 +148,27 @@ Citations:
 [8] https://community.fly.io/t/unable-to-connect-to-deployed-fly-io-node-express-app/17710
 [9] https://nx.dev/recipes/node/node-server-fly-io
 
-
+hooks:
+ - sudo apt install pre-commit
+ 
 detect secrets:
  - pip intall detect-secrets
+ - pip install pre-commit
+ - echo >>>EOT
+# .pre-commit-config.yaml
+repos:
+-   repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+    -   id: detect-secrets
+        args: ['--baseline', '.detect-secrets.baseline']
+EOT > .pre-commit-config.yaml
+ - yarn run detect-commit-scan
+ - yarn run detect-commit-audit
+ - pre-commit install
+ - `git commit` as usual...
+$ npx detect-secrets src/config.js 
+
+
+betterstack:
+ May I use the free plan to test betterstack logs integration with my node.js express app, without inserting a CC? I ask because I get UNAUTHORIZED error from @logtail-node both using the global API token and a lokgs API token...

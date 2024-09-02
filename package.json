@@ -43,7 +43,7 @@
     "fly-import-secrets": "cat .env | fly secrets import",
     "fly-deploy": "fly deploy",
     "fly-logs": "fly logs",
-    "detect-secrets-scan": "detect-secrets scan --exclude-files client --exclude-files test/ --exclude-files logs --exclude-files .yarn --exclude-secrets 'cat .env | fly secrets import' --exclude-secrets '(Wrong password|Mauvais mot de passe|Password errata)' > .detect-secrets.baseline",
+    "detect-secrets-scan": "detect-secrets scan --exclude-files client --exclude-files test/ --exclude-files logs --exclude-files .yarn --exclude-files .venv --exclude-secrets 'cat .env | fly secrets import' --exclude-secrets '(Wrong password|Mauvais mot de passe|Password errata)' > .detect-secrets.baseline",
     "detect-secrets-audit": "detect-secrets audit .detect-secrets.baseline"
   },
   "keywords": [
@@ -56,6 +56,8 @@
     "mongodb"
   ],
   "dependencies": {
+    "@logtail/node": "^0.5.0",
+    "@logtail/winston": "^0.5.0",
     "bcryptjs": "^2.4.3",
     "cheerio": "1.0.0",
     "codice-fiscale-js": "^2.3.18",

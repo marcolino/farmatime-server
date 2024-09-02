@@ -8,7 +8,7 @@ i18next
   .use(backend)
   .use(i18nextMiddleware.LanguageDetector)
   .init({
-    debug: true,
+    debug: false,
     backend: {
       loadPath: __dirname + "/../locales/{{lng}}/{{ns}}.json"
     },
