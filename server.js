@@ -18,8 +18,6 @@ const config = require("./src/config");
 const index = "index.html"; // index file name to be injected
 const indexInjected = "index-injected.html"; // injected index file name
 
-const secret = "MY FAKE PASSWORD"; // pragma: allowlist secret
-
 // instantiate express app
 const app = express();
 
