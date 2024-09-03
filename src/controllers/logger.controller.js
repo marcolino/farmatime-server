@@ -7,37 +7,10 @@ require("winston-syslog");
 
 const hostname = require("os").hostname;
 
-// const colors = {
-//   Reset: "\x1b[0m",
-//   Bright: "\x1b[1m",
-//   Dim: "\x1b[2m",
-//   Underscore: "\x1b[4m",
-//   Blink: "\x1b[5m",
-//   Reverse: "\x1b[7m",
-//   Hidden: "\x1b[8m",
-//   FgBlack: "\x1b[30m",
-//   FgRed: "\x1b[31m",
-//   FgGreen: "\x1b[32m",
-//   FgYellow: "\x1b[33m",
-//   FgBlue: "\x1b[34m",
-//   FgMagenta: "\x1b[35m",
-//   FgCyan: "\x1b[36m",
-//   FgWhite: "\x1b[37m",
-//   BgBlack: "\x1b[40m",
-//   BgRed: "\x1b[41m",
-//   BgGreen: "\x1b[42m",
-//   BgYellow: "\x1b[43m",
-//   BgBlue: "\x1b[44m",
-//   BgMagenta: "\x1b[45m",
-//   BgCyan: "\x1b[46m",
-//   BgWhite: "\x1b[47m",
-// };
-
 let logger = null;
 const transports = [];
 const exceptionHandlers = [];
 const colorize = false;
-console.log('Using BETTERSTACK_API_TOKEN:', process.env.BETTERSTACK_API_TOKEN); // TODO: REMOVEME...
 const logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
 
 try {
@@ -82,7 +55,7 @@ try {
         return `${level}: ${timestamp} ${message} ${strArgs}`;
       })
     ),
-    level: config.logs.levelMap[config.mode] || "debug",
+    level: config.logs.levelMap[config.mode.production ? "production" : config.mode.development ? "development" : config.mode.test ? "test" : "debug"],
     handleExceptions: true,
     prettyPrint: true,
     colorize: colorize,
@@ -96,9 +69,12 @@ try {
   exceptionHandlers.push(
     new winston.transports.File({ filename: config.logs.file }), // local file exceptions transport
   );
-  exceptionHandlers.push(
-    new LogtailTransport(logtail), // BetterStack exceptions transport
-  );
+
+  if (config.mode.production && config.logs.betterstack.enable) { // use logtail transport on betterstack only in production
+    exceptionHandlers.push(
+      new LogtailTransport(logtail), // BetterStack exceptions transport
+    );
+  }
 
   if (config.mode.production && config.logs.papertrail.enable) { // use syslog transport on papertrail only in production
     exceptionHandlers.push(
@@ -111,7 +87,7 @@ try {
     );
   }
 } catch(err) {
-  console.error("Winston exceptions handlers creation error:", err); // nothing better to do on errors while setting up logger...
+  console.error("Winston exceptions handlers creation error:", err);
   throw(err);
 }
 
@@ -121,10 +97,9 @@ try {
     exceptionHandlers
   });
 } catch(err) {
-  console.error("Winston logger creation error:", err); // nothing better to do on errors while setting up logger...
+  console.error("Winston logger creation error:", err);
 }
 
 module.exports = {
   logger,
-  //colors,
 };

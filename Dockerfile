@@ -9,11 +9,11 @@ LABEL fly_launch_runtime="Node.js"
 # node.js app lives here
 WORKDIR /app
 
-# set production environment
-#ENV NODE_ENV="production" # (using .env.NODE_ENV)
+# using .env.NODE_ENV / .env-dev.NODE_ENV file for environment selection
+#ENV NODE_ENV="..."
 
 # initialize Yarn project
-ARG YARN_VERSION=3.6.1
+ARG YARN_VERSION=4.4.1
 RUN yarn set version ${YARN_VERSION}
 
 # throw-away build stage to reduce size of final image
@@ -25,7 +25,7 @@ apt-get update -qq && \
 apt-get install --no-install-recommends -y \
 build-essential node-gyp pkg-config python-is-python3
 
-# install node modules
+# install yarn dependencies
 COPY --link .yarnrc.yml package.json yarn.lock ./
 RUN yarn install --immutable
 

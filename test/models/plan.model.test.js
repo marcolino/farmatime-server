@@ -21,6 +21,9 @@ describe("API tests - Plan model", async function() {
 
   it("plan model should accept any value different by -1 (\"unlimited\")", function(done) {
     Plan.findOne({}, (err, plan) => {
+      if (err) {
+        return done(err);
+      }
       should.exist(plan);
       //const number = 123;
       //plan.cigNumberAllowed = number;
@@ -35,6 +38,9 @@ describe("API tests - Plan model", async function() {
 
   it("plan model should convert -1 (\"unlimited\") value to a number (MAX_SAFE_INTEGER)", function(done) {
     Plan.findOne({}, (err, plan) => {
+      if (err) {
+        return done(err);
+      }
       should.exist(plan);
       //plan.cigNumberAllowed = -1;
       plan.save((err, plan) => {

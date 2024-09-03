@@ -1,0 +1,17 @@
+{
+  "entry": ["server.js", "src/**/*.js}"],
+  "extensions": [".js"],
+  "ignoreUnresolved": [],
+  "ignoreUnused": [],
+  "ignoreUnimported": [
+    "src/misc/strings-for-translation.js"
+  ],
+  "ignorePatterns": [
+    "**/.github/**",
+    "**/.nyc_output/",
+    "**/.vscode/**",
+    "**/.yarn/**",
+    "**/test/**"
+  ],
+  "respectGitignore": true
+}

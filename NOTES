@@ -152,8 +152,7 @@ hooks:
  - sudo apt install pre-commit
  
 detect secrets:
- - pip intall detect-secrets
- - pip install pre-commit
+ - 
  - echo >>>EOT
 # .pre-commit-config.yaml
 repos:
@@ -161,13 +160,15 @@ repos:
     rev: v1.5.0
     hooks:
     -   id: detect-secrets
-        args: ['--baseline', '.detect-secrets.baseline']
+        args: [
+                '--exclude-files', 'client',
+                '--exclude-files', 'test',
+                '--exclude-files', 'logs/*',
+                '--exclude-secrets', 'cat .env \| fly secrets import'
+              ]
 EOT > .pre-commit-config.yaml
- - yarn run detect-commit-scan
- - yarn run detect-commit-audit
  - pre-commit install
- - `git commit` as usual...
-$ npx detect-secrets src/config.js 
+ - `git commit` as usual; if secrets in staged files, do not commit with explanation
 
 
 betterstack:

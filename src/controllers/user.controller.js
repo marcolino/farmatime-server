@@ -432,7 +432,7 @@ const sendEmailToUsers = async (req, res, next) => {
     for (const user of users) {
       let to = user.email;
       try {
-        req.language = user.language; // get user language (when it ill be available)
+        req.language = user.language; // get user language
         await emailService.send(req, {
           to: user.email,
           subject,

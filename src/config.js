@@ -88,6 +88,9 @@ module.exports = {
   },
   logs: {
     file: "logs/acme.log", // logs and exceptions file
+    betterstack: {
+      enable: true,
+    },
     papertrail: {
       enable: false,
       host: "logs6.papertrailapp.com",

@@ -1,4 +1,3 @@
-TODO:
 - tradurre le notifiche e i messaggi logger - NO
 - rivedere /api/user/updateUserProperty (e successive) come /api/user/updateUser - NO
 - cambiare nomi controllers: controllers/articles.controllers.js => controllers/articles.js - NO
@@ -44,8 +43,8 @@ TODO:
 - quando si registra un utente, accettare anche utenti in stato isDeleted (attualmente no, si potrebbe poi implementare un pruning degli utenti cancellati...) - OK
 - aggiungere language nel doc user, settarlo in fase di login da req.language, e usarlo quando si inviano emails bulk, e testare il tutto - OK
 - aggiungere un tool per il controllo di secrets nel codice - OK
+- decidere come gestire le notifiche in produzione (betterstack) - OK
 
 NEWFEATURE:
-- decidere come gestire le notifiche in produzione (betterstack?)
-- rimuovere gli account non confermati, periodicamente (?)
-- aggiungere l'anno di riferimento ai prodotti stripe ()
+- rimuovere gli account non confermati, periodicamente (quando sarà necessario)
+- aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)

@@ -1,7 +1,7 @@
 
 
   API tests - Auth routes
-    ✔ should register user (91ms)
+    ✔ should register user (100ms)
     ✔ should not register user without confirmation
     ✔ should not register user with invalid email
     ✔ should not register user forcing invalid plan
@@ -40,13 +40,11 @@
     ✔ should login normal user
     ✔ should get payment mode, and it should be in a set of values
     ✔ should not create a checkout session without authentication
-error: 2024-08-28T13:27:12.051Z Payment session creation error: The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
-    ✔ should not create a checkout session for a 0 cost product (666ms)
-error: 2024-08-28T13:27:12.342Z Payment session creation error: You must provide either price or price_data for each line item when using prices.
-    ✔ should not create a checkout session for a non-existent product (292ms)
-    ✔ should create a checkout session for a standard product (631ms)
-    ✔ should redirect on a payment success call (611ms)
-    ✔ should redirect on a payment canceled call (716ms)
+    ✔ should not create a checkout session for a 0 cost product (924ms)
+    ✔ should not create a checkout session for a non-existent product (327ms)
+    ✔ should create a checkout session for a standard product (606ms)
+    ✔ should redirect on a payment success call (613ms)
+    ✔ should redirect on a payment canceled call (603ms)
 
   API tests - User routes
     ✔ should register normal user
@@ -121,11 +119,12 @@ error: 2024-08-28T13:27:12.342Z Payment session creation error: You must provide
     ✔ should remove all users with admin privileges
 
   API tests - Helpers - Environment
-error: 2024-08-28T13:27:15.028Z Missing env! 
     ✔ should not assert environment with no environment
-error: 2024-08-28T13:27:15.028Z Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
     ✔ should not assert environment with missing required variable
     ✔ should assert environment with default environment
+
+  API tests - Index of models
+    ✔ should populate database if empty
 
   API tests - Plan model
     ✔ plan model should accept any value different by -1 ("unlimited")
@@ -135,5 +134,5 @@ error: 2024-08-28T13:27:15.028Z Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_
     ✔ should correctly handle not found route
 
 
-  118 passing (4s)
+  119 passing (5s)
 

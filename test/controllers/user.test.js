@@ -1298,9 +1298,6 @@ function signupAndSigninAllUsers() {
         res.body.should.have.property("accessToken");
         res.body.should.have.property("roles");
         res.body.should.have.property("id");
-        //expect(res.body.roles).to.include("admin");
-        //expect(res.body.roles).some(role => role.name === "admin");
-        //expect(containsObjectWithPropertyValue(res.body.roles, "name", "admin")).to.be.true;
         expect(res.body.roles.some(obj => obj.name === "admin")).to.be.true;
         accessTokenAdmin = res.body.accessToken;
         config.admin.id = res.body.id;

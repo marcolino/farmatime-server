@@ -1,106 +1,56 @@
-info: 2024-08-29T16:24:53.594Z Loading development environment 
-info: 2024-08-29T16:24:53.718Z Successfully connected to MongoDB 
 
 
   API tests - Auth routes
-info: 2024-08-29T16:24:53.836Z VERIFICATION CODE: 953849
-info: 2024-08-29T16:24:53.839Z Email sent to user@mail.com with message id virtual-send-message-id 
-    ✔ should register user (95ms)
+    ✔ should register user (100ms)
     ✔ should not register user without confirmation
     ✔ should not register user with invalid email
     ✔ should not register user forcing invalid plan
     ✔ should not register user forcing invalid role
     ✔ should not login user before confirmation
-info: 2024-08-29T16:24:53.876Z Email sent to user@mail.com with message id virtual-send-message-id 
     ✔ should resend register code
     ✔ should not confirm user without code
     ✔ should not confirm user with invalid code
-info: 2024-08-29T16:24:53.892Z User signup: {"roles":["66cf15f733c6e760045ac86f"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d59e8034c709d322c8","email":"user@mail.com","password":"$2a$10$8Fwvgxon.xy2BZTdTFDeCOLKeUErdBxT5DgO9n2tp2c9glpfihjm2","plan":"66cf15f733c6e760045ac878","createdAt":"2024-08-29T16:24:53.774Z","updatedAt":"2024-08-29T16:24:53.890Z","__v":0} 
-info: 2024-08-29T16:24:53.898Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should confirm user
     ✔ should not confirm user twice
     ✔ should not resend register code for already confirmed user
     ✔ should not resend register code without email
     ✔ should not reset password without email
-info: 2024-08-29T16:24:53.921Z Sending email: to: user@mail.com, from: undefined, subject: Password change request 
-info: 2024-08-29T16:24:53.922Z Email sent to user@mail.com with message id virtual-send-message-id 
     ✔ should start reset password
     ✔ should confirm reset password
     ✔ should not confirm reset password with wrong email
     ✔ should not confirm reset password with no code
     ✔ should not confirm reset password with wrong code
     ✔ should not resend reset password code to invalid email
-info: 2024-08-29T16:24:53.998Z Sending email: user@mail.com  Reset Password Verification Code
-info: 2024-08-29T16:24:53.999Z Email sent to user@mail.com with message id virtual-send-message-id 
     ✔ should resend reset password code
     ✔ should not login user with invalid email
     ✔ should not login user with unregistered email
-info: 2024-08-29T16:24:54.071Z User signin: user@mail.com 
-info: 2024-08-29T16:24:54.071Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login user
-info: 2024-08-29T16:24:54.076Z Saved user's language: en
-info: 2024-08-29T16:24:54.137Z User signin: user@mail.com 
-info: 2024-08-29T16:24:54.137Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login user with passepartout password
-info: 2024-08-29T16:24:54.139Z Saved user's language: en
     ✔ should not login user with invalid password
-info: 2024-08-29T16:24:54.259Z VERIFICATION CODE: 109006
-info: 2024-08-29T16:24:54.262Z Email sent to admin@mail.com with message id virtual-send-message-id 
     ✔ should register admin user
-info: 2024-08-29T16:24:54.269Z User signup: {"roles":["66cf15f733c6e760045ac872"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d69e8034c709d32301","email":"admin@mail.com","password":"$2a$10$OBk16cOrSJOJhjzZPhp.a.PFiJMhtOUigK3DlrLQ1b5ShJYCpfmcu","plan":"66cf15f733c6e760045ac878","createdAt":"2024-08-29T16:24:54.203Z","updatedAt":"2024-08-29T16:24:54.268Z","__v":0} 
-info: 2024-08-29T16:24:54.270Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should confirm admin user
-info: 2024-08-29T16:24:54.329Z User signin: admin@mail.com 
-info: 2024-08-29T16:24:54.329Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login admin user
-info: 2024-08-29T16:24:54.332Z Saved user's language: en
     ✔ should not login removed user
     ✔ should not refresh token without refresh token
     ✔ should not refresh token with invalid refresh token
     ✔ should refresh token
 
   API tests - Payment routes
-info: 2024-08-29T16:24:54.412Z VERIFICATION CODE: 920462
-info: 2024-08-29T16:24:54.412Z Email sent to user@mail.com with message id virtual-send-message-id 
-info: 2024-08-29T16:24:54.419Z User signup: {"roles":["66cf15f733c6e760045ac86f"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d69e8034c709d3231b","email":"user@mail.com","password":"$2a$10$5N/z/xHUtd/19vdYRMSTtOTBgarNiZ7G4VGXVuQx69SsHP7tQTuui","plan":"66cf15f733c6e760045ac878","createdAt":"2024-08-29T16:24:54.357Z","updatedAt":"2024-08-29T16:24:54.417Z","__v":0} 
-info: 2024-08-29T16:24:54.419Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should register normal user
-info: 2024-08-29T16:24:54.484Z User signin: user@mail.com 
-info: 2024-08-29T16:24:54.484Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login normal user
-info: 2024-08-29T16:24:54.486Z Saved user's language: en
     ✔ should get payment mode, and it should be in a set of values
     ✔ should not create a checkout session without authentication
-error: 2024-08-29T16:24:55.195Z Payment session creation error: The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
-    ✔ should not create a checkout session for a 0 cost product (704ms)
-error: 2024-08-29T16:24:55.470Z Payment session creation error: You must provide either price or price_data for each line item when using prices.
-    ✔ should not create a checkout session for a non-existent product (278ms)
-info: 2024-08-29T16:24:56.047Z Payment session created 
-    ✔ should create a checkout session for a standard product (581ms)
-info: 2024-08-29T16:24:56.608Z Payment successful for product standard 
-    ✔ should redirect on a payment success call (558ms)
-info: 2024-08-29T16:24:57.179Z Payment canceled for product standard 
-    ✔ should redirect on a payment canceled call (570ms)
+    ✔ should not create a checkout session for a 0 cost product (924ms)
+    ✔ should not create a checkout session for a non-existent product (327ms)
+    ✔ should create a checkout session for a standard product (606ms)
+    ✔ should redirect on a payment success call (613ms)
+    ✔ should redirect on a payment canceled call (603ms)
 
   API tests - User routes
-info: 2024-08-29T16:24:57.242Z VERIFICATION CODE: 226618
-info: 2024-08-29T16:24:57.243Z Email sent to user@mail.com with message id virtual-send-message-id 
-info: 2024-08-29T16:24:57.249Z User signup: {"roles":["66cf15f733c6e760045ac86f"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d99e8034c709d3232e","email":"user@mail.com","password":"$2a$10$6PmeKtyOlQlZbnCidrxevuX8V0zrI1ZSrnbpkHwXO9yhjubx8l2YK","plan":"66cf15f733c6e760045ac878","createdAt":"2024-08-29T16:24:57.188Z","updatedAt":"2024-08-29T16:24:57.248Z","__v":0} 
-info: 2024-08-29T16:24:57.250Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should register normal user
-info: 2024-08-29T16:24:57.312Z User signin: user@mail.com 
-info: 2024-08-29T16:24:57.312Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login normal user
-info: 2024-08-29T16:24:57.314Z Saved user's language: en
-info: 2024-08-29T16:24:57.373Z VERIFICATION CODE: 425585
-info: 2024-08-29T16:24:57.374Z Email sent to admin@mail.com with message id virtual-send-message-id 
-info: 2024-08-29T16:24:57.381Z User signup: {"roles":["66cf15f733c6e760045ac872"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d99e8034c709d32340","email":"admin@mail.com","password":"$2a$10$ie1Iu.Jc3Ntl4KZ.bnXcFez9eMLU.Jpl0I/3H43xUXFUcnxCz.4o.","plan":"66cf15f733c6e760045ac87a","createdAt":"2024-08-29T16:24:57.319Z","updatedAt":"2024-08-29T16:24:57.380Z","__v":0} 
-info: 2024-08-29T16:24:57.382Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should register admin user
-info: 2024-08-29T16:24:57.443Z User signin: admin@mail.com 
-info: 2024-08-29T16:24:57.444Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login as admin user
-info: 2024-08-29T16:24:57.446Z Saved user's language: en
     ✔ should not get all users with full info with user role
     ✔ should get all users with full info with admin role
     ✔ should not get all roles without authentication
@@ -157,24 +107,10 @@ info: 2024-08-29T16:24:57.446Z Saved user's language: en
     ✔ should not delete user with admin privileges using invalid id
     ✔ should delete user with admin privileges using id
     ✔ should delete user with admin privileges using email
-info: 2024-08-29T16:24:57.820Z VERIFICATION CODE: 957374
-info: 2024-08-29T16:24:57.821Z Email sent to user@mail.com with message id virtual-send-message-id 
-info: 2024-08-29T16:24:57.828Z User signup: {"roles":["66cf15f733c6e760045ac86f"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d99e8034c709d3240f","email":"user@mail.com","password":"$2a$10$DhYC3O0.nJbg1zWnDhxB/.10ILr014pRL5uNKEIk8jDSwG1PbdJIS","plan":"66cf15f733c6e760045ac878","createdAt":"2024-08-29T16:24:57.765Z","updatedAt":"2024-08-29T16:24:57.827Z","__v":0} 
-info: 2024-08-29T16:24:57.829Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should register normal user
-info: 2024-08-29T16:24:57.897Z User signin: user@mail.com 
-info: 2024-08-29T16:24:57.897Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login normal user
-info: 2024-08-29T16:24:57.899Z Saved user's language: en
-info: 2024-08-29T16:24:57.958Z VERIFICATION CODE: 098450
-info: 2024-08-29T16:24:57.958Z Email sent to admin@mail.com with message id virtual-send-message-id 
-info: 2024-08-29T16:24:57.964Z User signup: {"roles":["66cf15f733c6e760045ac872"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d0a0d99e8034c709d32421","email":"admin@mail.com","password":"$2a$10$OYwkrGnzCLF3pbl18Z1P1u7RuTubRbVD.es1F9WOtyMyhp6fdHTCy","plan":"66cf15f733c6e760045ac87a","createdAt":"2024-08-29T16:24:57.904Z","updatedAt":"2024-08-29T16:24:57.963Z","__v":0} 
-info: 2024-08-29T16:24:57.965Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should register admin user
-info: 2024-08-29T16:24:58.026Z User signin: admin@mail.com 
-info: 2024-08-29T16:24:58.026Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should login as admin user
-info: 2024-08-29T16:24:58.030Z Saved user's language: en
     ✔ should not remove user without authentication
     ✔ should not remove user without admin privileges
     ✔ should not remove user with admin privileges using invalid id
@@ -183,13 +119,12 @@ info: 2024-08-29T16:24:58.030Z Saved user's language: en
     ✔ should remove all users with admin privileges
 
   API tests - Helpers - Environment
-error: 2024-08-29T16:24:58.056Z Missing env! 
-info: 2024-08-29T16:24:58.056Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should not assert environment with no environment
-error: 2024-08-29T16:24:58.056Z Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
-info: 2024-08-29T16:24:58.056Z Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
     ✔ should not assert environment with missing required variable
     ✔ should assert environment with default environment
+
+  API tests - Index of models
+    ✔ should populate database if empty
 
   API tests - Plan model
     ✔ plan model should accept any value different by -1 ("unlimited")
@@ -199,5 +134,5 @@ info: 2024-08-29T16:24:58.056Z Email sent to marcosolari@gmail.com with message 
     ✔ should correctly handle not found route
 
 
-  118 passing (4s)
+  119 passing (5s)
 

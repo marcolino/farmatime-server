@@ -12,11 +12,13 @@ i18next
     backend: {
       loadPath: __dirname + "/../locales/{{lng}}/{{ns}}.json"
     },
-    //lng: navigator.language || navigator.userLanguage,
-    //lng: config.app.i18n.languages.initial, // default initial language
     fallbackLng: config.app.i18n.languages.fallback, // fallback language
     preload: Object.keys(config.app.i18n.languages.supported), // preload all supported languages
-    detection: { order: ['navigator', 'cookie', 'localStorage', 'queryString', 'path', 'subdomain', 'htmlTag'] }
+    detection: {
+      order: [ "header" ], // server side we get language always from header
+      lookupHeader: "accept-language", // be sure we look up the right header
+      //caches: false, // do not cache
+    }
   })
 ;
 

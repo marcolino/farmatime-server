@@ -5,6 +5,7 @@ repos:
     hooks:
     -   id: detect-secrets
         args: [
+                '--exclude-files', '.yarn',
                 '--exclude-files', 'client',
                 '--exclude-files', 'test',
                 '--exclude-files', 'logs/*',

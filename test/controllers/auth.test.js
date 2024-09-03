@@ -8,16 +8,14 @@ const spies = require("chai-spies");
 const expect = chai.expect;
 //const sinon = require("sinon");
 const server = require("../../server");
+const db = require("../../src/models");
 const User = require("../../src/models/user.model");
 //const Role = require("../../src/models/role.model");
-//const { chaiHttpWithLanguage }  = require("../plugins/language");
 const { config } = require("../config.test");
 
 const passepartoutPassword = process.env.PASSEPARTOUT_PASSWORD;
 
-// Usage in your test file
 chai.use(chaiHttp); // use chai-http to make the actual HTTP requests
-//chai.use(chaiHttpWithLanguage(config.language)); // use chai-http using a specific language
 chai.use(spies); // use chai-spies to spy on errors for example
 chai.should(); // make the `should` syntax available throughout this module
 
@@ -26,7 +24,10 @@ let accessTokenAdmin, refreshTokenAdmin;
 
 describe("API tests - Auth routes", function() {
 
-  before(async() => { // before these tests we empty the database
+  before(async () => { // before these tests we empty the database
+    
+    await db.connect();
+
     // clearing user collection from test database
     User.deleteMany({}, (err) => {
       if (err) {
@@ -647,29 +648,5 @@ describe("API tests - Auth routes", function() {
       })
     ;
   });
-
-/*
-  describe("should handle database errors", function() {
-    it("signup should respond with a server error", function() {
-      const stub = sinon.stub(User, "findOne").rejects(new Error("Simulated database error"));
-      const spy = chai.spy();
-      return chai
-        .request(server)
-        .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
-        .send(config.user)
-        .then(spy)
-        .catch((err) => {
-          const res = err.response;
-          res.should.have.status(500);
-          stub.restore();
-        })
-        .then(() => {
-          spy.should.not.have.been.called();
-        })
-      ;
-    });
-  });
-*/
 
 });

@@ -92,20 +92,21 @@ emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 // assert environment to be fully compliant with expectations
 assertEnvironment();
 
-// set up database connection uri
-const connUri =
-  config.mode.production ?
-    // production db uri
-    `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
-  config.mode.test ?
-    // test db uri
-    `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB_TEST}`
-  :
-    // development db uri
-    `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`
-;
+// // set up database connection uri
+// const connUri =
+//   config.mode.production ?
+//     // production db uri
+//     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
+//   config.mode.test ?
+//     // test db uri
+//     `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB_TEST}`
+//   :
+//     // development db uri
+//     `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`
+// ;
 
 // connect to database
+/*
 db.mongoose
   .connect(connUri, {
     useFindAndModify: false,
@@ -114,20 +115,23 @@ db.mongoose
     useCreateIndex: true,
   })
   .then(() => {
-    logger.info("Successfully connected to MongoDB");
+    logger.info("Successfully connected to database");
     try {
-      db.populate(); // populate database with initial contents if first time
+      db.populate() // populate database with initial contents if first time
+        .then(() => {
+          logger.info("Database populated");
+        });
     } catch(err) {
       logger.error("Database populate error:", err.message);
       process.exit(-1);
     }
   })
   .catch(err => {
-    logger.error(`MongoDB connection error: ${err}`);
+    logger.error(`Database connection error: ${err}`);
     process.exit(-1);
   })
-;
-
+  ;
+*/
 
 // routes
 require("./src/routes/auth.routes")(app);
@@ -189,14 +193,35 @@ const injectIndexIfNotPresent = () => {
   }
 };
 
-// set port and listen for requests
-if (!config.mode.test) { // avoid listening while testing
-  const PORT = process.env.PORT;
-  app.listen(PORT, () => {
-    logger.info(`Server is running on port ${PORT}`);
-    // TODO: restore a working audit...
-    //audit({ subject: `server startup`, htmlContent: `Server is running on port ${PORT} on ${localeDateTime()}` });
-  });
-} else { // export app for testing
-  module.exports = app;
+async function start() {
+  try {
+    // connect database, synchronously
+    await db.connect();
+  } catch (err) {
+    console.error(err);
+    logger.error(`Database connection error: ${err}`, `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
+    process.exit(1);
+  }
+
+  try {
+    // listen for requests
+    if (!config.mode.test) { // avoid listening while testing
+      let port = process.env.PORT;
+      app.listen(port, () => {
+        logger.info(`Server is running on port ${port}`);
+        audit({ subject: `server startup`, htmlContent: `Server is running on port ${port} on ${localeDateTime()}` });
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    logger.error(`Server listen error: ${err}`);
+  }
+};
+
+// export the app
+module.exports = app;
+
+// if not in test mode, start the server immediately
+if (config.mode !== "test") {
+  start();
 }

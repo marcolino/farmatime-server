@@ -108,9 +108,6 @@ class EmailService {
         htmlContent,
       };
    
-      // send transactional email with sendSmtpEmail object
-      //logger.info("SMTP email:", JSON.stringify(sendSmtpEmail));
-
       // if requested in config.email.dryrun, skip real email send, just log sendSmtpEmail
       let response;
       if (config.email.dryrun) {
