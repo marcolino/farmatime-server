@@ -19,7 +19,7 @@
     "i18n": "i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
     "i18n-check": "grep __STRING_NOT_TRANSLATED__ --quiet src/locales/*/translation.json && ( echo 'Some texts must be translated!'; false ) || true",
     "deps-check": "npx unimported",
-    "deadfiles-check": "npx deadfile ./server.js --dir src/",
+    "deadfiles-check": "npx deadfile ./server.js --dir src/ --ci --exclude locales --exclude misc --exclude templates",
     "problems-check": "npx eslint server.js src/",
     "docker-build-dev": "rm -f client/build/index-injected.html; NODE_ENV=$(grep NODE_ENV .env.dev | cut -d '=' -f2) docker build -t acmeserver:latest .",
     "docker-run-dev": "docker run --network='host' --env-file .env.dev acmeserver",

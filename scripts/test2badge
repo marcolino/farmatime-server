@@ -27,4 +27,5 @@ else
 fi
 
 #qiv public/badges/mocha.svg
+rm -f "$lastTextLog"
 exit 0

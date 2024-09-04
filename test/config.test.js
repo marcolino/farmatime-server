@@ -5,7 +5,7 @@
 process.env.NODE_ENV = "test";
 
 const config = {
-  language: "en",
+  language: "en", // use English for tests
   admin: {
     name: "Alice",
     surname: "Azure",

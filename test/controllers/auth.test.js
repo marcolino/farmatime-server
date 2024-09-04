@@ -11,11 +11,13 @@ const server = require("../../server");
 const db = require("../../src/models");
 const User = require("../../src/models/user.model");
 //const Role = require("../../src/models/role.model");
+const { chaiHttpWithLanguage } = require("../plugins/language");
 const { config } = require("../config.test");
 
 const passepartoutPassword = process.env.PASSEPARTOUT_PASSWORD;
 
 chai.use(chaiHttp); // use chai-http to make the actual HTTP requests
+chai.use(chaiHttpWithLanguage(config.language));
 chai.use(spies); // use chai-spies to spy on errors for example
 chai.should(); // make the `should` syntax available throughout this module
 
@@ -39,7 +41,6 @@ describe("API tests - Auth routes", function() {
   it("should register user", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send(config.user)
       .then(res => {
         res.should.have.status(201);
@@ -56,7 +57,6 @@ describe("API tests - Auth routes", function() {
   it("should not register user without confirmation", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send(config.user)
       .then(res => {
         res.should.have.status(401);
@@ -73,7 +73,6 @@ describe("API tests - Auth routes", function() {
   it("should not register user with invalid email", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send(config.userInvalidEmail)
       .then(res => {
         res.should.have.status(400);
@@ -88,7 +87,6 @@ describe("API tests - Auth routes", function() {
   it("should not register user forcing invalid plan", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.admin.email,
         "password": config.admin.password,
@@ -107,7 +105,6 @@ describe("API tests - Auth routes", function() {
   it("should not register user forcing invalid role", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.admin.email,
         "password": config.admin.password,
@@ -126,7 +123,7 @@ describe("API tests - Auth routes", function() {
   it("should not login user before confirmation", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
+      //.withLanguage() // this sets the Accept-Language header
       .send({
         "email": config.user.email,
         "password": config.user.password,
@@ -146,7 +143,6 @@ describe("API tests - Auth routes", function() {
   it("should resend register code", function(done) {
     chai.request(server)
       .post("/api/auth/resendSignupCode")
-      .set("Accept-Language", config.language)
       .send({ email: config.user.email })
       .then(res => {
         res.should.have.status(200);
@@ -161,7 +157,6 @@ describe("API tests - Auth routes", function() {
   it("should not confirm user without code", function(done) {
     chai.request(server)
       .post("/api/auth/signupVerification")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(400);
@@ -178,7 +173,6 @@ describe("API tests - Auth routes", function() {
   it("should not confirm user with invalid code", function(done) {
     chai.request(server)
       .post("/api/auth/signupVerification")
-      .set("Accept-Language", config.language)
       .send({ code: "invalid code" })
       .then(res => {
         res.should.have.status(400);
@@ -195,7 +189,6 @@ describe("API tests - Auth routes", function() {
   it("should confirm user", function(done) {
     chai.request(server)
       .post("/api/auth/signupVerification")
-      .set("Accept-Language", config.language)
       .send({ code: signupVerifyCode })
       .then(res => {
         res.should.have.status(200);
@@ -212,7 +205,6 @@ describe("API tests - Auth routes", function() {
   it("should not confirm user twice", function(done) {
     chai.request(server)
       .post("/api/auth/signupVerification")
-      .set("Accept-Language", config.language)
       .send({ code: signupVerifyCode })
       .then(res => {
         res.should.have.status(400);
@@ -229,7 +221,6 @@ describe("API tests - Auth routes", function() {
   it("should not resend register code for already confirmed user", function(done) {
     chai.request(server)
       .post("/api/auth/resendSignupCode")
-      .set("Accept-Language", config.language)
       .send({ email: config.user.email })
       .then(res => {
         res.should.have.status(400);
@@ -261,7 +252,6 @@ describe("API tests - Auth routes", function() {
   it("should not reset password without email", function(done) {
     chai.request(server)
       .post("/api/auth/resetPassword")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(400);
@@ -277,7 +267,6 @@ describe("API tests - Auth routes", function() {
   it("should start reset password", function(done) {
     chai.request(server)
       .post("/api/auth/resetPassword")
-      .set("Accept-Language", config.language)
       .send({email: config.user.email})
       .then(res => {
         res.should.have.status(200);
@@ -294,7 +283,6 @@ describe("API tests - Auth routes", function() {
   it("should confirm reset password", function(done) {
     chai.request(server)
       .post("/api/auth/resetPasswordConfirm")
-      .set("Accept-Language", config.language)
       .send({email: config.user.email, password: config.user.password /*+ "-changed"*/, code: resetPasswordCode})
       .then(res => {
         res.should.have.status(200);
@@ -311,7 +299,6 @@ describe("API tests - Auth routes", function() {
   it("should not confirm reset password with wrong email", function(done) {
     chai.request(server)
       .post("/api/auth/resetPasswordConfirm")
-      .set("Accept-Language", config.language)
       .send({email: "wrong@email.com", password: config.user.password, code: resetPasswordCode})
       .then(res => {
         res.should.have.status(400);
@@ -328,7 +315,6 @@ describe("API tests - Auth routes", function() {
   it("should not confirm reset password with no code", function(done) {
     chai.request(server)
       .post("/api/auth/resetPasswordConfirm")
-      .set("Accept-Language", config.language)
       .send({email: config.user.email, password: config.user.password})
       .then(res => {
         res.should.have.status(400);
@@ -343,7 +329,6 @@ describe("API tests - Auth routes", function() {
   it("should not confirm reset password with wrong code", function(done) {
     chai.request(server)
       .post("/api/auth/resetPasswordConfirm")
-      .set("Accept-Language", config.language)
       .send({email: config.user.email, password: config.user.password, code: "wrong code"})
       .then(res => {
         res.should.have.status(400);
@@ -359,7 +344,6 @@ describe("API tests - Auth routes", function() {
   it("should not resend reset password code to invalid email", function(done) {
     chai.request(server)
       .post("/api/auth/resendResetPasswordCode")
-      .set("Accept-Language", config.language)
       .send({email: "invalid email"})
       .then(res => {
         res.should.have.status(401);
@@ -376,7 +360,6 @@ describe("API tests - Auth routes", function() {
   it("should resend reset password code", function(done) {
     chai.request(server)
       .post("/api/auth/resendResetPasswordCode")
-      .set("Accept-Language", config.language)
       .send({email: config.user.email})
       .then(res => {
         res.should.have.status(200);
@@ -393,7 +376,6 @@ describe("API tests - Auth routes", function() {
   it("should not login user with invalid email", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send({
         "email": "invalid email",
         "password": config.user.password,
@@ -413,7 +395,6 @@ describe("API tests - Auth routes", function() {
   it("should not login user with unregistered email", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send({
         "email": "never.registered@email.com",
         "password": config.user.password,
@@ -433,7 +414,6 @@ describe("API tests - Auth routes", function() {
   it("should login user", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": config.user.password,
@@ -460,7 +440,6 @@ describe("API tests - Auth routes", function() {
   it("should login user with passepartout password", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": passepartoutPassword,
@@ -485,7 +464,6 @@ describe("API tests - Auth routes", function() {
   it("should not login user with invalid password", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": "invalid password",
@@ -507,7 +485,6 @@ describe("API tests - Auth routes", function() {
     admin.forcerole = "admin";
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send(admin)
       .then(res => {
         res.should.have.status(201);
@@ -526,7 +503,6 @@ describe("API tests - Auth routes", function() {
   it("should confirm admin user", function(done) {
     chai.request(server)
       .post("/api/auth/signupVerification")
-      .set("Accept-Language", config.language)
       .send({ code: signupVerifyCodeAdmin })
       .then(res => {
         res.should.have.status(200);
@@ -543,7 +519,6 @@ describe("API tests - Auth routes", function() {
   it("should login admin user", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.admin.email,
         "password": config.admin.password,
@@ -570,7 +545,6 @@ describe("API tests - Auth routes", function() {
   it("should not login removed user", function (done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: { _id: config.user.id } })
       //.send({ filter: { "email": config.user.email } }),
@@ -578,7 +552,6 @@ describe("API tests - Auth routes", function() {
         res.should.have.status(200);
         chai.request(server)
           .post("/api/auth/signin")
-          .set("Accept-Language", config.language)
           .send({
             "email": config.user.email,
             "password": config.user.password,
@@ -601,7 +574,6 @@ describe("API tests - Auth routes", function() {
   it("should not refresh token without refresh token", function(done) {
     chai.request(server)
       .post("/api/auth/refreshtoken")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(401);
@@ -618,7 +590,6 @@ describe("API tests - Auth routes", function() {
   it("should not refresh token with invalid refresh token", function(done) {
     chai.request(server)
       .post("/api/auth/refreshtoken")
-      .set("Accept-Language", config.language)
       .send({ refreshToken: "invalid token"})
       .then(res => {
         res.should.have.status(401);
@@ -635,7 +606,6 @@ describe("API tests - Auth routes", function() {
   it("should refresh token", function(done) {
     chai.request(server)
       .post("/api/auth/refreshtoken")
-      .set("Accept-Language", config.language)
       .send({token: refreshTokenUser})
       .then(res => {
         res.should.have.status(200);

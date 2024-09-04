@@ -8955,3 +8955,1234 @@ info: 2024-09-03 11:37:29 Loading development environment
 info: 2024-09-03 11:37:29 Database connected 
 info: 2024-09-03 11:37:29 Server is running on port 5000 
 info: 2024-09-03 11:37:29 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:27:34 Loading development environment 
+info: 2024-09-03 14:27:34 Database connected 
+info: 2024-09-03 14:27:34 Server is running on port 5000 
+info: 2024-09-03 14:27:34 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:57 Loading development environment 
+info: 2024-09-03 14:36:57 Database connected 
+info: 2024-09-03 14:36:57 Database connected 
+info: 2024-09-03 14:36:57 VERIFICATION CODE: '433422'
+info: 2024-09-03 14:36:57 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:57 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:57 User signup: {"roles":["66d6d89e59ec0c405d794fc2"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702e947c697997a3e9144","email":"user@mail.com","password":"$2a$10$FVDG8P/SABmrkxdFW79uSe8pHLzaAooSGkzHFfRsC5w2Hyv1JTEIq","plan":"66d6d89e59ec0c405d794fce","createdAt":"2024-09-03T12:36:57.745Z","updatedAt":"2024-09-03T12:36:57.870Z","__v":0} 
+info: 2024-09-03 14:36:57 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:57 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-03 14:36:57 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:57 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-03 14:36:57 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 User signin: user@mail.com 
+info: 2024-09-03 14:36:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 Saved user's language: 'en'
+info: 2024-09-03 14:36:58 User signin: user@mail.com 
+info: 2024-09-03 14:36:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 Saved user's language: 'en'
+info: 2024-09-03 14:36:58 VERIFICATION CODE: '648500'
+info: 2024-09-03 14:36:58 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 User signup: {"roles":["66d6d89e59ec0c405d794fc5"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702ea47c697997a3e917d","email":"admin@mail.com","password":"$2a$10$A7ruN3B6NDeGhgGr.uFltuP2QGBdneUouytn2F.ZU5iBZit3biYCO","plan":"66d6d89e59ec0c405d794fce","createdAt":"2024-09-03T12:36:58.176Z","updatedAt":"2024-09-03T12:36:58.236Z","__v":0} 
+info: 2024-09-03 14:36:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 User signin: admin@mail.com 
+info: 2024-09-03 14:36:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 Saved user's language: 'en'
+info: 2024-09-03 14:36:58 VERIFICATION CODE: '625443'
+info: 2024-09-03 14:36:58 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 User signup: {"roles":["66d6d89e59ec0c405d794fc2"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702ea47c697997a3e9197","email":"user@mail.com","password":"$2a$10$5I6Xq4q1Sh9c/jTMnOZccO.P7gKlLnWvpTmVdDGORSru4ubYeB7bO","plan":"66d6d89e59ec0c405d794fce","createdAt":"2024-09-03T12:36:58.324Z","updatedAt":"2024-09-03T12:36:58.395Z","__v":0} 
+info: 2024-09-03 14:36:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 User signin: user@mail.com 
+info: 2024-09-03 14:36:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:36:58 Saved user's language: 'en'
+error: 2024-09-03 14:36:59 Payment session creation error: "The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts"
+error: 2024-09-03 14:36:59 Payment session creation error: 'You must provide either price or price_data for each line item when using prices.'
+info: 2024-09-03 14:37:00 Payment session created 
+info: 2024-09-03 14:37:00 Payment successful for product standard 
+info: 2024-09-03 14:37:01 Payment canceled for product standard 
+info: 2024-09-03 14:37:01 VERIFICATION CODE: '965269'
+info: 2024-09-03 14:37:01 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:01 User signup: {"roles":["66d6d89e59ec0c405d794fc2"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702ed47c697997a3e91aa","email":"user@mail.com","password":"$2a$10$NVMKz8u/V7nGyq1oYZ.cZeZQbUVYfS6e0Dm45jkQo9oxbohpuswda","plan":"66d6d89e59ec0c405d794fce","createdAt":"2024-09-03T12:37:01.451Z","updatedAt":"2024-09-03T12:37:01.515Z","__v":0} 
+info: 2024-09-03 14:37:01 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:01 User signin: user@mail.com 
+info: 2024-09-03 14:37:01 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:01 Saved user's language: 'en'
+info: 2024-09-03 14:37:01 VERIFICATION CODE: '650368'
+info: 2024-09-03 14:37:01 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:01 User signup: {"roles":["66d6d89e59ec0c405d794fc5"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702ed47c697997a3e91bc","email":"admin@mail.com","password":"$2a$10$zrg2EYfZo.5VVZRnqbVJUuVvhFdFbrVJ9A/IekjBuktkRm5ihUMlq","plan":"66d6d89e59ec0c405d794fd0","createdAt":"2024-09-03T12:37:01.583Z","updatedAt":"2024-09-03T12:37:01.646Z","__v":0} 
+info: 2024-09-03 14:37:01 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:01 User signin: admin@mail.com 
+info: 2024-09-03 14:37:01 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:01 Saved user's language: 'en'
+info: 2024-09-03 14:37:02 VERIFICATION CODE: '084151'
+info: 2024-09-03 14:37:02 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 User signup: {"roles":["66d6d89e59ec0c405d794fc2"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702ee47c697997a3e928b","email":"user@mail.com","password":"$2a$10$7MS6mWiY9gIWlHL1wyij4.lhlHzox5ucVx7jk4EsS1Xz6S6ArnHvS","plan":"66d6d89e59ec0c405d794fce","createdAt":"2024-09-03T12:37:02.151Z","updatedAt":"2024-09-03T12:37:02.212Z","__v":0} 
+info: 2024-09-03 14:37:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 User signin: user@mail.com 
+info: 2024-09-03 14:37:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 Saved user's language: 'en'
+info: 2024-09-03 14:37:02 VERIFICATION CODE: '711768'
+info: 2024-09-03 14:37:02 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 User signup: {"roles":["66d6d89e59ec0c405d794fc5"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d702ee47c697997a3e929d","email":"admin@mail.com","password":"$2a$10$XIJufuMO4wBiYhRRFJ3oJOV7qOcGRYv19V8VSSZTo.tRXPErNg/Ca","plan":"66d6d89e59ec0c405d794fd0","createdAt":"2024-09-03T12:37:02.278Z","updatedAt":"2024-09-03T12:37:02.338Z","__v":0} 
+info: 2024-09-03 14:37:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 User signin: admin@mail.com 
+info: 2024-09-03 14:37:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 Saved user's language: 'en'
+error: 2024-09-03 14:37:02 Missing env! 
+info: 2024-09-03 14:37:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-03 14:37:02 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-03 14:37:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:37:02 Database connected 
+info: 2024-09-03 14:37:02 added user admin name admin surname to users collection 
+info: 2024-09-03 14:37:02 added role user to roles collection 
+info: 2024-09-03 14:37:02 added role operator to roles collection 
+info: 2024-09-03 14:37:02 added role admin to roles collection 
+info: 2024-09-03 14:37:02 added role dealer to roles collection 
+info: 2024-09-03 14:37:02 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-03 14:37:02 all plans have been saved 
+info: 2024-09-03 14:37:02 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-03 14:37:10 Loading development environment 
+info: 2024-09-03 14:37:10 Database connected 
+info: 2024-09-03 14:37:10 Server is running on port 5000 
+info: 2024-09-03 14:37:10 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-03 14:48:36 Loading development environment 
+info: 2024-09-03 14:48:36 Database connected 
+info: 2024-09-03 14:48:36 Server is running on port 5000 
+info: 2024-09-03 14:48:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 Loading development environment 
+info: 2024-09-04 08:44:30 Database connected 
+info: 2024-09-04 08:44:30 Database connected 
+info: 2024-09-04 08:44:30 VERIFICATION CODE: '549358'
+info: 2024-09-04 08:44:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 User signup: {"roles":["66d702ee47c697997a3e92c4"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d801ce8a1805199362ca67","email":"user@mail.com","password":"$2a$10$HTaBjF3UaM/4ca5fIYnVIuXDeNstqRpy1yZs2h.IPUesM9SS4wk3y","plan":"66d702ee47c697997a3e92d0","createdAt":"2024-09-04T06:44:30.597Z","updatedAt":"2024-09-04T06:44:30.741Z","__v":0} 
+info: 2024-09-04 08:44:30 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 08:44:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 08:44:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 User signin: user@mail.com 
+info: 2024-09-04 08:44:30 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:30 Saved user's language: 'en'
+info: 2024-09-04 08:44:31 User signin: user@mail.com 
+info: 2024-09-04 08:44:31 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:31 Saved user's language: 'en'
+info: 2024-09-04 08:44:31 VERIFICATION CODE: '458855'
+info: 2024-09-04 08:44:31 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:31 User signup: {"roles":["66d702ee47c697997a3e92c7"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d801cf8a1805199362caa0","email":"admin@mail.com","password":"$2a$10$1eaC/W1wTiCxuYz4FkFTTegAPAC4vc1u3GIXny6bslpeKE/uJ2OTm","plan":"66d702ee47c697997a3e92d0","createdAt":"2024-09-04T06:44:31.097Z","updatedAt":"2024-09-04T06:44:31.161Z","__v":0} 
+info: 2024-09-04 08:44:31 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:31 User signin: admin@mail.com 
+info: 2024-09-04 08:44:31 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:44:31 Saved user's language: 'en'
+info: 2024-09-04 08:45:32 Loading development environment 
+info: 2024-09-04 08:45:32 Database connected 
+info: 2024-09-04 08:45:32 Database connected 
+info: 2024-09-04 08:45:32 VERIFICATION CODE: '210946'
+info: 2024-09-04 08:45:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 User signup: {"roles":["66d702ee47c697997a3e92c4"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8020cbd1a8a1a68a3f92b","email":"user@mail.com","password":"$2a$10$zqNaXMGGmm9y3.gcl9L1H.F5Amxl/oekTiI.dC/EQgMLKy1ccfbhy","plan":"66d702ee47c697997a3e92d0","createdAt":"2024-09-04T06:45:32.312Z","updatedAt":"2024-09-04T06:45:32.435Z","__v":0} 
+info: 2024-09-04 08:45:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:45:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:45:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 User signin: user@mail.com 
+info: 2024-09-04 08:45:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 Saved user's language: 'it'
+info: 2024-09-04 08:45:32 User signin: user@mail.com 
+info: 2024-09-04 08:45:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 Saved user's language: 'it'
+info: 2024-09-04 08:45:32 VERIFICATION CODE: '787596'
+info: 2024-09-04 08:45:32 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 VERIFICATION CODE: '989933'
+info: 2024-09-04 08:45:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 User signup: {"roles":["66d702ee47c697997a3e92c4"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8020cbd1a8a1a68a3f970","email":"user@mail.com","password":"$2a$10$AT3pypR4qh4azt1FOKixQujFRpzYwgg1KMNxT/qUMYYJwharUxSS2","plan":"66d702ee47c697997a3e92d0","createdAt":"2024-09-04T06:45:32.839Z","updatedAt":"2024-09-04T06:45:32.899Z","__v":0} 
+info: 2024-09-04 08:45:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 User signin: user@mail.com 
+info: 2024-09-04 08:45:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:32 Saved user's language: 'it'
+error: 2024-09-04 08:45:33 Payment session creation error: "The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts"
+error: 2024-09-04 08:45:34 Payment session creation error: 'You must provide either price or price_data for each line item when using prices.'
+info: 2024-09-04 08:45:34 Payment session created 
+info: 2024-09-04 08:45:35 Payment successful for product standard 
+info: 2024-09-04 08:45:35 Payment canceled for product standard 
+info: 2024-09-04 08:45:35 VERIFICATION CODE: '962107'
+info: 2024-09-04 08:45:35 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:35 User signup: {"roles":["66d702ee47c697997a3e92c4"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8020fbd1a8a1a68a3f983","email":"user@mail.com","password":"$2a$10$5PdtT/taWafb6A3LRPuPSOOhf38uI84ajnXgqgPSUHOQ/RFeQPeQa","plan":"66d702ee47c697997a3e92d0","createdAt":"2024-09-04T06:45:35.798Z","updatedAt":"2024-09-04T06:45:35.860Z","__v":0} 
+info: 2024-09-04 08:45:35 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:35 User signin: user@mail.com 
+info: 2024-09-04 08:45:35 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:35 Saved user's language: 'it'
+info: 2024-09-04 08:45:35 VERIFICATION CODE: '877381'
+info: 2024-09-04 08:45:35 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:35 User signup: {"roles":["66d702ee47c697997a3e92c7"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8020fbd1a8a1a68a3f995","email":"admin@mail.com","password":"$2a$10$zECat/PysuPGt2mNM.dCFOYMx2cd0TpbsRNhCql55rw4mNV02Jbq2","plan":"66d702ee47c697997a3e92d2","createdAt":"2024-09-04T06:45:35.928Z","updatedAt":"2024-09-04T06:45:35.991Z","__v":0} 
+info: 2024-09-04 08:45:35 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 User signin: admin@mail.com 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 Saved user's language: 'it'
+info: 2024-09-04 08:45:36 VERIFICATION CODE: '073474'
+info: 2024-09-04 08:45:36 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 User signup: {"roles":["66d702ee47c697997a3e92c4"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d80210bd1a8a1a68a3fa64","email":"user@mail.com","password":"$2a$10$sqDVyAxk4LJVek6NSGQgqe1fs0YLVCmKnybykV4ip1xoDzWR7KbiG","plan":"66d702ee47c697997a3e92d0","createdAt":"2024-09-04T06:45:36.427Z","updatedAt":"2024-09-04T06:45:36.489Z","__v":0} 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 User signin: user@mail.com 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 Saved user's language: 'it'
+info: 2024-09-04 08:45:36 VERIFICATION CODE: '402462'
+info: 2024-09-04 08:45:36 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 User signup: {"roles":["66d702ee47c697997a3e92c7"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d80210bd1a8a1a68a3fa76","email":"admin@mail.com","password":"$2a$10$8Ev74f6njQRW9we4sLsQ3uRYDjAj2mtYHO.2K2/PJsYGwVwqP8YJy","plan":"66d702ee47c697997a3e92d2","createdAt":"2024-09-04T06:45:36.556Z","updatedAt":"2024-09-04T06:45:36.616Z","__v":0} 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 User signin: admin@mail.com 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 Saved user's language: 'it'
+error: 2024-09-04 08:45:36 Missing env! 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-04 08:45:36 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-04 08:45:36 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:45:36 Database connected 
+info: 2024-09-04 08:45:36 added user admin name admin surname to users collection 
+info: 2024-09-04 08:45:36 added role user to roles collection 
+info: 2024-09-04 08:45:36 added role dealer to roles collection 
+info: 2024-09-04 08:45:36 added role operator to roles collection 
+info: 2024-09-04 08:45:36 added role admin to roles collection 
+info: 2024-09-04 08:45:36 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 08:45:36 all plans have been saved 
+info: 2024-09-04 08:45:36 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 08:49:46 Loading development environment 
+info: 2024-09-04 08:49:46 Database connected 
+info: 2024-09-04 08:49:46 Database connected 
+info: 2024-09-04 08:49:46 VERIFICATION CODE: '512791'
+info: 2024-09-04 08:49:46 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 User signup: {"roles":["66d80210bd1a8a1a68a3fa9d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8030a691a161d1719dd19","email":"user@mail.com","password":"$2a$10$.bg43gVkTbrtYqtYGdkqnO5O1EfxzR5qkXtD4P1T0vNY8oWfXktdm","plan":"66d80210bd1a8a1a68a3faa9","createdAt":"2024-09-04T06:49:46.539Z","updatedAt":"2024-09-04T06:49:46.674Z","__v":0} 
+info: 2024-09-04 08:49:46 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:49:46 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:49:46 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 User signin: user@mail.com 
+info: 2024-09-04 08:49:46 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 Saved user's language: 'it'
+info: 2024-09-04 08:49:46 User signin: user@mail.com 
+info: 2024-09-04 08:49:46 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:46 Saved user's language: 'it'
+info: 2024-09-04 08:49:47 VERIFICATION CODE: '694628'
+info: 2024-09-04 08:49:47 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:47 VERIFICATION CODE: '605606'
+info: 2024-09-04 08:49:47 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:47 User signup: {"roles":["66d80210bd1a8a1a68a3fa9d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8030b691a161d1719dd5e","email":"user@mail.com","password":"$2a$10$fLpuy5DHdmQ9njkqjA7vCOF0kLjT2Jvr4gnttXYaQWfXSc/Td3EkG","plan":"66d80210bd1a8a1a68a3faa9","createdAt":"2024-09-04T06:49:47.049Z","updatedAt":"2024-09-04T06:49:47.109Z","__v":0} 
+info: 2024-09-04 08:49:47 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:47 User signin: user@mail.com 
+info: 2024-09-04 08:49:47 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:47 Saved user's language: 'it'
+error: 2024-09-04 08:49:48 Payment session creation error: "The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts"
+error: 2024-09-04 08:49:48 Payment session creation error: 'You must provide either price or price_data for each line item when using prices.'
+info: 2024-09-04 08:49:49 Payment session created 
+info: 2024-09-04 08:49:49 Payment successful for product standard 
+info: 2024-09-04 08:49:50 Payment canceled for product standard 
+info: 2024-09-04 08:49:50 VERIFICATION CODE: '392156'
+info: 2024-09-04 08:49:50 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 User signup: {"roles":["66d80210bd1a8a1a68a3fa9d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8030e691a161d1719dd71","email":"user@mail.com","password":"$2a$10$IE9wdI0VNBc7DK/rxG5E.OsZtKx16V5POTLNyKziQFG/8gceqMPVq","plan":"66d80210bd1a8a1a68a3faa9","createdAt":"2024-09-04T06:49:50.365Z","updatedAt":"2024-09-04T06:49:50.426Z","__v":0} 
+info: 2024-09-04 08:49:50 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 User signin: user@mail.com 
+info: 2024-09-04 08:49:50 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 Saved user's language: 'it'
+info: 2024-09-04 08:49:50 VERIFICATION CODE: '588341'
+info: 2024-09-04 08:49:50 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 User signup: {"roles":["66d80210bd1a8a1a68a3faa0"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8030e691a161d1719dd83","email":"admin@mail.com","password":"$2a$10$Uolu1H/ppFKVu7DcFNKYfuI6pEVWlbVhsRiwJQR1cSaEEhgrnaBDW","plan":"66d80210bd1a8a1a68a3faab","createdAt":"2024-09-04T06:49:50.494Z","updatedAt":"2024-09-04T06:49:50.554Z","__v":0} 
+info: 2024-09-04 08:49:50 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 User signin: admin@mail.com 
+info: 2024-09-04 08:49:50 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 Saved user's language: 'it'
+info: 2024-09-04 08:49:50 VERIFICATION CODE: '920564'
+info: 2024-09-04 08:49:50 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:50 User signup: {"roles":["66d80210bd1a8a1a68a3fa9d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8030e691a161d1719de52","email":"user@mail.com","password":"$2a$10$ncIIN1zeni3gbeOHuDPo2uPbsHBckKGTXeYJdfQ.SIwDvnWBwzJcC","plan":"66d80210bd1a8a1a68a3faa9","createdAt":"2024-09-04T06:49:50.915Z","updatedAt":"2024-09-04T06:49:50.978Z","__v":0} 
+info: 2024-09-04 08:49:50 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:51 User signin: user@mail.com 
+info: 2024-09-04 08:49:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:51 Saved user's language: 'it'
+info: 2024-09-04 08:49:51 VERIFICATION CODE: '086583'
+info: 2024-09-04 08:49:51 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:51 User signup: {"roles":["66d80210bd1a8a1a68a3faa0"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8030f691a161d1719de64","email":"admin@mail.com","password":"$2a$10$P7QvE49eEpJ24iud2.apBe1T3OqbsV3MgnYOB2KB8Pr54GV63tuwW","plan":"66d80210bd1a8a1a68a3faab","createdAt":"2024-09-04T06:49:51.046Z","updatedAt":"2024-09-04T06:49:51.105Z","__v":0} 
+info: 2024-09-04 08:49:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:51 User signin: admin@mail.com 
+info: 2024-09-04 08:49:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:51 Saved user's language: 'it'
+error: 2024-09-04 08:49:51 Missing env! 
+info: 2024-09-04 08:49:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-04 08:49:51 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-04 08:49:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:49:51 Database connected 
+info: 2024-09-04 08:49:51 added user admin name admin surname to users collection 
+info: 2024-09-04 08:49:51 added role user to roles collection 
+info: 2024-09-04 08:49:51 added role admin to roles collection 
+info: 2024-09-04 08:49:51 added role operator to roles collection 
+info: 2024-09-04 08:49:51 added role dealer to roles collection 
+info: 2024-09-04 08:49:51 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 08:49:51 all plans have been saved 
+info: 2024-09-04 08:49:51 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 08:50:12 Loading development environment 
+info: 2024-09-04 08:50:12 Database connected 
+info: 2024-09-04 08:50:12 Database connected 
+info: 2024-09-04 08:50:12 VERIFICATION CODE: '175781'
+info: 2024-09-04 08:50:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:12 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d80324fbc3711dd36fc5b2","email":"user@mail.com","password":"$2a$10$WGKpfEXHGUKExm7wDZe2gOleBGJBQMSy4vWvHlVLyoua2VvYIOiWy","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:50:12.624Z","updatedAt":"2024-09-04T06:50:12.746Z","__v":0} 
+info: 2024-09-04 08:50:12 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:12 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:50:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:12 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:50:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:12 User signin: user@mail.com 
+info: 2024-09-04 08:50:12 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:12 Saved user's language: 'it'
+info: 2024-09-04 08:50:13 User signin: user@mail.com 
+info: 2024-09-04 08:50:13 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:13 Saved user's language: 'it'
+info: 2024-09-04 08:50:13 VERIFICATION CODE: '109239'
+info: 2024-09-04 08:50:13 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:57 Loading development environment 
+info: 2024-09-04 08:50:58 Database connected 
+info: 2024-09-04 08:50:58 Database connected 
+info: 2024-09-04 08:50:58 VERIFICATION CODE: '995061'
+info: 2024-09-04 08:50:58 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8035251a4bd1e61c82e8d","email":"user@mail.com","password":"$2a$10$cPoE3lLbceTqQCdzOrwpc.YbwHnMrJqO1Y/aZLaBarULOMpbWSOTa","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:50:58.082Z","updatedAt":"2024-09-04T06:50:58.210Z","__v":0} 
+info: 2024-09-04 08:50:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:50:58 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:50:58 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 User signin: user@mail.com 
+info: 2024-09-04 08:50:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 Saved user's language: 'it'
+info: 2024-09-04 08:50:58 User signin: user@mail.com 
+info: 2024-09-04 08:50:58 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:50:58 Saved user's language: 'it'
+info: 2024-09-04 08:50:58 VERIFICATION CODE: '641961'
+info: 2024-09-04 08:50:58 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 Loading development environment 
+info: 2024-09-04 08:52:09 Database connected 
+info: 2024-09-04 08:52:09 Database connected 
+info: 2024-09-04 08:52:09 VERIFICATION CODE: '167210'
+info: 2024-09-04 08:52:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d803998b541a1f0665950d","email":"user@mail.com","password":"$2a$10$Drj2CTSiEA4KUzftghC.ZOrB3ugTgjG0DkbstmUXxhzDkOg4OBeWi","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:52:09.296Z","updatedAt":"2024-09-04T06:52:09.438Z","__v":0} 
+info: 2024-09-04 08:52:09 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:52:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:52:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 User signin: user@mail.com 
+info: 2024-09-04 08:52:09 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 Saved user's language: 'it'
+info: 2024-09-04 08:52:09 User signin: user@mail.com 
+info: 2024-09-04 08:52:09 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:52:09 Saved user's language: 'it'
+info: 2024-09-04 08:52:09 VERIFICATION CODE: '384851'
+info: 2024-09-04 08:52:09 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:23 Loading development environment 
+info: 2024-09-04 08:54:23 Database connected 
+info: 2024-09-04 08:54:23 Database connected 
+info: 2024-09-04 08:54:23 VERIFICATION CODE: '974198'
+info: 2024-09-04 08:54:23 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:23 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:23 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8041fa171791fff33b16d","email":"user@mail.com","password":"$2a$10$pQ3kBsLgtBk069zovw4arefCpFE85qyVmoWoYUtNOv.r1KyDfgXzq","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:54:23.788Z","updatedAt":"2024-09-04T06:54:23.908Z","__v":0} 
+info: 2024-09-04 08:54:23 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:23 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:54:23 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:24 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:54:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:24 User signin: user@mail.com 
+info: 2024-09-04 08:54:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:24 Saved user's language: 'it'
+info: 2024-09-04 08:54:24 User signin: user@mail.com 
+info: 2024-09-04 08:54:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:54:24 Saved user's language: 'it'
+info: 2024-09-04 08:54:24 VERIFICATION CODE: '684339'
+info: 2024-09-04 08:54:24 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 Loading development environment 
+info: 2024-09-04 08:57:34 Database connected 
+info: 2024-09-04 08:57:34 Database connected 
+info: 2024-09-04 08:57:34 VERIFICATION CODE: '960308'
+info: 2024-09-04 08:57:34 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d804dec7add5219a57095d","email":"user@mail.com","password":"$2a$10$DY8Du5iQUmFHKuKuQMjuzuYzsj75BAD0/etBM6a.VaqDEwtGDkHnG","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:57:34.577Z","updatedAt":"2024-09-04T06:57:34.700Z","__v":0} 
+info: 2024-09-04 08:57:34 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:57:34 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:57:34 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 User signin: user@mail.com 
+info: 2024-09-04 08:57:34 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 Saved user's language: 'it'
+info: 2024-09-04 08:57:34 User signin: user@mail.com 
+info: 2024-09-04 08:57:34 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:57:34 Saved user's language: 'it'
+info: 2024-09-04 08:57:35 VERIFICATION CODE: '064213'
+info: 2024-09-04 08:57:35 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 Loading development environment 
+info: 2024-09-04 08:58:41 Database connected 
+info: 2024-09-04 08:58:41 Database connected 
+info: 2024-09-04 08:58:41 VERIFICATION CODE: '705700'
+info: 2024-09-04 08:58:41 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d805212a2d66222857e879","email":"user@mail.com","password":"$2a$10$GuFyt/rHfXZ05q4MtILO3O5PtB7FMNHFkxPDXXRwzQXZlBKN7LpyG","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:58:41.416Z","updatedAt":"2024-09-04T06:58:41.539Z","__v":0} 
+info: 2024-09-04 08:58:41 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:58:41 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:58:41 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 User signin: user@mail.com 
+info: 2024-09-04 08:58:41 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 Saved user's language: 'it'
+info: 2024-09-04 08:58:41 User signin: user@mail.com 
+info: 2024-09-04 08:58:41 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:58:41 Saved user's language: 'it'
+info: 2024-09-04 08:58:41 VERIFICATION CODE: '387739'
+info: 2024-09-04 08:58:41 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:50 Loading development environment 
+info: 2024-09-04 08:59:50 Database connected 
+info: 2024-09-04 08:59:50 Database connected 
+info: 2024-09-04 08:59:51 VERIFICATION CODE: '053584'
+info: 2024-09-04 08:59:51 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d80566fcffa622bd84d1ee","email":"user@mail.com","password":"$2a$10$BtCRehkJeknBW1jjKIuLT./57cL0sFwjyjG2G.CA4AuQEKM0iict.","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T06:59:50.950Z","updatedAt":"2024-09-04T06:59:51.074Z","__v":0} 
+info: 2024-09-04 08:59:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 08:59:51 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 08:59:51 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 User signin: user@mail.com 
+info: 2024-09-04 08:59:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 Saved user's language: 'it'
+info: 2024-09-04 08:59:51 User signin: user@mail.com 
+info: 2024-09-04 08:59:51 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 08:59:51 Saved user's language: 'it'
+info: 2024-09-04 08:59:51 VERIFICATION CODE: '653248'
+info: 2024-09-04 08:59:51 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:08 Loading development environment 
+info: 2024-09-04 09:00:12 Database connected 
+info: 2024-09-04 09:00:12 Database connected 
+info: 2024-09-04 09:00:12 VERIFICATION CODE: '096365'
+info: 2024-09-04 09:00:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8057c0c228123237e8ac4","email":"user@mail.com","password":"$2a$10$R9/Tw0f433GGJXigJK7YG.b46CqukaeahvDwY78ifChZYSyWpC/R.","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:00:12.183Z","updatedAt":"2024-09-04T07:00:12.310Z","__v":0} 
+info: 2024-09-04 09:00:12 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:00:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:00:12 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 User signin: user@mail.com 
+info: 2024-09-04 09:00:12 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 Saved user's language: 'it'
+info: 2024-09-04 09:00:12 User signin: user@mail.com 
+info: 2024-09-04 09:00:12 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:00:12 Saved user's language: 'it'
+info: 2024-09-04 09:00:12 VERIFICATION CODE: '635536'
+info: 2024-09-04 09:00:12 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:02:55 Loading development environment 
+info: 2024-09-04 09:02:59 Database connected 
+info: 2024-09-04 09:02:59 Database connected 
+info: 2024-09-04 09:02:59 VERIFICATION CODE: '919666'
+info: 2024-09-04 09:02:59 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:02:59 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:02:59 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d80623b3e8a523fd12d727","email":"user@mail.com","password":"$2a$10$XqAMOwU1acCpRQfz/n6S8eWU4ryhSDQ19zQL.AOH.wP6kylviC2d6","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:02:59.815Z","updatedAt":"2024-09-04T07:02:59.948Z","__v":0} 
+info: 2024-09-04 09:02:59 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:02:59 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:02:59 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:03:00 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:03:00 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:03:00 User signin: user@mail.com 
+info: 2024-09-04 09:03:00 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:03:00 Saved user's language: 'it'
+info: 2024-09-04 09:03:00 User signin: user@mail.com 
+info: 2024-09-04 09:03:00 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:03:00 Saved user's language: 'it'
+info: 2024-09-04 09:03:00 VERIFICATION CODE: '034926'
+info: 2024-09-04 09:03:00 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:31 Loading development environment 
+info: 2024-09-04 09:05:32 Database connected 
+info: 2024-09-04 09:05:32 Database connected 
+info: 2024-09-04 09:05:32 VERIFICATION CODE: '729550'
+info: 2024-09-04 09:05:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d806bce1a0a124c4eb4de9","email":"user@mail.com","password":"$2a$10$.by/f2G./I7OMcC5rU1nceFUR24j8SwgwWJtoP5xPDuuwOHYC.vBe","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:05:32.233Z","updatedAt":"2024-09-04T07:05:32.358Z","__v":0} 
+info: 2024-09-04 09:05:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:05:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:05:32 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 User signin: user@mail.com 
+info: 2024-09-04 09:05:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 Saved user's language: 'it'
+info: 2024-09-04 09:05:32 User signin: user@mail.com 
+info: 2024-09-04 09:05:32 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:05:32 Saved user's language: 'it'
+info: 2024-09-04 09:05:32 VERIFICATION CODE: '204803'
+info: 2024-09-04 09:05:32 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 Loading development environment 
+info: 2024-09-04 09:06:01 Database connected 
+info: 2024-09-04 09:06:01 Database connected 
+info: 2024-09-04 09:06:01 VERIFICATION CODE: '394575'
+info: 2024-09-04 09:06:01 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d806d97b3ace2531e8797d","email":"user@mail.com","password":"$2a$10$jluVeRD0yKT/ChCsNgM.T.KgpN32Ydfk0pO69VS2E35q1FN.daIk.","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:06:01.621Z","updatedAt":"2024-09-04T07:06:01.745Z","__v":0} 
+info: 2024-09-04 09:06:01 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:06:01 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:06:01 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 User signin: user@mail.com 
+info: 2024-09-04 09:06:01 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:01 Saved user's language: 'it'
+info: 2024-09-04 09:06:02 User signin: user@mail.com 
+info: 2024-09-04 09:06:02 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:02 Saved user's language: 'it'
+info: 2024-09-04 09:06:02 VERIFICATION CODE: '128121'
+info: 2024-09-04 09:06:02 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:20 Loading development environment 
+info: 2024-09-04 09:06:21 Database connected 
+info: 2024-09-04 09:06:21 Database connected 
+info: 2024-09-04 09:06:21 VERIFICATION CODE: '683047'
+info: 2024-09-04 09:06:21 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d806edd0e89125a07c37ce","email":"user@mail.com","password":"$2a$10$orr6KGSt5SEF2VZgj0h0AeX/VTDzAW7OhgebVLwpdYWeUqa9IoYRa","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:06:21.133Z","updatedAt":"2024-09-04T07:06:21.275Z","__v":0} 
+info: 2024-09-04 09:06:21 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:06:21 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:06:21 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 User signin: user@mail.com 
+info: 2024-09-04 09:06:21 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 Saved user's language: 'it'
+info: 2024-09-04 09:06:21 User signin: user@mail.com 
+info: 2024-09-04 09:06:21 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:21 Saved user's language: 'it'
+info: 2024-09-04 09:06:21 VERIFICATION CODE: '261660'
+info: 2024-09-04 09:06:21 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:33 Loading development environment 
+info: 2024-09-04 09:06:33 Database connected 
+info: 2024-09-04 09:06:33 Database connected 
+info: 2024-09-04 09:06:33 VERIFICATION CODE: '326836'
+info: 2024-09-04 09:06:33 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:33 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:33 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d806f9ef92fd25fe1bb9ab","email":"user@mail.com","password":"$2a$10$A1PlRiobaM8NUG/FodiBJ.boF9usf5aNbQSI/CrS7GBTUZsWNBjlO","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:06:33.689Z","updatedAt":"2024-09-04T07:06:33.815Z","__v":0} 
+info: 2024-09-04 09:06:33 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:33 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:06:33 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:33 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:06:33 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:34 User signin: user@mail.com 
+info: 2024-09-04 09:06:34 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:34 Saved user's language: 'it'
+info: 2024-09-04 09:06:34 User signin: user@mail.com 
+info: 2024-09-04 09:06:34 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:06:34 Saved user's language: 'it'
+info: 2024-09-04 09:06:34 VERIFICATION CODE: '461479'
+info: 2024-09-04 09:06:34 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 Loading development environment 
+info: 2024-09-04 09:07:09 Database connected 
+info: 2024-09-04 09:07:09 Database connected 
+info: 2024-09-04 09:07:09 VERIFICATION CODE: '942554'
+info: 2024-09-04 09:07:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8071dd146a5267b1f354a","email":"user@mail.com","password":"$2a$10$Y7O8uQ4qQsPt/.5CZ8Xjn.qSfDzGSMcZzEDIfj76omDs4kPs/MIJ6","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:07:09.512Z","updatedAt":"2024-09-04T07:07:09.637Z","__v":0} 
+info: 2024-09-04 09:07:09 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:07:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:07:09 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 User signin: user@mail.com 
+info: 2024-09-04 09:07:09 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 Saved user's language: 'it'
+info: 2024-09-04 09:07:09 User signin: user@mail.com 
+info: 2024-09-04 09:07:09 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:07:09 Saved user's language: 'it'
+info: 2024-09-04 09:07:10 VERIFICATION CODE: '978567'
+info: 2024-09-04 09:07:10 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:20 Loading development environment 
+info: 2024-09-04 09:08:30 Database connected 
+info: 2024-09-04 09:08:30 Database connected 
+info: 2024-09-04 09:08:30 VERIFICATION CODE: '868709'
+info: 2024-09-04 09:08:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8076e3c2bce2726f7e7d6","email":"user@mail.com","password":"$2a$10$hiKBzIBbUx.5GPutld3bj.snMS..GcigwLnOyNMmICnDmWw9nTxEu","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:08:30.471Z","updatedAt":"2024-09-04T07:08:30.632Z","__v":0} 
+info: 2024-09-04 09:08:30 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:08:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:08:30 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 User signin: user@mail.com 
+info: 2024-09-04 09:08:30 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 Saved user's language: 'it'
+info: 2024-09-04 09:08:30 User signin: user@mail.com 
+info: 2024-09-04 09:08:30 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:08:30 Saved user's language: 'it'
+info: 2024-09-04 09:08:31 VERIFICATION CODE: '847626'
+info: 2024-09-04 09:08:31 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:45 Loading development environment 
+info: 2024-09-04 09:11:48 Database connected 
+info: 2024-09-04 09:11:48 Database connected 
+info: 2024-09-04 09:11:48 VERIFICATION CODE: '588225'
+info: 2024-09-04 09:11:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 User signup: {"roles":["66d8030f691a161d1719de8b"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8083479bdba2863824268","email":"user@mail.com","password":"$2a$10$1aZG5WgkGbx8pcE8Hhxg7OlSqSsVCiyDLAvvR5XqBpab3ZZm7W.XC","plan":"66d8030f691a161d1719de97","createdAt":"2024-09-04T07:11:48.121Z","updatedAt":"2024-09-04T07:11:48.281Z","__v":0} 
+info: 2024-09-04 09:11:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:11:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:11:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 User signin: user@mail.com 
+info: 2024-09-04 09:11:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 Saved user's language: 'it'
+info: 2024-09-04 09:11:48 User signin: user@mail.com 
+info: 2024-09-04 09:11:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:11:48 Saved user's language: 'it'
+info: 2024-09-04 09:11:48 VERIFICATION CODE: '357509'
+info: 2024-09-04 09:11:48 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:12:08 Loading development environment 
+info: 2024-09-04 09:12:08 Database connected 
+info: 2024-09-04 09:12:08 Database connected 
+error: 2024-09-04 09:12:08 Missing env! 
+info: 2024-09-04 09:12:08 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-04 09:12:08 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-04 09:12:08 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:12:08 Database connected 
+info: 2024-09-04 09:12:08 added user admin name admin surname to users collection 
+info: 2024-09-04 09:12:08 added user admin name admin surname to users collection 
+info: 2024-09-04 09:12:08 added role user to roles collection 
+info: 2024-09-04 09:12:08 added role dealer to roles collection 
+info: 2024-09-04 09:12:08 added role operator to roles collection 
+info: 2024-09-04 09:12:08 added role admin to roles collection 
+info: 2024-09-04 09:12:08 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 09:12:08 all plans have been saved 
+info: 2024-09-04 09:12:08 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 09:12:14 Loading development environment 
+info: 2024-09-04 09:12:15 Database connected 
+info: 2024-09-04 09:12:15 Database connected 
+error: 2024-09-04 09:12:15 Missing env! 
+info: 2024-09-04 09:12:15 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-04 09:12:15 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-04 09:12:15 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:12:15 Database connected 
+info: 2024-09-04 09:12:15 added user admin name admin surname to users collection 
+info: 2024-09-04 09:12:15 added user admin name admin surname to users collection 
+info: 2024-09-04 09:12:15 added role user to roles collection 
+info: 2024-09-04 09:12:15 added role dealer to roles collection 
+info: 2024-09-04 09:12:15 added role admin to roles collection 
+info: 2024-09-04 09:12:15 added role operator to roles collection 
+info: 2024-09-04 09:12:15 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 09:12:15 all plans have been saved 
+info: 2024-09-04 09:12:15 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 09:13:13 Loading development environment 
+info: 2024-09-04 09:13:15 Database connected 
+info: 2024-09-04 09:13:15 Database connected 
+info: 2024-09-04 09:13:15 VERIFICATION CODE: '196265'
+info: 2024-09-04 09:13:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:15 User signup: {"roles":["66d8084fd70bd42950369bfe"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8088b1c42182a32d28599","email":"user@mail.com","password":"$2a$10$32OUC.O.BreZaAwtMyO58OU/fGz8D.o..6PymirZ5sjCn/po8PRju","plan":"66d8084fd70bd42950369c0a","createdAt":"2024-09-04T07:13:15.705Z","updatedAt":"2024-09-04T07:13:15.853Z","__v":0} 
+info: 2024-09-04 09:13:15 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:15 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:13:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:15 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:13:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:16 User signin: user@mail.com 
+info: 2024-09-04 09:13:16 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:16 Saved user's language: 'it'
+info: 2024-09-04 09:13:16 User signin: user@mail.com 
+info: 2024-09-04 09:13:16 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:16 Saved user's language: 'it'
+info: 2024-09-04 09:13:16 VERIFICATION CODE: '653071'
+info: 2024-09-04 09:13:16 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:29 Loading development environment 
+info: 2024-09-04 09:13:29 Database connected 
+info: 2024-09-04 09:13:29 Database connected 
+error: 2024-09-04 09:13:29 Missing env! 
+info: 2024-09-04 09:13:29 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-04 09:13:29 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-04 09:13:29 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:13:29 Database connected 
+info: 2024-09-04 09:13:29 added user admin name admin surname to users collection 
+info: 2024-09-04 09:13:30 added user admin name admin surname to users collection 
+info: 2024-09-04 09:13:30 added role user to roles collection 
+info: 2024-09-04 09:13:30 added role dealer to roles collection 
+info: 2024-09-04 09:13:30 added role operator to roles collection 
+info: 2024-09-04 09:13:30 added role admin to roles collection 
+info: 2024-09-04 09:13:30 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 09:13:30 all plans have been saved 
+info: 2024-09-04 09:13:30 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 09:17:14 Loading development environment 
+info: 2024-09-04 09:17:17 Database connected 
+info: 2024-09-04 09:17:17 Database connected 
+info: 2024-09-04 09:17:17 VERIFICATION CODE: '258847'
+info: 2024-09-04 09:17:17 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 User signup: {"roles":["66d8089a312bf72aa8e11121"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8097d55cf822bdc96759b","email":"user@mail.com","password":"$2a$10$/1RYjZNeEgO.wP2DjSS3cOipkJS675ZeqrwYnPj8dloRmHVKPk48.","plan":"66d8089a312bf72aa8e1112d","createdAt":"2024-09-04T07:17:17.503Z","updatedAt":"2024-09-04T07:17:17.635Z","__v":0} 
+info: 2024-09-04 09:17:17 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:17:17 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:17:17 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 User signin: user@mail.com 
+info: 2024-09-04 09:17:17 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 Saved user's language: 'it'
+info: 2024-09-04 09:17:17 User signin: user@mail.com 
+info: 2024-09-04 09:17:17 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:17 Saved user's language: 'it'
+info: 2024-09-04 09:17:18 VERIFICATION CODE: '426801'
+info: 2024-09-04 09:17:18 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:52 Loading development environment 
+info: 2024-09-04 09:17:55 Database connected 
+info: 2024-09-04 09:17:55 Database connected 
+info: 2024-09-04 09:17:55 VERIFICATION CODE: '933007'
+info: 2024-09-04 09:17:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:55 User signup: {"roles":["66d8089a312bf72aa8e11121"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d809a352aa0e2c4b803b89","email":"user@mail.com","password":"$2a$10$Qr0OY9I4uxAfQiR0wZqLOem8hmVFy708l0MfYd.YpQN/JSX3Y2OgK","plan":"66d8089a312bf72aa8e1112d","createdAt":"2024-09-04T07:17:55.578Z","updatedAt":"2024-09-04T07:17:55.747Z","__v":0} 
+info: 2024-09-04 09:17:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:55 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:17:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:55 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:17:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:55 User signin: user@mail.com 
+info: 2024-09-04 09:17:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:55 Saved user's language: 'it'
+info: 2024-09-04 09:17:56 User signin: user@mail.com 
+info: 2024-09-04 09:17:56 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:17:56 Saved user's language: 'it'
+info: 2024-09-04 09:17:56 VERIFICATION CODE: '665716'
+info: 2024-09-04 09:17:56 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:21 Loading development environment 
+info: 2024-09-04 09:19:24 Database connected 
+info: 2024-09-04 09:19:24 Database connected 
+info: 2024-09-04 09:19:24 VERIFICATION CODE: '885956'
+info: 2024-09-04 09:19:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 User signup: {"roles":["66d8089a312bf72aa8e11121"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d809fc281a132ccf01d2e6","email":"user@mail.com","password":"$2a$10$aheKPkSEpzAVY.VxuIUFS.etueDOt0rsjygVJac8EwhqsJ/Dj5YNm","plan":"66d8089a312bf72aa8e1112d","createdAt":"2024-09-04T07:19:24.326Z","updatedAt":"2024-09-04T07:19:24.470Z","__v":0} 
+info: 2024-09-04 09:19:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:19:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:19:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 User signin: user@mail.com 
+info: 2024-09-04 09:19:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 Saved user's language: 'it'
+info: 2024-09-04 09:19:24 User signin: user@mail.com 
+info: 2024-09-04 09:19:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:19:24 Saved user's language: 'it'
+info: 2024-09-04 09:19:24 VERIFICATION CODE: '798114'
+info: 2024-09-04 09:19:24 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:13 Loading development environment 
+info: 2024-09-04 09:20:15 Database connected 
+info: 2024-09-04 09:20:15 Database connected 
+info: 2024-09-04 09:20:16 VERIFICATION CODE: '483631'
+info: 2024-09-04 09:20:16 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 User signup: {"roles":["66d8089a312bf72aa8e11121"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d80a2fb137d12dd02047dc","email":"user@mail.com","password":"$2a$10$rjvlZAbgW6wZly5LjNuVWee.FhUulxES5SgqSl.AcCxTeyptaf8jO","plan":"66d8089a312bf72aa8e1112d","createdAt":"2024-09-04T07:20:15.966Z","updatedAt":"2024-09-04T07:20:16.110Z","__v":0} 
+info: 2024-09-04 09:20:16 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 09:20:16 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 09:20:16 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 User signin: user@mail.com 
+info: 2024-09-04 09:20:16 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 Saved user's language: 'it'
+info: 2024-09-04 09:20:16 User signin: user@mail.com 
+info: 2024-09-04 09:20:16 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 09:20:16 Saved user's language: 'it'
+info: 2024-09-04 09:20:16 VERIFICATION CODE: '934834'
+info: 2024-09-04 09:20:16 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:01 Loading development environment 
+info: 2024-09-04 10:11:10 Database connected 
+info: 2024-09-04 10:11:10 Database connected 
+info: 2024-09-04 10:11:10 VERIFICATION CODE: '855907'
+info: 2024-09-04 10:11:10 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 User signup: {"roles":["66d8089a312bf72aa8e11121"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8161ed20d0d3d8a7b73c4","email":"user@mail.com","password":"$2a$10$DfaVKnIquExKpLUgci.p3uNYSfgZ7czpZcvBg.CBmHw3axNQql/Aa","plan":"66d8089a312bf72aa8e1112d","createdAt":"2024-09-04T08:11:10.360Z","updatedAt":"2024-09-04T08:11:10.507Z","__v":0} 
+info: 2024-09-04 10:11:10 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 10:11:10 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 10:11:10 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 User signin: user@mail.com 
+info: 2024-09-04 10:11:10 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 Saved user's language: 'it'
+info: 2024-09-04 10:11:10 User signin: user@mail.com 
+info: 2024-09-04 10:11:10 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:11:10 Saved user's language: 'it'
+info: 2024-09-04 10:11:10 VERIFICATION CODE: '912923'
+info: 2024-09-04 10:11:10 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:13:50 Loading development environment 
+info: 2024-09-04 10:13:58 Database connected 
+info: 2024-09-04 10:13:58 Database connected 
+info: 2024-09-04 10:18:13 Loading development environment 
+info: 2024-09-04 10:18:13 Database connected 
+info: 2024-09-04 10:18:13 Database connected 
+info: 2024-09-04 10:18:13 added user admin name admin surname to users collection 
+error: 2024-09-04 10:18:13  
+info: 2024-09-04 10:18:36 Loading development environment 
+info: 2024-09-04 10:18:36 Database connected 
+info: 2024-09-04 10:18:36 Database connected 
+info: 2024-09-04 10:19:16 Loading development environment 
+info: 2024-09-04 10:19:22 Database connected 
+info: 2024-09-04 10:19:22 Database connected 
+info: 2024-09-04 10:19:22 added user admin name admin surname to users collection 
+error: 2024-09-04 10:19:22  
+info: 2024-09-04 10:19:59 Loading development environment 
+info: 2024-09-04 10:19:59 Database connected 
+info: 2024-09-04 10:19:59 Database connected 
+info: 2024-09-04 10:19:59 added user admin name admin surname to users collection 
+info: 2024-09-04 10:20:59 Loading development environment 
+info: 2024-09-04 10:21:00 Database connected 
+info: 2024-09-04 10:21:00 Database connected 
+info: 2024-09-04 10:21:00 added role user to roles collection 
+info: 2024-09-04 10:21:00 added role dealer to roles collection 
+info: 2024-09-04 10:21:00 added role admin to roles collection 
+info: 2024-09-04 10:21:00 added role operator to roles collection 
+info: 2024-09-04 10:21:00 added role dealer to roles collection 
+info: 2024-09-04 10:21:00 added role operator to roles collection 
+info: 2024-09-04 10:21:00 added role user to roles collection 
+info: 2024-09-04 10:21:00 added role admin to roles collection 
+info: 2024-09-04 10:21:00 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:21:00 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:21:00 all plans have been saved 
+info: 2024-09-04 10:21:00 all plans have been saved 
+info: 2024-09-04 10:21:00 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:21:00 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:22:39 Loading development environment 
+info: 2024-09-04 10:22:40 Database connected 
+info: 2024-09-04 10:22:40 Database connected 
+info: 2024-09-04 10:22:40 added user admin name admin surname to users collection 
+error: 2024-09-04 10:22:40  
+info: 2024-09-04 10:22:51 Loading development environment 
+info: 2024-09-04 10:23:10 Database connected 
+info: 2024-09-04 10:23:10 Database connected 
+info: 2024-09-04 10:30:17 Loading development environment 
+info: 2024-09-04 10:30:20 Database connected 
+info: 2024-09-04 10:30:20 Database connected 
+info: 2024-09-04 10:30:20 added user admin name admin surname to users collection 
+error: 2024-09-04 10:30:20  
+info: 2024-09-04 10:30:44 Loading development environment 
+info: 2024-09-04 10:30:47 Database connected 
+info: 2024-09-04 10:30:47 Database connected 
+info: 2024-09-04 10:30:47 added user admin name admin surname to users collection 
+error: 2024-09-04 10:30:47  
+info: 2024-09-04 10:30:47 added role user to roles collection 
+info: 2024-09-04 10:30:47 added role dealer to roles collection 
+info: 2024-09-04 10:30:47 added role operator to roles collection 
+info: 2024-09-04 10:30:47 added role admin to roles collection 
+info: 2024-09-04 10:30:47 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:30:47 all plans have been saved 
+info: 2024-09-04 10:30:47 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:32:14 Loading development environment 
+info: 2024-09-04 10:32:14 Database connected 
+info: 2024-09-04 10:32:14 Database connected 
+info: 2024-09-04 10:32:14 VERIFICATION CODE: '850882'
+info: 2024-09-04 10:32:14 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 User signup: {"roles":["66d81ab72c1cc045de95fb77"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d81b0e7c5d63467d0b66c0","email":"user@mail.com","password":"$2a$10$ZeEtWUGTyQEZbWmAXBHU2.wGwX3UieV5ZEPCLb6g2wtVVEOBnuz96","plan":"66d81ab72c1cc045de95fb83","createdAt":"2024-09-04T08:32:14.887Z","updatedAt":"2024-09-04T08:32:15.020Z","__v":0} 
+info: 2024-09-04 10:32:15 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 10:32:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 10:32:15 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 User signin: user@mail.com 
+info: 2024-09-04 10:32:15 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 Saved user's language: 'it'
+info: 2024-09-04 10:32:15 User signin: user@mail.com 
+info: 2024-09-04 10:32:15 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:15 Saved user's language: 'it'
+info: 2024-09-04 10:32:15 VERIFICATION CODE: '351184'
+info: 2024-09-04 10:32:15 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:32:31 Loading development environment 
+info: 2024-09-04 10:32:44 Database connected 
+info: 2024-09-04 10:32:44 Database connected 
+info: 2024-09-04 10:34:41 Loading development environment 
+info: 2024-09-04 10:34:42 Database connected 
+info: 2024-09-04 10:34:42 Database connected 
+info: 2024-09-04 10:34:42 added user admin name admin surname to users collection 
+error: 2024-09-04 10:34:42  
+info: 2024-09-04 10:34:52 Loading development environment 
+info: 2024-09-04 10:34:53 Database connected 
+info: 2024-09-04 10:34:53 Database connected 
+info: 2024-09-04 10:41:50 Loading development environment 
+info: 2024-09-04 10:41:55 Database connected 
+info: 2024-09-04 10:41:55 Database connected 
+info: 2024-09-04 10:41:56 added user admin name admin surname to users collection 
+error: 2024-09-04 10:41:56  
+info: 2024-09-04 10:42:05 Loading development environment 
+info: 2024-09-04 10:42:05 Database connected 
+info: 2024-09-04 10:42:05 Database connected 
+info: 2024-09-04 10:50:12 Loading development environment 
+info: 2024-09-04 10:50:12 Database connected 
+info: 2024-09-04 10:50:12 Database connected 
+info: 2024-09-04 10:50:12 added user admin name admin surname to users collection 
+error: 2024-09-04 10:50:12  
+info: 2024-09-04 10:50:40 Loading development environment 
+info: 2024-09-04 10:50:41 Database connected 
+info: 2024-09-04 10:50:41 Database connected 
+info: 2024-09-04 10:50:41 added user admin name admin surname to users collection 
+error: 2024-09-04 10:50:41  
+info: 2024-09-04 10:50:41 added role user to roles collection 
+info: 2024-09-04 10:50:41 added role dealer to roles collection 
+info: 2024-09-04 10:50:41 added role admin to roles collection 
+info: 2024-09-04 10:50:41 added role operator to roles collection 
+info: 2024-09-04 10:50:41 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:50:41 all plans have been saved 
+info: 2024-09-04 10:50:41 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 10:50:56 Loading development environment 
+info: 2024-09-04 10:50:57 Database connected 
+info: 2024-09-04 10:50:57 Database connected 
+info: 2024-09-04 10:51:43 Loading development environment 
+info: 2024-09-04 10:51:44 Database connected 
+info: 2024-09-04 10:51:44 Database connected 
+info: 2024-09-04 10:51:44 added user admin name admin surname to users collection 
+error: 2024-09-04 10:51:44  
+info: 2024-09-04 10:51:53 Loading development environment 
+info: 2024-09-04 10:51:53 Database connected 
+info: 2024-09-04 10:51:53 Database connected 
+info: 2024-09-04 10:52:18 VERIFICATION CODE: '924650'
+info: 2024-09-04 10:52:18 Email sent to user@mail.com with message id virtual-send-message-id 
+error: 2024-09-04 10:52:18 New user creation error: E11000 duplicate key error collection: acme_test.users index: email_1 dup key: { email: "user@mail.com" } MongoError: E11000 duplicate key error collection: acme_test.users index: email_1 dup key: { email: "user@mail.com" }
+    at MongoError.create (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/core/error.js:59:12)
+    at toError (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/utils.js:130:22)
+    at /home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/operations/common_functions.js:258:39
+    at handler (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/core/sdam/topology.js:961:24)
+    at /home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/connection_pool.js:352:13
+    at handleOperationResult (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/core/sdam/server.js:567:5)
+    at MessageStream.messageHandler (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/connection.js:308:5)
+    at MessageStream.emit (node:events:513:28)
+    at processIncomingData (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/message_stream.js:144:12)
+    at MessageStream._write (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/message_stream.js:42:5)
+    at writeOrBuffer (node:internal/streams/writable:392:12)
+    at _write (node:internal/streams/writable:333:10)
+    at Writable.write (node:internal/streams/writable:337:10)
+    at Socket.ondata (node:internal/streams/readable:766:22)
+    at Socket.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:324:12)
+    at readableAddChunk (node:internal/streams/readable:297:9)
+    at Readable.push (node:internal/streams/readable:234:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  driver: true,
+  index: 0,
+  code: 11000,
+  keyPattern: { email: 1 },
+  keyValue: { email: 'user@mail.com' }
+}
+error: 2024-09-04 10:52:18 Internal server error: E11000 duplicate key error collection: acme_test.users index: email_1 dup key: { email: "user@mail.com" } 
+info: 2024-09-04 10:52:18 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:52:18 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d81fc2cf74eb4f720f8264","email":"user@mail.com","password":"$2a$10$qzi0Ej/h/J790GwhDsMSaOV4.DRhG1/VfD9kvb43KiJXlJkYF5v.O","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T08:52:18.767Z","updatedAt":"2024-09-04T08:52:18.978Z","__v":0} 
+info: 2024-09-04 10:52:18 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:52:19 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 10:52:19 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:52:19 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 10:52:19 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:52:19 User signin: user@mail.com 
+info: 2024-09-04 10:52:19 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:52:19 Saved user's language: 'it'
+info: 2024-09-04 10:52:19 User signin: user@mail.com 
+info: 2024-09-04 10:52:19 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 10:52:19 Saved user's language: 'it'
+info: 2024-09-04 10:52:19 VERIFICATION CODE: '526301'
+info: 2024-09-04 10:52:19 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:39:55 Loading development environment 
+info: 2024-09-04 14:39:58 Database connected 
+info: 2024-09-04 14:39:58 Database connected 
+info: 2024-09-04 14:40:41 Loading development environment 
+info: 2024-09-04 14:40:57 Database connected 
+info: 2024-09-04 14:40:57 Database connected 
+info: 2024-09-04 14:40:58 added user admin name admin surname to users collection 
+info: 2024-09-04 14:41:07 Loading development environment 
+info: 2024-09-04 14:41:09 Database connected 
+info: 2024-09-04 14:41:09 Database connected 
+info: 2024-09-04 14:41:25 Loading development environment 
+info: 2024-09-04 14:41:29 Database connected 
+info: 2024-09-04 14:41:29 Database connected 
+info: 2024-09-04 14:41:29 added user admin name admin surname to users collection 
+error: 2024-09-04 14:41:29  
+info: 2024-09-04 14:41:50 Loading development environment 
+info: 2024-09-04 14:41:50 Database connected 
+info: 2024-09-04 14:41:50 Database connected 
+info: 2024-09-04 14:46:42 Loading development environment 
+info: 2024-09-04 14:46:43 Database connected 
+info: 2024-09-04 14:46:43 Database connected 
+info: 2024-09-04 14:46:43 added user admin name admin surname to users collection 
+info: 2024-09-04 14:46:51 Loading development environment 
+info: 2024-09-04 14:46:51 Database connected 
+info: 2024-09-04 14:46:51 Database connected 
+info: 2024-09-04 14:48:45 Loading development environment 
+info: 2024-09-04 14:48:46 Database connected 
+info: 2024-09-04 14:48:46 Database connected 
+info: 2024-09-04 14:48:46 added user admin name admin surname to users collection 
+error: 2024-09-04 14:48:46  
+info: 2024-09-04 14:48:55 Loading development environment 
+info: 2024-09-04 14:48:55 Database connected 
+info: 2024-09-04 14:48:55 Database connected 
+info: 2024-09-04 14:48:55 VERIFICATION CODE: '171542'
+info: 2024-09-04 14:48:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85737af9b437e66290eb7","email":"user@mail.com","password":"$2a$10$SbOq4LYCU72NagLHbozWG.GpYgrVP5jymtB8cH8ypbZ/jTtALOiTi","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:48:55.429Z","updatedAt":"2024-09-04T12:48:55.577Z","__v":0} 
+info: 2024-09-04 14:48:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 14:48:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 14:48:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 User signin: user@mail.com 
+info: 2024-09-04 14:48:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 Saved user's language: 'en-US'
+info: 2024-09-04 14:48:55 User signin: user@mail.com 
+info: 2024-09-04 14:48:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 Saved user's language: 'en-US'
+info: 2024-09-04 14:48:55 VERIFICATION CODE: '187634'
+info: 2024-09-04 14:48:55 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:55 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85737af9b437e66290ef0","email":"admin@mail.com","password":"$2a$10$FxnCy7XVt0olDIX2LBf2zOkxKmKV1Zhu5cBM8n8XS8480cxOpmq2.","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:48:55.907Z","updatedAt":"2024-09-04T12:48:55.971Z","__v":0} 
+info: 2024-09-04 14:48:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:56 User signin: admin@mail.com 
+info: 2024-09-04 14:48:56 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:48:56 Saved user's language: 'en-US'
+info: 2024-09-04 14:50:17 Loading development environment 
+info: 2024-09-04 14:50:18 Database connected 
+info: 2024-09-04 14:50:18 Database connected 
+info: 2024-09-04 14:50:18 VERIFICATION CODE: '871912'
+info: 2024-09-04 14:50:18 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8578a7ac54a7ef9ad5aa2","email":"user@mail.com","password":"$2a$10$BrqZQQieHmV/dozt/VQ1fuQpPrQf2DT.4JZr8cpDQs7TGvA1W88mC","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:50:18.133Z","updatedAt":"2024-09-04T12:50:18.273Z","__v":0} 
+info: 2024-09-04 14:50:18 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 14:50:18 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 14:50:18 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 User signin: user@mail.com 
+info: 2024-09-04 14:50:18 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 Saved user's language: 'en'
+info: 2024-09-04 14:50:18 User signin: user@mail.com 
+info: 2024-09-04 14:50:18 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 Saved user's language: 'en'
+info: 2024-09-04 14:50:18 VERIFICATION CODE: '317594'
+info: 2024-09-04 14:50:18 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8578a7ac54a7ef9ad5adb","email":"admin@mail.com","password":"$2a$10$by06TyGFZMsvNR2h7PGdzOqzKakEAjtVDDFktS55cchHmNKLd6eaq","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:50:18.611Z","updatedAt":"2024-09-04T12:50:18.680Z","__v":0} 
+info: 2024-09-04 14:50:18 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 User signin: admin@mail.com 
+info: 2024-09-04 14:50:18 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:50:18 Saved user's language: 'en'
+info: 2024-09-04 14:57:29 Loading development environment 
+info: 2024-09-04 14:57:29 Database connected 
+info: 2024-09-04 14:57:29 Database connected 
+info: 2024-09-04 14:57:29 VERIFICATION CODE: '447125'
+info: 2024-09-04 14:57:29 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85939b59dc880f96b85eb","email":"user@mail.com","password":"$2a$10$Uj11PMpF1KTi1mSyxMJByulv9aqq/Wb.WfgiWC9d/kfBECghkQZMG","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:57:29.445Z","updatedAt":"2024-09-04T12:57:29.573Z","__v":0} 
+info: 2024-09-04 14:57:29 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 14:57:29 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 14:57:29 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 User signin: user@mail.com 
+info: 2024-09-04 14:57:29 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 Saved user's language: 'it'
+info: 2024-09-04 14:57:29 User signin: user@mail.com 
+info: 2024-09-04 14:57:29 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:29 Saved user's language: 'it'
+info: 2024-09-04 14:57:29 VERIFICATION CODE: '217126'
+info: 2024-09-04 14:57:30 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:53 Loading development environment 
+info: 2024-09-04 14:57:55 Database connected 
+info: 2024-09-04 14:57:55 Database connected 
+info: 2024-09-04 14:57:55 VERIFICATION CODE: '985187'
+info: 2024-09-04 14:57:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85953b857cd815f3a7f49","email":"user@mail.com","password":"$2a$10$mb8y6Q.Ti5cgU5AnCe4qZOXv9qyNSt87T50DRZNN8jBVwYDCukCkO","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:57:55.096Z","updatedAt":"2024-09-04T12:57:55.233Z","__v":0} 
+info: 2024-09-04 14:57:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 Sending email: to: user@mail.com, from: undefined, subject: Richiesta cambio password 
+info: 2024-09-04 14:57:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 Sending email: 'user@mail.com',undefined,'Reimposta il codice di verifica password'
+info: 2024-09-04 14:57:55 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 User signin: user@mail.com 
+info: 2024-09-04 14:57:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 Saved user's language: 'it'
+info: 2024-09-04 14:57:55 User signin: user@mail.com 
+info: 2024-09-04 14:57:55 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:57:55 Saved user's language: 'it'
+info: 2024-09-04 14:57:55 VERIFICATION CODE: '110053'
+info: 2024-09-04 14:57:55 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:16 Loading development environment 
+info: 2024-09-04 14:58:22 Database connected 
+info: 2024-09-04 14:58:22 Database connected 
+info: 2024-09-04 14:58:48 VERIFICATION CODE: '419522'
+info: 2024-09-04 14:58:48 Email sent to user@mail.com with message id virtual-send-message-id 
+error: 2024-09-04 14:58:48 New user creation error: E11000 duplicate key error collection: acme_test.users index: email_1 dup key: { email: "user@mail.com" } MongoError: E11000 duplicate key error collection: acme_test.users index: email_1 dup key: { email: "user@mail.com" }
+    at MongoError.create (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/core/error.js:59:12)
+    at toError (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/utils.js:130:22)
+    at /home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/operations/common_functions.js:258:39
+    at handler (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/core/sdam/topology.js:961:24)
+    at /home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/connection_pool.js:352:13
+    at handleOperationResult (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/core/sdam/server.js:567:5)
+    at MessageStream.messageHandler (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/connection.js:308:5)
+    at MessageStream.emit (node:events:513:28)
+    at processIncomingData (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/message_stream.js:144:12)
+    at MessageStream._write (/home/marco/apps/sistemisolari/acme-server/.yarn/__virtual__/mongodb-virtual-90fe39f9d5/0/cache/mongodb-npm-3.7.4-eeff24a238-4b157ce0e2.zip/node_modules/mongodb/lib/cmap/message_stream.js:42:5)
+    at writeOrBuffer (node:internal/streams/writable:392:12)
+    at _write (node:internal/streams/writable:333:10)
+    at Writable.write (node:internal/streams/writable:337:10)
+    at Socket.ondata (node:internal/streams/readable:766:22)
+    at Socket.emit (node:events:513:28)
+    at addChunk (node:internal/streams/readable:324:12)
+    at readableAddChunk (node:internal/streams/readable:297:9)
+    at Readable.push (node:internal/streams/readable:234:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  driver: true,
+  index: 0,
+  code: 11000,
+  keyPattern: { email: 1 },
+  keyValue: { email: 'user@mail.com' }
+}
+error: 2024-09-04 14:58:48 Internal server error: E11000 duplicate key error collection: acme_test.users index: email_1 dup key: { email: "user@mail.com" } 
+info: 2024-09-04 14:58:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85987a4539581c58e6eff","email":"user@mail.com","password":"$2a$10$ZXCzs3RTBz7744084iIXtuNuRnj13aadBI/a9W5RaIdq7QOALNoiq","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:58:47.880Z","updatedAt":"2024-09-04T12:58:48.087Z","__v":0} 
+info: 2024-09-04 14:58:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 14:58:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 14:58:48 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 User signin: user@mail.com 
+info: 2024-09-04 14:58:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 Saved user's language: 'en'
+info: 2024-09-04 14:58:48 User signin: user@mail.com 
+info: 2024-09-04 14:58:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 Saved user's language: 'en'
+info: 2024-09-04 14:58:48 VERIFICATION CODE: '429147'
+info: 2024-09-04 14:58:48 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85988a4539581c58e6f3a","email":"admin@mail.com","password":"$2a$10$aBSJaFmM/xszvPmKWGqK8eJlQ8XhYxfvHQ5kkdDBh9NBZcvCjutjy","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:58:48.439Z","updatedAt":"2024-09-04T12:58:48.511Z","__v":0} 
+info: 2024-09-04 14:58:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 User signin: admin@mail.com 
+info: 2024-09-04 14:58:48 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:58:48 Saved user's language: 'en'
+info: 2024-09-04 14:58:58 Loading development environment 
+info: 2024-09-04 14:59:07 Database connected 
+info: 2024-09-04 14:59:07 Database connected 
+info: 2024-09-04 14:59:07 VERIFICATION CODE: '911898'
+info: 2024-09-04 14:59:07 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8599ba134bf8245969d2b","email":"user@mail.com","password":"$2a$10$XOx9D4iZoj.GHBkT6wwnt.lmZjPo.Vw04a45AA5Y5ErqKKlaQQtI2","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:59:07.103Z","updatedAt":"2024-09-04T12:59:07.233Z","__v":0} 
+info: 2024-09-04 14:59:07 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 14:59:07 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 14:59:07 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 User signin: user@mail.com 
+info: 2024-09-04 14:59:07 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 Saved user's language: 'en'
+info: 2024-09-04 14:59:07 User signin: user@mail.com 
+info: 2024-09-04 14:59:07 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 Saved user's language: 'en'
+info: 2024-09-04 14:59:07 VERIFICATION CODE: '089369'
+info: 2024-09-04 14:59:07 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d8599ba134bf8245969d64","email":"admin@mail.com","password":"$2a$10$nBageCPGP4ld2JFFTTvFpOnxJGzTfN6HtGuOd72pOuYB1bDyVQBZe","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T12:59:07.592Z","updatedAt":"2024-09-04T12:59:07.665Z","__v":0} 
+info: 2024-09-04 14:59:07 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 User signin: admin@mail.com 
+info: 2024-09-04 14:59:07 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 14:59:07 Saved user's language: 'en'
+info: 2024-09-04 15:00:43 Loading development environment 
+info: 2024-09-04 15:00:43 Database connected 
+info: 2024-09-04 15:00:43 Database connected 
+info: 2024-09-04 15:00:43 VERIFICATION CODE: '508344'
+info: 2024-09-04 15:00:43 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d859fbc821b282e7877d5b","email":"user@mail.com","password":"$2a$10$FhrV2gcKgP2Sgimdcaf95.C7hl8.02/nN8FEcv6aCKwchX81AkDay","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:00:43.418Z","updatedAt":"2024-09-04T13:00:43.541Z","__v":0} 
+info: 2024-09-04 15:00:43 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 15:00:43 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 15:00:43 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 User signin: user@mail.com 
+info: 2024-09-04 15:00:43 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 Saved user's language: 'en'
+info: 2024-09-04 15:00:43 User signin: user@mail.com 
+info: 2024-09-04 15:00:43 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 Saved user's language: 'en'
+info: 2024-09-04 15:00:43 VERIFICATION CODE: '939929'
+info: 2024-09-04 15:00:43 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:43 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d859fbc821b282e7877d94","email":"admin@mail.com","password":"$2a$10$835EcJeeUCXL3lm0IfW4q.qB34BH8Q5qtphJuanY3h.xZ/2fNuT3W","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:00:43.878Z","updatedAt":"2024-09-04T13:00:43.944Z","__v":0} 
+info: 2024-09-04 15:00:43 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:44 User signin: admin@mail.com 
+info: 2024-09-04 15:00:44 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:00:44 Saved user's language: 'en'
+info: 2024-09-04 15:01:20 Loading development environment 
+info: 2024-09-04 15:01:20 Database connected 
+info: 2024-09-04 15:01:20 Database connected 
+info: 2024-09-04 15:01:20 VERIFICATION CODE: '348585'
+info: 2024-09-04 15:01:20 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a20fdcb5b835d647665","email":"user@mail.com","password":"$2a$10$YnInVhCowDeSimArpEnDs.ldUk5xxs/qWM2TXJP7zABIs0IstvHmC","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:01:20.289Z","updatedAt":"2024-09-04T13:01:20.413Z","__v":0} 
+info: 2024-09-04 15:01:20 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 Sending email: to: user@mail.com, from: undefined, subject: Password change request 
+info: 2024-09-04 15:01:20 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 Sending email: 'user@mail.com',undefined,'Reset Password Verification Code'
+info: 2024-09-04 15:01:20 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 User signin: user@mail.com 
+info: 2024-09-04 15:01:20 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 Saved user's language: 'en'
+info: 2024-09-04 15:01:20 User signin: user@mail.com 
+info: 2024-09-04 15:01:20 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 Saved user's language: 'en'
+info: 2024-09-04 15:01:20 VERIFICATION CODE: '268297'
+info: 2024-09-04 15:01:20 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a20fdcb5b835d64769e","email":"admin@mail.com","password":"$2a$10$JUfq5s8JYl7IZnNn.2FNsO6ovTVq88G7Pfh.BKIjpWWG5AOT39ccC","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:01:20.731Z","updatedAt":"2024-09-04T13:01:20.793Z","__v":0} 
+info: 2024-09-04 15:01:20 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 User signin: admin@mail.com 
+info: 2024-09-04 15:01:20 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 Saved user's language: 'en'
+info: 2024-09-04 15:01:20 VERIFICATION CODE: '927257'
+info: 2024-09-04 15:01:20 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:20 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a20fdcb5b835d6476b8","email":"user@mail.com","password":"$2a$10$123Jc18Dv5wrxeh1TFWkLudtx3.wWKdRylPq.eWHKsxrs8Q80iaz.","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:01:20.884Z","updatedAt":"2024-09-04T13:01:20.945Z","__v":0} 
+info: 2024-09-04 15:01:20 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:21 User signin: user@mail.com 
+info: 2024-09-04 15:01:21 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:21 Saved user's language: 'en'
+error: 2024-09-04 15:01:21 Payment session creation error: "The Checkout Session's total amount due cannot be zero in `payment` mode. Please see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts"
+error: 2024-09-04 15:01:22 Payment session creation error: 'You must provide either price or price_data for each line item when using prices.'
+info: 2024-09-04 15:01:22 Payment session created 
+info: 2024-09-04 15:01:23 Payment successful for product standard 
+info: 2024-09-04 15:01:24 Payment canceled for product standard 
+info: 2024-09-04 15:01:24 VERIFICATION CODE: '942736'
+info: 2024-09-04 15:01:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a24fdcb5b835d6476cb","email":"user@mail.com","password":"$2a$10$ET.KQAZJV.8/aNXudeinVehak4v2koagdYlmJWLfYrTc3K9/3zSiq","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:01:24.197Z","updatedAt":"2024-09-04T13:01:24.261Z","__v":0} 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signin: user@mail.com 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 Saved user's language: 'en'
+info: 2024-09-04 15:01:24 VERIFICATION CODE: '958025'
+info: 2024-09-04 15:01:24 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a24fdcb5b835d6476dd","email":"admin@mail.com","password":"$2a$10$qBdiHOvwiDhxZpYpcx5t8O/w/iiE6BxCY3MZu7CCOhL8tfehZey6C","plan":"66d81f610cabc54e42262288","createdAt":"2024-09-04T13:01:24.328Z","updatedAt":"2024-09-04T13:01:24.387Z","__v":0} 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signin: admin@mail.com 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 Saved user's language: 'en'
+info: 2024-09-04 15:01:24 VERIFICATION CODE: '059090'
+info: 2024-09-04 15:01:24 Email sent to user@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signup: {"roles":["66d81f610cabc54e4226227a"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a24fdcb5b835d6477ac","email":"user@mail.com","password":"$2a$10$n.5OiHwmKSqyJtB69cDKX.XsXFwrv5/4c.WtWFJrMM0d2CE6g3Zg6","plan":"66d81f610cabc54e42262286","createdAt":"2024-09-04T13:01:24.741Z","updatedAt":"2024-09-04T13:01:24.801Z","__v":0} 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signin: user@mail.com 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 Saved user's language: 'en'
+info: 2024-09-04 15:01:24 VERIFICATION CODE: '661549'
+info: 2024-09-04 15:01:24 Email sent to admin@mail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signup: {"roles":["66d81f610cabc54e4226227d"],"isDeleted":false,"isVerified":true,"justRegistered":true,"_id":"66d85a24fdcb5b835d6477be","email":"admin@mail.com","password":"$2a$10$Xna1DqD6SdW5dGgiQZ4K..5qZaeZqRrApLyb9QjpW4nvRZtCvFbuW","plan":"66d81f610cabc54e42262288","createdAt":"2024-09-04T13:01:24.867Z","updatedAt":"2024-09-04T13:01:24.926Z","__v":0} 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 User signin: admin@mail.com 
+info: 2024-09-04 15:01:24 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:24 Saved user's language: 'en'
+error: 2024-09-04 15:01:25 Missing env! 
+info: 2024-09-04 15:01:25 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+error: 2024-09-04 15:01:25 Missing in env: ["JWT_TOKEN_SECRET","ADMIN_USER_DEFAULT_PASSWORD","MONGO_SCHEME","MONGO_URL","MONGO_DB","MONGO_USER","MONGO_PASS","BREVO_EMAIL_API_KEY","STRIPE_MODE","STRIPE_API_KEY_TEST","STRIPE_API_KEY_LIVE","GOOGLE_OAUTH_CLIENT_ID","GOOGLE_OAUTH_CLIENT_SECRET","FACEBOOK_OAUTH_CLIENT_ID","FACEBOOK_OAUTH_SECRET_KEY"] 
+info: 2024-09-04 15:01:25 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 
+info: 2024-09-04 15:01:25 Database connected 
+info: 2024-09-04 15:01:25 added user admin name admin surname to users collection 
+info: 2024-09-04 15:01:25 added role dealer to roles collection 
+info: 2024-09-04 15:01:25 added role user to roles collection 
+info: 2024-09-04 15:01:25 added role operator to roles collection 
+info: 2024-09-04 15:01:25 added role admin to roles collection 
+info: 2024-09-04 15:01:25 added "admin" role to "marcosolari@gmail.com" user 
+info: 2024-09-04 15:01:25 all plans have been saved 
+info: 2024-09-04 15:01:25 added "unlimited" plan to "marcosolari@gmail.com" user 
+info: 2024-09-04 15:15:06 Loading development environment 
+info: 2024-09-04 15:15:06 Database connected 
+info: 2024-09-04 15:15:06 Server is running on port 5000 
+info: 2024-09-04 15:15:06 Email sent to marcosolari@gmail.com with message id virtual-send-message-id 

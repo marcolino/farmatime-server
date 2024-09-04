@@ -40,11 +40,11 @@
     ✔ should login normal user
     ✔ should get payment mode, and it should be in a set of values
     ✔ should not create a checkout session without authentication
-    ✔ should not create a checkout session for a 0 cost product (924ms)
-    ✔ should not create a checkout session for a non-existent product (327ms)
-    ✔ should create a checkout session for a standard product (606ms)
-    ✔ should redirect on a payment success call (613ms)
-    ✔ should redirect on a payment canceled call (603ms)
+    ✔ should not create a checkout session for a 0 cost product (921ms)
+    ✔ should not create a checkout session for a non-existent product (294ms)
+    ✔ should create a checkout session for a standard product (633ms)
+    ✔ should redirect on a payment success call (594ms)
+    ✔ should redirect on a payment canceled call (734ms)
 
   API tests - User routes
     ✔ should register normal user

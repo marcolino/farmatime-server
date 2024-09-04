@@ -10,9 +10,11 @@ const db = require("../src/models");
 const User = require("../src/models/user.model");
 const Role = require("../src/models/role.model");
 const Plan = require("../src/models/plan.model");
+const { chaiHttpWithLanguage } = require("./plugins/language");
 const { config } = require("./config.test");
 
 chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
+chai.use(chaiHttpWithLanguage(config.language));
 
 //let accessTokenUser, accessTokenAdmin;
 

@@ -7,9 +7,11 @@ const should = chai.should();
 const expect = chai.expect;
 const server = require("../../server");
 const User = require("../../src/models/user.model");
+const { chaiHttpWithLanguage } = require("../plugins/language");
 const { config } = require("../config.test");
 
 chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
+chai.use(chaiHttpWithLanguage(config.language));
 
 const validFiscalCode = "RSSMRA74D22A001Q";
 let accessTokenUser, accessTokenAdmin;
@@ -34,7 +36,6 @@ describe("API tests - User routes", async function () {
   it("should not get all users with full info with user role", function(done) {
     chai.request(server)
       .get("/api/user/getAllUsersWithFullInfo")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -50,7 +51,6 @@ describe("API tests - User routes", async function () {
   it("should get all users with full info with admin role", function(done) {
     chai.request(server)
       .get("/api/user/getAllUsersWithFullInfo")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({})
       .then(res => {
@@ -66,7 +66,6 @@ describe("API tests - User routes", async function () {
   it("should not get all roles without authentication", function(done) {
     chai.request(server)
       .get("/api/user/getAllRoles")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(401);
@@ -81,7 +80,6 @@ describe("API tests - User routes", async function () {
   it("should get all roles", function(done) {
     chai.request(server)
       .get("/api/user/getAllRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -100,7 +98,6 @@ describe("API tests - User routes", async function () {
   it("should not get alls plans without authentication", function(done) {
     chai.request(server)
       .get("/api/user/getAllPlans")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(401);
@@ -115,7 +112,6 @@ describe("API tests - User routes", async function () {
   it("should get all plans", function(done) {
     chai.request(server)
       .get("/api/user/getAllPlans")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -134,7 +130,6 @@ describe("API tests - User routes", async function () {
   it("should get user's profile", function(done) {
     chai.request(server)
       .get("/api/user/getUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -151,7 +146,6 @@ describe("API tests - User routes", async function () {
   it("should not get user's profile without authentication", function(done) {
     chai.request(server)
       .get("/api/user/getUser")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(401);
@@ -166,7 +160,6 @@ describe("API tests - User routes", async function () {
   it("should not get another user's profile without admin access", function(done) {
     chai.request(server)
       .get("/api/user/getUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({userId: config.admin.id})
       .then(res => {
@@ -182,7 +175,6 @@ describe("API tests - User routes", async function () {
   it("should get another user's profile with admin access", function(done) {
     chai.request(server)
       .get("/api/user/getUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({userId: config.admin.id})
       .then(res => {
@@ -198,7 +190,6 @@ describe("API tests - User routes", async function () {
   it("should update user's profile", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         //userId: config.user.id,
@@ -224,7 +215,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile with invalid email", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -245,7 +235,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile with already taken email", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -266,7 +255,6 @@ describe("API tests - User routes", async function () {
   it("should update user's profile with new email", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -286,7 +274,6 @@ describe("API tests - User routes", async function () {
   it("should reset user's profile with email", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -306,7 +293,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile with empty firstName", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -327,7 +313,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile with invalid lastName", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -348,7 +333,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile with invalid fiscalCode", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -369,7 +353,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile without autentication", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .send({
         userId: config.user.id,
         email: config.user.email,
@@ -387,7 +370,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile for a different not existing user - without admin access", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         userId: "123456789012345678901234",
@@ -408,7 +390,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's profile for a different existent user - without admin access", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         userId: config.user.id,
@@ -429,7 +410,6 @@ describe("API tests - User routes", async function () {
   it("should update user's profile for a different existent user - as admin user", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.user.id,
@@ -449,7 +429,6 @@ describe("API tests - User routes", async function () {
   it("should not update another user's own property without admin access", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         userId: config.user.id,
@@ -470,7 +449,6 @@ describe("API tests - User routes", async function () {
   it("should update another user's property with admin access", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.user.id,
@@ -490,7 +468,6 @@ describe("API tests - User routes", async function () {
   it("should update user's property (with no changes) with an unexpected parameters", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         unexpected: "abc",
@@ -509,7 +486,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own property firstName", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         firstName: "updated first name",
@@ -528,7 +504,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own property email", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         email: config.user.email,
@@ -547,7 +522,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own property lastName", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         lastName: "updated last name",
@@ -566,7 +540,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own property fiscalCode", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         fiscalCode: config.user.fiscalCode,
@@ -585,7 +558,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own property businessName", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         businessName: "test business name",
@@ -604,7 +576,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own property address", function(done) {
     chai.request(server)
       .post("/api/user/updateUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         address: "test address",
@@ -623,7 +594,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's own roles without any role", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -641,7 +611,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's own roles with not array roles", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({roles: "anyrolestring"})
       .then(res => {
@@ -659,7 +628,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's own roles with empty array roles", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({ roles: [] })
       .then(res => {
@@ -677,7 +645,6 @@ describe("API tests - User routes", async function () {
   it("should update (equal or downgrade) user's own roles without admin access ", function (done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({ roles: allRoles.filter(role => role.name === "user") })
       .then(res => {
@@ -695,7 +662,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's own roles without admin access (upgrade)", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({ roles: allRoles.filter(role => role.name === "admin") })
       .then(res => {
@@ -713,7 +679,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own roles as admin user (upgrade)", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ roles: allRoles.filter(role => role.name === "admin") })
       .then(res => {
@@ -731,7 +696,6 @@ describe("API tests - User routes", async function () {
   it("should not update another user's roles without admin access", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         userId: config.admin.id,
@@ -751,7 +715,6 @@ describe("API tests - User routes", async function () {
   it("should update another user's roles with admin access", function(done) {
     chai.request(server)
       .post("/api/user/updateRoles")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -772,7 +735,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's our plan with no plan", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({})
       .then(res => {
@@ -790,7 +752,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's our plan with wrong plan", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.user.id,
@@ -811,7 +772,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's own plan without admin access", function (done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({plan: allPlans.find(plan => plan.name === "unlimited")})
       .then(res => {
@@ -829,7 +789,6 @@ describe("API tests - User routes", async function () {
   it("should not update user's own plan (even the free plan)", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({plan: allPlans.find(plan => plan.name === "free")})
       .then(res => {
@@ -847,7 +806,6 @@ describe("API tests - User routes", async function () {
   it("should not update another user's plan with admin access", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.user.id,
@@ -868,7 +826,6 @@ describe("API tests - User routes", async function () {
   it("should not update (upgrade) user's own plan without admin access", function (done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({plan: allPlans.find(plan => plan.name === "unlimited")})
       .then(res => {
@@ -886,7 +843,6 @@ describe("API tests - User routes", async function () {
   it("should update user's own plan as admin user (upgrade)", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ plan: allPlans.find(plan => plan.name === "free") })
       .then(res => {
@@ -904,7 +860,6 @@ describe("API tests - User routes", async function () {
   it("should not update another user's plan without admin access", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({
         userId: config.admin.id,
@@ -924,7 +879,6 @@ describe("API tests - User routes", async function () {
   it("should update another user's plan with admin access", function(done) {
     chai.request(server)
       .post("/api/user/updatePlan")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({
         userId: config.admin.id,
@@ -945,7 +899,6 @@ describe("API tests - User routes", async function () {
   it("should not get all users with user role", function(done) {
     chai.request(server)
       .get("/api/user/getAllUsers")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -963,7 +916,6 @@ describe("API tests - User routes", async function () {
   it("should not get all users with wrong filter", function(done) {
     chai.request(server)
       .get("/api/user/getAllUsers")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: "wrong filter" })
       .then(res => {
@@ -981,7 +933,6 @@ describe("API tests - User routes", async function () {
   it("should get all users with admin role", function(done) {
     chai.request(server)
       .get("/api/user/getAllUsers")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({})
       .then(res => {
@@ -999,7 +950,6 @@ describe("API tests - User routes", async function () {
   it("should not delete user without authentication", function(done) {
     chai.request(server)
       .post("/api/user/deleteUser")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(401);
@@ -1016,7 +966,6 @@ describe("API tests - User routes", async function () {
   it("should not delete user without admin privileges", function(done) {
     chai.request(server)
       .post("/api/user/deleteUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -1034,7 +983,6 @@ describe("API tests - User routes", async function () {
   it("should not delete user with admin privileges using invalid id", function(done) {
     chai.request(server)
       .post("/api/user/deleteUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: { id: "invalid user id" } })
       .then(res => {
@@ -1052,7 +1000,6 @@ describe("API tests - User routes", async function () {
   it("should delete user with admin privileges using id", function(done) {
     chai.request(server)
       .post("/api/user/deleteUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: { _id: config.user.id } })
       .then(res => {
@@ -1070,7 +1017,6 @@ describe("API tests - User routes", async function () {
   it("should delete user with admin privileges using email", function(done) {
     chai.request(server)
       .post("/api/user/deleteUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: { email: config.admin.email } })
       .send({})
@@ -1091,7 +1037,6 @@ describe("API tests - User routes", async function () {
   it("should not remove user without authentication", function(done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .send({})
       .then(res => {
         res.should.have.status(401);
@@ -1108,7 +1053,6 @@ describe("API tests - User routes", async function () {
   it("should not remove user without admin privileges", function(done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {
@@ -1126,7 +1070,6 @@ describe("API tests - User routes", async function () {
   it("should not remove user with admin privileges using invalid id", function(done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: {id: "invalid user id"} })
       .then(res => {
@@ -1144,7 +1087,6 @@ describe("API tests - User routes", async function () {
   it("should remove user with admin privileges using id", function(done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: { _id: config.user.id } })
       .then(res => {
@@ -1162,7 +1104,6 @@ describe("API tests - User routes", async function () {
   it("should remove user with admin privileges using email", function(done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: { email: config.user.email } })
       .then(res => {
@@ -1180,7 +1121,6 @@ describe("API tests - User routes", async function () {
   it("should remove all users with admin privileges", function (done) {
     chai.request(server)
       .post("/api/user/removeUser")
-      .set("Accept-Language", config.language)
       .set("authorization", accessTokenAdmin)
       .send({ filter: {} })
       .then(res => {
@@ -1201,7 +1141,6 @@ function signupAndSigninAllUsers() {
   it("should register normal user", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": config.user.password,
@@ -1212,7 +1151,6 @@ function signupAndSigninAllUsers() {
         signupConfirmCode = res.body.code;
         chai.request(server)
           .post("/api/auth/signupVerification")
-          .set("Accept-Language", config.language)
           .send({ code: signupConfirmCode })
           .then(res => {
             res.should.have.status(200);
@@ -1233,8 +1171,6 @@ function signupAndSigninAllUsers() {
   it("should login normal user", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
-      .set("Accept-Language", config.language)
       .send({
         "email": config.user.email,
         "password": config.user.password,
@@ -1256,7 +1192,6 @@ function signupAndSigninAllUsers() {
   it("should register admin user", function(done) {
     chai.request(server)
       .post("/api/auth/signup")
-      .set("Accept-Language", config.language)
       .send({
         "email": config.admin.email,
         "password": config.admin.password,
@@ -1269,7 +1204,6 @@ function signupAndSigninAllUsers() {
         signupConfirmCode = res.body.code;
         chai.request(server)
           .post("/api/auth/signupVerification")
-          .set("Accept-Language", config.language)
           .send({ code: signupConfirmCode })
           .then(res => {
             res.should.have.status(200);
@@ -1291,7 +1225,6 @@ function signupAndSigninAllUsers() {
   it("should login as admin user", function(done) {
     chai.request(server)
       .post("/api/auth/signin")
-      .set("Accept-Language", config.language)
       .send(config.admin)
       .then(res => {
         res.should.have.status(200);

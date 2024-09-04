@@ -7,9 +7,11 @@ const should = chai.should();
 const expect = chai.expect;
 const server = require("../../server");
 const environment = require("../../src/helpers/environment");
+const { chaiHttpWithLanguage } = require("../plugins/language");
 const { config } = require("../config.test");
 
 chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
+chai.use(chaiHttpWithLanguage(config.language));
 
 describe("API tests - Helpers - Environment", async function() {
 
