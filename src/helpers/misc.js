@@ -7,7 +7,7 @@ const logger = require("../controllers/logger.controller");
 const config = require("../config");
 
 const isObject = (x) => {
-  return (typeof x === 'object' && !Array.isArray(x) && x !== null);
+  return (typeof x === "object" && !Array.isArray(x) && x !== null);
 };
 
 const isArray = (x) => {
@@ -133,31 +133,49 @@ const cleanDomain = (domain) => {
 };
 
 /**
- * inject data into index.html meta tag "config"
+ * inject data into client config file
  */
-const inject = (rootClient, inputFile, outputFile, dataToInject) => {
-  const inputFilepath = path.resolve(rootClient, inputFile);
-    
-  // read the input file
-  try {
-    let data = fs.readFileSync(inputFilepath, "utf8");
-    
-    // inject the config.app into the meta tag
-    const injectedData = data.replace(
-      /<meta name="config" content="">/,
-      `<meta name="config" content='${JSON.stringify(dataToInject)}'>`
-    );
-
-    // write the injected output file
-    const outputFilepath = path.resolve(rootClient, outputFile);
-    try {
-      fs.writeFileSync(outputFilepath, injectedData);
+const inject = (rootClient, rootClientSrc, dataToInject, outputFile) => {
+  const rootClientOutputFilePath = path.resolve(rootClient, outputFile);
+  //if (!fs.existsSync(rootClientOutputFilePath)) { // TODO: should we check existence or not?
+  // we could also check if it exists but is different than dataToInject, but better speed up things here...
+    try { // write the injected output file to root client build
+      fs.writeFileSync(rootClientOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
     } catch (err) {
-      throw `Error writing ${outputFilepath}: ${err}`;
+      throw `Error writing ${rootClientOutputFilePath}: ${err}`;
     }
-  } catch (err) {
-    throw `Error reading ${inputFilepath}: ${err}`;
+  //}
+
+  const rootClientSrcOutputFilePath = path.resolve(rootClientSrc, outputFile); // we could also check if it exists but is older than config.js, but better speed up things here...
+  //if (!fs.existsSync(rootClientSrcOutputFilePath)) { // TODO: should we check existence or not?
+  // we could also check if it exists but is different than dataToInject, but better speed up things here...
+    try { // write the injected output file to root client src
+      fs.writeFileSync(rootClientSrcOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
+    } catch (err) {
+      throw `Error writing ${rootClientSrcOutputFilePath}: ${err}`;
+    }
+  //}
+}
+
+const JSONstringifyRecursive = (t, seen = new Set()) => {
+  if (seen.has(t)) throw TypeError("stringifyJSON cannot serialize cyclic structures")
+  else if (t === undefined) return undefined
+  else if (t === null) return "null"
+  else if (typeof t == "bigint") throw TypeError("stringifyJSON cannot serialize BigInt")
+  else if (typeof t == "number") return String(t)
+  else if (typeof t == "boolean") return t ? "true" : "false"
+  else if (typeof t == "string") return "\"" + t.replace(/"/g, '\\"') + "\""
+  else if (typeof t == "object") {
+    const nextSeen = new Set(seen).add(t)
+    return Array.isArray(t) 
+      ? "[" + Array.from(t, v => stringifyJSON(v, nextSeen) ?? "null").join(",") + "]"
+      : "{" + Object.entries(t)
+                .map(([k,v]) => [stringifyJSON(k, nextSeen), stringifyJSON(v, nextSeen)])
+                .filter(([k,v]) => v !== undefined)
+                .map(entry => entry.join(":"))
+                .join(",") + "}"
   }
+  else return undefined
 }
 
 module.exports = {
@@ -170,4 +188,5 @@ module.exports = {
   remoteAddress,
   isAdministrator,
   inject,
+  JSONstringifyRecursive,
 };

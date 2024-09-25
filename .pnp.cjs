@@ -29,6 +29,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@logtail/node", "npm:0.5.0"],\
           ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.0"],\
+          ["axios", "npm:1.7.7"],\
           ["bcryptjs", "npm:2.4.3"],\
           ["chai", "npm:4.5.0"],\
           ["chai-http", "npm:4.4.0"],\
@@ -40,7 +41,9 @@ const RAW_RUNTIME_STATE =
           ["ejs", "npm:3.1.10"],\
           ["email-validator", "npm:2.0.4"],\
           ["express", "npm:4.19.2"],\
+          ["express-session", "npm:1.18.0"],\
           ["globals", "npm:15.9.0"],\
+          ["helmet", "npm:7.1.0"],\
           ["i18next", "npm:22.5.1"],\
           ["i18next-fs-backend", "npm:2.3.2"],\
           ["i18next-http-middleware", "npm:3.6.0"],\
@@ -51,6 +54,9 @@ const RAW_RUNTIME_STATE =
           ["morgan", "npm:1.10.0"],\
           ["nodemon", "npm:2.0.22"],\
           ["nyc", "npm:15.1.0"],\
+          ["passport", "npm:0.7.0"],\
+          ["passport-facebook", "npm:3.0.0"],\
+          ["passport-google-oauth20", "npm:2.0.0"],\
           ["sib-api-v3-sdk", "npm:8.5.0"],\
           ["stripe", "npm:8.222.0"],\
           ["winston", "npm:3.14.2"],\
@@ -892,6 +898,7 @@ const RAW_RUNTIME_STATE =
           ["acme", "workspace:."],\
           ["@logtail/node", "npm:0.5.0"],\
           ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.0"],\
+          ["axios", "npm:1.7.7"],\
           ["bcryptjs", "npm:2.4.3"],\
           ["chai", "npm:4.5.0"],\
           ["chai-http", "npm:4.4.0"],\
@@ -903,7 +910,9 @@ const RAW_RUNTIME_STATE =
           ["ejs", "npm:3.1.10"],\
           ["email-validator", "npm:2.0.4"],\
           ["express", "npm:4.19.2"],\
+          ["express-session", "npm:1.18.0"],\
           ["globals", "npm:15.9.0"],\
+          ["helmet", "npm:7.1.0"],\
           ["i18next", "npm:22.5.1"],\
           ["i18next-fs-backend", "npm:2.3.2"],\
           ["i18next-http-middleware", "npm:3.6.0"],\
@@ -914,6 +923,9 @@ const RAW_RUNTIME_STATE =
           ["morgan", "npm:1.10.0"],\
           ["nodemon", "npm:2.0.22"],\
           ["nyc", "npm:15.1.0"],\
+          ["passport", "npm:0.7.0"],\
+          ["passport-facebook", "npm:3.0.0"],\
+          ["passport-google-oauth20", "npm:2.0.0"],\
           ["sib-api-v3-sdk", "npm:8.5.0"],\
           ["stripe", "npm:8.222.0"],\
           ["winston", "npm:3.14.2"],\
@@ -1085,6 +1097,18 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["axios", [\
+      ["npm:1.7.7", {\
+        "packageLocation": "./.yarn/cache/axios-npm-1.7.7-cfbedc233d-7f875ea13b.zip/node_modules/axios/",\
+        "packageDependencies": [\
+          ["axios", "npm:1.7.7"],\
+          ["follow-redirects", "virtual:cfbedc233d4c16068d815547ad303dec1092fdb3b8bb4ec9ab9c56bdd55b4e87650c7a525a88805756f4d2819c03abfd96a9983cfa927fedf995d1b8b879db38#npm:1.15.9"],\
+          ["form-data", "npm:4.0.0"],\
+          ["proxy-from-env", "npm:1.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["b4a", [\
       ["npm:1.6.6", {\
         "packageLocation": "./.yarn/cache/b4a-npm-1.6.6-140a53bc1d-6154a36bd7.zip/node_modules/b4a/",\
@@ -1117,6 +1141,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/base64-js-npm-1.5.1-b2f7275641-669632eb37.zip/node_modules/base64-js/",\
         "packageDependencies": [\
           ["base64-js", "npm:1.5.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["base64url", [\
+      ["npm:3.0.1", {\
+        "packageLocation": "./.yarn/cache/base64url-npm-3.0.1-4c171c4917-a77b2a3a52.zip/node_modules/base64url/",\
+        "packageDependencies": [\
+          ["base64url", "npm:3.0.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -1862,6 +1895,13 @@ const RAW_RUNTIME_STATE =
           ["cookie-signature", "npm:1.0.6"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:1.0.7", {\
+        "packageLocation": "./.yarn/cache/cookie-signature-npm-1.0.7-a115603de6-1a62808cd3.zip/node_modules/cookie-signature/",\
+        "packageDependencies": [\
+          ["cookie-signature", "npm:1.0.7"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["cookiejar", [\
@@ -2533,6 +2573,23 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["express-session", [\
+      ["npm:1.18.0", {\
+        "packageLocation": "./.yarn/cache/express-session-npm-1.18.0-a285922921-d0d8290615.zip/node_modules/express-session/",\
+        "packageDependencies": [\
+          ["express-session", "npm:1.18.0"],\
+          ["cookie", "npm:0.6.0"],\
+          ["cookie-signature", "npm:1.0.7"],\
+          ["debug", "virtual:e0cd6afa69db469de21c754be1546e018ea723a8653bf7c1fdbb52b3d67b9c4065461f2d7632852c8644c3b36b5304269483ba2eb51ad39f9eae03847036d7a9#npm:2.6.9"],\
+          ["depd", "npm:2.0.0"],\
+          ["on-headers", "npm:1.0.2"],\
+          ["parseurl", "npm:1.3.3"],\
+          ["safe-buffer", "npm:5.2.1"],\
+          ["uid-safe", "npm:2.1.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["extend", [\
       ["npm:3.0.2", {\
         "packageLocation": "./.yarn/cache/extend-npm-3.0.2-e1ca07ac54-59e89e2dc7.zip/node_modules/extend/",\
@@ -2670,6 +2727,28 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/fn.name-npm-1.1.0-b472333184-000198af19.zip/node_modules/fn.name/",\
         "packageDependencies": [\
           ["fn.name", "npm:1.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["follow-redirects", [\
+      ["npm:1.15.9", {\
+        "packageLocation": "./.yarn/cache/follow-redirects-npm-1.15.9-539785d34c-e3ab42d109.zip/node_modules/follow-redirects/",\
+        "packageDependencies": [\
+          ["follow-redirects", "npm:1.15.9"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:cfbedc233d4c16068d815547ad303dec1092fdb3b8bb4ec9ab9c56bdd55b4e87650c7a525a88805756f4d2819c03abfd96a9983cfa927fedf995d1b8b879db38#npm:1.15.9", {\
+        "packageLocation": "./.yarn/__virtual__/follow-redirects-virtual-334ade9a15/0/cache/follow-redirects-npm-1.15.9-539785d34c-e3ab42d109.zip/node_modules/follow-redirects/",\
+        "packageDependencies": [\
+          ["follow-redirects", "virtual:cfbedc233d4c16068d815547ad303dec1092fdb3b8bb4ec9ab9c56bdd55b4e87650c7a525a88805756f4d2819c03abfd96a9983cfa927fedf995d1b8b879db38#npm:1.15.9"],\
+          ["@types/debug", null],\
+          ["debug", null]\
+        ],\
+        "packagePeers": [\
+          "@types/debug",\
+          "debug"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3150,6 +3229,15 @@ const RAW_RUNTIME_STATE =
           ["heimdalljs-logger", "npm:0.1.10"],\
           ["debug", "virtual:e0cd6afa69db469de21c754be1546e018ea723a8653bf7c1fdbb52b3d67b9c4065461f2d7632852c8644c3b36b5304269483ba2eb51ad39f9eae03847036d7a9#npm:2.6.9"],\
           ["heimdalljs", "npm:0.2.6"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["helmet", [\
+      ["npm:7.1.0", {\
+        "packageLocation": "./.yarn/cache/helmet-npm-7.1.0-0f9f70fa93-aa13b0907d.zip/node_modules/helmet/",\
+        "packageDependencies": [\
+          ["helmet", "npm:7.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -4603,6 +4691,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["oauth", [\
+      ["npm:0.10.0", {\
+        "packageLocation": "./.yarn/cache/oauth-npm-0.10.0-74adff7683-3568089799.zip/node_modules/oauth/",\
+        "packageDependencies": [\
+          ["oauth", "npm:0.10.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["object-assign", [\
       ["npm:4.1.1", {\
         "packageLocation": "./.yarn/cache/object-assign-npm-4.1.1-1004ad6dec-fcc6e4ea8c.zip/node_modules/object-assign/",\
@@ -4810,6 +4907,61 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["passport", [\
+      ["npm:0.7.0", {\
+        "packageLocation": "./.yarn/cache/passport-npm-0.7.0-df02531736-0ebd4de8e3.zip/node_modules/passport/",\
+        "packageDependencies": [\
+          ["passport", "npm:0.7.0"],\
+          ["passport-strategy", "npm:1.0.0"],\
+          ["pause", "npm:0.0.1"],\
+          ["utils-merge", "npm:1.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["passport-facebook", [\
+      ["npm:3.0.0", {\
+        "packageLocation": "./.yarn/cache/passport-facebook-npm-3.0.0-3abfe2b93e-b75df57461.zip/node_modules/passport-facebook/",\
+        "packageDependencies": [\
+          ["passport-facebook", "npm:3.0.0"],\
+          ["passport-oauth2", "npm:1.8.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["passport-google-oauth20", [\
+      ["npm:2.0.0", {\
+        "packageLocation": "./.yarn/cache/passport-google-oauth20-npm-2.0.0-4187da29c8-bfd1316ec7.zip/node_modules/passport-google-oauth20/",\
+        "packageDependencies": [\
+          ["passport-google-oauth20", "npm:2.0.0"],\
+          ["passport-oauth2", "npm:1.8.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["passport-oauth2", [\
+      ["npm:1.8.0", {\
+        "packageLocation": "./.yarn/cache/passport-oauth2-npm-1.8.0-bb6d58d7d4-31af6c5968.zip/node_modules/passport-oauth2/",\
+        "packageDependencies": [\
+          ["passport-oauth2", "npm:1.8.0"],\
+          ["base64url", "npm:3.0.1"],\
+          ["oauth", "npm:0.10.0"],\
+          ["passport-strategy", "npm:1.0.0"],\
+          ["uid2", "npm:0.0.4"],\
+          ["utils-merge", "npm:1.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["passport-strategy", [\
+      ["npm:1.0.0", {\
+        "packageLocation": "./.yarn/cache/passport-strategy-npm-1.0.0-5648a82a66-5086693f25.zip/node_modules/passport-strategy/",\
+        "packageDependencies": [\
+          ["passport-strategy", "npm:1.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["path-exists", [\
       ["npm:4.0.0", {\
         "packageLocation": "./.yarn/cache/path-exists-npm-4.0.0-e9e4f63eb0-505807199d.zip/node_modules/path-exists/",\
@@ -4871,6 +5023,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/pathval-npm-1.1.1-ce0311d7e0-b50a475106.zip/node_modules/pathval/",\
         "packageDependencies": [\
           ["pathval", "npm:1.1.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["pause", [\
+      ["npm:0.0.1", {\
+        "packageLocation": "./.yarn/cache/pause-npm-0.0.1-0c421a299d-e96ee581b6.zip/node_modules/pause/",\
+        "packageDependencies": [\
+          ["pause", "npm:0.0.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -4962,6 +5123,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["proxy-from-env", [\
+      ["npm:1.1.0", {\
+        "packageLocation": "./.yarn/cache/proxy-from-env-npm-1.1.0-c13d07f26b-f0bb4a87cf.zip/node_modules/proxy-from-env/",\
+        "packageDependencies": [\
+          ["proxy-from-env", "npm:1.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["pstree.remy", [\
       ["npm:1.1.8", {\
         "packageLocation": "./.yarn/cache/pstree.remy-npm-1.1.8-2dd5d55de2-ef13b1b589.zip/node_modules/pstree.remy/",\
@@ -5015,6 +5185,15 @@ const RAW_RUNTIME_STATE =
           ["mktemp", "npm:0.4.0"],\
           ["rimraf", "npm:2.7.1"],\
           ["underscore.string", "npm:3.3.6"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["random-bytes", [\
+      ["npm:1.0.0", {\
+        "packageLocation": "./.yarn/cache/random-bytes-npm-1.0.0-5a886b8827-09faa25639.zip/node_modules/random-bytes/",\
+        "packageDependencies": [\
+          ["random-bytes", "npm:1.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -5974,6 +6153,25 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/typescript-patch-fe43cd9db9-746fdd0865.zip/node_modules/typescript/",\
         "packageDependencies": [\
           ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["uid-safe", [\
+      ["npm:2.1.5", {\
+        "packageLocation": "./.yarn/cache/uid-safe-npm-2.1.5-2f400e5dbd-07536043da.zip/node_modules/uid-safe/",\
+        "packageDependencies": [\
+          ["uid-safe", "npm:2.1.5"],\
+          ["random-bytes", "npm:1.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["uid2", [\
+      ["npm:0.0.4", {\
+        "packageLocation": "./.yarn/cache/uid2-npm-0.0.4-cd02831b83-e92325ce2e.zip/node_modules/uid2/",\
+        "packageDependencies": [\
+          ["uid2", "npm:0.0.4"]\
         ],\
         "linkType": "HARD"\
       }]\

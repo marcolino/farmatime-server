@@ -10,7 +10,243 @@ const Plan = require("../models/plan.model");
 const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
 
+const passport = require("passport");
+
 const config = require("../config");
+
+
+const googleLogin = (req, res, next) => {
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next); // TODO: scope in config...
+};
+
+// Google OAuth login
+// const googleLogin = (req, res, next) => {
+//   console.log('Hit /api/auth/google');  // Confirm this route is hit
+//   passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+//   console.log('Attempted redirect to Google OAuth');  // Log after passport.authenticate
+// };
+
+// const googleLogin = (req, res, next) => {  
+//   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next); // TODO: scope in config...
+// };
+
+// Google OAuth callback
+const googleCallback = (req, res, next) => {
+  passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial, info) => {
+    if (err) {
+      logger.error("Google authentication error:", err);
+      return next(err);  // handle error
+    }
+    req.userSocial = userSocial; // put userSocial in req
+    return socialLogin(req, res, next);
+  })(req, res, next);
+};
+
+// Facebook OAuth login
+const facebookLogin = (req, res, next) => {
+  passport.authenticate("facebook", { scope: ["email"] })(req, res, next); // TODO: scope in config...
+};
+
+// Facebook OAuth callback
+const facebookCallback = (req, res, next) => {
+  passport.authenticate("facebook", { failureRedirect: "/" }, (err, userSocial, info) => {
+    if (err) {
+      logger.error("Facebook authentication error:", err);
+      return next(err);  // handle error
+    }
+    req.userSocial = userSocial; // put userSocial in request
+    return socialLogin(req, res, next);
+  })(req, res, next);
+};
+
+const socialLogin = async (req, res, next) => {
+  if (!req?.userSocial) { // TODO: understand when this can happen and how to handle it...
+    logger.error("Social authentication incomplete");
+    return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") })
+    //return res.redirect("/"); // handle case where user is not authenticated
+  }
+
+  const roleName = "user";
+  const planName = "free";
+  const socialId = req.userSocial.id;
+  const provider = req.userSocial.provider;
+  const firstName = req.userSocial.given_name;
+  const lastName = req.userSocial.given_name;
+  const email = normalizeEmail(req.userSocial.emails[0].value); // TODO: use only the first one?
+
+  // check if a user with the given email exists already
+  let user;
+  try {
+    user = await User.findOne({
+      email,
+    },
+    null,
+    {
+      allowDeleted: true,
+      allowUnverified: true,
+    })
+    .populate("roles", "-__v")
+    .populate("plan", "-__v")
+    .exec();
+  } catch (err) {
+    logger.error(`Error finding user in social ${provider} signin request: ${err.message}`);
+    return redirectToClientWithError(req, res, {
+      message: req.t("Error finding user in social {{provider}} signin request: {{err}}", { provider, err: err.message })
+    }); 
+    //return next(Object.assign(new Error(err.message), { status: 500 }));
+  }
+
+  // // check user is found
+  // if (!user) { // TODO: test error here, forcing user to be false...
+  //   return res.status(401).json({ message: req.t("User not found") }); // return "Wrong credentials", if we want to to give less surface to attackers
+  // }
+  
+  if (user) { // check if a user with given email exists already
+    // check user is deleted
+    if (user.isDeleted) { // TODO: ...
+      // return res.status(401).json({
+      //   code: "AccountDeleted", message: req.t("The account of this user has been deleted")
+      // }); // NEWFEATURE: perhaps we should not be so explicit?
+      return redirectToClientWithError(req, res, {
+        message: req.t("The account of this user has been deleted")
+      }); 
+    }
+
+    // check email is verified
+    if (!user.isVerified) { // TODO: ...
+      // return res.status(401).json({
+      //   code: "AccountWaitingForVerification", message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
+      // });
+      return redirectToClientWithError(req, res, {
+        message: req.t("This account is waiting for a verification; if you did register it, check your emails")
+      }); 
+    }
+  } else { // user with given email does not exist, create a new one
+    let role, plan;
+    // get the role
+    try {
+      role = await Role.findOne({ name: roleName });
+    } catch (err) {
+      logger.error(`Error finding role ${roleName}:`, err);
+      return redirectToClientWithError(req, res, {
+        message: req.t("Error finding role {{roleName}}: {{error}}", { roleName, error: err.message })
+      }); 
+    }
+    if (!role) {
+      //return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName }) });
+      return redirectToClientWithError(req, res, {
+        message: req.t("Invalid role name {{roleName}}", { roleName })
+      }); 
+    }
+
+    // get plan
+    try {
+      plan = await Plan.findOne({ name: planName });
+    } catch (err) {
+      logger.error(`Error finding plan ${planName}:`, err);
+      //return next(Object.assign(new Error(err.message), { status: 500 }));
+      return redirectToClientWithError(req, res, {
+        message: req.t("Error finding plan {{planName}}: {{error}}", { planName, error:err.message })
+      }); 
+    }
+    if (!plan) {
+      //return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName }) });
+      return redirectToClientWithError(req, res, {
+        message: req.t("Invalid plan name {{planName}}", { planName })
+      }); 
+    }
+
+    // create new user
+    user = new User({
+      email,
+      password: "", // set an empty password, to have a safe record 
+      socialId: `${provider}:${socialId}`,
+      firstName: firstName,
+      lastName: lastName,
+      roles: [role._id],
+      plan: plan._id,
+      language: req.language,
+      isVerified: true, // social authorized user is verified automatically
+    });
+  }
+
+  // create new access token
+  user.accessToken = await RefreshToken.createToken(user, config.auth.accessTokenExpirationSeconds);
+
+  // create new refresh token
+  user.refreshToken = await RefreshToken.createToken(user, config.auth.refreshTokenExpirationSeconds);
+
+  logger.info(`User social signin (req,s): ${user.email}`);
+
+  // notify administration about logins
+  audit({ req, subject: `User ${user.email} social (${provider}) signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
+
+  user.save(async(err, user) => {
+    if (err) {
+      logger.error("User oauth login creation/update error:", err);
+      //return next(Object.assign(new Error(err.message), { status: 500 }));
+      return redirectToClientWithError(req, res, {
+        message: req.t("User oauth login creation/update error: {{error}}", { error: err.message })
+      }); 
+    }
+  });
+
+  const payload = {
+    id: user._id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    roles: user.roles,
+    plan: user.plan,
+    justRegistered: user.justRegistered,
+    accessToken: user.accessToken,
+    refreshToken: user.refreshToken,
+  };
+
+  redirectToClientWithSuccess(req, res, payload);
+};
+
+const redirectToClientWithSuccess = (req, res, payload) => {
+  return redirectToClient(req, res, true, payload);
+};
+
+const redirectToClientWithError = (req, res, payload) => {
+  return redirectToClient(req, res, false, payload);
+};
+
+const redirectToClient = (req, res, success, payload) => {
+  const url = new URL(
+    success ?
+      "http://localhost:5005/social-signin-success"
+    :
+      "http://localhost:5005/social-signin-error"
+  ); // TODO: to config...
+  const stringifiedPayload = JSON.stringify(payload);
+  url.searchParams.set("data", stringifiedPayload);
+  return res.redirect(url);
+};
+
+// social OAuth revoke
+const socialRevoke = async (req, res, next) => {
+  console.log("socialRevoke");
+
+  // TODO: check the providers give these data
+  const { userId, appId, issuedAt, provider } = req.body;
+  
+  // TODO:
+  // 1. verify the authenticity of the request
+  // 2. update your database to reflect that the user has revoked access
+  // 3. perform any cleanup necessary for your application
+  
+  console.log(`Access revoked for provider ${provider}, user ${user_id} at ${issued_at}`);
+
+  return res.status(200).json({
+    message: `Revocation notification received from provider ${provider} for user id ${userId}`
+  });
+};
+    
+const googleRevoke = socialRevoke;
+const facebookRevoke = socialRevoke;
 
 const signup = async(req, res, next) => {
   let roleName = "user";
@@ -92,7 +328,7 @@ const signup = async(req, res, next) => {
         message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
         codeDeliveryMedium: config.auth.codeDeliveryMedium,
         codeDeliveryEmail: user.email,
-        ...(config.mode.test) && { code: signupVerification.code } // to enble test mode to verify signup
+        ...(!config.mode.production) && { code: signupVerification.code } // to enble test mode to verify signup
       });
     } catch(err) {
       logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}:`, err);
@@ -102,39 +338,42 @@ const signup = async(req, res, next) => {
   });
 };
 
-const resendSignupCode = async(req, res, next) => {
+const resendSignupVerificationCode = async(req, res, next) => {
   try {
     const email = normalizeEmail(req.parameters.email);
-    const user = await User.findOne(
-      { email },
+    const user = await User.findOne({
+      email
+    },
       null,
       {
         allowUnverified: true,
       },
     );
-    if (!user) {
-      return res.status(401).json({ message: `The email address ${email} is not associated with any account. Double-check your email address and try again.`});
+    if (user) {
+      if (user.isVerified) {
+        return res.status(400).json({ message: req.t("This account has already been verified, you can log in") });
+      }
+
+      const signupVerification = await user.generateSignupVerification(user._id);
+      await signupVerification.save(); // save the verification code
+
+      await emailService.send(req, {
+        to: user.email,
+        subject: req.t("Signup Verification Code Resent"),
+        templateName: "signupVerificationCodeSent",
+        templateParams: {
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          signupVerificationCode: signupVerification.code,
+        },
+      });
     }
-
-    if (user.isVerified) {
-      return res.status(400).json({ message: req.t("This account has already been verified, you can log in")});
-    }
-
-    const signupVerification = await user.generateSignupVerification(user._id);
-    await signupVerification.save(); // save the verification code
-
-    await emailService.send(req, {
-      to: user.email,
-      subject: req.t("Signup Verification Code Resent"),
-      templateName: "signupVerificationCodeSent",
-      templateParams: {
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-        signupVerificationCode: signupVerification.code,
-      },
+    
+    res.status(200).json({
+      message: req.t("If the account exists, a verification code has been resent to {{to}} via {{codeDeliveryMedium}}", { to: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium }),
+      codeDeliveryMedium: config.auth.codeDeliveryMedium,
+      ...(!config.mode.production) && { code: signupVerification.code } // to enble non production modes to confirm signup
     });
-
-    res.status(200).json({ message: req.t("A verification code has been resent to {{to}} via {{codeDeliveryMedium}}", {to: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium}), codeDeliveryMedium: config.auth.codeDeliveryMedium });
 
   } catch(err) {
     logger.error("Error resending signup code:", err);
@@ -155,8 +394,7 @@ const signupVerification = async(req, res, next) => {
     }
 
     // we found a code, find a matching user
-    User.findOne(
-      {
+    User.findOne({
         _id: code.userId
       },
       null,
@@ -197,8 +435,7 @@ const signupVerification = async(req, res, next) => {
 const signin = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
-  User.findOne(
-    {
+  User.findOne({
       email,
     },
     null,
@@ -232,17 +469,25 @@ const signin = async (req, res, next) => {
       });
     }
 
-    // check input password with user's crypted assword, then with passepartout password
-    if (!user.comparePassword(req.parameters.password, user.password)) {
-      if (!user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)) {
-      //user.hashPassword(req.parameters.password, async (err, passepartoutPasswordHashed) => {
-      //  if (!err && !user.comparePassword(req.parameters.password, passepartoutPasswordHashed)) {
+
+    // if user.password === "", it could be a social auth user...
+    if (!user.password && user.socialId) {
+      let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
+      provider = provider.charAt(0).toUpperCase() + provider.slice(1)
+      return res.status(401).json({
+        accessToken: null,
+        message: req.t("This email is associated to your {{provider}} social account; please use it to sign in, or register a new account", { provider })
+      });
+    } else {
+      // check input password with user's crypted password, then with passepartout password
+      if (!user.comparePassword(req.parameters.password, user.password)) {
+        if (!user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)) {
           return res.status(401).json({
             accessToken: null,
             message: req.t("Wrong password"), // return "Wrong credentials", if we want to to give less surface to attackers
           });
         }
-      //});
+      }
     }
 
     // creacte new access token
@@ -257,7 +502,13 @@ const signin = async (req, res, next) => {
     audit({req, subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
     // save user's language as from request
-    User.findOneAndUpdate({ _id: user.id }, { $set: { language: req.language } }, { new: true }).then((user) => {
+    User.findOneAndUpdate({
+      _id: user.id
+    }, {
+      $set: { language: req.language }
+    }, {
+      new: true
+    }).then((user) => {
       logger.info("Saved user's language:", user.language);
     }).catch(err => {
       logger.error("Error saving user's language:", err);
@@ -278,44 +529,95 @@ const signin = async (req, res, next) => {
   });
 };
 
-const resetPassword = async(req, res, next) => {
+const signout = async (req, res, next) => {
+  const email = normalizeEmail(req.parameters.email);
+
+  User.findOne({
+      email,
+    },
+  )
+  //.populate("roles", "-__v")
+  //.populate("plan", "-__v")
+  .exec(async (err, user) => {
+    if (err) {
+      logger.error(req.t("Error finding user in signout request: {{err}}", { err: error.message }));
+      return next(Object.assign(new Error(err.message), { status: 500 }));
+    }
+
+    // check user is found
+    if (!user) {
+      return res.status(401).json({ message: req.t("User not found") });
+    }
+
+    // notify administration about logouts
+    //audit({req, subject: `User ${user.email} signout`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+  
+    // save user's language as from request
+    User.findOneAndUpdate({
+      _id: user.id
+    }, {
+      $set: {
+        accessToken: null,
+        refreshToken: null
+      }
+    }, {
+      new: true
+    }).then((user) => {
+      logger.info("User logged out:", user.email);
+    }).catch(err => {
+      logger.error("Error logging out user:", err);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
+    })
+
+    return res.status(200).json({
+      id: user._id,
+    });
+  });
+};
+
+const resetPassword = async (req, res, next) => {
   try {
     const { email } = req.parameters;
     if (!email) return res.status(400).json({ message: req.t("No email address to be reset")});
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
-
-    // generate and set password reset code
-    const resetPassword = user.generatePasswordResetCode();
-    user.resetPasswordCode = resetPassword.code;
-    user.resetPasswordExpires = resetPassword.expires;
-
-    // save the updated user object
-    await user.save();
-
-    // send email
-    const subject = req.t("Password change request");
-    const to = user.email;
-    const from = process.env.FROM_EMAIL;
-    logger.info(`Sending email: to: ${to}, from: ${from}, subject: ${subject}`);
-    config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
-
-    await emailService.send(req, {
-      to: user.email,
-      subject: req.t("Reset password code"),
-      templateName: "resetPasswordCodeSent",
-      templateParams: {
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-        resetPasswordCode: user.resetPasswordCode,
-      },
+    const user = await User.findOne({
+      email
     });
+    if (user) {
+      // generate and set password reset code
+      const resetPassword = user.generatePasswordResetCode();
+      user.resetPasswordCode = resetPassword.code;
+      user.resetPasswordExpires = resetPassword.expires;
+
+      // save the updated user object
+      await user.save();
+
+      // send email
+      const subject = req.t("Password change request");
+      const to = user.email;
+      const from = process.env.FROM_EMAIL;
+      logger.info(`Sending email: to: ${to}, from: ${from}, subject: ${subject}`);
+      config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
+
+      await emailService.send(req, {
+        to: user.email,
+        subject: req.t("Reset password code"),
+        templateName: "resetPasswordCodeSent",
+        templateParams: {
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          resetPasswordCode: user.resetPasswordCode,
+        },
+      });
+    } else {
+      // email not found... but we do not error out, to reduce attack surface...
+      //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
+    }
     
     res.status(200).json({
-      message: req.t("A reset code has been sent to {{email}} via {{codeDeliveryMedium}}", {email: user.email, codeDeliveryMedium: config.auth.codeDeliveryMedium}),
+      message: req.t("If the account exists, a reset code has been sent to {{email}} via {{codeDeliveryMedium}}.\nPlease copy and paste it here.", {email: email, codeDeliveryMedium: config.auth.codeDeliveryMedium}),
       codeDeliveryMedium: config.auth.codeDeliveryMedium,
-      codeDeliveryEmail: user.email,
-      ...(config.mode.test) && { code: user.resetPasswordCode } // to enble test mode to confirm reset password
+      codeDeliveryEmail: user?.email,
+      ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
   } catch(err) {
     logger.error("Error resetting password:", err);
@@ -330,12 +632,18 @@ const resetPasswordConfirm = async(req, res, next) => {
     const { code } = req.parameters;
 
     if (!code) {
-      return res.status(400).json({message: req.t("Password reset code not found"), code: "code"});
+      return res.status(400).json({message: req.t("Password reset code not found"), code: "NotFoundCode"});
     }
      // if we want to distinguish among invalid / expired we have to split the following query
-    const user = await User.findOne({email, resetPasswordCode: code, resetPasswordExpires: {$gt: Date.now()}});
+    const user = await User.findOne({
+      email,
+      resetPasswordCode: code,
+      resetPasswordExpires: {
+        $gt: Date.now()
+      }
+    });
     if (!user) {
-      return res.status(400).json({message: req.t("Password reset code is invalid or has expired"), code: "code"});
+      return res.status(400).json({message: req.t("Password reset code is invalid or has expired"), code: "InvalidOrExpiredCode"});
     }
 
     // set the new password
@@ -363,42 +671,46 @@ const resendResetPasswordCode = async(req, res, next) => {
   try {
     const { email } = req.parameters;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: `The email address ${req.parameters.email} is not associated with any account. Double-check your email address and try again.`});
-
-    //if (user.isVerified) return res.status(400).json({ message: req.t("This account has already been verified") + ". " + req.t("You can log in")});
-
-    user.generatePasswordResetCode();
-      
-    // save the updated user object
-    await user.save();
-
-    const subject = req.t("Reset Password Verification Code");
-    const to = user.email;
-    const from = process.env.FROM_EMAIL;
-//     const html = `
-// <p>Hi, ${user.firstName} ${user.lastName}.<p>
-// <p>The code to reset your password is <b>${user.resetPasswordCode}</b>.</p>
-// <p><i>If you did not request this, please ignore this email.</i></p>
-//     `;
-    logger.info("Sending email:", to, from, subject);
-    config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
-
-    await emailService.send(req, {
-      to: user.email,
-      subject: req.t("Reset password code"),
-      templateName: "resetPasswordCodeSent",
-      templateParams: {
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-        resetPasswordCode: user.resetPasswordCode,
-      },
+    const user = await User.findOne({
+      email
     });
+    if (user) {
+      //if (user.isVerified) return res.status(400).json({ message: req.t("This account has already been verified") + ". " + req.t("You can log in")});
+
+      // user.generatePasswordResetCode();
+      const resetPassword = user.generatePasswordResetCode();
+      user.resetPasswordCode = resetPassword.code;
+      user.resetPasswordExpires = resetPassword.expires;
+
+      // save the updated user object
+      await user.save();
+
+      const subject = req.t("Reset Password Verification Code");
+      const to = user.email;
+      const from = process.env.FROM_EMAIL;
+      logger.info("Sending email:", to, from, subject);
+      config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
+
+      await emailService.send(req, {
+        to: user.email,
+        subject: req.t("Reset password code"),
+        templateName: "resetPasswordCodeSent",
+        templateParams: {
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          resetPasswordCode: user.resetPasswordCode,
+        },
+      });
+    } else {
+      // email not found... but we do not error out, to reduce attack surface...
+      //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
+    }
 
     return res.status(200).json({
-      message: `A verification code has been sent to ${user.email}`,
+      message: `If the account exists, a verification code has been sent to ${email}`,
       codeDeliveryMedium: config.auth.codeDeliveryMedium,
-      codeDeliveryEmail: user.email,
+      codeDeliveryEmail: email,
+      ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
 
   } catch(err) {
@@ -443,15 +755,32 @@ const refreshToken = async(req, res, next) => {
     logger.error("Error refreshing token:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
+
 };
+
+// const google = async (req, res, next) => {
+//   console.log("********************** google req.parameters:", req.parameters);
+//   return passport.authenticate("google", { scope: ["profile", "email"] })
+//   //res.send("Google OAuth callback");
+//   // return res.status(200).json({
+//   //   message: "ok",
+//   // });
+// };
 
 module.exports = {
   signup,
-  resendSignupCode,
+  resendSignupVerificationCode,
   signupVerification,
   signin,
+  signout,
   resetPassword,
   resetPasswordConfirm,
   resendResetPasswordCode,
   refreshToken,
+  googleLogin,
+  googleCallback,
+  googleRevoke,
+  facebookLogin,
+  facebookCallback,
+  facebookRevoke,
 };

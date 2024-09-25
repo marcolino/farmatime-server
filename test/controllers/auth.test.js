@@ -142,7 +142,7 @@ describe("API tests - Auth routes", function() {
 
   it("should resend register code", function(done) {
     chai.request(server)
-      .post("/api/auth/resendSignupCode")
+      .post("/api/auth/resendSignupVerificationCode")
       .send({ email: config.user.email })
       .then(res => {
         res.should.have.status(200);
@@ -220,7 +220,7 @@ describe("API tests - Auth routes", function() {
 
   it("should not resend register code for already confirmed user", function(done) {
     chai.request(server)
-      .post("/api/auth/resendSignupCode")
+      .post("/api/auth/resendSignupVerificationCode")
       .send({ email: config.user.email })
       .then(res => {
         res.should.have.status(400);
@@ -236,7 +236,7 @@ describe("API tests - Auth routes", function() {
 
   it("should not resend register code without email", function(done) {
     chai.request(server)
-      .post("/api/auth/resendSignupCode")
+      .post("/api/auth/resendSignupVerificationCode")
       .send({})
       .then(res => {
         res.should.have.status(401); // 403?

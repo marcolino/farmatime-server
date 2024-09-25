@@ -45,6 +45,15 @@
 - aggiungere un tool per il controllo di secrets nel codice - OK
 - decidere come gestire le notifiche in produzione (betterstack) - OK
 
+- handle justRegistered, if needed...
+- http://localhost:5000/api/auth returns correctly JSON, but
+  http://localhost:5000/api returns HTML ... :-/, and
+- http://localhost:5000/ returns some JS error...
+- adjust "Error finding ..." and "Error looking for..."
+- in regular login, find by password AND socialId...
+- resetpassword: if email not found, do no error out immediately, to reduce attack surface
+
 NEWFEATURE:
 - rimuovere gli account non confermati, periodicamente (quando sarà necessario)
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
+ http://localhost:5000/api/

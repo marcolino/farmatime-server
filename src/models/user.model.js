@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const Role = require("./role.model");
-const Plan = require("./plan.model");
+// const Role = require("./role.model");
+// const Plan = require("./plan.model");
 const VerificationCode = require("./verificationCode.model");
 
 // Address schema
@@ -24,7 +24,8 @@ const UserSchema = mongoose.Schema({
     required: "Email is required",
     unique: true // `email` must be unique
   },
-  password: String,
+  password: String, // email/password login
+  socialId: String, // social login
   firstName: {
     type: String,
     max: 100
@@ -111,9 +112,10 @@ UserSchema.methods.hashPassword = async(password, callback) => {
     if (err) return callback(err);
     try {
       if (!password) {
-        let err = "empty password in user static method hashPassword";
-        //console.error(err);
-        return callback(err, null);
+        return callback(null, null); // password can be null, in social authorized users... So return no error, null hash
+        // let err = "empty password in user static method hashPassword";
+        // //console.error(err);
+        // return callback(err, null);
       }
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return callback(err);
@@ -139,6 +141,10 @@ UserSchema.methods.generatePasswordResetCode = () => {
   const maxDigits = 6;
   const expirySeconds = 60 * 60; // 1 hour
 
+  // // TODO:
+  // this.resetPasswordCode = generateRandomCode(maxDigits);
+  // this.resetPasswordExpires = Date.now() + (expirySeconds * 1000);
+
   return {
     code: generateRandomCode(maxDigits), //crypto.randomBytes(20).toString("hex")
     expires: Date.now() + (expirySeconds * 1000),
@@ -156,8 +162,11 @@ UserSchema.methods.generateSignupVerification = (userId) => {
 };
 
 function generateRandomCode(maxDigits) {
-  const maxValue = Math.pow(10, maxDigits);
-  return String(Math.floor(Math.random(maxValue) * maxValue)).padStart(maxDigits, "0");
+  // const maxValue = Math.pow(10, maxDigits);
+  // return String(Math.floor(Math.random(maxValue) * maxValue)).padStart(maxDigits, "0");
+  const minValue = Math.pow(10, maxDigits - 1); // minimum value to avoid leading zeros
+  const maxValue = Math.pow(10, maxDigits); // maximum value (exclusive)
+  return String(Math.floor(Math.random() * (maxValue - minValue) + minValue)).padStart(maxDigits, "0");
 }
 
 module.exports = mongoose.model("User", UserSchema);

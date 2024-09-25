@@ -8,13 +8,13 @@ const verifyToken = (req, res, next) => {
   let token = req.headers["authorization"];
 
   if (!token) {
-    return res.status(401).json({ message: req.t("You must be authenticated for this action") });
+    return res.status(401).json({ message: req.t("You must be authenticated for this action"), code: "NO_TOKEN" });
   }
 
   jwt.verify(token, process.env.JWT_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       if (err instanceof TokenExpiredError) {
-        return res.status(401).json({ message: req.t("Access token expired") });
+        return res.status(401).json({ message: req.t("Access token expired"), code: "EXPIRED_TOKEN" });
       }
       return res.status(403).json({ message: req.t("You must be authorized for this action") });
     }

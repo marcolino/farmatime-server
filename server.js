@@ -1,9 +1,9 @@
 const express = require("express");
-const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
+const helmet = require("helmet");
 const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
 const db = require("./src/models");
@@ -13,13 +13,30 @@ const emailService = require("./src/services/email.service");
 const { localeDateTime, inject } = require("./src/helpers/misc");
 const rateLimitMiddleware = require("./src/middlewares/rateLimit");
 const i18n = require("./src/middlewares/i18n");
+const passportSetup = require("./src/middlewares/passportSetup");
 const config = require("./src/config");
 
-const index = "index.html"; // index file name to be injected
-const indexInjected = "index-injected.html"; // injected index file name
+const configInjectedFileName = "config.json"; // injected config file name
 
-// instantiate express app
+// environment configuration
+if (config.mode.production) { // load environment variables from .env file
+  logger.info("Loading production environment");
+  require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+} else { // load environment variables from .env.dev file
+  logger.info("Loading development environment");
+  require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
+}
+
 const app = express();
+
+//console.log("HELMET:", helmet.contentSecurityPolicy.getDefaultDirectives());
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+    styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+  }
+}));
 
 // use compression
 app.use(compression());
@@ -30,9 +47,19 @@ if (config.mode.development) {
 }
 
 // enable CORS, and whitelist our urls
+// TODO: REENABLE-ME !!!
 app.use(cors({
-  origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
+  //origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
+  // origin: [ // TODO: check we need all of them, that paths are really neededd, and then store urls to config.clientDomains, or config.clientDomainsWhiteList
+  //   "http://localhost:5005",
+  // ],
+  origin: true,
+//  methods: "GET,POST", // allowed methods
+  credentials: true // if you need cookies/auth headers
 }));
+
+// initialize Passport and session management using the middleware
+passportSetup(app);
 
 // parse requests of content-type - application/json
 app.use(express.json({
@@ -77,61 +104,18 @@ app.use((req, res, next) => {
   }
 });
 
-// environment configuration
-if (config.mode.production) { // load environment variables from .env file
-  logger.info("Loading production environment");
-  require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-} else { // load environment variables from .env.dev file
-  logger.info("Loading development environment");
-  require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
-}
-
 // setup the email service
 emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 
 // assert environment to be fully compliant with expectations
 assertEnvironment();
 
-// // set up database connection uri
-// const connUri =
-//   config.mode.production ?
-//     // production db uri
-//     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
-//   config.mode.test ?
-//     // test db uri
-//     `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB_TEST}`
-//   :
-//     // development db uri
-//     `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`
-// ;
-
-// connect to database
-/*
-db.mongoose
-  .connect(connUri, {
-    useFindAndModify: false,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  })
-  .then(() => {
-    logger.info("Successfully connected to database");
-    try {
-      db.populate() // populate database with initial contents if first time
-        .then(() => {
-          logger.info("Database populated");
-        });
-    } catch(err) {
-      logger.error("Database populate error:", err.message);
-      process.exit(-1);
-    }
-  })
-  .catch(err => {
-    logger.error(`Database connection error: ${err}`);
-    process.exit(-1);
-  })
-  ;
-*/
+// the client root: the folder with the frontend site
+const rootClient = path.join(__dirname, "client", "build");
+// the client src root, used to inject client src too
+const rootClientSrc = path.join(__dirname, config.clientSrc);
+// the coverage root (used while developing only)
+const rootCoverage = path.join(__dirname, "coverage");
 
 // routes
 require("./src/routes/auth.routes")(app);
@@ -154,66 +138,55 @@ app.use((err, req, res, next) => {
   );
 });
 
+// handle static routes
+app.use("/", express.static(rootClient)); // base client root
+config.mode.development && app.use("/coverage", express.static(rootCoverage)); // coverage root
+
 // handle not found API routes
 app.all("/api/*", (req, res, next) => {
   return res.status(404).json({ message: "Not found" });
 })
 
-// "/client/build" is the client root: a folder with the frontend site
-const rootClient = path.join(__dirname, "client", "build");
-// "/coverage" is the coverage root, used while developing only
-const rootCoverage = path.join(__dirname, "coverage");
-
 // handle client route for base urls
 app.get("/", async (req, res) => {
-  injectIndexIfNotPresent();
-  res.sendFile(path.resolve(rootClient, indexInjected));
+  res.sendFile(path.resolve(rootClient, "index.html"));
 });
-
-// handle static routes
-app.use("/", express.static(rootClient)); // base client root
-/*(!config.mode.production) && */ app.use("/coverage", express.static(rootCoverage)); // coverage root
 
 // handle client routes for all other urls
 app.get("*", (req, res) => {
-  injectIndexIfNotPresent();
-  res.sendFile(path.resolve(rootClient, indexInjected));
+  res.sendFile(path.resolve(rootClient, "index.html"));
 });
 
-// inject index file with client app config in indexInjected file
-const injectIndexIfNotPresent = () => {
-  // we could also check if it exists but is older than config.js, but better speed up things here...
-  if (!fs.existsSync(path.resolve(rootClient, indexInjected))) {
-    try {
-      inject(rootClient, index, indexInjected, config.app);
-    } catch (err) {
-      logger.error("Error injecting config app data into index file:", err);
-      throw err;
-    }
+// inject client app config in configInjectedFileName
+const injectConfig = () => {
+  try {
+    inject(rootClient, rootClientSrc, config.app, configInjectedFileName);
+  } catch (err) {
+    logger.error(`Error injecting config app data in ${configInjectedFileName} file:`, err);
+    throw err;
   }
 };
 
 async function start() {
   try {
-    // connect database, synchronously
-    await db.connect();
+    await db.connect(); // connect database, synchronously
   } catch (err) {
-    console.error(err);
     logger.error(`Database connection error: ${err}`, `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
     process.exit(1);
   }
 
+  if (config.mode !== "production") {
+    injectConfig(); // TODO: check if in production we really can avoid injection
+  }
+  
   try {
     // listen for requests
-    if (!config.mode.test) { // avoid listening while testing
-      let port = process.env.PORT;
-      app.listen(port, () => {
-        logger.info(`Server is running on port ${port}`);
-        audit({ subject: `server startup`, htmlContent: `Server is running on port ${port} on ${localeDateTime()}` });
-      });
-    }
+    let port = process.env.PORT;
+    app.listen(port, () => {
+      logger.info(`Server is running on port ${port}`);
+      audit({ subject: `server startup`, htmlContent: `Server is running on port ${port} on ${localeDateTime()}` });
+    });
   } catch (err) {
-    console.error(err);
     logger.error(`Server listen error: ${err}`);
   }
 };

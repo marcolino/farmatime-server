@@ -20,3 +20,7 @@ primary_region = 'cdg'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+
+[env]
+  # to avoid "PCI: Fatal: No config space access function found" errors... TODO: test it!
+  NODE_OPTIONS='--max-old-space-size=4096'

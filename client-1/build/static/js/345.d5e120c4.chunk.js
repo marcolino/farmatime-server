@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkacme_client=self.webpackChunkacme_client||[]).push([[345],{345:(e,t,s)=>{s.r(t),s.d(t,{default:()=>o});var c=s(402),u=s(7758),r=s(6094),a=s(1619),n=s(8058);const i=(0,u.A)((e=>({articles:{fontSize:"1.5em"}})));function l(){const e=i(),{auth:t}=(0,c.useContext)(r.c),{t:s}=(0,a.B)();return(0,n.jsx)("div",{className:e.articles,children:`${s("Articles")} ${s("for")} ${t.user?s("authenticated user"):s("guest user")} ${t.user?t.user.email:""}`})}const o=c.memo(l)}}]);
+//# sourceMappingURL=345.d5e120c4.chunk.js.map
