@@ -49,12 +49,12 @@ if (config.mode.development) {
 // enable CORS, and whitelist our urls
 // TODO: REENABLE-ME !!!
 app.use(cors({
-  //origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
+  origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
   // origin: [ // TODO: check we need all of them, that paths are really neededd, and then store urls to config.clientDomains, or config.clientDomainsWhiteList
   //   "http://localhost:5005",
   // ],
   origin: true,
-//  methods: "GET,POST", // allowed methods
+  methods: "GET,POST", // allowed methods
   credentials: true // if you need cookies/auth headers
 }));
 
@@ -143,7 +143,7 @@ app.use("/", express.static(rootClient)); // base client root
 config.mode.development && app.use("/coverage", express.static(rootCoverage)); // coverage root
 
 // handle not found API routes
-app.all("/api/*", (req, res, next) => {
+app.all(/^\/api(\/.*)?$/, (req, res) => {
   return res.status(404).json({ message: "Not found" });
 })
 

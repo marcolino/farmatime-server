@@ -1,4 +1,6 @@
-//const i18n = require("./middlewares/i18n");
+const path = require("path");
+const fs = require("fs");
+
 const apiName = "ACME";
 const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
@@ -14,12 +16,15 @@ const stripeIsLive = process.env.STRIPE_MODE === "live"; // stripe mode is "live
 const serverBaseUrl = production ? `${urlPublic}` : `${urlLocal}`;
 const clientBaseUrl = production ? `${urlPublic}` : `${urlLocal}`;
 const clientSrc = `../${appName}-client/src`; // client app source relative folder
+const customization = "mda"; // custom configuration to be merged with configBase
+
 require("dotenv").config({ path: production ? "./.env" : "./.env.dev" });
 
 clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`;
 clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`;
 
-module.exports = {
+//module.exports = {
+const configBase = {
   mode: {
     production,
     development,
@@ -322,3 +327,37 @@ module.exports = {
     },
   },
 };
+
+let configCustom = {};
+if (customization) {
+  const configCustomizationPath = path.join(__dirname, `config.${customization}.js`);
+  if (fs.existsSync(configCustomizationPath)) {
+    configCustom = require(configCustomizationPath);
+  } else {
+    let error = `Config file ${configCustomizationPath} not found`;
+    console.error(error);
+    throw new Error(error);
+  }
+}
+
+// deeply merge objects with precedence to the source one
+const deepMergeObjects = (target, source) => {
+  for (let key in source) {
+    // check if the value is an object or an array
+    if (source[key] instanceof Object && !Array.isArray(source[key])) {
+      // if both target and source have the same key and they are objects, merge them recursively
+      if (key in target) {
+        Object.assign(source[key], deepMergeObjects(target[key], source[key]));
+      }
+    } else if (Array.isArray(source[key])) {
+      // if the value is an array, merge arrays by concatenating them
+      target[key] = (target[key] || []).concat(source[key]);
+    }
+  }
+  // combine target and updated source
+  return Object.assign(target || {}, source);
+}
+
+const config = deepMergeObjects(configBase, configCustom);
+
+module.exports = config;

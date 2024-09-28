@@ -248,7 +248,7 @@ const updateRoles = async(req, res, next) => {
   .exec(async(err, user) => {  
     if (err) {
       logger.error("Error finding user:", err);
-      const ret = { message: req.t("Error looking for user"), reason: err.message };
+      const ret = { message: req.t("Error finding user"), reason: err.message };
       return res ? res.status(err.code).json(ret) : ret; 
     }
     if (!user) {
@@ -309,7 +309,7 @@ const updatePlan = async(req, res, next) => {
   .exec(async(err, user) => {  
     if (err) {
       logger.error("Error finding user:", err);
-      const ret = { message: req.t("Error looking for user"), reason: err.message };
+      const ret = { message: req.t("Error finding user"), reason: err.message };
       return res ? res.status(err.code).json(ret) : ret;
     }
     if (!user) {
@@ -422,7 +422,7 @@ const sendEmailToUsers = async (req, res, next) => {
   .exec(async(err, users) => {  
     if (err) {
       logger.error("Error finding users:", err);
-      const ret = { message: req.t("Error looking for users"), reason: err.message };
+      const ret = { message: req.t("Error finding users"), reason: err.message };
       return res ? res.status(err.code).json(ret) : ret;
     }
     if (!users || users.length === 0) {
