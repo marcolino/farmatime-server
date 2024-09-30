@@ -132,10 +132,13 @@ if (config.publicBasePath) {
 // handle errors in API routes
 app.use((err, req, res, next) => {
   res.locals.error = err;
-  logger.error(`Internal server error: ${err.message}`);
-  return res.status(err.status || 500).json(
-    { message: `${err.message || req.t("Internal server error")} - ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")})}` }
-  );
+  logger.error(`Server error: ${err.message}`);
+  let status = err.status || 500;
+  let message = `${err.message || req.t("Server error")}`
+  if (status === 500) {
+    message += ` -  ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")}`;
+  }
+  return res.status(status).json({ message });
 });
 
 // handle static routes

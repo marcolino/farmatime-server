@@ -55,6 +55,7 @@ const UserSchema = mongoose.Schema({
   fiscalCode: {
     type: String,
     max: 16,
+    uppercase: true,
   },
   businessName: {
     type: String,

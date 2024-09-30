@@ -103,9 +103,9 @@ const getAllRoles = async(req, res, next) => {
 
 const getUser = async(req, res, next) => {
   let userId = req.userId;
-  if (req.parameters.userId) { // request to update another user's profile
+  if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
-      return res.status(403).json({ message: req.t("You must have admin role to update another user") });
+      return res.status(403).json({ message: req.t("You must have admin role to update another user") }); // TODO: wrong message...
     } else {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
@@ -134,7 +134,7 @@ const getUser = async(req, res, next) => {
  */
 const updateUser = async (req, res, next) => {
   let userId = req.userId;
-  if (req.parameters.userId) { // request to update another user's profile
+  if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
       return res.status(403).json({ message: req.t("You must have admin role to update another user") });
     } else {
@@ -197,150 +197,101 @@ const updateUser = async (req, res, next) => {
       user.address = req.parameters.address;
     }
 
-    // verify and save the user
-    user.save(async(err, user) => {
+    user.save(async (err, user) => {
       if (err) {
         return res.status(err.code).json({ message: err.message });
       }
-
-      // update roles, if needed
-      if (req.parameters?.roles && !arraysContainSameObjects(req.parameters.roles, user.roles, "_id")) {
-        const err = await updateRoles(req, null);
-        if (err) {
-          logger.error("Error updating roles:", err);
-          return next(Object.assign(new Error(err.message), { status: 500 }));
-        }
-      }
-      
-      // update plan, if needed
-      if (req.parameters?.plan && !(String(req.parameters.plan._id) === String(user.plan?._id))) {
-        const err = await updatePlan(req, null);
-        if (err) {
-          logger.error("Error updating plans:", err);
-          return next(Object.assign(new Error(err.message), { status: 500 }));
-        }
-      }
-
-      return res.status(200).json({ user });
-    });
-      
-  });
-}
- 
-const updateRoles = async(req, res, next) => {
-  let userId = req.userId;
-  if (req.parameters.userId) { // request to update another user's profile
-    if (!await isAdministrator(userId)) { // check if request is from admin
-      const ret = { message: req.t("You must have admin role to update another user") };
-      return res ? res.status(403).json(ret) : ret; 
-    } else {
-      userId = req.parameters.userId; // if admin, accept a specific user id in request
-    }
-  }
-
-  if (req.parameters.roles === undefined || typeof req.parameters.roles !== "object" || req.parameters.roles.length <= 0) {
-    const ret = { message: req.t("Please specify at least one role") };
-    return res ? res.status(400).json(ret) : ret; 
-  }
-
-  User.findOne({ _id: userId })
-  .populate("roles", "-__v")
-  .exec(async(err, user) => {  
-    if (err) {
-      logger.error("Error finding user:", err);
-      const ret = { message: req.t("Error finding user"), reason: err.message };
-      return res ? res.status(err.code).json(ret) : ret; 
-    }
-    if (!user) {
-      const ret = { message: req.t("User not found") };
-      return res ? res.status(400).json(ret) : ret; 
-    }
-
-    // get roles ids, here we only have the names...
-    Role.find({
-      "_id": { $in: req.parameters.roles }
-    }, async(err, docs) => {
-      if (err) {
-        logger.error("Error finding roles:", err);
-        const ret = { message: req.t("Sorry, this user is not allowed elevate roles") };
-        return res ? res.status(403).json(ret) : ret;
-      }
-
-      if (!await isAdministrator(req.userId)) { // caller is not admin: check if requested roles do not require an upgrade, otherwise error out
-        requestedRolesMaxPriority = Math.max(...docs.map(role => role.priority));
-        currentRolesMaxPriority = Math.max(...user.roles.map(role => role.priority));
-        if (requestedRolesMaxPriority > currentRolesMaxPriority) {
-          const ret = { message: req.t("Sorry, this user is not allowed elevate roles") };
-          return res ? res.status(403).json(ret) : ret;
-        }
-      }
-      user.roles = docs.map(doc => doc._id);
-
-      // verify and save the user
-      user.save(err => {
-        if (err) {
-          logger.error("Error saving user:", err);
-          const ret = { message: `Error saving user: ${err.message}` };
-          return next ? next(Object.assign(new Error(err.message), { status: 500 })) : ret;
-        }
-        const ret = { message: req.t("Roles updated") };
-        return res ? res.status(200).json(ret) : null;
-      });
-    });
-  });
-}
   
-const updatePlan = async(req, res, next) => {
-  let userId = req.userId;
-  if (req.parameters.userId) { // request to update another user's profile
-    if (!await isAdministrator(userId)) { // check if request is from admin
-      const ret = { message: req.t("You must have admin role to update another user") };
-      return res ? res.status(403).json(ret) : ret;
+      try {
+        // update roles, if needed
+        if (req.parameters?.roles && !arraysContainSameObjects(req.parameters.roles, user.roles, "_id")) {
+          await updateRoles(req, userId);
+        }
+        
+        // update plan, if needed
+        if (req.parameters?.plan && !(String(req.parameters.plan._id) === String(user.plan?._id))) {
+          await updatePlan(req, userId);
+        }
+  
+        return res.status(200).json({ user });
+      } catch (error) {
+        logger.error("Error updating roles or plan:", error.message);
+        return next(Object.assign(new Error(error.message), { status: 403 }));
+      }
+    });
+      
+  });
+}
+
+const updateRoles = async (req, userId) => {
+  if (!userId) userId = req.userId;
+  if (req.parameters.userId && req.parameters.userId !== userId) {
+    if (!await isAdministrator(userId)) {
+      throw new Error(req.t("You must have admin role to update another user's roles"));
     } else {
-      userId = req.parameters.userId; // if admin, accept a specific user id in request
+      userId = req.parameters.userId;
+    }
+  }
+  
+  if (req.parameters.roles === undefined || !Array.isArray(req.parameters.roles) || req.parameters.roles.length === 0) {
+    throw new Error(req.t("Please specify at least one role"));
+  }
+
+  const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
+  if (!user) {
+    throw new Error(req.t("User not found"));
+  }
+
+  const roles = await Role.find({ "_id": { $in: req.parameters.roles } });
+  if (!await isAdministrator(req.userId)) {
+    const requestedRolesMaxPriority = Math.max(...roles.map(role => role.priority));
+    const currentRolesMaxPriority = Math.max(...user.roles.map(role => role.priority));
+    if (requestedRolesMaxPriority > currentRolesMaxPriority) {
+      //throw new Error();
+      const error = new Error(req.t("Sorry, it is not possible to elevate roles for users"));
+      error.code = 403;
+      throw error;
     }
   }
 
-  if (!req.parameters.plan) return res.status(400).json({ message: req.t("Plan is mandatory") });
-  if (!req.parameters.plan._id) return res.status(400).json({ message: req.t("Plan is wrong") });
+  user.roles = roles.map(role => role._id);
+  await user.save();
+  return { message: req.t("Roles updated") };
+};
 
-  User.findOne({ _id: userId })
-  .populate("plan", "-__v")
-  .exec(async(err, user) => {  
-    if (err) {
-      logger.error("Error finding user:", err);
-      const ret = { message: req.t("Error finding user"), reason: err.message };
-      return res ? res.status(err.code).json(ret) : ret;
-    }
+const updatePlan = async (req, userId) => {
+  if (!userId) userId = req.userId;
+  if (!await isAdministrator(userId)) {
+    const error = new Error(req.t("Sorry, you must have admin role to update plans"));
+    error.code = 403;
+    throw error;
+  } else {
+    userId = req.parameters.userId;
+  }
+
+  if (!req.parameters.plan || !req.parameters.plan._id) {
+    throw new Error(req.t("Plan is mandatory and must have a valid _id"));
+  }
+
+  try {
+    const user = await User.findOne({ _id: userId }).populate("plan", "-__v");
     if (!user) {
-      const ret = { message: req.t("User not found") };
-      return res ? res.status(400).json({ message: req.t("User not found") }) : ret;
+      throw new Error(req.t("User not found"));
     }
 
-    // search plan
-    Plan.findOne({
-      "_id": req.parameters.plan._id
-    }, async(err, doc) => {
-      if (err) {
-        logger.error("Error finding plan:", err);
-        const ret = { message: "Error finding plan", reason: err.message };
-        return res ? res.status(err.code).json(ret) : ret;
-      }
+    const plan = await Plan.findOne({ "_id": req.parameters.plan._id });
+    if (!plan) {
+      throw new Error(req.t("Plan not found"));
+    }
 
-      user.plan = doc._id;
+    user.plan = plan._id;
+    await user.save();
 
-      // verify and save the user
-      user.save(err => {
-        if (err) {
-          logger.error("Error saving user:", err);
-          const ret = { message: `Error saving user: ${err.message}` };
-          // return res ? res.status(err.code).json(ret) : ret;
-          return next ? next(Object.assign(new Error(err.message), { status: 500 })) : ret;
-        }
-        return res ? res.status(200).json({message: req.t("Plan updated")}) : null;
-      });
-    });
-  });
+    return { message: req.t("Plan updated") };
+  } catch (error) {
+    logger.error("Error in updatePlan:", error);
+    throw error;
+  }
 };
 
 // deletes a user: delete it from database
