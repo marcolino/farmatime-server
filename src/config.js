@@ -35,7 +35,7 @@ const configBase = {
     payloadLimit: "100mb",
     rateLimit: {
       maxRequestsPerMinute: 1000, // limit requests per minute (use 1 to throttle all requests)
-      delayAfterMaxRequestsMilliseconds: 2.5 * 1000, // delay after limit is reached
+      delayAfterMaxRequestsSeconds: 2.5, // delay after limit is reached
     },
     allowedVerbs: [
       "GET",
@@ -271,8 +271,9 @@ const configBase = {
       display: "standalone", // display value in manifest
     },
     auth: {
-      clientSessionExpirationSeconds: 60 * 60 * 2, // client session expiration seconds (should be less than auth.refreshTokenExpirationSeconds)
-      warnBeforeSessionExpirationSeconds: 60 * 2, // seconds before client session expiration warning
+      clientSessionExpirationSeconds: 30 /*60 * 60 * 2*/, // client session expiration seconds (should be less than auth.refreshTokenExpirationSeconds)
+      clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
+      clientLastActivityCheckTimeoutSeconds: 60, // the seconds of user inactivity before we ask user for session continuation
     },
     spinner: { // loading spinner
       /** choose one in type in:
@@ -312,6 +313,7 @@ const configBase = {
         maxInStack: 3,
         autoHideDurationSeconds: 5,
       },
+      backgroundVideo: "steam",
     },
     oauth: {
       domain: "auth.sistemisolari.com",

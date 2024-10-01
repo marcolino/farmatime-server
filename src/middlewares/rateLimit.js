@@ -15,7 +15,8 @@ const rateLimitMiddleware = (req, res, next) => {
   requestCount++;
 
   if (requestCount > config.api.rateLimit.maxRequestsPerMinute) {
-    setTimeout(() => next(), config.api.rateLimit.delayAfterMaxRequestsMilliseconds); // introduce delay
+    setTimeout(() => next(), config.api.rateLimit.delayAfterMaxRequestsSeconds * 1000); // introduce delay
+    console.warn(`delaying requests by ${config.api.rateLimit.delayAfterMaxRequestsSeconds} seconds because rate limit of ${config.api.rateLimit.maxRequestsPerMinute} request per minute`);
   } else {
     next(); // proceed immediately
   }
