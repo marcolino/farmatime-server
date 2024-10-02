@@ -48,11 +48,9 @@
 - http://localhost:5000/api/auth ritorna correttamente JSON, ma http://localhost:5000/api ritorna HTML - OK
 - resetpassword: se email non trovata, non andare subito in errore, per ridurre la superficie d'attacco... - OK
 
-- nel login regolare, cercare per password E socialId...
+- nel login via email, cercare per email/password E socialId... if email with socialId found, tell user to signin with social, or to signup a new account...
 
 NEWFEATURE:
 - gestire "justRegistered", se necessario
-
 - rimuovere gli account non confermati, periodicamente (quando sarà necessario)
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
- http://localhost:5000/api/

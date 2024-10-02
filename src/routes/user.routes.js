@@ -4,7 +4,7 @@ const controller = require("../controllers/user.controller");
 module.exports = app => {
   app.get("/api/user/getAllUsersWithFullInfo", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsersWithFullInfo);
   app.get("/api/user/getAllUsers", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsers);
-  app.get("/api/user/getUser", authJwt.verifyToken, controller.getUser);
+  app.post("/api/user/getUser", authJwt.verifyToken, controller.getUser);
   app.post("/api/user/updateUser", authJwt.verifyToken, controller.updateUser);
   app.get("/api/user/getAllPlans", authJwt.verifyToken, controller.getAllPlans);
   app.get("/api/user/getAllRoles", [authJwt.verifyToken], controller.getAllRoles);

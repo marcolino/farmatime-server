@@ -133,28 +133,21 @@ const cleanDomain = (domain) => {
 };
 
 /**
- * inject data into client config file
+ * inject data into client config file (development only)
  */
 const inject = (rootClient, rootClientSrc, dataToInject, outputFile) => {
   const rootClientOutputFilePath = path.resolve(rootClient, outputFile);
-  //if (!fs.existsSync(rootClientOutputFilePath)) { // TODO: should we check existence or not?
-  // we could also check if it exists but is different than dataToInject, but better speed up things here...
-    try { // write the injected output file to root client build
-      fs.writeFileSync(rootClientOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
-    } catch (err) {
-      throw `Error writing ${rootClientOutputFilePath}: ${err}`;
-    }
-  //}
-
+  try { // write the injected output file to root client build
+    fs.writeFileSync(rootClientOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
+  } catch (err) {
+    throw `Error writing ${rootClientOutputFilePath}: ${err}`;
+  }
   const rootClientSrcOutputFilePath = path.resolve(rootClientSrc, outputFile); // we could also check if it exists but is older than config.js, but better speed up things here...
-  //if (!fs.existsSync(rootClientSrcOutputFilePath)) { // TODO: should we check existence or not?
-  // we could also check if it exists but is different than dataToInject, but better speed up things here...
-    try { // write the injected output file to root client src
-      fs.writeFileSync(rootClientSrcOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
-    } catch (err) {
-      throw `Error writing ${rootClientSrcOutputFilePath}: ${err}`;
-    }
-  //}
+  try { // write the injected output file to root client src
+    fs.writeFileSync(rootClientSrcOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
+  } catch (err) {
+    throw `Error writing ${rootClientSrcOutputFilePath}: ${err}`;
+  }
 }
 
 const JSONstringifyRecursive = (t, seen = new Set()) => {

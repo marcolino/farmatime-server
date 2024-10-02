@@ -11,6 +11,8 @@ WORKDIR /app
 
 # using .env.NODE_ENV / .env-dev.NODE_ENV file for environment selection
 #ENV NODE_ENV="..."
+#ENV NODE_ENV=production
+# it seems unuseful...
 
 # initialize Yarn project
 ARG YARN_VERSION=4.4.1

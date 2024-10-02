@@ -1,5 +1,5 @@
 /**
- * Strings for translations: they are listed here for i18next-parse to find them.
+ * Strings for translations: they are listed here for i18next-parse to find them
  */
 
 // error strings, not in source code
@@ -18,8 +18,3 @@ t("Too many requests"); // 429, Troppe richieste
 t("Internal server error"); // 500, Errore interno del server
 t("Bad gateway"); // 502, Errore del gateway
 t("Service unavailable"); // 503, Servizio non disponibile
-
-// payment types
-t("unlimited");
-t("standard");
-t("free");

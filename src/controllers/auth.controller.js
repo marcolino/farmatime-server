@@ -9,21 +9,19 @@ const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
 const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
-
 const passport = require("passport");
-
 const config = require("../config");
 
 
 const googleLogin = (req, res, next) => {
-  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next); // TODO: scope in config...
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next); // TODO: scope in config...
 };
 
 // Google OAuth login
 // const googleLogin = (req, res, next) => {
-//   console.log('Hit /api/auth/google');  // Confirm this route is hit
-//   passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
-//   console.log('Attempted redirect to Google OAuth');  // Log after passport.authenticate
+//   console.log("Hit /api/auth/google");  // Confirm this route is hit
+//   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+//   console.log("Attempted redirect to Google OAuth");  // Log after passport.authenticate
 // };
 
 // const googleLogin = (req, res, next) => {  
@@ -217,10 +215,10 @@ const redirectToClientWithError = (req, res, payload) => {
 const redirectToClient = (req, res, success, payload) => {
   const url = new URL(
     success ?
-      "http://localhost:5005/social-signin-success"
+      `${config.serverDomain}/social-signin-success`
     :
-      "http://localhost:5005/social-signin-error"
-  ); // TODO: to config...
+    `${config.serverDomain}/social-signin-error`
+  );
   const stringifiedPayload = JSON.stringify(payload);
   url.searchParams.set("data", stringifiedPayload);
   return res.redirect(url);
@@ -757,15 +755,6 @@ const refreshToken = async(req, res, next) => {
   }
 
 };
-
-// const google = async (req, res, next) => {
-//   console.log("********************** google req.parameters:", req.parameters);
-//   return passport.authenticate("google", { scope: ["profile", "email"] })
-//   //res.send("Google OAuth callback");
-//   // return res.status(200).json({
-//   //   message: "ok",
-//   // });
-// };
 
 module.exports = {
   signup,

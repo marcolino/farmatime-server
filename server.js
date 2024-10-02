@@ -19,22 +19,30 @@ const config = require("./src/config");
 const configInjectedFileName = "config.json"; // injected config file name
 
 // environment configuration
-if (config.mode.production) { // load environment variables from .env file
-  logger.info("Loading production environment");
-  require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-} else { // load environment variables from .env.dev file
+// if (config.mode.production) { // load environment variables from .env file
+//   logger.info("Loading production environment");
+//   require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+// } else { // load environment variables from .env.dev file
+//   logger.info("Loading development environment");
+//   require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
+// }
+// environment configuration
+if (config.mode.development) { // load environment variables from .env.dev file
   logger.info("Loading development environment");
   require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
 }
+// in production we have variables in environment from the provider "secrets" setup (see `yarn fly-import-secrets`)
 
 const app = express();
 
 //console.log("HELMET:", helmet.contentSecurityPolicy.getDefaultDirectives());
 app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
   directives: {
     defaultSrc: ["'self'"],
     fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
     styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+    imgSrc: ["'self'", "https: data:"]
   }
 }));
 
@@ -47,12 +55,8 @@ if (config.mode.development) {
 }
 
 // enable CORS, and whitelist our urls
-// TODO: REENABLE-ME !!!
 app.use(cors({
   origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
-  // origin: [ // TODO: check we need all of them, that paths are really neededd, and then store urls to config.clientDomains, or config.clientDomainsWhiteList
-  //   "http://localhost:5005",
-  // ],
   origin: true,
   methods: "GET,POST", // allowed methods
   credentials: true // if you need cookies/auth headers
@@ -78,6 +82,7 @@ app.use((req, res, next) => {
 
 // custom middleware to merge req.query and req.body to req.parameters
 app.use((req, res, next) => {
+  console.log("app.use - req.query, req.body:", req.query, req.body);
   req.parameters = Object.assign({}, req.query, req.body);
   next();
 });
@@ -178,8 +183,8 @@ async function start() {
     process.exit(1);
   }
 
-  if (config.mode !== "production") {
-    injectConfig(); // TODO: check if in production we really can avoid injection
+  if (!config.mode.containerized) {
+    injectConfig();
   }
   
   try {
@@ -198,6 +203,6 @@ async function start() {
 module.exports = app;
 
 // if not in test mode, start the server immediately
-if (config.mode !== "test") {
+if (!config.mode.test) {
   start();
 }

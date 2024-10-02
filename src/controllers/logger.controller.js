@@ -39,6 +39,7 @@ try {
       maxsize: 5242880
     }),
   );
+
   transports.push(
     new LogtailTransport(logtail), // BetterStack transport
   );
@@ -55,7 +56,12 @@ try {
         return `${level}: ${timestamp} ${message} ${strArgs}`;
       })
     ),
-    level: config.logs.levelMap[config.mode.production ? "production" : config.mode.development ? "development" : config.mode.test ? "test" : "debug"],
+    level: config.logs.levelMap[ // TODO: choose levels for all modes...
+      config.mode.production ? "debug" :
+      config.mode.development ? "debug" :
+      config.mode.test ? "test" :
+      "debug"
+    ],
     handleExceptions: true,
     prettyPrint: true,
     colorize: colorize,
