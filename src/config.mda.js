@@ -8,10 +8,8 @@ const urlPublic = `https://acme-server-lingering-brook-4120.fly.dev${portPublic}
 const clientSrc = `../${appName}-client/src`; // client app source relative folder
 
 const config = {
-  db: {
-    HOST: "localhost",
-    PORT: 27017,
-    DB: "acme",
+  app: {
+    customization: "mda"
   },
   logs: {
     file: "logs/mda.log", // logs and exceptions file

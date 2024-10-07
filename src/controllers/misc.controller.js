@@ -1,7 +1,15 @@
 const emailService = require("../services/email.service");
 
+const ping = async (req, res, next) => {
+  res.json({ message: "👍" });
+};
+
+const maintenanceStatus = async (req, res, next) => {
+  res.json({ message: process.env.MAINTENANCE === "true" ? true : false });
+};
+
 const sendTestEmail = async(req, res, next) => {
-  try {
+    try {
     await emailService.send(req, {
       to: "marcosolari@gmail.com",
       toName: "ACME Administrator",
@@ -21,5 +29,7 @@ const sendTestEmail = async(req, res, next) => {
 };
 
 module.exports = {
+  ping,
+  maintenanceStatus,
   sendTestEmail,
 };

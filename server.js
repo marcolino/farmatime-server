@@ -11,8 +11,9 @@ const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
 const emailService = require("./src/services/email.service");
 const { localeDateTime, inject } = require("./src/helpers/misc");
-const rateLimitMiddleware = require("./src/middlewares/rateLimit");
 const i18n = require("./src/middlewares/i18n");
+const rateLimit = require("./src/middlewares/rateLimit");
+const checkReferer = require("./src/middlewares/checkReferer");
 const passportSetup = require("./src/middlewares/passportSetup");
 const config = require("./src/config");
 
@@ -56,10 +57,11 @@ if (config.mode.development) {
 
 // enable CORS, and whitelist our urls
 app.use(cors({
-  origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]),
+  // origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]), // TODO!!!
   origin: true,
   methods: "GET,POST", // allowed methods
-  credentials: true // if you need cookies/auth headers
+  credentials: true, // if you need cookies/auth headers
+  exposedHeaders: ["X-Maintenance-Status"],
 }));
 
 // initialize Passport and session management using the middleware
@@ -70,20 +72,37 @@ app.use(express.json({
   limit: config.api.payloadLimit, // limit payload to avoid too much data to be uploaded
 }));
 
+// use i18n
+app.use(i18nextMiddleware.handle(i18n/*ext*/));
+
+// apply rate limiting middleware globally
+app.use(rateLimit);
+
+// apply check referer middleware globally
+app.use(checkReferer);
+
 // add default headers
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, Content-Type, Accept, Authorization"
-  );
+  // if (process.env.MAINTENANCE === "true") { // handle maintenance mode
+  //   res.header("X-Maintenance-Status", "true");
+  // }
+  res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
   next();
 });
 
-// custom middleware to merge req.query and req.body to req.parameters
+// merge req.query and req.body to req.parameters
 app.use((req, res, next) => {
-  console.log("app.use - req.query, req.body:", req.query, req.body);
+  console.log("app.use - req.query, req.body:", req.query, req.body); // TODO...
   req.parameters = Object.assign({}, req.query, req.body);
+  next();
+});
+
+// handle maintenance mode
+app.use((req, res, next) => {
+  if (process.env.MAINTENANCE === "true") {
+    res.header("X-Maintenance-Status", "true");
+  }
   next();
 });
 
@@ -93,12 +112,6 @@ app.use((req, res, next) => {
   req.version = req.headers["accept-version"];
   next();
 });
-
-// use i18n
-app.use(i18nextMiddleware.handle(i18n/*ext*/));
-
-// apply rate limiting middleware globally
-app.use(rateLimitMiddleware);
 
 // verify if request verb is allowed
 app.use((req, res, next) => {
@@ -125,7 +138,7 @@ const rootCoverage = path.join(__dirname, "coverage");
 // routes
 require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
-require("./src/routes/articles.routes")(app);
+require("./src/routes/product.routes")(app);
 require("./src/routes/payment.routes")(app);
 require("./src/routes/misc.routes")(app);
 
@@ -157,6 +170,10 @@ app.all(/^\/api(\/.*)?$/, (req, res) => {
 
 // handle client route for base urls
 app.get("/", async (req, res) => {
+  //res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString()); 
+  if (process.env.MAINTENANCE === "true") {
+    res.header("X-Maintenance-Status", "true");
+  }
   res.sendFile(path.resolve(rootClient, "index.html"));
 });
 

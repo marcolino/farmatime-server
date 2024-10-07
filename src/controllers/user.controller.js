@@ -297,7 +297,7 @@ const updatePlan = async (req, userId) => {
 // deletes a user: delete it from database
 const deleteUser = async(req, res, next) => {
   let filter = req.parameters?.filter;
-  if (filter === "*") { // attention here, we are deleting ALL users!
+  if (filter === "*") { // TODO: attention here, we are deleting ALL users!
     filter = {};
   } else
   if (isObject(filter)) {
@@ -324,7 +324,7 @@ const deleteUser = async(req, res, next) => {
 // removes a user: mark it as deleted, but do not delete from database
 const removeUser = async (req, res, next) => {
   let filter = req.parameters?.filter;
-  if (filter === "*") { // attention here, we are deleting ALL users!
+  if (filter === "*") { // TODO: attention here, we are deleting ALL users!
     filter = {};
   } else
   if (isObject(filter)) {
@@ -342,9 +342,9 @@ const removeUser = async (req, res, next) => {
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (data.nModified > 0) {
-      return res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.nModified }), count: data.nModified });
+      return res.status(200).json({ message: req.t("{{count}} user(s) have been removed", { count: data.nModified }), count: data.nModified });
     } else {
-      return res.status(400).json({ message: req.t("No user have been deleted") });
+      return res.status(400).json({ message: req.t("No user have been removed") });
     }
   });
 

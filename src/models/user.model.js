@@ -1,18 +1,16 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-// const Role = require("./role.model");
-// const Plan = require("./plan.model");
 const VerificationCode = require("./verificationCode.model");
 
-// Address schema
-const AddressSchema = mongoose.Schema({
-  street: String,
-  streetNo: String,
-  city: String,
-  province: String, // (state or province)
-  zip: String,
-  country: String,
-});
+// // address schema
+// const AddressSchema = mongoose.Schema({
+//   street: String,
+//   streetNo: String,
+//   city: String,
+//   province: String, // (state or province)
+//   zip: String,
+//   country: String,
+// });
 
 const UserSchema = mongoose.Schema({
   // username:
@@ -88,7 +86,7 @@ const UserSchema = mongoose.Schema({
 }, {timestamps: true});
 
 UserSchema.pre(/^find|^count/, function() {
-  const operation = this.op; // we might need the effectiove operation matched
+  const operation = this.op; // we might need the effective operation matched
   const user = this;
   let condition = {};
   if (!this.options.allowDeleted) condition.isDeleted = false;
@@ -114,13 +112,9 @@ UserSchema.methods.hashPassword = async(password, callback) => {
     try {
       if (!password) {
         return callback(null, null); // password can be null, in social authorized users... So return no error, null hash
-        // let err = "empty password in user static method hashPassword";
-        // //console.error(err);
-        // return callback(err, null);
       }
       bcrypt.hash(password, salt, (err, hash) => {
         if (err) return callback(err);
-//console.log("hashPassword", "PASSWORD:", password, ", HASH:", hash)
         return callback(null, hash);
       });
     } catch(err) {
@@ -147,7 +141,7 @@ UserSchema.methods.generatePasswordResetCode = () => {
   // this.resetPasswordExpires = Date.now() + (expirySeconds * 1000);
 
   return {
-    code: generateRandomCode(maxDigits), //crypto.randomBytes(20).toString("hex")
+    code: generateRandomCode(maxDigits),
     expires: Date.now() + (expirySeconds * 1000),
   };
 };
@@ -163,8 +157,6 @@ UserSchema.methods.generateSignupVerification = (userId) => {
 };
 
 function generateRandomCode(maxDigits) {
-  // const maxValue = Math.pow(10, maxDigits);
-  // return String(Math.floor(Math.random(maxValue) * maxValue)).padStart(maxDigits, "0");
   const minValue = Math.pow(10, maxDigits - 1); // minimum value to avoid leading zeros
   const maxValue = Math.pow(10, maxDigits); // maximum value (exclusive)
   return String(Math.floor(Math.random() * (maxValue - minValue) + minValue)).padStart(maxDigits, "0");

@@ -2,7 +2,6 @@ const url = require("url");
 const fs = require("fs");
 const path = require("path");
 const User = require("../models/user.model");
-//const Role = require("../models/role.model");
 const logger = require("../controllers/logger.controller");
 const config = require("../config");
 
