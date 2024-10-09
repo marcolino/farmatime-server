@@ -37,7 +37,7 @@ const dbMock = {
       regulator: "incorporato",
       notes: "E' un bel motorino",
       type: "motorino",
-      imageName: "332.jpg",
+      imageNameOriginal: "332.jpg",
     },
     {
       mdaCode: "0334",
@@ -53,7 +53,7 @@ const dbMock = {
       regulator: "",
       notes: "",
       type: "motorino",
-      imageName: "334_0.jpg",
+      imageNameOriginal: "334_0.jpg",
     },
     {
       mdaCode: "2702",
@@ -69,7 +69,7 @@ const dbMock = {
       regulator: "incorporato",
       notes: "PULEGGIA MULTIRIGHE - AUTOVENTILATO",
       type: "alternatore",
-      imageName: "2702.jpg",
+      imageNameOriginal: "2702.jpg",
     },
     {
       mdaCode: "979",
@@ -85,7 +85,7 @@ const dbMock = {
       regulator: "",
       notes: "",
       type: "motorino",
-      imageName: "334_0.jpg",
+      imageNameOriginal: "334_0.jpg",
     },
   ]
 };

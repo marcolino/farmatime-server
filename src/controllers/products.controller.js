@@ -2,10 +2,10 @@
 //const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
-const crypto = require("crypto");
 const Product = require("../models/product.model");
+const { saveImageFile } = require("../helpers/images");
 const { isObject, isArray } = require("../helpers/misc");
-const config = require("../config");
+//const config = require("../config");
 
 
 const getAllProducts = async(req, res, next) => {
@@ -36,8 +36,9 @@ const getAllProducts = async(req, res, next) => {
         regulator: product.regulator,
         notes: product.notes,
         type: product.type,
-        imageName: product.imageName, //`${config.products.images.basepath}/${product.imageName}`,
-        imageNameHashed: product.imageNameHashed, //`${config.products.images.basepath}/${product.imageName}`,
+        imageNameOriginal: product.imageNameOriginal,
+        imageName: product.imageName,
+        imageNameWaterMark: product.imageNameWaterMark,
       });
     });
     return res.json({ products: productsData });
@@ -82,8 +83,9 @@ const getProduct = (req, res) => {
       regulator: product.regulator,
       notes: product.notes,
       type: product.type,
+      imageNameOriginal: product.imageNameOriginal,
       imageName: product.imageName,
-      imageNameHashed: product.imageNameHashed,
+      imageNameWaterMark: product.imageNameWaterMark,
     };
     return res.status(200).json({ product: productData });
 
@@ -192,27 +194,21 @@ const uploadProductImage = (req, res, next) => {
       return res.status(400).json({ message: req.t("Product not found") });
     }
 
-    const originalFilename = req.file.originalname;
-    const hashedFilename = createHashedFilename(originalFilename);
-    console.log("__dirname:", __dirname);
-    console.log("hashedFilename:", hashedFilename);
-    const filepath = path.join(__dirname, "../../public/assets/products/images", hashedFilename); // TODO: to config...
+    try {
+      result = await saveImageFile(req.file);
+      product.imageNameOriginal = result.imageNameOriginal;
+      product.imageName = result.imageName;
+    } catch (err) {
+      return res.status(400).json({ message: err.message });
+    }
 
-    fs.writeFile(filepath, req.file.buffer, (err) => {
+    product.save(async (err, product) => {
       if (err) {
-        return res.status(500).json({ message: req.t("Error saving image {{imageName}}", { imageName: "..." }) });
+        return res.status(err.code).json({ message: err.message });
       }
-    
-      product.imageName = originalFilename;
-      product.imageNameHashed = hashedFilename;
-      product.save(async(err, product) => {
-        if (err) {
-          return res.status(err.code).json({ message: err.message });
-        }
-        return res.status(200).json({ message: req.t("Image uploaded to {{fileName}}", { filename: hashedFilename }) });
-      });
-      // return res.status(200).json({ message: req.t("Image uploaded to {{fileName}}", { filename: hashedFilename }) });
     });
+
+    return res.status(200).json({ message: req.t("Image uploaded to {{fileName}}", { filename: product.imageName }) });
   });
 };
 
@@ -245,13 +241,7 @@ const removeProduct = async (req, res, next) => {
   });
 
 };
-
-
-// utility to create hashed filenames
-function createHashedFilename(originalFilename) {
-  const hash = crypto.createHash("sha256").update(originalFilename + Date.now()).digest("hex");
-  return `${hash}${path.extname(originalFilename)}`; // hash + .png
-}
+  
 
 // user properties validation
 const propertyMdaCodeValidate = async(req, value, product) => { // validate and normalize mda code

@@ -92,6 +92,12 @@ const configBase = {
   ],
   products: {
     images: {
+      path: "/public/assets/products/images",
+      pathWaterMark: "/public/assets/products/imagesWaterMark",
+      maximumSidePixels: 1024,
+      format: "webp",
+      qualityPercent: 80,
+      alphaQualityPercent: 90,
       basepath: "/assets/products/images",
     },
   },
@@ -125,6 +131,7 @@ const configBase = {
   clientDomains: [
     clientBaseUrl,
     "http://localhost:5005", // TODO: for dev only...
+    "http://localhost:4173", // TODO: for dev only...
   ],
   clientEmailUnsubscribeUrl,
   payment: {
@@ -262,6 +269,7 @@ const configBase = {
     },
     images: {
       publicPath: "/assets/products/images",
+      publicPathWaterMark: "/assets/products/imagesWaterMark",
     },
     legal: {
       termsValidityStartDate: "01-01-2025", // start date of terms validity

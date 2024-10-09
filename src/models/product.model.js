@@ -40,10 +40,10 @@ const ProductSchema = mongoose.Schema({
     type: String,
     enum: ["motorino", "alternatore"],
   },
-  imageName: {
+  imageNameOriginal: {
     type: String,
   },
-  imageNameHashed: {
+  imageName: {
     type: String,
   },
   notes: {

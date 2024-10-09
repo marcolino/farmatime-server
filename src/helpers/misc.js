@@ -1,6 +1,7 @@
 const url = require("url");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const User = require("../models/user.model");
 const logger = require("../controllers/logger.controller");
 const config = require("../config");
@@ -170,23 +171,13 @@ const JSONstringifyRecursive = (t, seen = new Set()) => {
   else return undefined
 }
 
-// // deeply merge objects with precedence to the first one
-// const deepMergeObjects = (target, source) => {
-//   for (let key in source) {
-//     // check if the value is an object or an array
-//     if (source[key] instanceof Object && !Array.isArray(source[key])) {
-//       // if both target and source have the same key and they are objects, merge them recursively
-//       if (key in target) {
-//         Object.assign(source[key], deepMergeObjects(target[key], source[key]));
-//       }
-//     } else if (Array.isArray(source[key])) {
-//       // if the value is an array, merge arrays by concatenating them
-//       target[key] = (target[key] || []).concat(source[key]);
-//     }
-//   }
-//   // combine target and updated source
-//   return Object.assign(target || {}, source);
-// }
+// utility to hash a string
+const hashString = (value) => {
+  return crypto.createHash("sha256").update(value).digest("hex");
+  // const hash = crypto.createHash("sha256").update(originalFilename + Date.now()).digest("hex");
+  // return `${hash}${path.extname(originalFilename)}`; // hash + .png
+}
+
 
 module.exports = {
   isObject,
@@ -199,5 +190,5 @@ module.exports = {
   isAdministrator,
   inject,
   JSONstringifyRecursive,
-  //deepMergeObjects,
+  hashString,
 };

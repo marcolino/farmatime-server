@@ -1,5 +1,5 @@
 const emailService = require("../services/email.service");
-const { logger } = require("../controllers/logger.controller");
+//const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 const audit = async ({ req, subject, htmlContent }) => {
