@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const Product = require("../models/product.model");
+const { logger } = require("./logger.controller");
 const { saveImageFile } = require("../helpers/images");
 const { isObject, isArray } = require("../helpers/misc");
 //const config = require("../config");
@@ -50,7 +51,7 @@ const getAllProducts = async(req, res, next) => {
 };
 
 // get product data by id
-const getProduct = (req, res) => {
+const getProduct = (req, res, next) => {
   const productId = req.parameters.productId;
 
   //const product = products.find(p => p.id === productId);
@@ -63,6 +64,7 @@ const getProduct = (req, res) => {
     if (err) {
       logger.error("Error finding product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
+      //return res.status(400).json({ message: req.t("Error finding product by id {{id}}", { id: productId }) });
     }
     if (!product) {
       return res.status(400).json({ message: req.t("Could not find any product by id {{id}}", { id: productId }) });

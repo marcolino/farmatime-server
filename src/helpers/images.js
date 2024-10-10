@@ -51,16 +51,29 @@ const imageConvertFormatAndLimitSize = async(imageBuffer) => {
   ;
 };
 
-const imageAddWaterMark = async(imageBuffer) => {
-  const watermarkImagePath = path.join(__dirname, "..", "assets/images/watermark-semi-transparent.png"); // the watermark image
-
+const imageAddWaterMark = async (imageBuffer) => {
+  const watermarkImagePath = path.join(__dirname, "..", "assets/images/watermark.png"); // the watermark image
+  const watermarkPercentWidth = 33; // TODO: to config
+  const watermarkPercentOpacity = 12; // TODO: to config
+  
   // load the input image to get its dimensions
   return await sharp(imageBuffer)
     .metadata()
-    .then(({ width }) => {
+    .then(async({ width }) => {
+
+      const watermarkOpacized = await sharp(watermarkImagePath)
+        .composite([{
+          input: Buffer.from([255, 255, 255, Math.round((watermarkPercentOpacity / 100) * 255)]),
+          raw: { width: 1, height: 1, channels: 4 },
+          tile: true,
+          blend: "dest-in"
+        }])
+        .toBuffer()
+      ;
+      
       // resize the watermark relative to the input image width (e.g., 10% of the input image width)
-      return sharp(watermarkImagePath)
-        .resize(Math.floor(width * 0.3)) // resize watermark
+      return await sharp(watermarkOpacized)
+        .resize(Math.floor(width * (watermarkPercentWidth / 100))) // resize watermark
         .greyscale() // make it greyscale
         .linear(1.5, 0) // increase the contrast
         .toBuffer()
@@ -75,7 +88,6 @@ const imageAddWaterMark = async(imageBuffer) => {
             blend: "over", // blending mode
           }
         ])
-        .sharpen()
         .toBuffer()
       ;
     })
@@ -83,7 +95,7 @@ const imageAddWaterMark = async(imageBuffer) => {
       console.error("Error processing the image:", err);
     })
   ;
-}
+};
 
 module.exports = {
   saveImageFile,

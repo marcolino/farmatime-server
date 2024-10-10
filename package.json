@@ -82,7 +82,7 @@
     "nodemon": "^2.0.15",
     "nyc": "^15.1.0"
   },
-  "packageManager": "yarn@4.4.1",
+  "packageManager": "yarn@4.5.0",
   "dependenciesMetadata": {
     "unplugged": []
   }
