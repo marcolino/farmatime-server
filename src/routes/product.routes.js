@@ -9,13 +9,15 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 module.exports = app => {
-  app.get (`${path}/getAllProducts`, authJwt.verifyToken, controller.getAllProducts);
+  app.get(`${path}/getAllProducts`, [authJwt.verifyToken], controller.getAllProducts);
   //app.post(`${path}/uploadImage`, [authJwt.verifyToken, upload.single("image")], controller.uploadImage);
-  app.post (`${path}/getProduct`, [authJwt.verifyToken], controller.getProduct);
-  app.post (`${path}/getProductImageById/:imageId`, [authJwt.verifyToken], controller.getProductImageById);
+  app.post(`${path}/getProduct`, [authJwt.verifyToken], controller.getProduct);
+  app.post(`${path}/getProductImageById/:imageId`, [authJwt.verifyToken], controller.getProductImageById);
+  app.post(`${path}/getProductAllConstraintsById`, [authJwt.verifyToken], controller.getProductAllConstraintsById);
+  app.post(`${path}/insertProduct`, [authJwt.verifyToken], controller.insertProduct);
   app.post(`${path}/updateProduct`, [authJwt.verifyToken], controller.updateProduct);
   app.post(`${path}/uploadProductImage`, [authJwt.verifyToken, upload.single("image")], controller.uploadProductImage);
-  app.post (`${path}/deleteProduct`, [authJwt.verifyToken], controller.deleteProduct); // be careful !
+  app.post(`${path}/deleteProduct`, [authJwt.verifyToken], controller.deleteProduct); // be careful !
   app.post(`${path}/removeProduct`, [authJwt.verifyToken], controller.removeProduct);
   // app.post(`${path}/uploadProductImage`, upload.single("image"), (req, res, next) => {
   //   if (req.file) {

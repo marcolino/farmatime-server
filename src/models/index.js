@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-//const db = require("../models");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
@@ -45,12 +44,12 @@ const dbMock = {
       make: "FIAT",
       models: [ "REGATA 1.7 D (83-)", "RITMO 1.7 D (79-)", "TIPO 1.7 D (87-)" ],
       application: "application-booh-2",
-      kw: "1.60",
-      volt: "12",
+      kw: 1.60,
+      volt: 12,
       ampere: "",
-      teeth: "910",
+      teeth: 910,
       rotation: "sinistra",
-      regulator: "",
+      regulator: "esterno",
       notes: "",
       type: "motorino",
       imageNameOriginal: "334_0.jpg",
@@ -61,11 +60,11 @@ const dbMock = {
       make: "FIAT",
       models: [ "BRAVA 1.2i 16V (98-)", "PUNTO 85 16V-cabrio (97-)" ],
       application: "application-booh-3",
-      kw: "1.60",
-      volt: "12",
-      ampere: "65",
-      teeth: "",
-      rotation: "",
+      kw: 1.60,
+      volt: 12,
+      ampere: 65,
+      teeth: 30,
+      rotation: "destra",
       regulator: "incorporato",
       notes: "PULEGGIA MULTIRIGHE - AUTOVENTILATO",
       type: "alternatore",
@@ -78,10 +77,10 @@ const dbMock = {
       models: [ "500 X 2.0 multijet 4X4 (5526308…) 11.14-", "DOBLÓ 2.0 multijet (263A1.000) 02.10-", "DUCATO 2.0 multijet [115] (250A1.000) 06.11-06.16" ],
       application: "application-booh-4",
       kw: "",
-      volt: "12",
+      volt: 12,
       ampere: "",
       teeth: "",
-      rotation: "",
+      rotation: "sinistra",
       regulator: "",
       notes: "",
       type: "motorino",
@@ -94,17 +93,23 @@ const dbMock = {
 const connect = async() => {
   // set up database connection uri
   const connUri =
-    config.mode.production ?
-      // production db uri
-      `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
-      config.mode.test ?
-        // test db uri
-        `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB_TEST}`
-        :
-        // development db uri
-        `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`
-    ;
-  
+    config.mode.production ? // production db uri
+      `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}`
+    :
+    config.mode.staging || config.mode.development ? // staging/development db uri
+      `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`
+    :
+    config.mode.test ? // test db uri
+      `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB_TEST}`
+    :
+      null
+  ;
+  if (!connUri) {
+    const err = `Unforeseen mode ${JSON.stringify(config.mode)}, cannot connect database`;
+    logger.error(err);
+    throw new Error(err);
+  }
+
   try {
     await mongoose.connect(connUri, {
       useFindAndModify: false,

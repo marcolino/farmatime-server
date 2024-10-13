@@ -57,7 +57,7 @@ const facebookCallback = (req, res, next) => {
   })(req, res, next);
 };
 
-const socialLogin = async (req, res, next) => {
+const socialLogin = async(req, res, next) => {
   if (!req?.userSocial) { // TODO: understand when this can happen and how to handle it...
     logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") })
@@ -215,9 +215,9 @@ const redirectToClientWithError = (req, res, payload) => {
 const redirectToClient = (req, res, success, payload) => {
   const url = new URL(
     success ?
-      `${config.serverDomain}/social-signin-success`
+      `${config.baseUrl}/social-signin-success`
     :
-    `${config.serverDomain}/social-signin-error`
+      `${config.baseUrl}/social-signin-error`
   );
   const stringifiedPayload = JSON.stringify(payload);
   url.searchParams.set("data", stringifiedPayload);
@@ -225,7 +225,7 @@ const redirectToClient = (req, res, success, payload) => {
 };
 
 // social OAuth revoke
-const socialRevoke = async (req, res, next) => {
+const socialRevoke = async(req, res, next) => {
   console.log("socialRevoke");
 
   // TODO: check the providers give these data
@@ -430,7 +430,7 @@ const signupVerification = async(req, res, next) => {
   }
 }
 
-const signin = async (req, res, next) => {
+const signin = async(req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
   User.findOne({
@@ -444,7 +444,7 @@ const signin = async (req, res, next) => {
   )
   .populate("roles", "-__v")
   .populate("plan", "-__v")
-  .exec(async (err, user) => {
+  .exec(async(err, user) => {
     if (err) {
       logger.error(req.t("Error finding user in signin request: {{err}}", { err: error.message }));
       return next(Object.assign(new Error(err.message), { status: 500 }));
@@ -527,7 +527,7 @@ const signin = async (req, res, next) => {
   });
 };
 
-const signout = async (req, res, next) => {
+const signout = async(req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
   User.findOne({
@@ -536,7 +536,7 @@ const signout = async (req, res, next) => {
   )
   //.populate("roles", "-__v")
   //.populate("plan", "-__v")
-  .exec(async (err, user) => {
+  .exec(async(err, user) => {
     if (err) {
       logger.error(req.t("Error finding user in signout request: {{err}}", { err: error.message }));
       return next(Object.assign(new Error(err.message), { status: 500 }));
@@ -573,7 +573,7 @@ const signout = async (req, res, next) => {
   });
 };
 
-const resetPassword = async (req, res, next) => {
+const resetPassword = async(req, res, next) => {
   try {
     const { email } = req.parameters;
     if (!email) return res.status(400).json({ message: req.t("No email address to be reset")});

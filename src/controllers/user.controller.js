@@ -132,7 +132,7 @@ const getUser = async(req, res, next) => {
 /**
  * Update current user's profile
  */
-const updateUser = async (req, res, next) => {
+const updateUser = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
@@ -197,7 +197,7 @@ const updateUser = async (req, res, next) => {
       user.address = req.parameters.address;
     }
 
-    user.save(async (err, user) => {
+    user.save(async(err, user) => {
       if (err) {
         return res.status(err.code).json({ message: err.message });
       }
@@ -223,7 +223,7 @@ const updateUser = async (req, res, next) => {
   });
 }
 
-const updateRoles = async (req, userId) => {
+const updateRoles = async(req, userId) => {
   if (!userId) userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) {
     if (!await isAdministrator(userId)) {
@@ -259,7 +259,7 @@ const updateRoles = async (req, userId) => {
   return { message: req.t("Roles updated") };
 };
 
-const updatePlan = async (req, userId) => {
+const updatePlan = async(req, userId) => {
   if (!userId) userId = req.userId;
   if (!await isAdministrator(userId)) {
     const error = new Error(req.t("Sorry, you must have admin role to update plans"));
@@ -322,7 +322,7 @@ const deleteUser = async(req, res, next) => {
 };
 
 // removes a user: mark it as deleted, but do not delete from database
-const removeUser = async (req, res, next) => {
+const removeUser = async(req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // TODO: attention here, we are deleting ALL users!
     filter = {};
@@ -351,7 +351,7 @@ const removeUser = async (req, res, next) => {
 };
 
 // send an email to a list of users
-const sendEmailToUsers = async (req, res, next) => {
+const sendEmailToUsers = async(req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};

@@ -17,22 +17,23 @@ const checkReferer = require("./src/middlewares/checkReferer");
 const passportSetup = require("./src/middlewares/passportSetup");
 const config = require("./src/config");
 
-const configInjectedFileName = "config.json"; // injected config file name
+const configFileNameInjected = "config.json"; // injected config file name
 
 // environment configuration
-// if (config.mode.production) { // load environment variables from .env file
-//   logger.info("Loading production environment");
-//   require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-// } else { // load environment variables from .env.dev file
-//   logger.info("Loading development environment");
-//   require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
-// }
-// environment configuration
-if (config.mode.development) { // load environment variables from .env.dev file
-  logger.info("Loading development environment");
-  require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
+if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
+  logger.info("Production environment");
 }
-// in production we have variables in environment from the provider "secrets" setup (see `yarn fly-import-secrets`)
+if (config.mode.staging) { // load environment variables from .env file
+  require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+  logger.info("Staging environment");
+}
+if (config.mode.development) { // load environment variables from .env.dev file
+  require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
+  logger.info("Development environment");
+}
+if (config.payment.stripe.enabled) {
+  logger.info(`Stripe payment mode is ${config.mode.livestripe}`);
+}
 
 const app = express();
 
@@ -50,15 +51,12 @@ app.use(helmet.contentSecurityPolicy({
 // use compression
 app.use(compression());
 
-// log requests to express output, while developing
-if (config.mode.development) {
-  app.use(morgan("dev"));
-}
+// log requests to express output
+app.use(morgan("dev"));
 
 // enable CORS, and whitelist our urls
 app.use(cors({
-  // origin: Object.keys(config.clientDomains).map(domain => config.clientDomains[domain]), // TODO!!!
-  origin: true,
+  origin: config.clientDomains, // the accepted client domains
   methods: "GET,POST", // allowed methods
   credentials: true, // if you need cookies/auth headers
   exposedHeaders: ["X-Maintenance-Status"],
@@ -84,16 +82,12 @@ app.use(checkReferer);
 // add default headers
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  // if (process.env.MAINTENANCE === "true") { // handle maintenance mode
-  //   res.header("X-Maintenance-Status", "true");
-  // }
   res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
   next();
 });
 
 // merge req.query and req.body to req.parameters
 app.use((req, res, next) => {
-  console.log("app.use - req.query, req.body:", req.query, req.body); // TODO...
   req.parameters = Object.assign({}, req.query, req.body);
   next();
 });
@@ -108,7 +102,7 @@ app.use((req, res, next) => {
 
 // handle version, if needed
 app.use((req, res, next) => {
-  // req.version is used to determine the version
+  // req.version is used to determine the API default version
   req.version = req.headers["accept-version"];
   next();
 });
@@ -130,12 +124,12 @@ assertEnvironment();
 
 // the client root: the folder with the frontend site
 const rootClient = path.join(__dirname, "client", "build");
-// the client src root, used to inject client src too
+// the client src root, used to inject client src
 const rootClientSrc = path.join(__dirname, config.clientSrc);
 // the coverage root (used while developing only)
 const rootCoverage = path.join(__dirname, "coverage");
 
-// routes
+// routes handling
 require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
 require("./src/routes/product.routes")(app);
@@ -161,7 +155,7 @@ app.use((err, req, res, next) => {
 
 // handle static routes
 app.use("/", express.static(rootClient)); // base client root
-config.mode.development && app.use("/coverage", express.static(rootCoverage)); // coverage root
+!config.mode.production && app.use("/coverage", express.static(rootCoverage)); // coverage root
 
 // handle not found API routes
 app.all(/^\/api(\/.*)?$/, (req, res) => {
@@ -169,7 +163,7 @@ app.all(/^\/api(\/.*)?$/, (req, res) => {
 })
 
 // handle client route for base urls
-app.get("/", async (req, res) => {
+app.get("/", async(req, res) => {
   //res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString()); 
   if (process.env.MAINTENANCE === "true") {
     res.header("X-Maintenance-Status", "true");
@@ -182,30 +176,21 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(rootClient, "index.html"));
 });
 
-// inject client app config in configInjectedFileName
-const injectConfig = () => {
-  try {
-    inject(rootClient, rootClientSrc, config.app, configInjectedFileName);
-  } catch (err) {
-    logger.error(`Error injecting config app data in ${configInjectedFileName} file:`, err);
-    throw err;
-  }
-};
-
+// connect to database and let express server start listening for requests
 async function start() {
   try {
-    await db.connect(); // connect database, synchronously
+    await db.connect(); // connect to database, synchronously
   } catch (err) {
     logger.error(`Database connection error: ${err}`, `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
     process.exit(1);
   }
 
-  if (!config.mode.containerized) {
-    injectConfig();
+  if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
+    // inject client app config to configFileNameInjected
+    inject(rootClient, rootClientSrc, configFileNameInjected, config.app);
   }
   
-  try {
-    // listen for requests
+  try { // listen for requests
     let port = process.env.PORT;
     app.listen(port, () => {
       logger.info(`Server is running on port ${port}`);
@@ -219,7 +204,7 @@ async function start() {
 // export the app
 module.exports = app;
 
-// if not in test mode, start the server immediately
+// if not in test mode, start the server
 if (!config.mode.test) {
   start();
 }

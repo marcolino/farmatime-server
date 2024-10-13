@@ -1,15 +1,12 @@
 const config = require("../config");
 
 // check referer header
-function checkReferer(req, res, next) {
-  //const allowedReferers = ["https://your-frontend.com", "https://another-allowed-site.com"];
+const checkReferer = (req, res, next) => {
   const allowedReferers = config.clientDomains;
-  const referer = req.get("Referer");
-
-  if (!referer || !allowedReferers.some(domain => referer.startsWith(domain))) {
-    return res.status(403).json({ message: "Forbidden: Invalid referer" });
+  const referer = req.get("Referer")?.replace(/\/+$/g, ""); // strip trailing slash
+  if (referer && !allowedReferers.some(domain => referer.startsWith(domain))) {
+    return res.status(403).json({ message: `Forbidden: Invalid referer ${referer}` });
   }
-
   next();
 }
 

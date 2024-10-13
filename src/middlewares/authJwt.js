@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { isAdministrator, localeDateTime } = require("../helpers/misc");
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 const { TokenExpiredError } = jwt;
@@ -19,13 +20,15 @@ const verifyToken = (req, res, next) => {
       return res.status(403).json({ message: req.t("You must be authorized for this action") });
     }
     const { exp } = jwt.decode(token);
-    if (config.development) console.info("access token will expire on", localeDateTime(new Date(exp * 1000)));
+    if (!config.mode.production) {
+      logger.info("Access token will expire on", localeDateTime(new Date(exp * 1000)));
+    }
     req.userId = decoded.id;
     next();
   });
 };
 
-const isAdmin = async (req, res, next) => {
+const isAdmin = async(req, res, next) => {
   const result = await isAdministrator(req.userId);
   switch (result) {
     case "InternalServerError":

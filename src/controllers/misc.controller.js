@@ -1,11 +1,11 @@
 const emailService = require("../services/email.service");
 
-const ping = async (req, res, next) => {
-  res.json({ message: "👍" });
+const ping = async(req, res, next) => {
+  res.status(200).json({ message: "👍" });
 };
 
-const maintenanceStatus = async (req, res, next) => {
-  res.json({ message: process.env.MAINTENANCE === "true" ? true : false });
+const maintenanceStatus = async(req, res, next) => {
+  res.status(200).json({ message: process.env.MAINTENANCE === "true" ? true : false });
 };
 
 const sendTestEmail = async(req, res, next) => {

@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const User = require("../models/user.model");
-const logger = require("../controllers/logger.controller");
+const { logger }  = require("../controllers/logger.controller");
 const config = require("../config");
 
 const isObject = (x) => {
@@ -110,7 +110,7 @@ const remoteAddress = (req) => {
   ).replace(/^\w+:/, "");
 };
 
-const isAdministrator = async (userId) => {
+const isAdministrator = async(userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
     if (user.roles.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)) {
@@ -118,7 +118,7 @@ const isAdministrator = async (userId) => {
     }
     return false;
   } catch (err) {
-    logger.error(`Cannot find user by id ${userId}`)
+    logger.error(`Cannot find user by id ${userId}`);
     return false;
   }
 };
@@ -135,18 +135,20 @@ const cleanDomain = (domain) => {
 /**
  * inject data into client config file (development only)
  */
-const inject = (rootClient, rootClientSrc, dataToInject, outputFile) => {
+const inject = (rootClient, rootClientSrc, outputFile, dataToInject) => {
   const rootClientOutputFilePath = path.resolve(rootClient, outputFile);
   try { // write the injected output file to root client build
     fs.writeFileSync(rootClientOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
+    logger.info(`Injected config file ${rootClientOutputFilePath} to client root`)
   } catch (err) {
-    throw `Error writing ${rootClientOutputFilePath}: ${err}`;
+    throw `Error injecting config file ${rootClientOutputFilePath}: ${err}`;
   }
   const rootClientSrcOutputFilePath = path.resolve(rootClientSrc, outputFile); // we could also check if it exists but is older than config.js, but better speed up things here...
   try { // write the injected output file to root client src
     fs.writeFileSync(rootClientSrcOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
+    logger.info(`Injected config file ${rootClientSrcOutputFilePath} to client src root`)
   } catch (err) {
-    throw `Error writing ${rootClientSrcOutputFilePath}: ${err}`;
+    throw `Error injecting config file ${rootClientSrcOutputFilePath}: ${err}`;
   }
 }
 

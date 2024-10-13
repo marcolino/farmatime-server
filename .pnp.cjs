@@ -27,8 +27,8 @@ const RAW_RUNTIME_STATE =
       [null, {\
         "packageLocation": "./",\
         "packageDependencies": [\
-          ["@logtail/node", "npm:0.5.0"],\
-          ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.0"],\
+          ["@logtail/node", "npm:0.5.2"],\
+          ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.2"],\
           ["axios", "npm:1.7.7"],\
           ["bcryptjs", "npm:2.4.3"],\
           ["chai", "npm:4.5.0"],\
@@ -844,24 +844,24 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@logtail/core", [\
-      ["npm:0.5.0", {\
-        "packageLocation": "./.yarn/cache/@logtail-core-npm-0.5.0-cdd1d074ba-88e9cb8e85.zip/node_modules/@logtail/core/",\
+      ["npm:0.5.2", {\
+        "packageLocation": "./.yarn/cache/@logtail-core-npm-0.5.2-c71714419a-aae5b4eec8.zip/node_modules/@logtail/core/",\
         "packageDependencies": [\
-          ["@logtail/core", "npm:0.5.0"],\
-          ["@logtail/tools", "npm:0.5.0"],\
-          ["@logtail/types", "npm:0.5.0"],\
+          ["@logtail/core", "npm:0.5.2"],\
+          ["@logtail/tools", "npm:0.5.2"],\
+          ["@logtail/types", "npm:0.5.2"],\
           ["serialize-error", "npm:8.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@logtail/node", [\
-      ["npm:0.5.0", {\
-        "packageLocation": "./.yarn/cache/@logtail-node-npm-0.5.0-33148f4daa-9743100083.zip/node_modules/@logtail/node/",\
+      ["npm:0.5.2", {\
+        "packageLocation": "./.yarn/cache/@logtail-node-npm-0.5.2-b3456bae12-0fc231d227.zip/node_modules/@logtail/node/",\
         "packageDependencies": [\
-          ["@logtail/node", "npm:0.5.0"],\
-          ["@logtail/core", "npm:0.5.0"],\
-          ["@logtail/types", "npm:0.5.0"],\
+          ["@logtail/node", "npm:0.5.2"],\
+          ["@logtail/core", "npm:0.5.2"],\
+          ["@logtail/types", "npm:0.5.2"],\
           ["@msgpack/msgpack", "npm:2.8.0"],\
           ["@types/stack-trace", "npm:0.0.33"],\
           ["cross-fetch", "npm:4.0.0"],\
@@ -873,39 +873,39 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@logtail/tools", [\
-      ["npm:0.5.0", {\
-        "packageLocation": "./.yarn/cache/@logtail-tools-npm-0.5.0-37174e7449-22f3d1d57b.zip/node_modules/@logtail/tools/",\
+      ["npm:0.5.2", {\
+        "packageLocation": "./.yarn/cache/@logtail-tools-npm-0.5.2-11596c11ad-7f64b03f3c.zip/node_modules/@logtail/tools/",\
         "packageDependencies": [\
-          ["@logtail/tools", "npm:0.5.0"],\
-          ["@logtail/types", "npm:0.5.0"],\
+          ["@logtail/tools", "npm:0.5.2"],\
+          ["@logtail/types", "npm:0.5.2"],\
           ["cross-fetch", "npm:4.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@logtail/types", [\
-      ["npm:0.5.0", {\
-        "packageLocation": "./.yarn/cache/@logtail-types-npm-0.5.0-7fb68b4f7d-3d6b794c35.zip/node_modules/@logtail/types/",\
+      ["npm:0.5.2", {\
+        "packageLocation": "./.yarn/cache/@logtail-types-npm-0.5.2-de2e49087d-9986f3d6c5.zip/node_modules/@logtail/types/",\
         "packageDependencies": [\
-          ["@logtail/types", "npm:0.5.0"]\
+          ["@logtail/types", "npm:0.5.2"]\
         ],\
         "linkType": "HARD"\
       }]\
     ]],\
     ["@logtail/winston", [\
-      ["npm:0.5.0", {\
-        "packageLocation": "./.yarn/cache/@logtail-winston-npm-0.5.0-9f1e4db64d-7890b14fa1.zip/node_modules/@logtail/winston/",\
+      ["npm:0.5.2", {\
+        "packageLocation": "./.yarn/cache/@logtail-winston-npm-0.5.2-436ff56c87-539e804981.zip/node_modules/@logtail/winston/",\
         "packageDependencies": [\
-          ["@logtail/winston", "npm:0.5.0"]\
+          ["@logtail/winston", "npm:0.5.2"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.0", {\
-        "packageLocation": "./.yarn/__virtual__/@logtail-winston-virtual-421ad9040e/0/cache/@logtail-winston-npm-0.5.0-9f1e4db64d-7890b14fa1.zip/node_modules/@logtail/winston/",\
+      ["virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.2", {\
+        "packageLocation": "./.yarn/__virtual__/@logtail-winston-virtual-0bedcb6cae/0/cache/@logtail-winston-npm-0.5.2-436ff56c87-539e804981.zip/node_modules/@logtail/winston/",\
         "packageDependencies": [\
-          ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.0"],\
-          ["@logtail/node", "npm:0.5.0"],\
-          ["@logtail/types", "npm:0.5.0"],\
+          ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.2"],\
+          ["@logtail/node", "npm:0.5.2"],\
+          ["@logtail/types", "npm:0.5.2"],\
           ["@types/winston", null],\
           ["winston", "npm:3.14.2"],\
           ["winston-transport", "npm:4.7.1"]\
@@ -1089,8 +1089,8 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["acme", "workspace:."],\
-          ["@logtail/node", "npm:0.5.0"],\
-          ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.0"],\
+          ["@logtail/node", "npm:0.5.2"],\
+          ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.2"],\
           ["axios", "npm:1.7.7"],\
           ["bcryptjs", "npm:2.4.3"],\
           ["chai", "npm:4.5.0"],\

@@ -110,6 +110,15 @@ const getProductImageById = (req, res) => {
   return res.sendFile(imagePath);
 };
 
+// serve product all constraints  by id
+const getProductAllConstraintsById = (req, res) => {
+  const imageId = req.parameters.imageId;
+  
+  return res.status(200).json({
+    types: ["motorino", "alternatore"],
+  });
+};
+
 // deletes a product: delete it from database
 const deleteProduct = async(req, res, next) => {
   let filter = req.parameters?.filter;
@@ -138,10 +147,32 @@ const deleteProduct = async(req, res, next) => {
 };
 
 /**
- * Update current product's profile
+ * Insert new product
  */
-const updateProduct = async (req, res, next) => {
-  let productId = req.parameters.productId;
+const insertProduct = async(req, res, next) => {
+  const productNew = req.parameters.product;
+  if (!productNew) {
+    return res.status(400).json({ message: req.t("Please specify a product") });
+  }
+
+  const product = new Product(productNew);
+  product.save()
+    .then(product => {
+      return res.status(200).json({ id: product._id, message: req.t("product has been inserted") });
+    })
+    .catch(err => {
+      logger.error("Error inserting product:", err);
+      return next(Object.assign(new Error(err.message), { status: 500 }));
+    })
+  ;
+}
+
+/**
+ * Update current product
+ */
+const updateProduct = async(req, res, next) => {
+  const productId = req.parameters.productId;
+  const productNew = req.parameters.product;
 
   Product.findOne({
     _id: productId
@@ -155,18 +186,21 @@ const updateProduct = async (req, res, next) => {
       return res.status(400).json({ message: req.t("Product not found") });
     }
 
-    // validate and normalize email
+    // validate and normalize fields
     let [message, value] = [null, null];
 
-    if ((req.parameters.mdaCode !== undefined)) {
-      [message, value] = await propertyMdaCodeValidate(req, req.parameters.mdaCode, product);
+    if ((productNew.mdaCode !== undefined)) {
+      [message, value] = await propertyMdaCodeValidate(req, productNew.mdaCode, productNew);
       if (message) return res.status(400).json({ message });
       product.mdaCode = value;
     }
     //...
-    product.notes = req.parameters.notes;
-    
-    console.log("product.notes:", product.notes);
+    if ((productNew.notes !== undefined)) {
+      // [message, value] = await propertyNotesValidate(req, productNew.notes, productNew);
+      // if (message) return res.status(400).json({ message });
+      product.notes = productNew.notes;
+    }
+
     product.save(async(err, product) => {
       if (err) {
         return res.status(err.code).json({ message: err.message });
@@ -187,7 +221,7 @@ const uploadProductImage = (req, res, next) => {
   Product.findOne({
     _id: productId
   })
-  .exec(async (err, product) => {
+  .exec(async(err, product) => {
     if (err) {
       logger.error("Error finding product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
@@ -204,7 +238,7 @@ const uploadProductImage = (req, res, next) => {
       return res.status(400).json({ message: err.message });
     }
 
-    product.save(async (err, product) => {
+    product.save(async(err, product) => {
       if (err) {
         return res.status(err.code).json({ message: err.message });
       }
@@ -216,7 +250,7 @@ const uploadProductImage = (req, res, next) => {
 
 
 // removes a product: mark it as deleted, but do not delete from database
-const removeProduct = async (req, res, next) => {
+const removeProduct = async(req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // TODO: attention here, we are deleting ALL products!
     filter = {};
@@ -255,6 +289,8 @@ module.exports = {
   getAllProducts,
   getProduct,
   getProductImageById,
+  getProductAllConstraintsById,
+  insertProduct,
   updateProduct,
   uploadProductImage,
   deleteProduct,

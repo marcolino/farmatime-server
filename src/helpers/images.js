@@ -51,7 +51,7 @@ const imageConvertFormatAndLimitSize = async(imageBuffer) => {
   ;
 };
 
-const imageAddWaterMark = async (imageBuffer) => {
+const imageAddWaterMark = async(imageBuffer) => {
   const watermarkImagePath = path.join(__dirname, "..", "assets/images/watermark.png"); // the watermark image
   const watermarkPercentWidth = 33; // TODO: to config
   const watermarkPercentOpacity = 12; // TODO: to config

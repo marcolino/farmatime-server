@@ -1,6 +1,6 @@
 const winston = require("winston");
-const { Logtail } = require('@logtail/node');
-const { LogtailTransport } = require('@logtail/winston');
+const { Logtail } = require("@logtail/node");
+const { LogtailTransport } = require("@logtail/winston");
 const util = require("util");
 const config = require("../config");
 require("winston-syslog");
@@ -58,6 +58,7 @@ try {
     ),
     level: config.logs.levelMap[ // TODO: choose levels for all modes...
       config.mode.production ? "debug" :
+      config.mode.staging ? "debug" :
       config.mode.development ? "debug" :
       config.mode.test ? "test" :
       "debug"

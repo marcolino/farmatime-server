@@ -49,8 +49,12 @@
 - resetpassword: se email non trovata, non andare subito in errore, per ridurre la superficie d'attacco... - OK
 
 - nel login via email, cercare per email/password E socialId... if email with socialId found, tell user to signin with social, or to signup a new account...
+- fare script per iniettare un config di produzione per i casi di staging e production, sul server, richiamabile dal client prime delle build
 
 NEWFEATURE:
 - gestire "justRegistered", se necessario
 - rimuovere gli account non confermati, periodicamente (quando sarà necessario)
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
+- gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)
+- gestire email preferences (clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`)
+- disabilitare `app.use(morgan)` (api server requests log) in server.js, in produzione (?)

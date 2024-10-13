@@ -15,7 +15,7 @@ module.exports = (app) => {
   passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_OAUTH_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_OAUTH_SECRET_KEY,
-    callbackURL: `${config.serverDomain}/api/auth/facebook/callback`,
+    callbackURL: `${config.baseUrl}/api/auth/facebook/callback`,
     profileFields: ['id', 'displayName', 'email'], // request email and profile info
   }, (accessToken, refreshToken, profile, done) => { // Facebook profile data is returned here
     return done(null, profile);
@@ -25,7 +25,7 @@ module.exports = (app) => {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
     clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-    callbackURL: `${config.serverDomain}/api/auth/google/callback`,
+    callbackURL: `${config.baseUrl}/api/auth/google/callback`,
   }, (accessToken, refreshToken, profile, done) => { // Google profile data is returned here
     return done(null, profile);
   }));

@@ -9,13 +9,8 @@ LABEL fly_launch_runtime="Node.js"
 # node.js app lives here
 WORKDIR /app
 
-# using .env.NODE_ENV / .env-dev.NODE_ENV file for environment selection
-#ENV NODE_ENV="..."
-#ENV NODE_ENV=production
-# it seems unuseful...
-
 # initialize Yarn project
-ARG YARN_VERSION=4.4.1
+ARG YARN_VERSION=4.5.0
 RUN yarn set version ${YARN_VERSION}
 
 # throw-away build stage to reduce size of final image

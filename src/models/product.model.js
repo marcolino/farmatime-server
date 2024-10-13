@@ -38,7 +38,7 @@ const ProductSchema = mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ["motorino", "alternatore"],
+    enum: ["", "motorino", "alternatore"],
   },
   imageNameOriginal: {
     type: String,
