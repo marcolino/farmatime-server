@@ -735,7 +735,7 @@ const refreshToken = async(req, res, next) => {
 
     if (RefreshToken.isExpired(refreshTokenDoc)) {
       // mongodb expired documents by default are disposed every minute
-      RefreshToken.findByIdAndDelete(refreshTokenDoc._id, { useFindAndModify: false }).exec();
+      RefreshToken.findByIdAndDelete(refreshTokenDoc._id, /*{ useFindAndModify: false }*/).exec();
       return res.status(401).json({ // refresh token is expired
         message: req.t("Session is just expired, please make a new signin request"),
       });

@@ -93,10 +93,10 @@ const dbMock = {
 const connect = async() => {
   // set up database connection uri
   const connUri =
-    config.mode.production ? // production db uri
+    (config.mode.production || config.mode.staging) ? // production/staging db uri
       `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}`
     :
-    config.mode.staging || config.mode.development ? // staging/development db uri
+    config.mode.development ? // development db uri
       `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`
     :
     config.mode.test ? // test db uri
@@ -111,6 +111,8 @@ const connect = async() => {
   }
 
   try {
+    console.log("config.mode:", config.mode);
+    console.log("connUri:", connUri);
     await mongoose.connect(connUri, {
       useFindAndModify: false,
       useNewUrlParser: true,

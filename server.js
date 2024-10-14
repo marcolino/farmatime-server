@@ -24,8 +24,21 @@ if (config.mode.production) { // load environment variables from the provider "s
   logger.info("Production environment");
 }
 if (config.mode.staging) { // load environment variables from .env file
-  require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-  logger.info("Staging environment");
+  try {
+    // const fs = require("fs");
+    //const data = fs.readFileSync(path.resolve(__dirname, "./.env"));
+    //console.log("ENV:", data);
+    // fs.readdir(".", (err, files) => {
+    //   files.forEach(file => {
+    //     console.log(".:", file);
+    //   });
+    // });
+    //console.log("clientDomains:", config.clientDomains);
+    require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+    logger.info("Staging environment", process.env.MONGO_URL);
+  } catch (err) {
+    console.error("Error loading ./.env file:", err);
+  }
 }
 if (config.mode.development) { // load environment variables from .env.dev file
   require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
@@ -42,9 +55,11 @@ app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
     defaultSrc: ["'self'"],
+    connectSrc: ["'self'", "http://localhost:5000", "https://acme-server-lingering-brook-4120.fly.dev"], // for client connection to server (TODO: use config.baseUrl, and we DON'T need https://acme-server-lingering-brook-4120.fly.dev ...)
     fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
     styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-    imgSrc: ["'self'", "https: data:"]
+    imgSrc: ["'self'", "https: data: blob:"]
+    //Content-Security-Policy: img-src 'self' https: data: blob:;
   }
 }));
 
@@ -191,10 +206,11 @@ async function start() {
   }
   
   try { // listen for requests
-    let port = process.env.PORT;
-    app.listen(port, () => {
-      logger.info(`Server is running on port ${port}`);
-      audit({ subject: `server startup`, htmlContent: `Server is running on port ${port} on ${localeDateTime()}` });
+    const port = process.env.PORT || 5000;
+    const host = "0.0.0.0";
+    app.listen(port, host, () => {
+      logger.info(`Server is running on ${host}:${port}`);
+      audit({ subject: `server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
     });
   } catch (err) {
     logger.error(`Server listen error: ${err}`);

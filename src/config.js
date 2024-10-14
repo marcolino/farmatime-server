@@ -3,7 +3,7 @@ const fs = require("fs");
 
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
 const production = (!test && (process.env.NODE_ENV === "production")); // production mode (production behaviour, production db on public host)
-const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, local db on local host)
+const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
 const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
 const livestripe = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
 
@@ -20,10 +20,10 @@ const customization = "mda"; // custom configuration to be merged with configBas
 
 /**
  * Import envronment variables from env file depending on current mode.
- * In production we don"t have an env file, but a "secrets" environment from the provider
+ * In production we don't have an env file, but a "secrets" environment from the provider
  */
 if (!production) {
-  require("dotenv").config({ path: production ? "./.env" : "./.env.dev" });
+  require("dotenv").config({ path: staging ? "./.env" : "./.env.dev" });
 }
 
 
@@ -34,6 +34,7 @@ const configBase = {
     development,
     test,
   },
+  baseUrl,
   api: {
     name: apiName,
     payloadLimit: "100mb",
@@ -129,9 +130,9 @@ const configBase = {
   upload: {
     maxFileSize: 10 * 1024 * 1024, // 10 MB
   },
-  //baseUrl: baseUrl,
   clientDomains: [
     baseUrl,
+    "http://localhost:5000", // TODO: for testing a production environment in a local container...
     "http://localhost:5005", // TODO: for development only...
     "http://localhost:4173", // TODO: for staging only...
   ],

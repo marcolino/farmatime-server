@@ -176,8 +176,6 @@ const JSONstringifyRecursive = (t, seen = new Set()) => {
 // utility to hash a string
 const hashString = (value) => {
   return crypto.createHash("sha256").update(value).digest("hex");
-  // const hash = crypto.createHash("sha256").update(originalFilename + Date.now()).digest("hex");
-  // return `${hash}${path.extname(originalFilename)}`; // hash + .png
 }
 
 

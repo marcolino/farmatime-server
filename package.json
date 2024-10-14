@@ -16,6 +16,8 @@
     "start-dev-trace-warnings": "NODE_ENV=development node --trace-warnings server.js",
     "start-staging": "NODE_ENV=staging node server.js",
     "start": "node server.js",
+    "inject": "node scripts/inject.js",
+    "inject-production": "NODE_ENV=production node scripts/inject.js # TODO: do we need to force production?",
     "test": "nyc --reporter=html mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log; scripts/test2badge",
     "coverage": "xdg-open http://localhost:5000/coverage/",
     "i18n": "i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
@@ -26,14 +28,15 @@
     "docker-build-dev": "docker build --build-arg NODE_ENV=development -t acmeserver:latest .",
     "docker-run-dev": "docker run --network='host' --env-file .env.dev -e NODE_ENV=development acmeserver",
     "docker-build-staging": "docker build --build-arg NODE_ENV=staging -t acmeserver:latest .",
-    "docker-run-staging": "docker run --network='host' --env-file .env.dev -e NODE_ENV=staging acmeserver",
+    "docker-run-staging": "docker run --network='host' --env-file .env -e NODE_ENV=staging acmeserver",
     "docker-build": "docker build --build-arg NODE_ENV=production -t acmeserver:latest .",
-    "docker-run": "docker run --network='host' --env-file .env -e NODE_ENV=production acmeserver",
+    "docker-run": "#TODO: no sense to use production server url, use always localhost:5000 as server url! - docker run --network='host' --env-file .env -e NODE_ENV=production acmeserver",
     "fly-upgrade": "fly version upgrade",
     "fly-import-secrets": "cat .env | fly secrets import",
     "fly-deploy": "NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) echo $NODE_ENV && fly deploy",
     "fly-logs": "fly logs",
-    "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn docker-build && yarn fly-deploy && yarn fly-logs"
+    "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn docker-build && yarn fly-deploy && yarn fly-logs",
+    "mongoose-was": "^8.7.1"
   },
   "keywords": [
     "node.js",

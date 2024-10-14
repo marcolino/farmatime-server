@@ -17,10 +17,10 @@ RUN yarn set version ${YARN_VERSION}
 FROM base AS build
 
 # install packages needed to build node modules
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-    build-essential node-gyp pkg-config python-is-python3 curl dnsutils && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN \
+apt-get update -qq && \
+apt-get install --no-install-recommends -y \
+build-essential node-gyp pkg-config python-is-python3 curl
 
 # install yarn dependencies
 COPY --link .yarnrc.yml package.json yarn.lock ./
@@ -32,13 +32,7 @@ COPY --link . .
 # final stage for app image
 FROM base
 
-# install runtime dependencies (including curl) in the final stage
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-    curl dnsutils && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# copy built application from the build stage
+# copy built application
 COPY --from=build /app /app
 
 # expose the server port (using .env.PORT)
