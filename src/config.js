@@ -272,7 +272,7 @@ const configBase = {
         "Content-Type": "application/json",
       },
       redirect: "follow",
-      timeoutSeconds: 10, // the maximum time in seconds to wait for an API response
+      timeoutSeconds: 30, // the maximum time in seconds to wait for an API response
     },
     images: {
       publicPath: "/assets/products/images",
