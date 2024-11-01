@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Env = require("./env.model");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
@@ -9,6 +10,10 @@ const config = require("../config");
 
 
 const dbMock = {
+  env: [
+    { key: "PORT", value: config.api.port },
+    { key: "MAINTENANCE", value: false },
+  ],
   users: [
     {
       email: config.defaultUsers.admin.email,
@@ -137,6 +142,15 @@ const connect = async() => {
  */
 const populate = async() => {
   try {
+    // check if env collection is empty
+    const envCount = await Env.estimatedDocumentCount();
+    if (envCount === 0) {
+      await Promise.all(dbMock.env.map(async(e) => {
+        await new Env(e).save();
+        logger.info(`added env ${e.key} = ${e.value} to env collection`);
+      }));
+    }
+
     // check if users collection is empty
     const userCount = await User.estimatedDocumentCount();
     if (userCount === 0) {

@@ -7,12 +7,13 @@ const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode
 const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
 const livestripe = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
 
+const apiPort = 5000;
 const apiName = "ACME";
 const appName = "acme";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const company = "Sistemi Solari Rossi";
 const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
-const urlLocal = "http://localhost:5000";
+const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 
@@ -37,6 +38,7 @@ const configBase = {
   baseUrl,
   api: {
     name: apiName,
+    port: apiPort,
     payloadLimit: "100mb",
     rateLimit: {
       maxRequestsPerMinute: 1000, // limit requests per minute (use 1 to throttle all requests)
@@ -130,11 +132,12 @@ const configBase = {
   upload: {
     maxFileSize: 10 * 1024 * 1024, // 10 MB
   },
+  envReloadIntervalSeconds: 60, // the seconds interval when to reload env collection from database
   clientDomains: [
     baseUrl,
-    "http://localhost:5000", // TODO: for testing a production environment in a local container...
-    "http://localhost:5005", // TODO: for development only...
-    "http://localhost:4173", // TODO: for staging only...
+    "http://localhost:5000", // TODO: for testing a production environment in a local container
+    "http://localhost:5005", // TODO: for development only
+    "http://localhost:4173", // TODO: for staging only
   ],
   clientEmailUnsubscribeUrl: `${baseUrl}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrl}/email-preferences`,
@@ -207,7 +210,6 @@ const configBase = {
   },
   envRequiredVariables: [
     "JWT_TOKEN_SECRET",
-    "MAINTENANCE",
     "ADMIN_USER_DEFAULT_PASSWORD",
     "MONGO_SCHEME",
     "MONGO_URL",

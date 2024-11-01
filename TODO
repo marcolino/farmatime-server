@@ -50,6 +50,8 @@
 
 - nel login via email, cercare per email/password E socialId... if email with socialId found, tell user to signin with social, or to signup a new account...
 - fare script per iniettare un config di produzione per i casi di staging e production, sul server, richiamabile dal client prime delle build
+- spostare le variabili non-secret da .env.dev a db.config - OK
+- nell'header, "Profilo (main role)" deve mostrare il ruolo con priority più alta
 
 NEWFEATURE:
 - gestire "justRegistered", se necessario

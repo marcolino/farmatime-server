@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
 const db = require("./src/models");
+const Env = require("./src/models/env.model");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
 const emailService = require("./src/services/email.service");
@@ -18,6 +19,7 @@ const passportSetup = require("./src/middlewares/passportSetup");
 const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // injected config file name
+
 
 // environment configuration
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
@@ -74,7 +76,7 @@ app.use(cors({
   origin: config.clientDomains, // the accepted client domains
   methods: "GET,POST", // allowed methods
   credentials: true, // if you need cookies/auth headers
-  exposedHeaders: ["X-Maintenance-Status"],
+  //exposedHeaders: ["X-Maintenance-Status"],
 }));
 
 // initialize Passport and session management using the middleware
@@ -108,9 +110,13 @@ app.use((req, res, next) => {
 });
 
 // handle maintenance mode
-app.use((req, res, next) => {
-  if (process.env.MAINTENANCE === "true") {
-    res.header("X-Maintenance-Status", "true");
+app.use(async(req, res, next) => {
+  const env = await Env.load(); // load env and access it
+  //if (process.env.MAINTENANCE === "true") { // TODO: will this catch also client routes ("/")?
+  //  res.header("X-Maintenance-Status", "true");
+  //}
+  if (env.MAINTENANCE === "true") { // TODO: will this catch also client routes ("/")? (NO)
+    return res.status(503).json({ message: "On maintenance" });
   }
   next();
 });
@@ -180,9 +186,9 @@ app.all(/^\/api(\/.*)?$/, (req, res) => {
 // handle client route for base urls
 app.get("/", async(req, res) => {
   //res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString()); 
-  if (process.env.MAINTENANCE === "true") {
-    res.header("X-Maintenance-Status", "true");
-  }
+  // if (process.env.MAINTENANCE === "true") {
+  //   res.header("X-Maintenance-Status", "true");
+  // }
   res.sendFile(path.resolve(rootClient, "index.html"));
 });
 
