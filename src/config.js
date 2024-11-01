@@ -272,7 +272,7 @@ const configBase = {
         "Content-Type": "application/json",
       },
       redirect: "follow",
-      timeoutSeconds: 30, // the maximum time in seconds to wait for an API response
+      timeoutSeconds: production ? 10 : 30, // the maximum time in seconds to wait for an API response
     },
     images: {
       publicPath: "/assets/products/images",
@@ -291,9 +291,9 @@ const configBase = {
       display: "standalone", // display value in manifest
     },
     auth: {
-      clientSessionExpirationSeconds: 30 /*60 * 60 * 2*/, // client session expiration seconds (should be less than auth.refreshTokenExpirationSeconds)
+      clientSessionExpirationSeconds: 60 * 60 * 36, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
       clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
-      clientLastActivityCheckTimeoutSeconds: 24 * 60 * 60, // the seconds of user inactivity before we ask user for session continuation
+      clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
     },
     spinner: { // loading spinner
       /** choose one in type in:

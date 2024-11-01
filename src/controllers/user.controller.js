@@ -197,20 +197,20 @@ const updateUser = async(req, res, next) => {
       user.address = req.parameters.address;
     }
 
-    user.save(async(err, user) => {
+        user.save(async(err, user) => {
       if (err) {
         return res.status(err.code).json({ message: err.message });
       }
-  
+    
       try {
         // update roles, if needed
         if (req.parameters?.roles && !arraysContainSameObjects(req.parameters.roles, user.roles, "_id")) {
-          await updateRoles(req, userId);
+          user.roles = await updateRoles(req, userId);
         }
         
         // update plan, if needed
         if (req.parameters?.plan && !(String(req.parameters.plan._id) === String(user.plan?._id))) {
-          await updatePlan(req, userId);
+          user.plan = await updatePlan(req, userId);
         }
   
         return res.status(200).json({ user });
@@ -256,7 +256,8 @@ const updateRoles = async(req, userId) => {
 
   user.roles = roles.map(role => role._id);
   await user.save();
-  return { message: req.t("Roles updated") };
+  return roles;
+  //return { message: req.t("Roles updated") };
 };
 
 const updatePlan = async(req, userId) => {
@@ -287,7 +288,8 @@ const updatePlan = async(req, userId) => {
     user.plan = plan._id;
     await user.save();
 
-    return { message: req.t("Plan updated") };
+    return plan;
+    //return { message: req.t("Plan updated") };
   } catch (error) {
     logger.error("Error in updatePlan:", error);
     throw error;
