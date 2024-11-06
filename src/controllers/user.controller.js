@@ -58,7 +58,7 @@ const getAllUsers = async(req, res, next) => {
     ;
     return res.status(200).json({users});
   } catch(err) {
-    logger.error("Error getting all users with:", err.message);
+    logger.error("Error getting all users:", err.message);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   };
 };

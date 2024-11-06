@@ -5,8 +5,8 @@ const path = require("path");
 const Product = require("../models/product.model");
 const { logger } = require("./logger.controller");
 const { saveImageFile } = require("../helpers/images");
-const { isObject, isArray } = require("../helpers/misc");
-//const config = require("../config");
+const { isObject, isArray, isDealerAtLeast } = require("../helpers/misc");
+const config = require("../config");
 
 
 const getAllProducts = async(req, res, next) => {
@@ -47,7 +47,38 @@ const getAllProducts = async(req, res, next) => {
     console.error("Error fetching products:", err);
     throw err;
   }
-  
+};
+
+const getProducts = async(req, res, next) => {
+  try {
+    filter = req.parameters.filter ?? {};
+    if (typeof filter !== "object") {
+      return res.status(400).json({ message: req.t("A filter must be an object") });
+    }
+
+    let limit = 0; // a limit() value of 0 is equivalent to setting no limit
+    if (!await isDealerAtLeast(req.userId)) { // check if request is from a dealer, at least
+      limit = config.products.limitForUsers;
+    }
+
+    let products = await Product.find(filter)
+      .select(["-__v"])
+      //.populate("roles", "-__v")
+      //.populate("plan", "-__v")
+      .lean()
+      .exec()
+    ;
+    
+    let count = products.length;
+    if (limit > 0) {
+      products = products.slice(0, limit);
+    }
+    
+    return res.status(200).json({products, count});
+  } catch(err) {
+    logger.error("Error getting all products:", err.message);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
+  };
 };
 
 // get product data by id
@@ -287,6 +318,7 @@ const propertyMdaCodeValidate = async(req, value, product) => { // validate and 
 
 module.exports = {
   getAllProducts,
+  getProducts,
   getProduct,
   getProductImageById,
   getProductAllConstraintsById,

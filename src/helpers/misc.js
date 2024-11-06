@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const User = require("../models/user.model");
+const Role = require("../models/role.model");
 const { logger }  = require("../controllers/logger.controller");
 const config = require("../config");
 
@@ -112,8 +113,22 @@ const remoteAddress = (req) => {
 
 const isAdministrator = async(userId) => {
   try {
-    const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
+    const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
     if (user.roles.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)) {
+      return true;
+    }
+    return false;
+  } catch (err) {
+    logger.error(`Cannot find user by id ${userId}`);
+    return false;
+  }
+};
+
+const isDealerAtLeast = async(userId) => {
+  try {
+    const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
+    const dealerRole = await Role.findOne({ name: "dealer" }).lean();
+    if (user.roles.some(role => role.priority >= config.roles.find(role => role.priority >= dealerRole.priority).priority)) {
       return true;
     }
     return false;
@@ -188,6 +203,7 @@ module.exports = {
   localeDateTime,
   remoteAddress,
   isAdministrator,
+  isDealerAtLeast,
   inject,
   JSONstringifyRecursive,
   hashString,

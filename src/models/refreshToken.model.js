@@ -23,7 +23,7 @@ const RefreshTokenSchema = new mongoose.Schema({
   },
 });
 
-RefreshTokenSchema.statics.createToken = async(user, expirationSeconds) => {
+RefreshTokenSchema.statics.createToken = async function (user, expirationSeconds) {
   let token = jwt.sign({ id: user.id }, process.env.JWT_TOKEN_SECRET, {
     expiresIn: expirationSeconds, //config.auth.accessTokenExpirationSeconds,
   });

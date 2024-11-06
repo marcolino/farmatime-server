@@ -11,7 +11,6 @@ const config = require("../config");
 
 const dbMock = {
   env: [
-    { key: "PORT", value: config.api.port },
     { key: "MAINTENANCE", value: false },
   ],
   users: [

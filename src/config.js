@@ -105,6 +105,7 @@ const configBase = {
       alphaQualityPercent: 90,
       basepath: "/assets/products/images",
     },
+    limitForUsers: 3,
   },
   logs: {
     file: "logs/acme.log", // logs and exceptions file
@@ -293,7 +294,7 @@ const configBase = {
       display: "standalone", // display value in manifest
     },
     auth: {
-      clientSessionExpirationSeconds: 60 * 60 * 36, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
+      clientSessionExpirationSeconds: 60 * 60 * 72, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
       clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
       clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
     },
@@ -329,6 +330,7 @@ const configBase = {
       // sounds: {
       //   buttonClick,
       // },
+      headerHeight: 64,
       usePlans: true, // if we do use plans in the app
       toastAutoCloseSeconds: 7, // TODO: REMOVEME
       snacks: {

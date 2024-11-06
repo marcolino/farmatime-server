@@ -212,7 +212,7 @@ async function start() {
   }
   
   try { // listen for requests
-    const port = process.env.PORT || 5000;
+    const port = config.api.port;
     const host = "0.0.0.0";
     app.listen(port, host, () => {
       logger.info(`Server is running on ${host}:${port}`);
