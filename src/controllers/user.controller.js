@@ -132,7 +132,107 @@ const getUser = async(req, res, next) => {
 /**
  * Update current user's profile
  */
-const updateUser = async(req, res, next) => {
+const updateUser = async (req, res, next) => {
+  // const session = await mongoose.startSession();
+  // session.startTransaction();
+  try {
+    let userId = req.userId;
+    if (req.parameters.userId && req.parameters.userId !== userId) {
+      if (!(await isAdministrator(userId))) {
+        return res.status(403).json({ message: req.t("You must have admin role to update another user") });
+      }
+      userId = req.parameters.userId;
+    }
+
+    // collect update data
+    const updateData = {};
+    const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan } = req.parameters;
+
+    if (email) {
+      const [message, value] = await propertyEmailValidate(req, email, userId);
+      if (message) return res.status(400).json({ message });
+      updateData.email = value;
+    }
+    if (firstName) {
+      const [message, value] = propertyFirstNameValidate(req, firstName);
+      if (message) return res.status(400).json({ message });
+      updateData.firstName = value;
+    }
+    if (lastName) {
+      const [message, value] = propertyLastNameValidate(req, lastName);
+      if (message) return res.status(400).json({ message });
+      updateData.lastName = value;
+    }
+    if (phone) {
+      const [message, value] = propertyPhoneValidate(req, phone);
+      if (message) return res.status(400).json({ message });
+      updateData.phone = value;
+    }
+    if (fiscalCode) {
+      const [message, value] = propertyFiscalCodeValidate(req, fiscalCode);
+      if (message) return res.status(400).json({ message });
+      updateData.fiscalCode = value;
+    }
+    if (businessName) updateData.businessName = businessName;
+    if (address) updateData.address = address;
+
+    // handle role updates with priority checks
+    if (roles && Array.isArray(roles) && roles.length > 0) {
+      const user = await User.findById(userId).populate("roles"); //.session(session);
+      if (!user) throw new Error(req.t("User not found"));
+      const newRoles = await Role.find({ _id: { $in: roles } }); //.session(session);
+      if (!(await isAdministrator(req.userId))) {
+        const requestedRolesMaxPriority = Math.max(...newRoles.map(role => role.priority));
+        const currentRolesMaxPriority = Math.max(...user.roles.map(role => role.priority));
+        if (requestedRolesMaxPriority > currentRolesMaxPriority) {
+          throw new Error(req.t("Sorry, it is not possible to elevate roles for users"));
+        }
+      }
+
+      updateData.roles = newRoles.map(role => role._id); // put roles ids in updateData
+    }
+
+    // handle plan update
+    if (plan && typeof plan === "string" && plan.length > 0) {
+      const user = await User.findById(userId).populate("plan");// .session(session);
+      if (!user) throw new Error(req.t("User not found"));
+      const newPlan = await Plan.find({ _id: { $in: plan } }); //.session(session);
+      if (!(await isAdministrator(req.userId))) {
+        if (newPlan !== user.plan) {
+          return res.status(403).json({ message: req.t("You must have admin role to update a user's plan") });
+        }
+      }
+      updateData.plan = newPlan._id; // put plan id in updateData
+    }
+
+    // update the user in a single transaction
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true/*, session*/ }
+    ).populate("roles", "-__v")
+     .populate("plan", "-__v");
+
+    if (!updatedUser) {
+      throw new Error(req.t("User not found"));
+    }
+
+    // await session.commitTransaction();
+    // session.endSession();
+
+    return res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    // await session.abortTransaction();
+    // session.endSession();
+    logger.error("Error updating user:", error.message);
+    return next(Object.assign(new Error(error.message), { status: error.code || 500 }));
+  }
+};
+
+/**
+ * Update current user's profile
+ */
+const updateUser_ORIGINAL = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
@@ -197,7 +297,7 @@ const updateUser = async(req, res, next) => {
       user.address = req.parameters.address;
     }
 
-        user.save(async(err, user) => {
+    user.save(async(err, user) => {
       if (err) {
         return res.status(err.code).json({ message: err.message });
       }
@@ -402,13 +502,14 @@ const sendEmailToUsers = async(req, res, next) => {
 };
 
 // user properties validation
-const propertyEmailValidate = async(req, value, user) => { // validate and normalize email
+const propertyEmailValidate = async(req, value, userId) => { // validate and normalize email
   if (!emailValidate.validate(value)) {
     return [ req.t("Please supply a valid email"), value];
   } 
   value = normalizeEmail(value);
 
   // be sure email - if changed - is not taken already
+  const user = await User.findOne({ _id: userId });
   if (value !== normalizeEmail(user.email)) {
     const check = await User.findOne({ email: value });
     if (check) return [ req.t("This email is already taken, sorry"), value ];
