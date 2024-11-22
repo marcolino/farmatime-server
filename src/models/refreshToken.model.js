@@ -3,32 +3,29 @@ const jwt = require("jsonwebtoken");
 const config = require("../config");
 
 const RefreshTokenSchema = new mongoose.Schema({
-  token: String,
+  token: { 
+    type: String, 
+    required: true, 
+    unique: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    expires: config.auth.refreshTokenExpirationSeconds,
+    required: true, 
   },
   expiresAt: {
     type: Date,
-    default: () => {
-      let expirationDate = new Date();
-      expirationDate.setSeconds(expirationDate.getSeconds() + config.auth.refreshTokenExpirationSeconds);
-      return expirationDate;
-    }
+    required: true,
   },
+  issuedAt: Date,
 });
 
-RefreshTokenSchema.statics.createToken = async function (user, expirationSeconds) {
-  let token = jwt.sign({ id: user.id }, process.env.JWT_TOKEN_SECRET, {
-    expiresIn: expirationSeconds, //config.auth.accessTokenExpirationSeconds,
+RefreshTokenSchema.statics.createToken = async function (user) {
+  let token = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_TOKEN_SECRET, {
+    expiresIn: config.auth.refreshTokenExpirationSeconds,
   });
 
-  const expiresAt = Date.now() + (expirationSeconds * 1000);
+  const expiresAt = Date.now() + (config.auth.refreshTokenExpirationSeconds * 1000);
   const object = new this({
     token,
     user: user._id,
@@ -52,7 +49,7 @@ RefreshTokenSchema.statics.isExpired = (token) => {
     return false; // valid
   } catch (err) {
     console.error(`Error decoding token ${token}:`, err)
-    return false;
+    return false; // assume it is expired...
   }
 }
 
@@ -63,7 +60,7 @@ RefreshTokenSchema.statics.secondsToExpiration = (token) => {
     return ((exp * 1000) - Date.now()) / 1000;
   } catch (err) {
     console.error(`Error decoding token ${token}:`, err)
-    return 0;
+    return 0; // assume 0 seconds to expiration
   }
 }
 

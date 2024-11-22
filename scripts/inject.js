@@ -3,15 +3,15 @@ const path = require("path");
 // environment configuration
 if (process.env.NODE_ENV === "production") { // load environment variables
   require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-  console.info("Production environment");
+  //console.info("Production environment");
 }
 if (process.env.NODE_ENV === "staging") { // load environment variables
   require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-  console.info("Staging environment");
+  //console.info("Staging environment");
 }
 if (process.env.NODE_ENV === "development") { // load environment variables
   require("dotenv").config({ path: path.resolve(__dirname, "../.env.dev") });
-  console.info("Development environment");
+  //console.info("Development environment");
 }
 
 const config = require("../src/config");

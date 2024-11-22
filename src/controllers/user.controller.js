@@ -10,7 +10,7 @@ const RefreshToken = require("../models/refreshToken.model");
 const { isObject, isArray, normalizeEmail, isAdministrator, arraysContainSameObjects } = require("../helpers/misc");
 const emailService = require("../services/email.service");
 
-const getAllUsersWithFullInfo = (req, res, next) => {
+const getAllUsersWithTokens = (req, res, next) => {
   // get all users and refresh tokens
   Promise.all([
     User.find()
@@ -31,7 +31,11 @@ const getAllUsersWithFullInfo = (req, res, next) => {
     users.map(user => {
       refreshTokens.map(refreshToken => {
         if ((String(refreshToken.user) === String(user._id)) && (!user.refreshToken || user.refreshToken?.expiresAt < refreshToken?.expiresAt.toISOString())) {
-          user.refreshToken = (({ token, expiresAt }) => ({ token, expiresAt }))(refreshToken);
+          //user.refreshToken = (({ token, expiresAt }) => ({ token, expiresAt }))(refreshToken);
+          user.refreshToken = {
+            token: refreshToken.token,
+            expiresAt: refreshToken.expiresAt
+          };
         }
       });
     });
@@ -552,7 +556,7 @@ const propertyFiscalCodeValidate = (req, value, user) => { // validate and norma
 
 module.exports = {
   getAllUsers,
-  getAllUsersWithFullInfo,
+  getAllUsersWithTokens,
   getAllPlans,
   getAllRoles,
   getUser,

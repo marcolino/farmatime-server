@@ -10,12 +10,19 @@ const livestripe = (!test && (process.env.STRIPE_MODE === "live")); // stripe mo
 const apiPort = 5000;
 const apiName = "ACME";
 const appName = "acme";
+const description = "A powerful web app, easily customizable";
+const dir = "ltr";
+const charset = "UTF-8";
+const themeColor = "#a5dc6f";
+const cacheControl = "mag-age=1440";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const company = "Sistemi Solari Rossi";
 const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
+const defaultLocale = "it"; // default initial locale
+const defaultLocaleLanguage = "it_IT"; // default initial locale and language
 
 const customization = "mda"; // custom configuration to be merged with configBase
 
@@ -53,7 +60,7 @@ const configBase = {
   clientSrc, // client src folder, to be able to inject the client app section of this config file
   auth: {
     accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL
-    refreshTokenExpirationSeconds: 60 * 60 * 24 * 7, // 1 week TTL
+    refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL
     verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
   },
@@ -128,7 +135,7 @@ const configBase = {
       development: "debug",
     },
   },
-  locale: "it", // server"s locale (for dates)
+  locale: defaultLocale, // server locale (for dates)
   currency,
   upload: {
     maxFileSize: 10 * 1024 * 1024, // 10 MB
@@ -136,9 +143,9 @@ const configBase = {
   envReloadIntervalSeconds: 60, // the seconds interval when to reload env collection from database
   clientDomains: [
     baseUrl,
-    "http://localhost:5000", // TODO: for testing a production environment in a local container
-    "http://localhost:5005", // TODO: for development only
-    "http://localhost:4173", // TODO: for staging only
+    "http://localhost:5000", // for testing a production environment in a local container
+    "http://localhost:5005", // for development only
+    "http://localhost:4173", // for staging only
   ],
   clientEmailUnsubscribeUrl: `${baseUrl}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrl}/email-preferences`,
@@ -177,8 +184,8 @@ const configBase = {
           price_id: "price_1KVgfKFZEWHriL1utJyT904c",
         },
       },
-      paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`, // TODO: test me
-      paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`, // TODO: test me
+      paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`, // test me
+      paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`, // test me
       paymentSuccessUrlClient: `${baseUrl}/payment-success`,
       paymentCancelUrlClient: `${baseUrl}/payment-cancel`,
     },
@@ -210,7 +217,8 @@ const configBase = {
     },
   },
   envRequiredVariables: [
-    "JWT_TOKEN_SECRET",
+    "JWT_ACCESS_TOKEN_SECRET",
+    "JWT_REFRESH_TOKEN_SECRET",
     "ADMIN_USER_DEFAULT_PASSWORD",
     "MONGO_SCHEME",
     "MONGO_URL",
@@ -256,6 +264,7 @@ const configBase = {
         streetAddress: "Via Felisio, 19",
         city: "Rivoli",
         province: "TO",
+        country: "Italy",
         zipCode: "10098",
         phone: "+39 333 6480983",
         email: "marcosolari@gmail.com",
@@ -275,7 +284,7 @@ const configBase = {
         "Content-Type": "application/json",
       },
       redirect: "follow",
-      timeoutSeconds: production ? 10 : 30, // the maximum time in seconds to wait for an API response
+      timeoutSeconds: production ? 20 : 30, // the maximum time in seconds to wait for an API response (production to free fly.io instance must be at lest 20 seconds...)
     },
     images: {
       publicPath: "/assets/products/images",
@@ -294,9 +303,13 @@ const configBase = {
       display: "standalone", // display value in manifest
     },
     auth: {
-      clientSessionExpirationSeconds: 60 * 60 * 72, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
+      clientSessionExpirationSeconds: 0, //60 * 60 * 72, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
       clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
-      clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
+      clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // TODO: not used in code??? the seconds timeout when we check if client session is expired for user inactivity
+    },
+    cookies: {
+      key: "cookieConsent",
+      expirationDays: 365, // one year
     },
     spinner: { // loading spinner
       /** choose one in type in:
@@ -314,7 +327,6 @@ const configBase = {
       country: "it",
       phonePrefix: "+39",
       languages: { // ISO 639 language codes
-        initial: "it", // the initial language to use for translations: when initializing i18next, setting the lng option determines the language (lng) that i18next will attempt to use first for translations
         supported: {
           "en": { icon: "🇬🇧" },
           "it": { icon: "🇮🇹" },
@@ -332,7 +344,6 @@ const configBase = {
       // },
       headerHeight: 64,
       usePlans: true, // if we do use plans in the app
-      toastAutoCloseSeconds: 7, // TODO: REMOVEME
       snacks: {
         maxInStack: 3,
         autoHideDurationSeconds: 5,
@@ -348,12 +359,20 @@ const configBase = {
           fontSize: "1.1rem",
         }
       },
-      backgroundVideo: "steam",
+      products: {
+        images: {
+          minHeight: 300,
+        },
+        cards: {
+          minHeight: 720,
+        },
+      },
+      backgroundVideo: "factory" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
       domain: "auth.sistemisolari.com",
       // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
-      scope: [ "email", "openid", "aws.cognito.signin.user.admin" ],
+      scope: [ "email", "openid"/*, "aws.cognito.signin.user.admin"*/ ],
       responseType: "code",
       redirectSignIn: baseUrl,
       redirectSignOut: baseUrl, // TODO: use me!!!
@@ -361,6 +380,45 @@ const configBase = {
         "Google",
         "Facebook",
       ],
+    },
+    index: { // to inject index.html
+      language: defaultLocale,
+      dir: dir,
+      charset: charset,
+      description: description,
+      themeColor: themeColor,
+      cacheControl: cacheControl,
+      og: {
+        title: apiName,
+        description: description,
+        url: baseUrl, // i.e.: "https://ahrefs.com/blog/open-graph-meta-tags/""
+        type: "website",
+        image: { // use custom images for “shareable” pages (e.g., homepage, articles, etc.). Use your logo or any other branded image for the rest of your pages. Use images with a 1.91:1 ratio and minimum recommended dimensions of 1200x630 for optimal clarity across all devices.
+          url: `${baseUrl}/apple-touch-icon.png`,
+          alt: `${apiName} logo image`,
+        },
+        locale: defaultLocaleLanguage,
+        site_name: apiName,
+      },
+      twitter: {
+        card: `${baseUrl}/apple-touch-icon.png`,
+        title: apiName,
+        description: description,
+        image: `${baseUrl}/favicon-64x64.png`,
+      },
+      apple: {
+        mobileWebAppCapable: "yes",
+        mobileWebAppStatusBarStyle: "black-translucent",
+        mobileWebAppTitle: apiName,
+      },
+      ms: {
+        themeColor: themeColor,
+        tileImage: `${baseUrl}/ms-tile.png`,
+      },
+      canonicalUrl: baseUrl,
+      fontFamily: "Open+Sans:wght@400;600;700",
+      fontDisplayMode: "block",
+      title: apiName,
     },
   },
 };

@@ -9,7 +9,7 @@ module.exports = function(app) {
   app.post(`${path}/signup`, [verifySignUp.checkDuplicateEmail, verifySignUp.checkRolesExisted], controller.signup);
   app.post(`${path}/signupVerification`, controller.signupVerification);
   app.post(`${path}/signin`, [verifySignIn.checkValidEmail], controller.signin);
-  app.post(`${path}/signout`, [authJwt.verifyToken], controller.signout);
+  app.post(`${path}/signout`, [authJwt.verifyAccessToken], controller.signout);
   app.post(`${path}/resendSignupVerificationCode`, controller.resendSignupVerificationCode);
   app.post(`${path}/resetPassword`, controller.resetPassword);
   app.post(`${path}/resetPasswordConfirm`, controller.resetPasswordConfirm);

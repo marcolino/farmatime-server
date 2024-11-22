@@ -33,9 +33,9 @@ describe("API tests - User routes", async function () {
 
   signupAndSigninAllUsers();
 
-  it("should not get all users with full info with user role", function(done) {
+  it("should not get all users with tokens with user role", function(done) {
     chai.request(server)
-      .get("/api/user/getAllUsersWithFullInfo")
+      .get("/api/user/getAllUsersWithTokens")
       .set("authorization", accessTokenUser)
       .send({})
       .then(res => {

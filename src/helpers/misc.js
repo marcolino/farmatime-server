@@ -154,14 +154,14 @@ const inject = (rootClient, rootClientSrc, outputFile, dataToInject) => {
   const rootClientOutputFilePath = path.resolve(rootClient, outputFile);
   try { // write the injected output file to root client build
     fs.writeFileSync(rootClientOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
-    logger.info(`Injected config file ${rootClientOutputFilePath} to client root`)
+    //logger.info(`Injected config file ${rootClientOutputFilePath} to client root`)
   } catch (err) {
     throw `Error injecting config file ${rootClientOutputFilePath}: ${err}`;
   }
   const rootClientSrcOutputFilePath = path.resolve(rootClientSrc, outputFile); // we could also check if it exists but is older than config.js, but better speed up things here...
   try { // write the injected output file to root client src
     fs.writeFileSync(rootClientSrcOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
-    logger.info(`Injected config file ${rootClientSrcOutputFilePath} to client src root`)
+    //logger.info(`Injected config file ${rootClientSrcOutputFilePath} to client src root`)
   } catch (err) {
     throw `Error injecting config file ${rootClientSrcOutputFilePath}: ${err}`;
   }

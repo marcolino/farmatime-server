@@ -18,10 +18,10 @@ const config = {
   //     title: `${company}`,
   //     phone: "+39 333 3333333",
   //     address: "Via Leinì, 1/A - 10077 San Maurizio Canavese (TO)",
-  //     mailto: "mailto:info@mdasrlTODO.eu", // TODO
+  //     mailto: "mailto:info@mdasrl.eu", // TODO
   //     copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
   //     homeSite: {
-  //       name: "mdasrl.eu", // TODO...
+  //       name: "mdasrl.eu", // TODO
   //     },
   //     owner: { // TODO
   //       name: "NOME_RESPONSABILE COGNOME_RESPONSABILE",

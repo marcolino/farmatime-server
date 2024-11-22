@@ -36,7 +36,8 @@
     "fly-deploy": "NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) echo $NODE_ENV && fly deploy",
     "fly-logs": "fly logs",
     "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn docker-build && yarn fly-deploy && yarn fly-logs",
-    "mongoose-was": "^8.7.1"
+    "pub": "(cd ../acme-client/ && yarn build ) && yarn fly",
+    "REMOVEME-mongoose-was": "^8.7.1"
   },
   "keywords": [
     "node.js",

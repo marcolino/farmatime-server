@@ -57,11 +57,39 @@ app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
     defaultSrc: ["'self'"],
-    connectSrc: ["'self'", "http://localhost:5000", "https://acme-server-lingering-brook-4120.fly.dev"], // for client connection to server (TODO: use config.baseUrl, and we DON'T need https://acme-server-lingering-brook-4120.fly.dev ...)
-    fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-    styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-    imgSrc: ["'self'", "https: data: blob:"]
-    //Content-Security-Policy: img-src 'self' https: data: blob:;
+    connectSrc: [
+      "'self'",
+      config.baseUrl,
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com",
+      "https://www.gravatar.com",
+      "https://secure.gravatar.com",
+      "https://a.tile.openstreetmap.org",
+      "https://b.tile.openstreetmap.org",
+      "https://c.tile.openstreetmap.org",
+      //"https://cdnjs.cloudflare.com",      
+    ],
+    fontSrc: [
+      "'self'",
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com",
+    ],
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      "https://fonts.googleapis.com",
+      "https://fonts.gstatic.com",
+    ],
+    imgSrc: [
+      "'self'",
+      "https: data: blob:",
+      "https://www.gravatar.com",
+      "https://secure.gravatar.com",
+      "https://a.tile.openstreetmap.org",
+      "https://b.tile.openstreetmap.org",
+      "https://c.tile.openstreetmap.org",
+      "https://cdnjs.cloudflare.com",
+    ]
   }
 }));
 
@@ -69,7 +97,15 @@ app.use(helmet.contentSecurityPolicy({
 app.use(compression());
 
 // log requests to express output
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
+// configure Morgan to use the Winston stream, so it goes to betterstack, too, in production
+app.use(morgan("combined", {
+  stream: { // a Morgan stream
+    write: (message) => {
+      logger.info(message.trim()); // use Winston's info level for HTTP request logs
+    }
+  }
+}));
 
 // enable CORS, and whitelist our urls
 app.use(cors({
@@ -112,10 +148,7 @@ app.use((req, res, next) => {
 // handle maintenance mode
 app.use(async(req, res, next) => {
   const env = await Env.load(); // load env and access it
-  //if (process.env.MAINTENANCE === "true") { // TODO: will this catch also client routes ("/")?
-  //  res.header("X-Maintenance-Status", "true");
-  //}
-  if (env.MAINTENANCE === "true") { // TODO: will this catch also client routes ("/")? (NO)
+  if (env.MAINTENANCE === "true") {
     return res.status(503).json({ message: "On maintenance" });
   }
   next();
@@ -216,7 +249,8 @@ async function start() {
     const host = "0.0.0.0";
     app.listen(port, host, () => {
       logger.info(`Server is running on ${host}:${port}`);
-      audit({ subject: `server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
+      // notify administration abount server start up
+      //audit({ subject: `server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
     });
   } catch (err) {
     logger.error(`Server listen error: ${err}`);

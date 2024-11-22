@@ -225,11 +225,65 @@ const updateProduct = async(req, res, next) => {
       if (message) return res.status(400).json({ message });
       product.mdaCode = value;
     }
-    //...
+    if ((productNew.oemCode !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.oemCode, productNew);
+      if (message) return res.status(400).json({ message });
+      product.oemCode = value;
+    }
+    if ((productNew.make !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.make, productNew);
+      if (message) return res.status(400).json({ message });
+      product.make = value;
+    }
+    if ((productNew.models !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.models, productNew);
+      if (message) return res.status(400).json({ message });
+      product.models = value;
+    }
+    if ((productNew.application !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.application, productNew);
+      if (message) return res.status(400).json({ message });
+      product.application = value;
+    }
+    if ((productNew.kw !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.kw, productNew);
+      if (message) return res.status(400).json({ message });
+      product.kw = value;
+    }
+    if ((productNew.volt !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.volt, productNew);
+      if (message) return res.status(400).json({ message });
+      product.volt = value;
+    }
+    if ((productNew.ampere !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.ampere, productNew);
+      if (message) return res.status(400).json({ message });
+      product.ampere = value;
+    }
+    if ((productNew.teeth !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.teeth, productNew);
+      if (message) return res.status(400).json({ message });
+      product.teeth = value;
+    }
+    if ((productNew.rotation !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.rotation, productNew);
+      if (message) return res.status(400).json({ message });
+      product.rotation = value;
+    }
+    if ((productNew.regulator !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.regulator, productNew);
+      if (message) return res.status(400).json({ message });
+      product.regulator = value;
+    }
     if ((productNew.notes !== undefined)) {
-      // [message, value] = await propertyNotesValidate(req, productNew.notes, productNew);
-      // if (message) return res.status(400).json({ message });
-      product.notes = productNew.notes;
+      [message, value] = await propertyValidate(req, productNew.notes, productNew);
+      if (message) return res.status(400).json({ message });
+      product.notes = value;
+    }
+    if ((productNew.type !== undefined)) {
+      [message, value] = await propertyValidate(req, productNew.type, productNew);
+      if (message) return res.status(400).json({ message });
+      product.type = value;
     }
 
     product.save(async(err, product) => {
@@ -311,6 +365,10 @@ const removeProduct = async(req, res, next) => {
   
 
 // user properties validation
+const propertyValidate = async(req, value, product) => { // generic product type validation
+  return [null, value];
+};
+
 const propertyMdaCodeValidate = async(req, value, product) => { // validate and normalize mda code
   // ... TODO ...
   return [null, value];

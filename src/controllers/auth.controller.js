@@ -7,6 +7,7 @@ const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
+const AccessToken = require("../models/accessToken.model");
 const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
 const passport = require("passport");
@@ -169,14 +170,26 @@ const socialLogin = async(req, res, next) => {
   }
 
   // create new access token
-  user.accessToken = await RefreshToken.createToken(user, config.auth.accessTokenExpirationSeconds);
+  try {
+    user.accessToken = await AccessToken.createToken(user);
+  } catch (err) {
+    return redirectToClientWithError(req, res, {
+      message: req.t("Error creating access token: {{error}}", { error: err.message })
+    });
+  }
 
   // create new refresh token
-  user.refreshToken = await RefreshToken.createToken(user, config.auth.refreshTokenExpirationSeconds);
+  try {
+    user.refreshToken = await RefreshToken.createToken(user);
+  } catch (err) {
+    return redirectToClientWithError(req, res, {
+      message: req.t("Error creating refresh token: {{error}}", { error: err.message })
+    });
+  }
 
   logger.info(`User social signin (req,s): ${user.email}`);
 
-  // notify administration about logins
+  // notify administration about social logins
   audit({ req, subject: `User ${user.email} social (${provider}) signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
 
   user.save(async(err, user) => {
@@ -419,7 +432,8 @@ const signupVerification = async(req, res, next) => {
             return res.status(err.code).json({ message: err.message });
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
-          audit({req, subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+          // notify administration abunt registrations
+          audit({ req, subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
           return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
         });
       }
@@ -489,10 +503,26 @@ const signin = async(req, res, next) => {
     }
 
     // creacte new access token
-    user.accessToken = await RefreshToken.createToken(user, config.auth.accessTokenExpirationSeconds);
+    //user.accessToken = await RefreshToken.createToken(user, config.auth.accessTokenExpirationSeconds);
+    try {
+      user.accessToken = await AccessToken.createToken(user);
+    } catch (err) {
+      return res.status(401).json({
+        accessToken: null,
+        message: req.t("Error creating access token: {{error}}", { error: err.message })
+      });
+    }
 
     // create new refresh token
-    user.refreshToken = await RefreshToken.createToken(user, config.auth.refreshTokenExpirationSeconds);
+    //user.refreshToken = await RefreshToken.createToken(user, config.auth.refreshTokenExpirationSeconds);
+    try {
+      user.refreshToken = await RefreshToken.createToken(user);
+    } catch (err) {
+      return res.status(401).json({
+        accessToken: null,
+        message: req.t("Error creating refresh token: {{error}}", { error: err.message })
+      });
+    }
 
     logger.info(`User signin: ${user.email}`);
 
@@ -550,11 +580,11 @@ const signout = async(req, res, next) => {
     // notify administration about logouts
     //audit({req, subject: `User ${user.email} signout`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
-    // save user's language as from request
+    // invalidate access and refresh tokens
     User.findOneAndUpdate({
       _id: user.id
     }, {
-      $set: {
+      $set: { 
         accessToken: null,
         refreshToken: null
       }
@@ -721,7 +751,9 @@ const refreshToken = async(req, res, next) => {
   const { token } = req.parameters;
 
   if (!token) { // refresh token is required
-    return res.status(401).json({ message: req.t("Please make a new signin request") });
+    return res.status(401).json({
+      message: req.t("Please make a new signin request") + `(@ refreshToken: no token @)`,
+    });
   }
 
   try {
@@ -729,19 +761,24 @@ const refreshToken = async(req, res, next) => {
 
     if (!refreshTokenDoc) { // refresh token not found
       return res.status(401).json({
-        message: req.t("Session is expired, please make a new signin request"),
+        message: req.t("Session is expired, please make a new signin request") + `(@ refreshToken: no refreshTokenDoc @)`,
       });
     }
 
     if (RefreshToken.isExpired(refreshTokenDoc)) {
-      // mongodb expired documents by default are disposed every minute
-      RefreshToken.findByIdAndDelete(refreshTokenDoc._id, /*{ useFindAndModify: false }*/).exec();
-      return res.status(401).json({ // refresh token is expired
-        message: req.t("Session is just expired, please make a new signin request"),
+      const refrestTokenId = RefreshToken.findByIdAndDelete(refreshTokenDoc._id, /*{ useFindAndModify: false }*/).exec();
+      if (refrestTokenId) {
+        logger.info("Refresh token deleted successfully");
+      } else {
+        logger.warning("Refresh token not found");
+      }
+      return res.status(401).json({ // refresh token is just expired
+        message: req.t("Session is expired, please make a new signin request") + `(@ refresh token is expired, ${refrestTokenId ? "deleted" : "not found, not deleted..."} @)`,
       });
     }
+    logger.info("RefreshToken will expire on", refreshTokenDoc.expiresAt);
 
-    let newAccessToken = jwt.sign({ id: refreshTokenDoc.user._id }, process.env.JWT_TOKEN_SECRET, {
+    let newAccessToken = jwt.sign({ id: refreshTokenDoc.user._id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
       expiresIn: config.auth.accessTokenExpirationSeconds,
     });
 
