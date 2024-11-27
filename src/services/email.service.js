@@ -17,7 +17,7 @@ class EmailService {
       sys_company_title: config.app.company.title,
       sys_company_mailto: config.app.company.mailto,
       sys_company_copyright: config.app.company.copyright,
-      sys_company_logo: `${config.baseUrl}/favicon-512.ico`,
+      sys_company_logo: `${config.baseUrl}/favicon.ico`,
       sys_client_email_unsubscribe_link: config.clientEmailUnsubscribeUrl,
       sys_client_email_preferences_link: config.clientEmailPreferencesUrl,
     };
@@ -32,7 +32,7 @@ class EmailService {
       // create transactional emails api instance 
       this.apiInstance = new Brevo.TransactionalEmailsApi();
     } catch (err) {
-      logger.error("Error during setup of email service:", err);
+      logger.error(`Error during setup of email service: ${err}`);
       throw new Error(err.message);
     }
     return true;
@@ -199,7 +199,7 @@ class EmailService {
       const templatesPath = path.join(__dirname, config.email.templatesPath, name + config.email.templatesExtension);
       return fs.readFileSync(templatesPath, { encoding: "utf-8" });
     } catch (err) {
-      logger.error(`Error reading template file name ${name}:`, err);
+      logger.error(`Error reading template file name ${name}: ${err}`);
       throw err;
     }
   }
@@ -215,7 +215,7 @@ class EmailService {
       const templatesPath = path.join(__dirname, config.email.templatesPath, "styles", name + ".css");
       return fs.readFileSync(templatesPath, { encoding: "utf-8" });
     } catch (err) {
-      logger.error(`Can't read template style file name ${name}:`, err);
+      logger.error(`Can't read template style file name ${name}: ${err}`);
       return null;
     }
   }

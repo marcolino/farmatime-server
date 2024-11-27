@@ -27,17 +27,8 @@ if (config.mode.production) { // load environment variables from the provider "s
 }
 if (config.mode.staging) { // load environment variables from .env file
   try {
-    // const fs = require("fs");
-    //const data = fs.readFileSync(path.resolve(__dirname, "./.env"));
-    //console.log("ENV:", data);
-    // fs.readdir(".", (err, files) => {
-    //   files.forEach(file => {
-    //     console.log(".:", file);
-    //   });
-    // });
-    //console.log("clientDomains:", config.clientDomains);
     require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-    logger.info("Staging environment", process.env.MONGO_URL);
+    logger.info("Staging environment");
   } catch (err) {
     console.error("Error loading ./.env file:", err);
   }
@@ -89,6 +80,7 @@ app.use(helmet.contentSecurityPolicy({
       "https://b.tile.openstreetmap.org",
       "https://c.tile.openstreetmap.org",
       "https://cdnjs.cloudflare.com",
+      //"https://flagcdn.com",
     ]
   }
 }));

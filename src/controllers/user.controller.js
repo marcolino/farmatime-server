@@ -42,7 +42,7 @@ const getAllUsersWithTokens = (req, res, next) => {
 
     return res.status(200).json({users});
   }).catch(err => {
-    logger.error("Error getting all users with full info:", err.message);
+    logger.error(`Error getting all users with full info: ${err.message}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   });
 };
@@ -62,7 +62,7 @@ const getAllUsers = async(req, res, next) => {
     ;
     return res.status(200).json({users});
   } catch(err) {
-    logger.error("Error getting all users:", err.message);
+    logger.error(`Error getting all users: ${err.message}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   };
 };
@@ -75,13 +75,13 @@ const getAllPlans = async(req, res, next) => {
     .sort({pricePerYear: 1})
     .exec(async(err, docs) => {
       if (err) {
-        logger.error("Error getting plans:", err);
+        logger.error(`Error getting plans: ${err}`);
         return next(Object.assign(new Error(err.message), { status: 500 }));
       }
       return res.status(200).json({ plans: docs });
     });
   } catch(err) {
-    logger.error("Error getting all plans:", err.message);
+    logger.error(`Error getting all plans: ${err.message}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -94,13 +94,13 @@ const getAllRoles = async(req, res, next) => {
     .select(["name", "priority"]) //, "-_id"])
     .exec(async(err, docs) => {
       if (err) {
-        logger.error("Error getting roles:", err);
+        logger.error(`Error getting roles: ${err}`);
         return next(Object.assign(new Error(err.message), { status: 500 }));
       }
       return res.status(200).json({ roles: docs });
     })
   } catch(err) {
-    logger.error("Error getting roles:", err);
+    logger.error(`Error getting roles: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -109,7 +109,7 @@ const getUser = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     if (!await isAdministrator(userId)) { // check if request is from admin
-      return res.status(403).json({ message: req.t("You must have admin role to update another user") }); // TODO: wrong message...
+      return res.status(403).json({ message: req.t("You must have admin role to access another user") });
     } else {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
@@ -123,7 +123,7 @@ const getUser = async(req, res, next) => {
   .populate("plan", "-__v")
   .exec(async(err, user) => {
     if (err) {
-      logger.error("Error finding user:", err);
+      logger.error(`Error finding user: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!user) {
@@ -228,8 +228,13 @@ const updateUser = async (req, res, next) => {
   } catch (error) {
     // await session.abortTransaction();
     // session.endSession();
-    logger.error("Error updating user:", error.message);
-    return next(Object.assign(new Error(error.message), { status: error.code || 500 }));
+    logger.error(`Error updating user: ${error.message}`);
+    if (error.codeName === "DuplicateKey") {
+      if (error.keyValue.email) {
+        return next(Object.assign(new Error(req.t("The email {{email}} is already in use", { email: error.keyValue.email })), { status: 400 }));
+      }
+    }
+    return next(Object.assign(new Error(error.message), { status: 500 }));
   }
 };
 
@@ -253,7 +258,7 @@ const updateUser_ORIGINAL = async(req, res, next) => {
   .populate({ path: "plan", select: "-__v", options: { lean: true }})
   .exec(async(err, user) => {
     if (err) {
-      logger.error("Error finding user:", err);
+      logger.error(`Error finding user: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!user) {
@@ -319,7 +324,7 @@ const updateUser_ORIGINAL = async(req, res, next) => {
   
         return res.status(200).json({ user });
       } catch (error) {
-        logger.error("Error updating roles or plan:", error.message);
+        logger.error(`Error updating roles or plan: ${error.message}`);
         return next(Object.assign(new Error(error.message), { status: 403 }));
       }
     });
@@ -395,7 +400,7 @@ const updatePlan = async(req, userId) => {
     return plan;
     //return { message: req.t("Plan updated") };
   } catch (error) {
-    logger.error("Error in updatePlan:", error);
+    logger.error(`Error in updatePlan: ${error}`);
     throw error;
   }
 };
@@ -403,7 +408,7 @@ const updatePlan = async(req, userId) => {
 // deletes a user: delete it from database
 const deleteUser = async(req, res, next) => {
   let filter = req.parameters?.filter;
-  if (filter === "*") { // TODO: attention here, we are deleting ALL users!
+  if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
   } else
   if (isObject(filter)) {
@@ -430,7 +435,7 @@ const deleteUser = async(req, res, next) => {
 // removes a user: mark it as deleted, but do not delete from database
 const removeUser = async(req, res, next) => {
   let filter = req.parameters?.filter;
-  if (filter === "*") { // TODO: attention here, we are deleting ALL users!
+  if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
   } else
   if (isObject(filter)) {
@@ -444,7 +449,7 @@ const removeUser = async(req, res, next) => {
   const payload = { isDeleted: true };
   User.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
     if (err) {
-      logger.error("Error finding user:", err);
+      logger.error(`Error finding user: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (data.nModified > 0) {
@@ -474,11 +479,11 @@ const sendEmailToUsers = async(req, res, next) => {
   let body = req.parameters?.body;
 
   User.find(filter)
-  //.populate("roles", "-__v")
-  //.populate("plan", "-__v")
+  .populate("roles", "-__v")
+  .populate("plan", "-__v")
   .exec(async(err, users) => {  
     if (err) {
-      logger.error("Error finding users:", err);
+      logger.error(`Error finding users: ${err}`);
       const ret = { message: req.t("Error finding users"), reason: err.message };
       return res ? res.status(err.code).json(ret) : ret;
     }
@@ -488,22 +493,41 @@ const sendEmailToUsers = async(req, res, next) => {
     
     for (const user of users) {
       let to = user.email;
+
+      const [subjectExpanded, bodyExpanded] = expandEmailTags(user, subject, body);
       try {
         req.language = user.language; // get user language
         await emailService.send(req, {
           to: user.email,
-          subject,
-          body,
+          subject: subjectExpanded,
+          body: bodyExpanded,
           style: "base", // this is currently fixed
         });
       } catch (err) {
-        logger.error("Error sending email to users:", err)
+        logger.error(`Error sending email to users: ${err}`)
         return next(Object.assign(new Error(err.message), { status: 500 }));
       };
     }
     return res.status(200).json({ "message": req.t("All emails sent") });
   });
 };
+
+const expandEmailTags = (user, subject, body) => {
+  const expand = (str) => {
+    str = str.replace(/\$NAME\$/, user.firstName);
+    str = str.replace(/\$SURNAME\$/, user.lastName);
+    str = str.replace(/\$EMAIL\$/, user.email);
+    str = str.replace(/\$PHONE\$/, user.phone);
+    str = str.replace(/\$ADDRESS\$/, user.address);
+    str = str.replace(/\$ROLES\$/, user.roles.map(role => role.name).join(", ")); // array of objects to csv string...
+    str = str.replace(/\$PLAN\$/, user.plan.name);
+    str = str.replace(/\$COMPANY\$/, user.company);
+    return str;
+  };
+  subject = expand(subject);
+  body = expand(body);
+  return [subject, body];
+}
 
 // user properties validation
 const propertyEmailValidate = async(req, value, userId) => { // validate and normalize email

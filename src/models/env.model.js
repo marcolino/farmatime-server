@@ -17,6 +17,7 @@ let lastEnvLoadTime = 0; // last Env load time, initially
 // load env from MongoDB
 EnvSchema.statics.load = async function() {
   const currentTime = Date.now();
+  //logger.info(`*** EnvSchema.statics.load - lastEnvLoadTime: ${lastEnvLoadTime}`);
   if (currentTime - lastEnvLoadTime > (config.envReloadIntervalSeconds * 1000)) { // TODO: is lastEnvLoadTime really static?
     try {
       const envs = await this.find({}); // retrieve all documents in the collection
@@ -25,9 +26,9 @@ EnvSchema.statics.load = async function() {
         return acc;
       }, {});
       lastEnvLoadTime = currentTime;
-      //logger.info("Env reloaded from database");
+      //logger.info(`*** !!! EnvSchema.statics.load - ${config.envReloadIntervalSeconds} seconds passed, env loaded from db: ${env}`);
     } catch (err) {
-      logger.error("Error loading env from database:", err);
+      logger.error(`Error loading env from database: ${err}`);
     }
   }
   return env;
@@ -42,7 +43,7 @@ EnvSchema.statics.store = async(newEnv) => {
     }
     //logger.info("Env stored to database");
   } catch (err) {
-    logger.error("Error storing env to database:", err);
+    logger.error(`Error storing env to database: ${err}`);
     return false;
   }
   return true;

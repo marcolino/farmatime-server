@@ -28,7 +28,7 @@ const saveImageFile = async(file) => {
   try { // save image to disk
     fs.writeFileSync(filepathWaterMark, imageBufferWithWaterMark);
   } catch (err) {
-    console.error(i18n.t("Error writing image to {{filepathWaterMark}}", { filepathWaterMark }));
+    console.error(i18n.t("Error writing image to {{filepath}}", { filepath: filepathWaterMark }));
     throw err;
   }
   return {
@@ -52,18 +52,18 @@ const imageConvertFormatAndLimitSize = async(imageBuffer) => {
 };
 
 const imageAddWaterMark = async(imageBuffer) => {
-  const watermarkImagePath = path.join(__dirname, "..", "assets/images/watermark.png"); // the watermark image
-  const watermarkPercentWidth = 33; // TODO: to config
-  const watermarkPercentOpacity = 12; // TODO: to config
+  // const watermarkImagePath = path.join(__dirname, "..", "assets/images/watermark.png"); // the watermark image
+  // const watermarkPercentWidth = 33; // to config
+  // const watermarkPercentOpacity = 12; // to config
   
   // load the input image to get its dimensions
   return await sharp(imageBuffer)
     .metadata()
     .then(async({ width }) => {
 
-      const watermarkOpacized = await sharp(watermarkImagePath)
+      const watermarkOpacized = await sharp(path.join(__dirname, "..", config.app.ui.products.images.watermark.path))
         .composite([{
-          input: Buffer.from([255, 255, 255, Math.round((watermarkPercentOpacity / 100) * 255)]),
+          input: Buffer.from([255, 255, 255, Math.round((config.app.ui.products.images.watermark.percentOpacity / 100) * 255)]),
           raw: { width: 1, height: 1, channels: 4 },
           tile: true,
           blend: "dest-in"
@@ -73,9 +73,9 @@ const imageAddWaterMark = async(imageBuffer) => {
       
       // resize the watermark relative to the input image width (e.g., 10% of the input image width)
       return await sharp(watermarkOpacized)
-        .resize(Math.floor(width * (watermarkPercentWidth / 100))) // resize watermark
+        .resize(Math.floor(width * (config.app.ui.products.images.watermark.percentWidth / 100))) // resize watermark
         .greyscale() // make it greyscale
-        .linear(1.5, 0) // increase the contrast
+        .linear(config.app.ui.products.images.watermark.contrast, 0) // increase the contrast
         .toBuffer()
       ;
     })

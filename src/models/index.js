@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Env = require("./env.model");
+const Env = require("../models/env.model");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");

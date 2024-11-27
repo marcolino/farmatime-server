@@ -15,7 +15,7 @@ const getAllProducts = async(req, res, next) => {
   
     // TODO: handle a filter...
 
-    if (!products) { // TODO: handle errors...
+    if (!products) {
       return res.status(404).json({ message: req.t("No product found") });
     }
 
@@ -76,7 +76,7 @@ const getProducts = async(req, res, next) => {
     
     return res.status(200).json({products, count});
   } catch(err) {
-    logger.error("Error getting all products:", err.message);
+    logger.error(`Error getting all products: ${err.message}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   };
 };
@@ -93,7 +93,7 @@ const getProduct = (req, res, next) => {
   //.populate("plan", "-__v")
   .exec(async(err, product) => {
     if (err) {
-      logger.error("Error finding product:", err);
+      logger.error(`Error finding product: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
       //return res.status(400).json({ message: req.t("Error finding product by id {{id}}", { id: productId }) });
     }
@@ -153,7 +153,7 @@ const getProductAllConstraintsById = (req, res) => {
 // deletes a product: delete it from database
 const deleteProduct = async(req, res, next) => {
   let filter = req.parameters?.filter;
-  if (filter === "*") { // TODO: attention here, we are deleting ALL products!
+  if (filter === "*") { // attention here, we are deleting ALL products!
     filter = {};
   } else
   if (isObject(filter)) {
@@ -192,7 +192,7 @@ const insertProduct = async(req, res, next) => {
       return res.status(200).json({ id: product._id, message: req.t("product has been inserted") });
     })
     .catch(err => {
-      logger.error("Error inserting product:", err);
+      logger.error(`Error inserting product: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     })
   ;
@@ -210,7 +210,7 @@ const updateProduct = async(req, res, next) => {
   })
   .exec(async(err, product) => {
     if (err) {
-      logger.error("Error finding product:", err);
+      logger.error(`Error finding product: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!product) {
@@ -298,17 +298,18 @@ const updateProduct = async(req, res, next) => {
 
 // upload product image
 const uploadProductImage = (req, res, next) => {
+  // we don't have req.parameters set in this endpoint because it' a multipart/form-data content-type
   if (!req.file) { // no image uploaded
     res.status(400).json({ error: req.t("No image uploaded") });
   }
 
-  const productId = req.body.productId; // TODO: why don't we have this in parameters? (it' a multipart/form-data content-type...)
+  const productId = req.body.productId;
   Product.findOne({
     _id: productId
   })
   .exec(async(err, product) => {
     if (err) {
-      logger.error("Error finding product:", err);
+      logger.error(`Error finding product: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!product) {
@@ -337,7 +338,7 @@ const uploadProductImage = (req, res, next) => {
 // removes a product: mark it as deleted, but do not delete from database
 const removeProduct = async(req, res, next) => {
   let filter = req.parameters?.filter;
-  if (filter === "*") { // TODO: attention here, we are deleting ALL products!
+  if (filter === "*") { // attention here, we are deleting ALL products!
     filter = {};
   } else
   if (isObject(filter)) {
@@ -351,7 +352,7 @@ const removeProduct = async(req, res, next) => {
   const payload = { isDeleted: true };
   Product.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
     if (err) {
-      logger.error("Error finding product:", err);
+      logger.error(`Error finding product: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (data.nModified > 0) {

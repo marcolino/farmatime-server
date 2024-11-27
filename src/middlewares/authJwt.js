@@ -22,7 +22,7 @@ const verifyAccessToken = (req, res, next) => {
     }
     if (!config.mode.production) {
       const { exp } = jwt.decode(token);
-      logger.info("Access token will expire on", localeDateTime(new Date(exp * 1000)));
+      logger.info(`Access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
     }
     if (!decoded.id) { // jwt.verify did not error out but did not give an id, should not happen
       return res.status(401).json({ message: req.t("Access token is not valid"), code: "WRONG_TOKEN" });

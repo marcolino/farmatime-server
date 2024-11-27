@@ -15,10 +15,10 @@ module.exports = function(app) {
   app.post(`${path}/resetPasswordConfirm`, controller.resetPasswordConfirm);
   app.post(`${path}/resendResetPasswordCode`, controller.resendResetPasswordCode);
   app.post(`${path}/refreshtoken`, controller.refreshToken);
-  app.get(`${path}/google`, controller.googleLogin); // TODO: /google/login
+  app.get(`${path}/google`, controller.googleLogin);
   app.get(`${path}/google/callback`, controller.googleCallback);
   app.post(`${path}/google/revoke`, controller.googleRevoke);
-  app.get(`${path}/facebook`, controller.facebookLogin); // TODO: /facebook/login
+  app.get(`${path}/facebook`, controller.facebookLogin);
   app.get(`${path}/facebook/callback`, controller.facebookCallback);
   app.post(`${path}/facebook/revoke`, controller.facebookRevoke);
 };

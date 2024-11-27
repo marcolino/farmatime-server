@@ -14,26 +14,16 @@ const passport = require("passport");
 const config = require("../config");
 
 
-const googleLogin = (req, res, next) => {
-  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next); // TODO: scope in config...
-};
-
 // Google OAuth login
-// const googleLogin = (req, res, next) => {
-//   console.log("Hit /api/auth/google");  // Confirm this route is hit
-//   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
-//   console.log("Attempted redirect to Google OAuth");  // Log after passport.authenticate
-// };
-
-// const googleLogin = (req, res, next) => {  
-//   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next); // TODO: scope in config...
-// };
+const googleLogin = (req, res, next) => {
+  passport.authenticate("google", { scope: config.oauth.scope.google })(req, res, next);
+};
 
 // Google OAuth callback
 const googleCallback = (req, res, next) => {
   passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial, info) => {
     if (err) {
-      logger.error("Google authentication error:", err);
+      logger.error(`Google authentication error: ${err}`);
       return next(err);  // handle error
     }
     req.userSocial = userSocial; // put userSocial in req
@@ -43,14 +33,14 @@ const googleCallback = (req, res, next) => {
 
 // Facebook OAuth login
 const facebookLogin = (req, res, next) => {
-  passport.authenticate("facebook", { scope: ["email"] })(req, res, next); // TODO: scope in config...
+  passport.authenticate("facebook", { scope: config.oauth.scope.facebook })(req, res, next);
 };
 
 // Facebook OAuth callback
 const facebookCallback = (req, res, next) => {
   passport.authenticate("facebook", { failureRedirect: "/" }, (err, userSocial, info) => {
     if (err) {
-      logger.error("Facebook authentication error:", err);
+      logger.error(`Facebook authentication error: ${err}`);
       return next(err);  // handle error
     }
     req.userSocial = userSocial; // put userSocial in request
@@ -62,7 +52,6 @@ const socialLogin = async(req, res, next) => {
   if (!req?.userSocial) { // TODO: understand when this can happen and how to handle it...
     logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") })
-    //return res.redirect("/"); // handle case where user is not authenticated
   }
 
   const roleName = "user";
@@ -71,7 +60,7 @@ const socialLogin = async(req, res, next) => {
   const provider = req.userSocial.provider;
   const firstName = req.userSocial.given_name;
   const lastName = req.userSocial.given_name;
-  const email = normalizeEmail(req.userSocial.emails[0].value); // TODO: use only the first one?
+  const email = normalizeEmail(req.userSocial.emails[0].value); // we do only only the first one...
 
   // check if a user with the given email exists already
   let user;
@@ -92,32 +81,22 @@ const socialLogin = async(req, res, next) => {
     return redirectToClientWithError(req, res, {
       message: req.t("Error finding user in social {{provider}} signin request: {{err}}", { provider, err: err.message })
     }); 
-    //return next(Object.assign(new Error(err.message), { status: 500 }));
   }
-
-  // // check user is found
-  // if (!user) { // TODO: test error here, forcing user to be false...
-  //   return res.status(401).json({ message: req.t("User not found") }); // return "Wrong credentials", if we want to to give less surface to attackers
-  // }
   
   if (user) { // check if a user with given email exists already
     // check user is deleted
-    if (user.isDeleted) { // TODO: ...
-      // return res.status(401).json({
-      //   code: "AccountDeleted", message: req.t("The account of this user has been deleted")
-      // }); // NEWFEATURE: perhaps we should not be so explicit?
-      return redirectToClientWithError(req, res, {
-        message: req.t("The account of this user has been deleted")
-      }); 
+    if (user.isDeleted) { // we just force user's rebirth
+      user.deleded = false;
+      // return redirectToClientWithError(req, res, {
+      //   message: req.t("The account of this user has been deleted")
+      // }); 
     }
 
     // check email is verified
-    if (!user.isVerified) { // TODO: ...
-      // return res.status(401).json({
-      //   code: "AccountWaitingForVerification", message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
-      // });
+    if (!user.isVerified) {
       return redirectToClientWithError(req, res, {
-        message: req.t("This account is waiting for a verification; if you did register it, check your emails")
+        message: req.t("This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email"),
+        code: "ACCOUNT_WAITING_FOR_VERIFICATION",
       }); 
     }
   } else { // user with given email does not exist, create a new one
@@ -126,7 +105,7 @@ const socialLogin = async(req, res, next) => {
     try {
       role = await Role.findOne({ name: roleName });
     } catch (err) {
-      logger.error(`Error finding role ${roleName}:`, err);
+      logger.error(`Error finding role ${roleName}: ${err}`);
       return redirectToClientWithError(req, res, {
         message: req.t("Error finding role {{roleName}}: {{error}}", { roleName, error: err.message })
       }); 
@@ -142,7 +121,7 @@ const socialLogin = async(req, res, next) => {
     try {
       plan = await Plan.findOne({ name: planName });
     } catch (err) {
-      logger.error(`Error finding plan ${planName}:`, err);
+      logger.error(`Error finding plan ${planName}: ${err}`);
       //return next(Object.assign(new Error(err.message), { status: 500 }));
       return redirectToClientWithError(req, res, {
         message: req.t("Error finding plan {{planName}}: {{error}}", { planName, error:err.message })
@@ -166,6 +145,7 @@ const socialLogin = async(req, res, next) => {
       plan: plan._id,
       language: req.language,
       isVerified: true, // social authorized user is verified automatically
+      isDeleted: false, // if the user was deleted, force it's rebirth
     });
   }
 
@@ -187,14 +167,14 @@ const socialLogin = async(req, res, next) => {
     });
   }
 
-  logger.info(`User social signin (req,s): ${user.email}`);
+  logger.info(`User social signin email: ${user.email}`);
 
   // notify administration about social logins
   audit({ req, subject: `User ${user.email} social (${provider}) signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
 
   user.save(async(err, user) => {
     if (err) {
-      logger.error("User oauth login creation/update error:", err);
+      logger.error(`User oauth login creation/update error: ${err}`);
       //return next(Object.assign(new Error(err.message), { status: 500 }));
       return redirectToClientWithError(req, res, {
         message: req.t("User oauth login creation/update error: {{error}}", { error: err.message })
@@ -282,7 +262,7 @@ const signup = async(req, res, next) => {
   try {
     role = await Role.findOne({name: roleName});
   } catch(err) {
-    logger.error(`Error finding role ${roleName}:`, err);
+    logger.error(`Error finding role ${roleName}: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
   if (!role) {
@@ -294,7 +274,7 @@ const signup = async(req, res, next) => {
   try {
     plan = await Plan.findOne({name: planName});
   } catch(err) {
-    logger.error(`Error finding plan ${planName}:`, err);
+    logger.error(`Error finding plan ${planName}: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
   if (!plan) {
@@ -314,7 +294,7 @@ const signup = async(req, res, next) => {
     if (err) {
       // we don't check duplicated user email (err.code === 11000)
       // as it is done already as a route middleware
-      logger.error("New user creation error:", err);
+      logger.error(`New user creation error: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
 
@@ -323,7 +303,7 @@ const signup = async(req, res, next) => {
       const signupVerification = user.generateSignupVerification(user._id);
       await signupVerification.save(); // save the verification code
   
-      logger.info("VERIFICATION CODE:", signupVerification.code);
+      logger.info(`VERIFICATION CODE: ${signupVerification.code}`);
       
       await emailService.send(req, {
         to: user.email,
@@ -342,7 +322,7 @@ const signup = async(req, res, next) => {
         ...(!config.mode.production) && { code: signupVerification.code } // to enble test mode to verify signup
       });
     } catch(err) {
-      logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}:`, err);
+      logger.error(`Error sending verification code via ${config.auth.codeDeliveryMedium}: ${err}`);
       //return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + err.message + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
@@ -387,7 +367,7 @@ const resendSignupVerificationCode = async(req, res, next) => {
     });
 
   } catch(err) {
-    logger.error("Error resending signup code:", err);
+    logger.error(`Error resending signup code: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -414,7 +394,7 @@ const signupVerification = async(req, res, next) => {
       },
       (err, user) => {
         if (err) {
-          logger.error("Error finding user for the requested code:", err);
+          logger.error(`Error finding user for the requested code: ${err}`);
           res.status(err.code).json({message: err.message})
         }
         if (!user) {
@@ -428,7 +408,7 @@ const signupVerification = async(req, res, next) => {
         user.isVerified = true;
         user.save(async(err, user) => {
           if (err) {
-            logger.error("Error saving user in signup verification:", err);
+            logger.error(`Error saving user in signup verification: ${err}`);
             return res.status(err.code).json({ message: err.message });
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
@@ -439,7 +419,7 @@ const signupVerification = async(req, res, next) => {
       }
     );
   } catch(err) {
-    logger.error("Error verifying signup:", err);
+    logger.error(`Error verifying signup: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 }
@@ -471,13 +451,13 @@ const signin = async(req, res, next) => {
 
     // check user is not deleted
     if (user.isDeleted) {
-      return res.status(401).json({ code: "AccountDeleted", message: req.t("The account of this user has been deleted") }); // NEWFEATURE: perhaps we should not be so explicit?
+      return res.status(401).json({ code: "ACCOUNT_DELETED", message: req.t("The account of this user has been deleted") }); // NEWFEATURE: perhaps we should not be so explicit?
     }
 
     // check email is verified
     if (!user.isVerified) {
       return res.status(401).json({
-        code: "AccountWaitingForVerification", message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
+        code: "ACCOUNT_WAITING_FOR_VERIFICATION", message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
       });
     }
 
@@ -537,9 +517,9 @@ const signin = async(req, res, next) => {
     }, {
       new: true
     }).then((user) => {
-      logger.info("Saved user's language:", user.language);
+      logger.info(`Saved user's language: ${user.language}`);
     }).catch(err => {
-      logger.error("Error saving user's language:", err);
+      logger.error(`Error saving user's language: ${err}`);
       //res.status(500).send(err);
     })
 
@@ -591,9 +571,9 @@ const signout = async(req, res, next) => {
     }, {
       new: true
     }).then((user) => {
-      logger.info("User logged out:", user.email);
+      logger.info(`User logged out: ${user.email}`);
     }).catch(err => {
-      logger.error("Error logging out user:", err);
+      logger.error(`Error logging out user: ${err}`);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     })
 
@@ -623,7 +603,7 @@ const resetPassword = async(req, res, next) => {
       const subject = req.t("Password change request");
       const to = user.email;
       const from = process.env.FROM_EMAIL;
-      logger.info(`Sending email: to: ${to}, from: ${from}, subject: ${subject}`);
+      logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
       config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
       await emailService.send(req, {
@@ -648,7 +628,7 @@ const resetPassword = async(req, res, next) => {
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
   } catch(err) {
-    logger.error("Error resetting password:", err);
+    logger.error(`Error resetting password: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -660,7 +640,7 @@ const resetPasswordConfirm = async(req, res, next) => {
     const { code } = req.parameters;
 
     if (!code) {
-      return res.status(400).json({message: req.t("Password reset code not found"), code: "NotFoundCode"});
+      return res.status(400).json({message: req.t("Password reset code not found"), code: "CODE_NOT_FOUND"});
     }
      // if we want to distinguish among invalid / expired we have to split the following query
     const user = await User.findOne({
@@ -671,7 +651,7 @@ const resetPasswordConfirm = async(req, res, next) => {
       }
     });
     if (!user) {
-      return res.status(400).json({message: req.t("Password reset code is invalid or has expired"), code: "InvalidOrExpiredCode"});
+      return res.status(400).json({message: req.t("Password reset code is invalid or has expired"), code: "CODE_INVALID_OR_EXPIRED"});
     }
 
     // set the new password
@@ -685,7 +665,7 @@ const resetPasswordConfirm = async(req, res, next) => {
     return res.status(200).json({message: req.t("Your password has been updated")});
 
   } catch(err) {
-    logger.error("Error in reset password confirm:", err);
+    logger.error(`Error in reset password confirm: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -716,7 +696,7 @@ const resendResetPasswordCode = async(req, res, next) => {
       const subject = req.t("Reset Password Verification Code");
       const to = user.email;
       const from = process.env.FROM_EMAIL;
-      logger.info("Sending email:", to, from, subject);
+      logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
       config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
       await emailService.send(req, {
@@ -742,7 +722,7 @@ const resendResetPasswordCode = async(req, res, next) => {
     });
 
   } catch(err) {
-    logger.error("Error resending reset password code:", err);
+    logger.error(`Error resending reset password code: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -751,32 +731,37 @@ const refreshToken = async(req, res, next) => {
   const { token } = req.parameters;
 
   if (!token) { // refresh token is required
+    logger.warn("refreshToken: no token from input");
     return res.status(401).json({
-      message: req.t("Please make a new signin request") + `(@ refreshToken: no token @)`,
+      message: req.t("Session has no token, please make a new signin request"),
     });
   }
 
   try {
     const refreshTokenDoc = await RefreshToken.findOne({ token });
 
-    if (!refreshTokenDoc) { // refresh token not found
+    if (!refreshTokenDoc) { // refresh token document not found
+      logger.warn("refreshToken: no token document");
       return res.status(401).json({
-        message: req.t("Session is expired, please make a new signin request") + `(@ refreshToken: no refreshTokenDoc @)`,
+        message: req.t("Session is expired, please make a new signin request"),
       });
     }
 
     if (RefreshToken.isExpired(refreshTokenDoc)) {
-      const refrestTokenId = RefreshToken.findByIdAndDelete(refreshTokenDoc._id, /*{ useFindAndModify: false }*/).exec();
+      const refrestTokenId = RefreshToken.findByIdAndDelete(refreshTokenDoc._id).exec();
       if (refrestTokenId) {
-        logger.info("Refresh token deleted successfully");
+        logger.info("Expired refresh token deleted successfully");
+        return res.status(401).json({ // refresh token is just expired
+          message: req.t("Session is expired, token removed, please make a new signin request"),
+        });
       } else {
-        logger.warning("Refresh token not found");
+        logger.warn("Expired refresh token not found");
+        return res.status(401).json({ // refresh token is just expired
+          message: req.t("Session is expired, token already removed, please make a new signin request"),
+        });
       }
-      return res.status(401).json({ // refresh token is just expired
-        message: req.t("Session is expired, please make a new signin request") + `(@ refresh token is expired, ${refrestTokenId ? "deleted" : "not found, not deleted..."} @)`,
-      });
     }
-    logger.info("RefreshToken will expire on", refreshTokenDoc.expiresAt);
+    logger.info(`RefreshToken will expire on ${refreshTokenDoc.expiresAt}`);
 
     let newAccessToken = jwt.sign({ id: refreshTokenDoc.user._id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
       expiresIn: config.auth.accessTokenExpirationSeconds,
@@ -787,7 +772,7 @@ const refreshToken = async(req, res, next) => {
       refreshToken: refreshTokenDoc.token,
     });
   } catch(err) {
-    logger.error("Error refreshing token:", err);
+    logger.error(`Error refreshing token: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 

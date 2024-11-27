@@ -191,7 +191,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: !production, // if true, do not really send emails, use fake send
+    dryrun: false, /* TODO!!! DEBUG ONLY!!! !production, // if true, do not really send emails, use fake send */
     subject: {
       prefix: apiName,
     },
@@ -305,7 +305,7 @@ const configBase = {
     auth: {
       clientSessionExpirationSeconds: 0, //60 * 60 * 72, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
       clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
-      clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // TODO: not used in code??? the seconds timeout when we check if client session is expired for user inactivity
+      clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
     },
     cookies: {
       key: "cookieConsent",
@@ -362,6 +362,12 @@ const configBase = {
       products: {
         images: {
           minHeight: 300,
+          watermark: {
+            path: "assets/images/watermark.png",
+            percentWidth: 33,
+            percentOpacity: 12,
+            contrast: 1.5,
+          }
         },
         cards: {
           minHeight: 720,
@@ -370,12 +376,18 @@ const configBase = {
       backgroundVideo: "factory" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
+      /* these keys are never used in (nor server nor client) code...
       domain: "auth.sistemisolari.com",
       // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
-      scope: [ "email", "openid"/*, "aws.cognito.signin.user.admin"*/ ],
+      scope: [ "email", "openid" ],
       responseType: "code",
       redirectSignIn: baseUrl,
       redirectSignOut: baseUrl, // TODO: use me!!!
+      */
+      scope: {
+        google: ["profile", "email"],
+        facebook: ["email"],
+      },
       federatedSigninProviders: [ // we currently handle "Facebook", "Google"
         "Google",
         "Facebook",

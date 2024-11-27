@@ -56,7 +56,7 @@ try {
         return `${level}: ${timestamp} ${message} ${strArgs}`;
       })
     ),
-    level: config.logs.levelMap[ // TODO: choose levels for all modes...
+    level: config.logs.levelMap[ // TODO: set correct levels for all modes, when working at full stretch
       config.mode.production ? "debug" :
       config.mode.staging ? "debug" :
       config.mode.development ? "debug" :

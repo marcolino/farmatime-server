@@ -136,10 +136,6 @@ UserSchema.methods.generatePasswordResetCode = () => {
   const maxDigits = 6;
   const expirySeconds = 60 * 60; // 1 hour
 
-  // // TODO:
-  // this.resetPasswordCode = generateRandomCode(maxDigits);
-  // this.resetPasswordExpires = Date.now() + (expirySeconds * 1000);
-
   return {
     code: generateRandomCode(maxDigits),
     expires: Date.now() + (expirySeconds * 1000),
