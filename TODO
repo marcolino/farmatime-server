@@ -30,7 +30,8 @@
 - implementare invio email html ad una lista di utenti - OK
 - aggiungere "Please contact support at {{email}}" ai messaggi di errore (500) - OK
 - usare jwt sia per access che refresh tokens (?) - OK
-- in tutti i controller di routes, in caso di errore fare sempre: catch (err) { logger.error("Error BLA BLA:", err); return next(Object.assign(new Error(err.message), { status: 500 })); }; - OK
+- in tutti i controller di routes, in caso di errore fare sempre: catch (err) { logger.error("Error BLA BLA:", err);
+  return next(Object.assign(new Error(err.message), { status: 500 })); }; - OK
 - testare sempre le interazioni col database (i.e.: user.save(err => { ...}))
 - aggiungere `next(err); // pass the error to the error handling middleware` alle catch di tutte le routes - OK
 - ripulire tutto il codice dalle parti commentate (disabilitate) - OK
@@ -40,21 +41,25 @@
 - verificare che i18n becchi tuttle le traduzioni nei templates - OK
 - test "should remove all users with admin privileges" si blocca (tutti gli utenti isDeleted) - OK
 - css, logo, [unsubscribe-link] and [preferences-link] nei templates delle email - OK
-- quando si registra un utente, accettare anche utenti in stato isDeleted (attualmente no, si potrebbe poi implementare un pruning degli utenti cancellati...) - OK
-- aggiungere language nel doc user, settarlo in fase di login da req.language, e usarlo quando si inviano emails bulk, e testare il tutto - OK
+- quando si registra un utente, accettare anche utenti in stato isDeleted
+  (attualmente no, si potrebbe poi implementare un pruning degli utenti cancellati...) - OK
+- aggiungere language nel doc user, settarlo in fase di login da req.language,
+  e usarlo quando si inviano emails bulk, e testare il tutto - OK
 - aggiungere un tool per il controllo di secrets nel codice - OK
 - decidere come gestire le notifiche in produzione (betterstack) - OK
 - correggere "Error looking for..." in "Error finding ..." - OK
 - http://localhost:5000/api/auth ritorna correttamente JSON, ma http://localhost:5000/api ritorna HTML - OK
 - resetpassword: se email non trovata, non andare subito in errore, per ridurre la superficie d'attacco... - OK
-- fare script per iniettare un config di produzione per i casi di staging e production, sul server, richiamabile dal client prime delle build - OK
+- fare script per iniettare un config di produzione per i casi di staging e production, sul server,
+  richiamabile dal client prime delle build - OK
 - spostare le variabili non-secret da .env.dev a db.config - OK
-- disabilitare `app.use(morgan)` (api server requests log) in server.js, in produzione (no, accodato stream morgan a winston) - OK
+- disabilitare `app.use(morgan)` (api server requests log) in server.js, in produzione
+  (no, accodato stream morgan a winston) - OK
 - logger.xxx(a, b, c) => logger.xxx(`{a} ${b} ${c}`); - OK
 - aggiungere il dominio delle icone delle bandiere del componente del telefono in helmet exceptions - OK
 - modificare gli errori con (@ ... @), distinguerli solo nel testo - OK
-- nel login via email, cercare per email/password e socialId... se si trova email con socialId, dire all'utente di autenticarsi con il social, oppure registrare un nuovo account... - OK
-
+- nel login via email, cercare per email/password e socialId... se si trova email con socialId,
+  dire all'utente di autenticarsi con il social, oppure registrare un nuovo account... - OK
 
 
 NEWFEATURE:

@@ -461,7 +461,6 @@ const signin = async(req, res, next) => {
       });
     }
 
-
     // if user.password === "", it could be a social auth user...
     if (!user.password && user.socialId) {
       let provider = user.socialId.slice(0, user.socialId.indexOf(":"));

@@ -10,7 +10,7 @@ const upload = multer({ storage });
 
 module.exports = app => {
   app.get(`${path}/getAllProducts`, [authJwt.verifyAccessToken], controller.getAllProducts);
-  app.get(`${path}/getProducts`, [authJwt.verifyAccessToken], controller.getProducts);
+  app.get(`${path}/getProducts`, [/*authJwt.verifyAccessToken*/], controller.getProducts);
   //app.post(`${path}/uploadImage`, [authJwt.verifyAccessToken, upload.single("image")], controller.uploadImage);
   app.post(`${path}/getProduct`, [authJwt.verifyAccessToken], controller.getProduct);
   app.post(`${path}/getProductImageById/:imageId`, [authJwt.verifyAccessToken], controller.getProductImageById);

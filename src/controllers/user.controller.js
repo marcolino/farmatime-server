@@ -238,100 +238,6 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-/**
- * Update current user's profile
- */
-const updateUser_ORIGINAL = async(req, res, next) => {
-  let userId = req.userId;
-  if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
-    if (!await isAdministrator(userId)) { // check if request is from admin
-      return res.status(403).json({ message: req.t("You must have admin role to update another user") });
-    } else {
-      userId = req.parameters.userId; // if admin, accept a specific user id in request
-    }
-  }
-
-  User.findOne({
-    _id: userId
-  })
-  .populate({ path: "roles", select: "-__v", options: { lean: true }})
-  .populate({ path: "plan", select: "-__v", options: { lean: true }})
-  .exec(async(err, user) => {
-    if (err) {
-      logger.error(`Error finding user: ${err}`);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
-    if (!user) {
-      return res.status(400).json({ message: req.t("User not found") });
-    }
-
-    // validate and normalize email
-    let [message, value] = [null, null];
-
-    if ((req.parameters.email !== undefined)) { //&& (req.parameters.email !== user.email)) { // TO-DO (?): for all updates, skip update check and update if value did not change
-      [message, value] = await propertyEmailValidate(req, req.parameters.email, user);
-      if (message) return res.status(400).json({ message });
-      user.email = value;
-    }
-
-    if (req.parameters.firstName !== undefined) {
-      [message, value] = user.firstName = propertyFirstNameValidate(req, req.parameters.firstName, user);
-      if (message) return res.status(400).json({ message });
-      user.firstName = value;
-    }
-
-    if (req.parameters.lastName !== undefined) {
-      [message, value] = user.lastName = propertyLastNameValidate(req, req.parameters.lastName, user);
-      if (message) return res.status(400).json({ message });
-      user.lastName = value;
-    }
-
-    if (req.parameters.phone !== undefined) {
-      [message, value] = user.phone = propertyPhoneValidate(req, req.parameters.phone, user);
-      if (message) return res.status(400).json({ message });
-      user.phone = value;
-    }
-
-    if (req.parameters.fiscalCode !== undefined) {
-      [message, value] = user.fiscalCode = propertyFiscalCodeValidate(req, req.parameters.fiscalCode, user);
-      if (message) return res.status(400).json({ message });
-      user.fiscalCode = value;
-    }
-
-    if (req.parameters.businessName !== undefined) {
-      user.businessName = req.parameters.businessName;
-    }
-
-    if (req.parameters.address !== undefined) {
-      user.address = req.parameters.address;
-    }
-
-    user.save(async(err, user) => {
-      if (err) {
-        return res.status(err.code).json({ message: err.message });
-      }
-    
-      try {
-        // update roles, if needed
-        if (req.parameters?.roles && !arraysContainSameObjects(req.parameters.roles, user.roles, "_id")) {
-          user.roles = await updateRoles(req, userId);
-        }
-        
-        // update plan, if needed
-        if (req.parameters?.plan && !(String(req.parameters.plan._id) === String(user.plan?._id))) {
-          user.plan = await updatePlan(req, userId);
-        }
-  
-        return res.status(200).json({ user });
-      } catch (error) {
-        logger.error(`Error updating roles or plan: ${error.message}`);
-        return next(Object.assign(new Error(error.message), { status: 403 }));
-      }
-    });
-      
-  });
-}
-
 const updateRoles = async(req, userId) => {
   if (!userId) userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) {
@@ -356,7 +262,6 @@ const updateRoles = async(req, userId) => {
     const requestedRolesMaxPriority = Math.max(...roles.map(role => role.priority));
     const currentRolesMaxPriority = Math.max(...user.roles.map(role => role.priority));
     if (requestedRolesMaxPriority > currentRolesMaxPriority) {
-      //throw new Error();
       const error = new Error(req.t("Sorry, it is not possible to elevate roles for users"));
       error.code = 403;
       throw error;
@@ -366,7 +271,6 @@ const updateRoles = async(req, userId) => {
   user.roles = roles.map(role => role._id);
   await user.save();
   return roles;
-  //return { message: req.t("Roles updated") };
 };
 
 const updatePlan = async(req, userId) => {
@@ -402,6 +306,41 @@ const updatePlan = async(req, userId) => {
   } catch (error) {
     logger.error(`Error in updatePlan: ${error}`);
     throw error;
+  }
+};
+
+const promoteToDealer = async(req, res, next) => {
+  //if (!userId) userId = req.userId;
+  // if (req.parameters.userId && req.parameters.userId !== userId) {
+  //   if (!await isAdministrator(userId)) {
+  //     throw new Error(req.t("You must have admin role to update another user's roles"));
+  //   } else {
+  //     userId = req.parameters.userId;
+  //   }
+  // }
+  const roleName = "dealer";
+  const userId = req.parameters.userId;
+
+  try {
+    const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
+    if (!user) {
+      throw new Error(req.t("No user by id {{userId}} found!", { userId }));
+    }
+
+    const role = await Role.findOne({ name: roleName });
+    if (!role) {
+      throw new Error(req.t("No role {{roleName}} found!", { roleName }));
+    }
+
+    if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
+      user.roles.push(role);
+      await user.save();
+      return res.status(200).json({ message: req.t("user has been promoted to role {{roleName}}", { roleName }) });
+    } else {
+      return res.status(200).json({ message: req.t("user already had role {{roleName}}", { roleName }) });
+    }
+  } catch (err) {
+    throw err;
   }
 };
 
@@ -587,6 +526,7 @@ module.exports = {
   updateUser, 
   updateRoles,
   updatePlan,
+  promoteToDealer,
   deleteUser,
   removeUser,
   sendEmailToUsers,

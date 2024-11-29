@@ -191,7 +191,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: false, /* TODO!!! DEBUG ONLY!!! !production, // if true, do not really send emails, use fake send */
+    dryrun: !production, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -270,6 +270,7 @@ const configBase = {
         email: "marcosolari@gmail.com",
       },
       contacts: {
+        dealerRoleRequest: "+39 333 6480983",
         // claimsTitle: i18n.t("Our Company Claims"),
         // claimsSubtitle: i18n.t("We provide the best services in the industry, focusing on quality and customer satisfaction"),
         map: {
@@ -373,7 +374,7 @@ const configBase = {
           minHeight: 720,
         },
       },
-      backgroundVideo: "factory" // see in "/public/videos/*.mp4" for available videos
+      backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
       /* these keys are never used in (nor server nor client) code...

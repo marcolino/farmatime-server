@@ -13,7 +13,8 @@ module.exports = app => {
   app.get(`${path}/getAllRoles`, [authJwt.verifyAccessToken], controller.getAllRoles);
   app.post(`${path}/updateRoles`, [authJwt.verifyAccessToken/*, authJwt.isAdmin*/], controller.updateRoles);
   app.post(`${path}/updatePlan`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.updatePlan);
-  app.post(`${path}/deleteUser`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.deleteUser); // be careful !
+  app.post(`${path}/promoteToDealer`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.promoteToDealer);
+  app.post(`${path}/deleteUser`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.deleteUser);
   app.post(`${path}/removeUser`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.removeUser);
   app.post(`${path}/sendEmailToUsers`, controller.sendEmailToUsers);
 };
