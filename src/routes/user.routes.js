@@ -11,8 +11,8 @@ module.exports = app => {
   app.post(`${path}/updateUser`, authJwt.verifyAccessToken, controller.updateUser);
   app.get(`${path}/getAllPlans`, authJwt.verifyAccessToken, controller.getAllPlans);
   app.get(`${path}/getAllRoles`, [authJwt.verifyAccessToken], controller.getAllRoles);
-  app.post(`${path}/updateRoles`, [authJwt.verifyAccessToken/*, authJwt.isAdmin*/], controller.updateRoles);
-  app.post(`${path}/updatePlan`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.updatePlan);
+  //app.post(`${path}/updateRoles`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.updateRoles);
+  //app.post(`${path}/updatePlan`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.updatePlan);
   app.post(`${path}/promoteToDealer`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.promoteToDealer);
   app.post(`${path}/deleteUser`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.deleteUser);
   app.post(`${path}/removeUser`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.removeUser);

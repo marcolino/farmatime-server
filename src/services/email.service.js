@@ -77,7 +77,7 @@ class EmailService {
         htmlContent = params.htmlContent;
       } else {
         // add language and dir from request
-        params.templateParams.sys_language = req ? req.language : config.app.i18n.languages.fallback;
+        params.templateParams.sys_language = req ? req.language : config.app.serverLocale;
 
         // add system placeholders to template params
         params.templateParams = { ...params.templateParams, ...this.systemPlaceholders };

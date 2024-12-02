@@ -20,7 +20,7 @@
     "test": "nyc --reporter=html mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log; scripts/test2badge",
     "coverage": "xdg-open http://localhost:5000/coverage/",
     "i18n": "i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
-    "i18n-check": "grep __STRING_NOT_TRANSLATED__ --quiet src/locales/*/translation.json && ( echo 'Some texts must be translated!'; false ) || true",
+    "i18n-check": "yarn i18n && missing=$((grep --only-matching __STRING_NOT_TRANSLATED__ src/locales/*/translation.json | wc -l)); test $missing -gt 0 && ( echo \"$missing strings have to be translated!\"; false ) || true",
     "deps-check": "npx unimported",
     "deadfiles-check": "npx deadfile ./server.js --dir src/ --ci --exclude locales --exclude misc --exclude templates",
     "problems-check": "npx eslint server.js src/",
@@ -34,7 +34,7 @@
     "fly-import-secrets": "cat .env | fly secrets import",
     "fly-deploy": "NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) echo $NODE_ENV && fly deploy",
     "fly-logs": "fly logs",
-    "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn docker-build && yarn fly-deploy && yarn fly-logs",
+    "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn i18n-check && yarn docker-build && yarn fly-deploy && yarn fly-logs",
     "pub": "(cd ../acme-client/ && yarn build ) && yarn fly",
     "REMOVEME-mongoose-was": "^8.7.1"
   },

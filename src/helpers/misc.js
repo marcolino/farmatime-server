@@ -99,7 +99,7 @@ const normalizeEmail = (email) => {
 };
 
 const localeDateTime = (date = new Date()) => {
-  return date.toLocaleString(config.locale, { timeZoneName: "short" });
+  return date.toLocaleString(config.app.serverLocale, { timeZoneName: "short" });
 };
 
 const remoteAddress = (req) => {

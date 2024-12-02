@@ -5,7 +5,6 @@ const config = require("../config");
 
 const { TokenExpiredError } = jwt;
 
-//const verifyToken = (req, res, next) => {
 const verifyAccessToken = (req, res, next) => {
   let token = req.headers["authorization"];
 
@@ -30,6 +29,15 @@ const verifyAccessToken = (req, res, next) => {
     req.userId = decoded.id;
     next();
   });
+};
+
+const verifyAccessTokenAllowGuest = (req, res, next) => {
+  let token = req.headers["authorization"];
+
+  if (!token) { // allow guests
+    return next();
+  }
+  return verifyAccessToken(req, res, next);
 };
 
 const isAdmin = async(req, res, next) => {
@@ -63,6 +71,7 @@ const cleanupExpiredTokens = async (req, res, next) => {
 
 module.exports = {
   verifyAccessToken,
+  verifyAccessTokenAllowGuest,
   isAdmin,
   cleanupExpiredTokens,
 };

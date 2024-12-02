@@ -21,9 +21,9 @@ const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
-const defaultLocale = "it"; // default initial locale
-const defaultLocaleLanguage = "it_IT"; // default initial locale and language
-
+const serverLocale = "it"; // server locale
+const serverCountry = "IT"; // server country
+//const defaultLocaleLanguage = "it_IT"; // default initial locale and language
 const customization = "mda"; // custom configuration to be merged with configBase
 
 /**
@@ -112,7 +112,7 @@ const configBase = {
       alphaQualityPercent: 90,
       basepath: "/assets/products/images",
     },
-    limitForUsers: 3,
+    limitForNonDealers: 3,
   },
   logs: {
     file: "logs/acme.log", // logs and exceptions file
@@ -135,7 +135,6 @@ const configBase = {
       development: "debug",
     },
   },
-  locale: defaultLocale, // server locale (for dates)
   currency,
   upload: {
     maxFileSize: 10 * 1024 * 1024, // 10 MB
@@ -324,19 +323,18 @@ const configBase = {
       opacity: 0.9,
       color: "ochra",
     },
-    i18n: {
-      country: "it",
-      phonePrefix: "+39",
-      languages: { // ISO 639 language codes
-        supported: {
-          "en": { icon: "🇬🇧" },
-          "it": { icon: "🇮🇹" },
-        },
-        fallback: "it", // defines the fallback language(s) to use when a translation in the initial language (lng) is not found; this can be a single language code, an array of language codes, or even a function that dynamically determines the fallback language based on the current language code
-      },
+    serverLocale, // server locale
+    locales: { // supported locales
+      "en": { flag: "🇬🇧", dir: "ltr", country: "EN", phonePrefix:  "+1", charset: "utf-8" },
+      "it": { flag: "🇮🇹", dir: "rtl", country: "IT", phonePrefix: "+39", charset: "utf-8" },
+      "fr": { flag: "🇫🇷", dir: "ltr", country: "FR", phonePrefix: "+33", charset: "utf-8" },
     },
     ui: {
-      themeMode: "light",
+      themes: [
+        "light",
+        "dark",
+      ],
+      defaultTheme: "light",
       footerHeight: "1.5rem",
       extraSmallWatershed: 600,
       mobileDesktopWatershed: 900,
@@ -395,9 +393,9 @@ const configBase = {
       ],
     },
     index: { // to inject index.html
-      language: defaultLocale,
-      dir: dir,
-      charset: charset,
+      language: serverLocale, // TODO: update index.language when user changes locale
+      dir: dir, // TODO: update index.dir when user changes locale
+      charset: charset, // TODO: update index.charset when user changes locale
       description: description,
       themeColor: themeColor,
       cacheControl: cacheControl,
@@ -410,7 +408,7 @@ const configBase = {
           url: `${baseUrl}/apple-touch-icon.png`,
           alt: `${apiName} logo image`,
         },
-        locale: defaultLocaleLanguage,
+        locale: serverLocale, // TODO: update index.og.locale when user changes locale
         site_name: apiName,
       },
       twitter: {

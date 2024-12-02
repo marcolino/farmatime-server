@@ -508,19 +508,19 @@ const signin = async(req, res, next) => {
     // notify administration about logins
     audit({req, subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
-    // save user's language as from request
-    User.findOneAndUpdate({
-      _id: user.id
-    }, {
-      $set: { language: req.language }
-    }, {
-      new: true
-    }).then((user) => {
-      logger.info(`Saved user's language: ${user.language}`);
-    }).catch(err => {
-      logger.error(`Error saving user's language: ${err}`);
-      //res.status(500).send(err);
-    })
+    // // save user's language as from request
+    // User.findOneAndUpdate({
+    //   _id: user.id
+    // }, {
+    //   //$set: { language: req.language }
+    // }, {
+    //   new: true
+    // }).then((user) => {
+    //   logger.info(`Saved user's language: ${user.language}`);
+    // }).catch(err => {
+    //   logger.error(`Error saving user's language: ${err}`);
+    //   //res.status(500).send(err);
+    // })
 
     res.status(200).json({
       id: user._id,
@@ -530,6 +530,7 @@ const signin = async(req, res, next) => {
       roles: user.roles,
       plan: user.plan,
       justRegistered: user.justRegistered,
+      preferences: user.preferences,
       accessToken: user.accessToken,
       refreshToken: user.refreshToken,
     });

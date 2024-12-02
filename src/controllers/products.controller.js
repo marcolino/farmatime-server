@@ -58,23 +58,37 @@ const getProducts = async(req, res, next) => {
 
     let limit = 0; // a limit() value of 0 is equivalent to setting no limit
     if (!await isDealerAtLeast(req.userId)) { // check if request is from a dealer, at least
-      limit = config.products.limitForUsers;
+      limit = config.products.limitForNonDealers;
     }
 
-    let products = await Product.find(filter)
+    // TODO: add limit to Product.find, if it is possible to get count of total products
+    // count the filter results (with no limit)
+    const totalCount = await Product.countDocuments(filter);
+
+    // fetch the limited set of results
+    const products = await Product.find(filter)
+      .limit(limit)
       .select(["-__v"])
       //.populate("roles", "-__v")
       //.populate("plan", "-__v")
       .lean()
       .exec()
     ;
+
+    // let products = await Product.find(filter)
+    //   .select(["-__v"])
+    //   //.populate("roles", "-__v")
+    //   //.populate("plan", "-__v")
+    //   .lean()
+    //   .exec()
+    // ;
+    //
+    // let count = products.length;
+    // if (limit > 0) {
+    //   products = products.slice(0, limit);
+    // }
     
-    let count = products.length;
-    if (limit > 0) {
-      products = products.slice(0, limit);
-    }
-    
-    return res.status(200).json({products, count});
+    return res.status(200).json({products, count: totalCount});
   } catch(err) {
     logger.error(`Error getting all products: ${err.message}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
@@ -141,10 +155,8 @@ const getProductImageById = (req, res) => {
   return res.sendFile(imagePath);
 };
 
-// serve product all constraints  by id
-const getProductAllConstraintsById = (req, res) => {
-  const imageId = req.parameters.imageId;
-  
+// serve product all types
+const getProductAllTypes = (req, res) => {
   return res.status(200).json({
     types: ["motorino", "alternatore"],
   });
@@ -189,7 +201,7 @@ const insertProduct = async(req, res, next) => {
   const product = new Product(productNew);
   product.save()
     .then(product => {
-      return res.status(200).json({ id: product._id, message: req.t("product has been inserted") });
+      return res.status(200).json({ id: product._id, message: req.t("Product has been inserted") });
     })
     .catch(err => {
       logger.error(`Error inserting product: ${err}`);
@@ -380,7 +392,7 @@ module.exports = {
   getProducts,
   getProduct,
   getProductImageById,
-  getProductAllConstraintsById,
+  getProductAllTypes,
   insertProduct,
   updateProduct,
   uploadProductImage,

@@ -1,13 +1,12 @@
 const emailValidate = require("email-validator");
 const codiceFiscaleValidate = require("codice-fiscale-js");
-const mongoose = require("mongoose");
-//const i18n = require("i18next");
+//const mongoose = require("mongoose");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
 const Role = require("../models/role.model");
 const RefreshToken = require("../models/refreshToken.model");
-const { isObject, isArray, normalizeEmail, isAdministrator, arraysContainSameObjects } = require("../helpers/misc");
+const { isObject, isArray, normalizeEmail, isAdministrator } = require("../helpers/misc");
 const emailService = require("../services/email.service");
 
 const getAllUsersWithTokens = (req, res, next) => {
@@ -108,6 +107,7 @@ const getAllRoles = async(req, res, next) => {
 const getUser = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
+    // TODO: this test should be done in routing middleware...
     if (!await isAdministrator(userId)) { // check if request is from admin
       return res.status(403).json({ message: req.t("You must have admin role to access another user") });
     } else {
@@ -142,6 +142,7 @@ const updateUser = async (req, res, next) => {
   try {
     let userId = req.userId;
     if (req.parameters.userId && req.parameters.userId !== userId) {
+      // TODO: this test should be done in routing middleware...
       if (!(await isAdministrator(userId))) {
         return res.status(403).json({ message: req.t("You must have admin role to update another user") });
       }
@@ -238,7 +239,7 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-const updateRoles = async(req, userId) => {
+const _updateRoles = async(req, userId) => {
   if (!userId) userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) {
     if (!await isAdministrator(userId)) {
@@ -273,7 +274,7 @@ const updateRoles = async(req, userId) => {
   return roles;
 };
 
-const updatePlan = async(req, userId) => {
+const _updatePlan = async(req, userId) => {
   if (!userId) userId = req.userId;
   if (!await isAdministrator(userId)) {
     const error = new Error(req.t("Sorry, you must have admin role to update plans"));
@@ -309,15 +310,8 @@ const updatePlan = async(req, userId) => {
   }
 };
 
+// promotes a user to "dealer" role
 const promoteToDealer = async(req, res, next) => {
-  //if (!userId) userId = req.userId;
-  // if (req.parameters.userId && req.parameters.userId !== userId) {
-  //   if (!await isAdministrator(userId)) {
-  //     throw new Error(req.t("You must have admin role to update another user's roles"));
-  //   } else {
-  //     userId = req.parameters.userId;
-  //   }
-  // }
   const roleName = "dealer";
   const userId = req.parameters.userId;
 
@@ -335,9 +329,9 @@ const promoteToDealer = async(req, res, next) => {
     if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
       user.roles.push(role);
       await user.save();
-      return res.status(200).json({ message: req.t("user has been promoted to role {{roleName}}", { roleName }) });
+      return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }) });
     } else {
-      return res.status(200).json({ message: req.t("user already had role {{roleName}}", { roleName }) });
+      return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }) });
     }
   } catch (err) {
     throw err;
@@ -524,8 +518,8 @@ module.exports = {
   getAllRoles,
   getUser,
   updateUser, 
-  updateRoles,
-  updatePlan,
+  _updateRoles,
+  _updatePlan,
   promoteToDealer,
   deleteUser,
   removeUser,

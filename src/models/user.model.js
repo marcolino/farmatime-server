@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const VerificationCode = require("./verificationCode.model");
+const config = require("../config");
 
 // // address schema
 // const AddressSchema = mongoose.Schema({
@@ -80,8 +81,17 @@ const UserSchema = mongoose.Schema({
     type: Boolean,
     default: true
   },
-  language: {
-    type: String,
+  preferences: {
+    locale: {
+      type: String,
+      enum: Object.keys(config.app.locales),
+      default: config.app.serverLocale,
+    },
+    theme: {
+      type: String,
+      enum: config.app.ui.themes,
+      default: config.app.ui.defaultTheme,
+    },
   },
 }, {timestamps: true});
 

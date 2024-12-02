@@ -12,8 +12,8 @@ i18next
     backend: {
       loadPath: __dirname + "/../locales/{{lng}}/{{ns}}.json"
     },
-    fallbackLng: config.app.i18n.languages.fallback, // fallback language
-    preload: Object.keys(config.app.i18n.languages.supported), // preload all supported languages
+    fallbackLng: config.app.serverLocale, // fallback language
+    preload: Object.keys(config.app.locales), // preload all supported languages
     detection: {
       order: [ "header" ], // server side we get language always from header
       lookupHeader: "accept-language", // be sure we look up the right header
