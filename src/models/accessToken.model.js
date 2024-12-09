@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 const AccessTokenSchema = new mongoose.Schema({
@@ -65,7 +66,7 @@ AccessTokenSchema.statics.isExpired = (token) => {
     }
     return false; // valid
   } catch (err) {
-    console.error(`Error decoding token ${token}:`, err)
+    logger.error(`Error decoding token ${token}:`, err)
     return false;
   }
 }
@@ -76,7 +77,7 @@ AccessTokenSchema.statics.secondsToExpiration = (token) => {
     const { exp } = jwt.decode(token.token);
     return ((exp * 1000) - Date.now()) / 1000;
   } catch (err) {
-    console.error(`Error decoding token ${token}:`, err)
+    logger.error(`Error decoding token ${token}:`, err)
     return 0;
   }
 }

@@ -219,7 +219,7 @@ const redirectToClient = (req, res, success, payload) => {
 
 // social OAuth revoke
 const socialRevoke = async(req, res, next) => {
-  console.log("socialRevoke");
+  logger.log("socialRevoke");
 
   // TODO: check the providers give these data
   const { userId, appId, issuedAt, provider } = req.body;
@@ -229,7 +229,7 @@ const socialRevoke = async(req, res, next) => {
   // 2. update your database to reflect that the user has revoked access
   // 3. perform any cleanup necessary for your application
   
-  console.log(`Access revoked for provider ${provider}, user ${user_id} at ${issued_at}`);
+  logger.log(`Access revoked for provider ${provider}, user ${user_id} at ${issued_at}`);
 
   return res.status(200).json({
     message: `Revocation notification received from provider ${provider} for user id ${userId}`
@@ -530,7 +530,7 @@ const signin = async(req, res, next) => {
       roles: user.roles,
       plan: user.plan,
       justRegistered: user.justRegistered,
-      preferences: user.preferences,
+      preferences: user.preferences.toObject(),
       accessToken: user.accessToken,
       refreshToken: user.refreshToken,
     });

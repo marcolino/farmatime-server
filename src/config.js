@@ -130,7 +130,7 @@ const configBase = {
       // in staging mode skip console logging for levels lower than debug (none)
       // in development mode skip console logging for levels lower than info (debug)
       test: "crit",
-      production: "warning",
+      production: "error",
       staging: "debug",
       development: "debug",
     },
@@ -326,7 +326,7 @@ const configBase = {
     serverLocale, // server locale
     locales: { // supported locales
       "en": { flag: "🇬🇧", dir: "ltr", country: "EN", phonePrefix:  "+1", charset: "utf-8" },
-      "it": { flag: "🇮🇹", dir: "rtl", country: "IT", phonePrefix: "+39", charset: "utf-8" },
+      "it": { flag: "🇮🇹", dir: "ltr", country: "IT", phonePrefix: "+39", charset: "utf-8" },
       "fr": { flag: "🇫🇷", dir: "ltr", country: "FR", phonePrefix: "+33", charset: "utf-8" },
     },
     ui: {
@@ -367,9 +367,6 @@ const configBase = {
             percentOpacity: 12,
             contrast: 1.5,
           }
-        },
-        cards: {
-          minHeight: 720,
         },
       },
       backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos

@@ -20,6 +20,12 @@ const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // injected config file name
 
+console.log('Current LOGGING modes:', {
+  production: config.mode.production,
+  staging: config.mode.staging,
+  development: config.mode.development,
+  test: config.mode.test
+});
 
 // environment configuration
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
@@ -30,7 +36,7 @@ if (config.mode.staging) { // load environment variables from .env file
     require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
     logger.info("Staging environment");
   } catch (err) {
-    console.error("Error loading ./.env file:", err);
+    logger.error("Error loading ./.env file:", err);
   }
 }
 if (config.mode.development) { // load environment variables from .env.dev file
@@ -43,7 +49,7 @@ if (config.payment.stripe.enabled) {
 
 const app = express();
 
-//console.log("HELMET:", helmet.contentSecurityPolicy.getDefaultDirectives());
+//logger.log("HELMET:", helmet.contentSecurityPolicy.getDefaultDirectives());
 app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
@@ -217,10 +223,10 @@ app.get("/", async(req, res) => {
   res.sendFile(path.resolve(rootClient, "index.html"));
 });
 
-// handle client routes for all other urls
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(rootClient, "index.html"));
-});
+  // handle client routes for all other urls
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(rootClient, "index.html"));
+  });
 
 // connect to database and let express server start listening for requests
 async function start() {

@@ -151,7 +151,7 @@ const updateUser = async (req, res, next) => {
 
     // collect update data
     const updateData = {};
-    const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan } = req.parameters;
+    const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan, preferences } = req.parameters;
 
     if (email) {
       const [message, value] = await propertyEmailValidate(req, email, userId);
@@ -208,6 +208,13 @@ const updateUser = async (req, res, next) => {
         }
       }
       updateData.plan = newPlan._id; // put plan id in updateData
+    }
+
+    if (preferences) {
+      // TODO: implement `propertyPreferencesValidate`
+      // const [message, value] = await propertyPreferencesValidate(req, email, userId);
+      // if (message) return res.status(400).json({ message });
+      updateData.preferences = preferences;
     }
 
     // update the user in a single transaction
@@ -329,9 +336,9 @@ const promoteToDealer = async(req, res, next) => {
     if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
       user.roles.push(role);
       await user.save();
-      return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }) });
+      return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }), count: 1 });
     } else {
-      return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }) });
+      return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }), count: 0 });
     }
   } catch (err) {
     throw err;

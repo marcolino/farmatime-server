@@ -115,8 +115,8 @@ const connect = async() => {
   }
 
   try {
-    console.log("config.mode:", config.mode);
-    console.log("connUri:", connUri);
+    //console.log("config.mode:", config.mode);
+    //console.log("connUri:", connUri);
     await mongoose.connect(connUri, {
       useFindAndModify: false,
       useNewUrlParser: true,

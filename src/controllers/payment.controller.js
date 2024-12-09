@@ -34,7 +34,7 @@ const createCheckoutSession = async(req, res) => {
       cancel_url: `${config.payment.stripe.paymentCancelUrl}?session_id={CHECKOUT_SESSION_ID}`,
     });
     if (!session?.url) { // incomplete response, we miss the redirect url
-      logger.console.warn(`Payment session creation error: no session url`);
+      logger.warn(`Payment session creation error: no session url`);
       return res.status(400).json({message: "no session url", code: "NO_SESSION_URL"});
     }
 

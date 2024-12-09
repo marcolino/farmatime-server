@@ -61,9 +61,9 @@
 - nel login via email, cercare per email/password e socialId... se si trova email con socialId,
   dire all'utente di autenticarsi con il social, oppure registrare un nuovo account... - OK
 - capitalizzare tutti i messaggi (ove possibile) - OK
-
-- capire perchè al sign-out, spesso lato client si ottiene la warning "la sessione non ha token..."
-- server+client: language => locale (GLOBALMENTE)
+- capire perchè al sign-out, spesso lato client si ottiene la warning "la sessione non ha token..." - OK
+- server+client: language => locale (GLOBALMENTE) - OK
+- rimpiazzare i console.* con Logger.*, oppure rimuoverli... - OK
 
 NEWFEATURE:
 - configurare un account su Cloudflare...

@@ -68,6 +68,8 @@
   "If you did not request this, please ignore this email and your password will remain unchanged": "Se non l'hai richiesto, ignora questa email e la tua password rimarrà invariata",
   "If you have any questions, feel free to": "__STRING_NOT_TRANSLATED__",
   "IM Used": "",
+  "Image uploaded to {{fileName}}": "Immagine caricata in {{fileName}}",
+  "Image uploaded to {{fileName}} from {{file}}": "Immagine caricata su {{fileName}} da {{file}}",
   "Input file is corrupted": "Il file di input è danneggiato",
   "Insufficient Storage": "",
   "internal server error": "",

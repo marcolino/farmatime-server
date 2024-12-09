@@ -68,6 +68,8 @@
   "If you did not request this, please ignore this email and your password will remain unchanged": "If you did not request this, please ignore this email and your password will remain unchanged",
   "If you have any questions, feel free to": "If you have any questions, feel free to",
   "IM Used": "",
+  "Image uploaded to {{fileName}}": "Image uploaded to {{fileName}}",
+  "Image uploaded to {{fileName}}, {{file}}": "Image uploaded to {{fileName}}, {{file}}",
   "Input file is corrupted": "Input file is corrupted",
   "Insufficient Storage": "",
   "internal server error": "",

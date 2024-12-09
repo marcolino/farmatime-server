@@ -44,7 +44,7 @@ const getAllProducts = async(req, res, next) => {
     });
     return res.json({ products: productsData });
   } catch (err) { // TODO...
-    console.error("Error fetching products:", err);
+    logger.error("Error fetching products:", err);
     throw err;
   }
 };
@@ -342,7 +342,7 @@ const uploadProductImage = (req, res, next) => {
       }
     });
 
-    return res.status(200).json({ message: req.t("Image uploaded to {{fileName}}", { filename: product.imageName }) });
+    return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{file}}", { fileName: product.imageName, file: req.file }) });
   });
 };
 

@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
 const { hashString } = require("./misc");
+const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");
 
@@ -12,23 +13,33 @@ const saveImageFile = async(file) => {
   const filepath = path.join(__dirname, "../..", config.products.images.path, imageName);
   const filepathWaterMark = path.join(__dirname, "../..", config.products.images.pathWaterMark, imageName);
 
-  console.log("__dirname:", __dirname);
-  console.log("imageName:", imageName);
+  //console.log("__dirname:", __dirname);
+  //console.log("imageName:", imageName);
   //const filepath = path.join(__dirname, "../../public/assets/products/images", imageName);
 
-  imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
+  try {
+    imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
+  } catch (err) {
+    logger.error(i18n.t("Error converting image: {{err}}", { err: err.message }));
+    throw err;
+  }
   try { // save image to disk
     fs.writeFileSync(filepath, imageBufferConvertedAndResized);
   } catch (err) {
-    console.error(i18n.t("Error writing image to {{filepath}}", { filepath }));
+    logger.error(i18n.t("Error writing image to {{filepath}}", { filepath }));
     throw err;
   }
 
-  imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
+  try { // add watermark
+    imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
+  } catch (err) {
+    logger.error(i18n.t("Error adding watermark to image: {{err}}", { err: err.message }));
+    throw err;
+  }
   try { // save image to disk
     fs.writeFileSync(filepathWaterMark, imageBufferWithWaterMark);
   } catch (err) {
-    console.error(i18n.t("Error writing image to {{filepath}}", { filepath: filepathWaterMark }));
+    logger.error(i18n.t("Error writing image to {{filepath}}", { filepath: filepathWaterMark }));
     throw err;
   }
   return {
@@ -92,7 +103,8 @@ const imageAddWaterMark = async(imageBuffer) => {
       ;
     })
     .catch(err => {
-      console.error("Error processing the image:", err);
+      logger.error("Error processing the image:", err);
+      throw err;
     })
   ;
 };

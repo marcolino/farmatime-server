@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const VerificationCode = require("./verificationCode.model");
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 // // address schema
@@ -128,7 +129,7 @@ UserSchema.methods.hashPassword = async(password, callback) => {
         return callback(null, hash);
       });
     } catch(err) {
-      console.error("bcrypt.hash error:", err);
+      logger.error("bcrypt.hash error:", err);
       return callback(err, null);
     }
   });
