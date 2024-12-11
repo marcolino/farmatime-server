@@ -20,7 +20,7 @@ const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // injected config file name
 
-console.log('Current LOGGING modes:', {
+console.log('Current log modes:', {
   production: config.mode.production,
   staging: config.mode.staging,
   development: config.mode.development,

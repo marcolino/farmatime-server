@@ -61,7 +61,6 @@ const getProducts = async(req, res, next) => {
       limit = config.products.limitForNonDealers;
     }
 
-    // TODO: add limit to Product.find, if it is possible to get count of total products
     // count the filter results (with no limit)
     const totalCount = await Product.countDocuments(filter);
 

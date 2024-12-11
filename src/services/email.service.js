@@ -17,7 +17,7 @@ class EmailService {
       sys_company_title: config.app.company.title,
       sys_company_mailto: config.app.company.mailto,
       sys_company_copyright: config.app.company.copyright,
-      sys_company_logo: `${config.baseUrl}/favicon.ico`,
+      sys_company_logo: `${config.baseUrl}/logo-main-header.png`,
       sys_client_email_unsubscribe_link: config.clientEmailUnsubscribeUrl,
       sys_client_email_preferences_link: config.clientEmailPreferencesUrl,
     };

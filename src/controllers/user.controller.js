@@ -107,7 +107,7 @@ const getAllRoles = async(req, res, next) => {
 const getUser = async(req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
-    // TODO: this test should be done in routing middleware...
+    // this test should be done in routing middleware, but doing it here allows for a more specific error message
     if (!await isAdministrator(userId)) { // check if request is from admin
       return res.status(403).json({ message: req.t("You must have admin role to access another user") });
     } else {
@@ -142,7 +142,7 @@ const updateUser = async (req, res, next) => {
   try {
     let userId = req.userId;
     if (req.parameters.userId && req.parameters.userId !== userId) {
-      // TODO: this test should be done in routing middleware...
+      // this test should be done in routing middleware, but doing it here allows for a more specific error message
       if (!(await isAdministrator(userId))) {
         return res.status(403).json({ message: req.t("You must have admin role to update another user") });
       }

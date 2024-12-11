@@ -65,6 +65,7 @@
 - server+client: language => locale (GLOBALMENTE) - OK
 - rimpiazzare i console.* con Logger.*, oppure rimuoverli... - OK
 
+
 NEWFEATURE:
 - configurare un account su Cloudflare...
 - gestire "justRegistered", se necessario
