@@ -415,8 +415,8 @@ const sendEmailToUsers = async(req, res, next) => {
   } else
     return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
 
-  let subject = req.parameters?.subject;
-  let body = req.parameters?.body;
+  // let subject = req.parameters?.subject;
+  // let body = req.parameters?.body;
 
   User.find(filter)
   .populate("roles", "-__v")
@@ -428,20 +428,21 @@ const sendEmailToUsers = async(req, res, next) => {
       return res ? res.status(err.code).json(ret) : ret;
     }
     if (!users || users.length === 0) {
+      logger.warn(`No user found with filter ${filter}`);
       return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
     }
     
     for (const user of users) {
-      let to = user.email;
-
-      const [subjectExpanded, bodyExpanded] = expandEmailTags(user, subject, body);
+      const to = user.email;
+      const [subject, body] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
+      const style = "base"; // style is currently fixed
       try {
         req.language = user.language; // get user language
         await emailService.send(req, {
-          to: user.email,
-          subject: subjectExpanded,
-          body: bodyExpanded,
-          style: "base", // this is currently fixed
+          to,
+          subject,
+          body,
+          style,
         });
       } catch (err) {
         logger.error(`Error sending email to users: ${err}`)

@@ -64,6 +64,12 @@
 - capire perchè al sign-out, spesso lato client si ottiene la warning "la sessione non ha token..." - OK
 - server+client: language => locale (GLOBALMENTE) - OK
 - rimpiazzare i console.* con Logger.*, oppure rimuoverli... - OK
+- on logout "no token from input" - OK
+- on accessing authenticated routes, user get "no respnse from server" instead of "you must be authenticated"... - OK
+- disable http logs from Winston setup - OK
+- undefined err when sending email to users, and nothing in logs - OK
+
+- automate functions logging - see https://mirzaleka.medium.com/automated-logging-in-express-js-a1f85ca6c5cd
 
 
 NEWFEATURE:

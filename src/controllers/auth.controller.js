@@ -731,10 +731,9 @@ const refreshToken = async(req, res, next) => {
   const { token } = req.parameters;
 
   if (!token) { // refresh token is required
-    logger.warn("refreshToken: no token from input");
-    return res.status(401).json({
-      message: req.t("Session has no token, please make a new signin request"),
-    });
+    logger.warn("refreshToken: session has no token");
+    //return res.status(401).json({ message: req.t("Session has no token, please make a new signin request"), code: "NO_TOKEN" });
+    return res.status(401).json({ message: req.t("You must be authenticated for this action"), code: "NO_TOKEN" });
   }
 
   try {

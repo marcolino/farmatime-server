@@ -94,8 +94,7 @@ app.use(helmet.contentSecurityPolicy({
 // use compression
 app.use(compression());
 
-// log requests to express output
-//app.use(morgan("dev"));
+/*
 // configure Morgan to use the Winston stream, so it goes to betterstack, too, in production
 app.use(morgan("combined", {
   stream: { // a Morgan stream
@@ -104,6 +103,7 @@ app.use(morgan("combined", {
     }
   }
 }));
+*/
 
 // enable CORS, and whitelist our urls
 app.use(cors({

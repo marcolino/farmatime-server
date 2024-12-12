@@ -190,7 +190,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: !production, // if true, do not really send emails, use fake send
+    dryrun: false, // TODOOOOOOOOOOO (DEBUGONLY) !production, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },

@@ -1,4 +1,4 @@
-  const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const { isAdministrator, localeDateTime } = require("../helpers/misc");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");

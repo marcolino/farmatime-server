@@ -119,6 +119,7 @@ class EmailService {
       logger.info(`Email sent to ${params.to} with message id ${response.messageId}`);
       return true;
     } catch (err) {
+      logger.error(`Error sending email to ${params.to}: ${err.message}`);
       throw new Error(err.message);
     }
   }
