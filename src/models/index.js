@@ -124,6 +124,13 @@ const connect = async() => {
       useCreateIndex: true,
     });
     logger.info("Database connected");
+
+    // show MongoDB version
+    const admin = new mongoose.mongo.Admin(mongoose.connection.db);
+    admin.buildInfo((err, info) => {
+      logger.info(`MongoDB v. ${info.version}`);
+    });
+
     try {
       await populate() // populate database with initial contents if first time
       //logger.info("Database populated");

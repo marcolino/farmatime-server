@@ -68,7 +68,9 @@
 - on accessing authenticated routes, user get "no respnse from server" instead of "you must be authenticated"... - OK
 - disable http logs from Winston setup - OK
 - undefined err when sending email to users, and nothing in logs - OK
+- always use collation: "it" and strength: "1" in mongoose searches - see https://chatgpt.com/share/675bc8e5-6194-8003-8c43-dc1eb9fc82cd (used diacritics regexp function) - OK
 
+- trap regexp errors in model post find
 - automate functions logging - see https://mirzaleka.medium.com/automated-logging-in-express-js-a1f85ca6c5cd
 
 

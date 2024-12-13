@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const config = require("../config");
 
 const ProductSchema = mongoose.Schema({
   mdaCode: {
@@ -53,14 +54,39 @@ const ProductSchema = mongoose.Schema({
     type: Boolean,
     default: false
   },
-}, {timestamps: true});
+}, {
+  timestamps: true,
+  // collation: {
+  //   locale: config.db.collation.locale,
+  //   strength: config.db.collation.strength,
+  // },
+});
 
-ProductSchema.pre(/^find|^count/, function() {
-  const operation = this.op; // we might need the effective operation matched
+// filter deleted documents by default for all `find` and `count` queries
+ProductSchema.pre(/^find|^count/, function(next) {
+  //const operation = this.op; // we might need the effective operation matched
   const product = this;
   let condition = {};
   if (!this.options.allowDeleted) condition.isDeleted = false;
   product.where(condition);
+  next();
+});
+
+// // add collation to all `find` queries
+// ProductSchema.pre(/^find/, function(next) {
+//   if (!this.options.collation) {
+//     this.options.collation = {
+//       locale: config.db.collation.locale,
+//       strength: config.db.collation.strength,
+//     };
+//     console.log("COLLATION APPLIED:", this.options.collation);
+//   }
+//   console.log("COLLATION ALREADY PRESENT:", this.options.collation);
+//   next();
+// });
+
+ProductSchema.post(/^find/, function() {
+  // TODO: trap regular expression errors...
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

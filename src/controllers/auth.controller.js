@@ -537,7 +537,8 @@ const signin = async(req, res, next) => {
   });
 };
 
-const signout = async(req, res, next) => {
+const signout = async (req, res, next) => {
+  logger.info("SIGNOUT CALLED!");
   const email = normalizeEmail(req.parameters.email);
 
   User.findOne({

@@ -64,6 +64,20 @@ const configBase = {
     verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
   },
+  // db: {
+  //   products: {
+  //     search: {
+  //       mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
+  //       caseInsensitive: true, // if true, search ignoring case
+  //     },
+  //   }
+    // collation: {
+    //   // "en" locale treats accented characters as variants of their base letters,
+    //   // and tends to ignore apostrophes and certain punctuation for comparisons
+    //   locale: "en",
+    //   strength: 1, // ignores accents and case differences
+    // },
+  //},
   roles: [
     {
       name: "user",
@@ -269,7 +283,7 @@ const configBase = {
         email: "marcosolari@gmail.com",
       },
       contacts: {
-        dealerRoleRequest: "+39 333 6480983",
+        dealerRoleRequestPhoneNumber: "+39 333 6480983",
         // claimsTitle: i18n.t("Our Company Claims"),
         // claimsSubtitle: i18n.t("We provide the best services in the industry, focusing on quality and customer satisfaction"),
         map: {
@@ -285,6 +299,14 @@ const configBase = {
       },
       redirect: "follow",
       timeoutSeconds: production ? 20 : 30, // the maximum time in seconds to wait for an API response (production to free fly.io instance must be at lest 20 seconds...)
+    },
+    db: {
+      products: {
+        search: {
+          mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
+          caseInsensitive: true, // if true, search ignoring case
+        },
+      },
     },
     images: {
       publicPath: "/assets/products/images",
