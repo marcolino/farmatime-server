@@ -16,7 +16,8 @@ const config = require("../config");
 
 // Google OAuth login
 const googleLogin = (req, res, next) => {
-  passport.authenticate("google", { scope: config.oauth.scope.google })(req, res, next);
+  console.log("googleLogin");
+  passport.authenticate("google", { scope: config.app.oauth.scope.google })(req, res, next);
 };
 
 // Google OAuth callback
@@ -33,7 +34,7 @@ const googleCallback = (req, res, next) => {
 
 // Facebook OAuth login
 const facebookLogin = (req, res, next) => {
-  passport.authenticate("facebook", { scope: config.oauth.scope.facebook })(req, res, next);
+  passport.authenticate("facebook", { scope: config.app.oauth.scope.facebook })(req, res, next);
 };
 
 // Facebook OAuth callback

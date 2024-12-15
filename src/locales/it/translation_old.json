@@ -1,4 +1,5 @@
 {
+  "a": "__STRING_NOT_TRANSLATED__",
   "A filter is mandatory to delete users (use \"*\" for all users)": "Un filtro è obbligatorio per rimuovere gli utenti (usa \"*\" per tutti gli utenti)",
   "A filter must be the string \"*\" or an object": "Un filtro deve essere la stringa \"*\" oppure un oggetto",
   "A reset code has been sent to {{email}} via {{codeDeliveryMedium}}": "Un codice di reset è stato inviato a {{email}} tramite {{codeDeliveryMedium}}",

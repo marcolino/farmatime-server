@@ -394,14 +394,12 @@ const configBase = {
       backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
-      /* these keys are never used in (nor server nor client) code...
       domain: "auth.sistemisolari.com",
       // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
       scope: [ "email", "openid" ],
       responseType: "code",
       redirectSignIn: baseUrl,
       redirectSignOut: baseUrl, // TODO: use me!!!
-      */
       scope: {
         google: ["profile", "email"],
         facebook: ["email"],

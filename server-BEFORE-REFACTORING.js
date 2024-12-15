@@ -57,8 +57,7 @@ app.use(helmet.contentSecurityPolicy({
     connectSrc: [
       "'self'",
       config.baseUrl,
-                                    "http://localhost:5000", // TODO...
-                                    "http://localhost:5005", // TODO...
+                                      "http://localhost:5000", // TODO...
       "https://fonts.googleapis.com",
       "https://fonts.gstatic.com",
       "https://www.gravatar.com",
@@ -112,7 +111,7 @@ app.use(morgan("combined", {
 // enable CORS, and whitelist our urls
 app.use(cors({
   origin: config.clientDomains, // the accepted client domains
-  methods: ["GET", "POST", "OPTIONS"], // allowed methods
+  methods: "GET,POST", // allowed methods
   credentials: true, // if you need cookies/auth headers
   //exposedHeaders: ["X-Maintenance-Status"],
 }));
@@ -190,12 +189,6 @@ const rootClientSrc = path.join(__dirname, config.clientSrc);
 // the coverage root (used while developing only)
 const rootCoverage = path.join(__dirname, "coverage");
 
-// First, handle not found API routes BEFORE registering specific routes
-app.all(/^\/api(\/.*)?$/, (req, res, next) => {
-  // Use next() instead of returning 404 immediately
-  next();
-});
-
 // routes handling
 require("./src/routes/auth.routes")(app);
 require("./src/routes/user.routes")(app);
@@ -208,32 +201,6 @@ if (config.publicBasePath) {
   app.use(express.static(path.join(__dirname, config.publicBasePath)));
 }
 
-// handle static routes
-app.use("/", express.static(rootClient)); // base client root
-
-if (!config.mode.production) {
-  app.use("/coverage", express.static(rootCoverage)); // coverage root
-}
-
-// handle not found API routes
-app.all(/^\/api(\/.*)?$/, (req, res) => {
-  return res.status(404).json({ message: "Not found" });
-})
-
-// // handle client route for base urls
-// app.get("/", async(req, res) => {
-//   //res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString()); 
-//   // if (process.env.MAINTENANCE === "true") {
-//   //   res.header("X-Maintenance-Status", "true");
-//   // }
-//   res.sendFile(path.resolve(rootClient, "index.html"));
-// });
-
-// handle client routes for all other urls
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(rootClient, "index.html"));
-});
-
 // handle errors in API routes
 app.use((err, req, res, next) => {
   res.locals.error = err;
@@ -243,8 +210,31 @@ app.use((err, req, res, next) => {
   if (status === 500) {
     message += ` -  ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")}`;
   }
-  // TODO: send email on 50* errors
   return res.status(status).json({ message });
+});
+
+// handle static routes
+app.use("/", express.static(rootClient)); // base client root
+
+//!config.mode.production && app.use("/coverage", express.static(rootCoverage)); // coverage root
+
+// handle not found API routes
+app.all(/^\/api(\/.*)?$/, (req, res) => {
+  return res.status(404).json({ message: "Not found" });
+})
+
+// handle client route for base urls
+app.get("/", async(req, res) => {
+  //res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString()); 
+  // if (process.env.MAINTENANCE === "true") {
+  //   res.header("X-Maintenance-Status", "true");
+  // }
+  res.sendFile(path.resolve(rootClient, "index.html"));
+});
+
+// handle client routes for all other urls
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(rootClient, "index.html"));
 });
 
 // connect to database and let express server start listening for requests
