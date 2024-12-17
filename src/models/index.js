@@ -128,7 +128,7 @@ const connect = async() => {
     // show MongoDB version
     const admin = new mongoose.mongo.Admin(mongoose.connection.db);
     admin.buildInfo((err, info) => {
-      logger.info(`MongoDB v. ${info.version}`);
+      logger.info(`MongoDB v${info.version}`);
     });
 
     try {

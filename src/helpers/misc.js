@@ -7,6 +7,10 @@ const Role = require("../models/role.model");
 const { logger }  = require("../controllers/logger.controller");
 const config = require("../config");
 
+const isString = (x) => {
+  return (typeof x === "string" || x instanceof String);
+};
+
 const isObject = (x) => {
   return (typeof x === "object" && !Array.isArray(x) && x !== null);
 };
@@ -195,6 +199,7 @@ const hashString = (value) => {
 
 
 module.exports = {
+  isString,
   isObject,
   isArray,
   objectContains,

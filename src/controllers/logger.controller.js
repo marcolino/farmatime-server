@@ -1,110 +1,148 @@
 const winston = require("winston");
+const stream = require("stream");
 const { Logtail } = require("@logtail/node");
 const { LogtailTransport } = require("@logtail/winston");
-const util = require("util");
 const config = require("../config");
 require("winston-syslog");
-
-const hostname = require("os").hostname;
 
 let logger = null;
 const transports = [];
 const exceptionHandlers = [];
-const colorize = false;
+const colorize = true;
 const logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
+
+
+const isString = (x) => {
+  return (typeof x === "string" || x instanceof String);
+};
+
+class LogtailStream extends stream.Writable {
+  constructor(logtail) {
+    super({ objectMode: true });
+    this.logtail = logtail;
+  }
+
+  _write(info, encoding, callback) {
+    //const { message, metadata } = info; // use the formatted message
+    // extract level, message, and metadata
+    const { level, message } = info;
+
+    // extract additional arguments from Symbol(splat)
+    const splatSymbol = Object.getOwnPropertySymbols(info).find((sym) => sym.toString() === "Symbol(splat)");
+    const splatArgs = splatSymbol ? info[splatSymbol] : [];
+
+    // combine level and message
+    let logMessage = `[${level.toUpperCase()}] ${message}`;
+
+    // add splat arguments to the message
+    if (splatArgs.length) {
+      logMessage += ` ${splatArgs.map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg))).join(" ")}`;
+    }
+
+    // send the log data to Logtail
+    this.logtail.log(logMessage, {})
+      .then(() => callback())
+      .catch(callback)
+    ;
+    
+    // // construct metadata including splat arguments
+    // const metadata = {
+    //   level: level.toUpperCase(), // ensure level is included
+    //   ...(splatArgs.length && { args: splatArgs }),
+    // };
+
+    // // send the log data to Logtail
+    // this.logtail.log(message, metadata)
+    //   .then(() => callback())
+    //   .catch(callback)
+    //;
+  }
+}
+
+const formatWithArgs = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.printf((info) => {
+    const { timestamp, level, message/*, ...meta*/ } = info;
+
+    // extract additional arguments from Symbol(splat)
+    const splatSymbol = Object.getOwnPropertySymbols(info).find((sym) => sym.toString() === "Symbol(splat)");
+    const splatArgs = splatSymbol ? info[splatSymbol] : [];
+
+    // combine meta and splatArgs into a clean array or object
+    //const metadata = Object.keys(meta).length ? meta : undefined;
+    const extraArgs = splatArgs.length ? splatArgs : undefined;
+
+    // build the log output
+    let logOutput = `${level.toUpperCase()}: ${timestamp} ${message}`;
+    if (extraArgs) {
+      extraArgs.forEach(extraArg => {
+        logOutput += ` ${isString(extraArg) ? extraArg : JSON.stringify(extraArg)}`;
+      });
+    }
+
+    return logOutput;
+  })
+);
+
+
 
 try {
   transports.push(
-    new winston.transports.File({ // local file transport
-      filename: config.logs.file,
-      format: winston.format.combine(
-        winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-        winston.format.printf(info => {
-          const timestamp = info.timestamp.trim();
-          const level = info.level;
-          const message = (typeof info?.message === "string" ? info.message : "").trim();
-          const args = info[Symbol.for("splat")];
-          const strArgs = (args || []).map(arg => {
-            return util.inspect(arg, { colors: colorize });
-          });
-          return `${level}: ${timestamp} ${message} ${strArgs}`;
-        }),
-      ),
-      timestamp: true,
-      colorize: colorize,
+    new winston.transports.File({ // File transport
+      filename: config.logs.file.name,
+      format: formatWithArgs,
+      level: config.logs.levelMap.development,
       handleExceptions: true,
-      humanReadableUnhandledException: true,
-      prettyPrint: true,
-      json: true,
-      maxsize: 5242880
+      maxsize: config.logs.file.maxsize,
     }),
+    new winston.transports.Stream({ // BetterStack transport stream
+      stream: new LogtailStream(logtail),
+      format: formatWithArgs,
+      level: config.logs.levelMap.development,
+      handleExceptions: true,
+      colorize,
+    }),
+    new winston.transports.Console({
+      format: formatWithArgs,
+      level:
+        config.mode.production ? config.logs.levelMap.production :
+        config.mode.staging ? config.logs.levelMap.staging :
+        config.mode.development ? config.logs.levelMap.development :
+        config.mode.test ? config.logs.levelMap.test :
+        "debug"
+      ,
+      handleExceptions: true,
+      colorize,
+    })
   );
-
-  transports.push(
-    new LogtailTransport(logtail), // BetterStack transport
-  );
-
-  transports.push(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.printf(info => {
-        const timestamp = info.timestamp.trim();
-        const level = info.level;
-        const message = (info.message || "").trim();
-        const args = info[Symbol.for("splat")];
-        const strArgs = (args || []).map(arg => arg).join(" ");
-        return `${level}: ${timestamp} ${message} ${strArgs}`;
-      })
-    ),
-    level: config.logs.levelMap[ // TODO: set correct levels for all modes, when working at full stretch
-      config.mode.production ? "debug" :
-      config.mode.staging ? "debug" :
-      config.mode.development ? "debug" :
-      config.mode.test ? "test" :
-      "debug"
-    ],
-    handleExceptions: true,
-    prettyPrint: true,
-    colorize: colorize,
-  }));
-} catch(err) {
+} catch (err) {
   console.error("Winston transports creation error:", err);
-  throw(err);
+  throw err;
 }
 
 try {
   exceptionHandlers.push(
-    new winston.transports.File({ filename: config.logs.file }), // local file exceptions transport
+    new winston.transports.File({ filename: config.logs.file.name }),
+    new LogtailTransport(logtail)
   );
-
-  if (config.mode.production && config.logs.betterstack.enable) { // use logtail transport on betterstack only in production
-    exceptionHandlers.push(
-      new LogtailTransport(logtail), // BetterStack exceptions transport
-    );
-  }
-
-  if (config.mode.production && config.logs.papertrail.enable) { // use syslog transport on papertrail only in production
-    exceptionHandlers.push(
-      new winston.transports.Syslog({
-        host: config.logs.papertrail.host,
-        port: config.logs.papertrail.port,
-        app_name: config.api.name,
-        hostname,
-      })
-    );
-  }
-} catch(err) {
+} catch (err) {
   console.error("Winston exceptions handlers creation error:", err);
-  throw(err);
+  throw err;
 }
 
 try {
   logger = winston.createLogger({
+    level: "debug", // default log level for transports that don’t override it
+    format: winston.format.combine( // default format for transports that don’t override it
+      winston.format.timestamp(),
+      winston.format.json()
+    ),
     transports,
-    exceptionHandlers
+    exceptionHandlers,
   });
-} catch(err) {
+} catch (err) {
   console.error("Winston logger creation error:", err);
+  throw err;
 }
 
 module.exports = {

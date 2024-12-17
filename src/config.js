@@ -129,22 +129,21 @@ const configBase = {
     limitForNonDealers: 3,
   },
   logs: {
-    file: "logs/acme.log", // logs and exceptions file
+    file: {
+      name: "logs/acme.log", // logs and exceptions file
+      maxsize: 5 * (1024 * 1024), // max logs file size: 5MB
+    },
     betterstack: {
       enable: true,
     },
-    papertrail: {
-      enable: false,
-      host: "logs6.papertrailapp.com",
-      port: 18466,
-    },
+    // papertrail: {
+    //   enable: false,
+    //   host: "logs6.papertrailapp.com",
+    //   port: 18466,
+    // },
     levelMap: { // log levels for all currently foreseen modes
-      // in test mode skip console logging for levels lower than crit (error, warning, notice, info, debug)
-      // in production mode skip console logging for levels lower than warning (notice, info, debug)
-      // in staging mode skip console logging for levels lower than debug (none)
-      // in development mode skip console logging for levels lower than info (debug)
       test: "crit",
-      production: "error",
+      production: "debug", // when production will be fully stable, we can high this up to "info"...
       staging: "debug",
       development: "debug",
     },
@@ -357,13 +356,13 @@ const configBase = {
         "dark",
       ],
       defaultTheme: "light",
-      footerHeight: "1.5rem",
+      defaultThemeColor: "#a5dc6f",
+      headerHeight: 64,
+      footerHeight: 64,
+      headerPadding: 10,
+      footerPadding: 10,
       extraSmallWatershed: 600,
       mobileDesktopWatershed: 900,
-      // sounds: {
-      //   buttonClick,
-      // },
-      headerHeight: 64,
       usePlans: true, // if we do use plans in the app
       snacks: {
         maxInStack: 3,
@@ -394,7 +393,7 @@ const configBase = {
       backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
-      domain: "auth.sistemisolari.com",
+      domain: "auth.sistemisolari.com", // TODO: removeme, used only in client, test-federated-login.js
       // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
       scope: [ "email", "openid" ],
       responseType: "code",

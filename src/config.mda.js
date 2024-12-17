@@ -8,7 +8,9 @@ const config = {
     name: apiName,
   },
   logs: {
-    file: "logs/mda.log", // logs and exceptions file
+    file: {
+      name: "logs/mda.log", // logs and exceptions file
+    },
   },
   name: appName, // app name
   title: apiName, // app title

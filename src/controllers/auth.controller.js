@@ -22,6 +22,12 @@ const googleLogin = (req, res, next) => {
 
 // Google OAuth callback
 const googleCallback = (req, res, next) => {
+  console.log('googleCallback Debug:', {
+    query: req.query,
+    headers: req.headers,
+    baseUrl: config.baseUrl,
+    environment: process.env.NODE_ENV,
+  });
   passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial, info) => {
     if (err) {
       logger.error(`Google authentication error: ${err}`);
@@ -539,7 +545,6 @@ const signin = async(req, res, next) => {
 };
 
 const signout = async (req, res, next) => {
-  logger.info("SIGNOUT CALLED!");
   const email = normalizeEmail(req.parameters.email);
 
   User.findOne({

@@ -20,12 +20,19 @@ const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // injected config file name
 
-console.log('Current log modes:', {
-  production: config.mode.production,
-  staging: config.mode.staging,
-  development: config.mode.development,
-  test: config.mode.test
-});
+//logger.info("A", "Bb", "Ccc", {key: "value"});
+//logger.info("Current log modes:", config.mode);
+
+// /**
+//  * add console.log to every function automatically
+//  */
+// (function enableGlobalFunctionLogging() {
+//   const originalFunctionPrototype = Function.prototype.call;
+//   Function.prototype.call = function(...args) {
+//     console.log(`-> ${this.name}(${args.slice(1).map(a => JSON.stringify(a)).join(', ')})`);
+//     return originalFunctionPrototype.apply(this, args);
+//   };
+// }());
 
 // environment configuration
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
@@ -98,22 +105,30 @@ app.use(helmet.contentSecurityPolicy({
 // use compression
 app.use(compression());
 
-/*
 // configure Morgan to use the Winston stream, so it goes to betterstack, too, in production
 app.use(morgan("combined", {
   stream: { // a Morgan stream
     write: (message) => {
-      logger.info(message.trim()); // use Winston's info level for HTTP request logs
+      // check if the message contains an API request (starting with "/api/")
+      if (
+        message.includes("\"GET /api/") ||
+        message.includes("\"POST /api/") ||
+        message.includes("\"PUT /api/") ||
+        message.includes("\"DELETE /api/") ||
+        message.includes("\"PATCH /api/")
+      ) {
+        logger.info(message.trim()); // use Winston's info level for HTTP request logs
+      }
     }
   }
 }));
-*/
 
 // enable CORS, and whitelist our urls
 app.use(cors({
   origin: config.clientDomains, // the accepted client domains
   methods: ["GET", "POST", "OPTIONS"], // allowed methods
-  credentials: true, // if you need cookies/auth headers
+  //allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+  credentials: true, // if cookies/auth headers are needed
   //exposedHeaders: ["X-Maintenance-Status"],
 }));
 
@@ -172,10 +187,10 @@ app.use((req, res, next) => {
   }
 });
 
-app.use((req, res, next) => { // DEBUG ONLY
-  console.log(`METHOD & URL: ${req.method} ${req.url}`);
-  next();
-});
+// app.use((req, res, next) => { // DEBUG ONLY
+//   if (req.url.startsWith("/social")) logger.info(`Social Request: ${req.method} ${req.url}`);
+//   next();
+// });
 
 // setup the email service
 emailService.setup(process.env.BREVO_EMAIL_API_KEY);
