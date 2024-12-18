@@ -22,7 +22,7 @@ const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
-const serverCountry = "IT"; // server country
+//const serverCountry = "IT"; // server country
 //const defaultLocaleLanguage = "it_IT"; // default initial locale and language
 const customization = "mda"; // custom configuration to be merged with configBase
 
@@ -203,7 +203,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: false, // TODOOOOOOOOOOO (DEBUGONLY) !production, // if true, do not really send emails, use fake send
+    dryrun: !production, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },

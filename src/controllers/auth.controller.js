@@ -177,7 +177,7 @@ const socialLogin = async(req, res, next) => {
   logger.info(`User social signin email: ${user.email}`);
 
   // notify administration about social logins
-  audit({ req, subject: `User ${user.email} social (${provider}) signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
+  audit({ req, subject: `SignIn - user ${user.email} social (${provider})`, htmlContent: `SignIn social (${provider}) of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
 
   user.save(async(err, user) => {
     if (err) {
@@ -420,7 +420,7 @@ const signupVerification = async(req, res, next) => {
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
           // notify administration abunt registrations
-          audit({ req, subject: `User ${user.email} signup completed`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
+          audit({ req, subject: `SignUp - user ${user.email}`, htmlContent: `SignUp of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
           return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
         });
       }
@@ -513,7 +513,7 @@ const signin = async(req, res, next) => {
     logger.info(`User signin: ${user.email}`);
 
     // notify administration about logins
-    audit({req, subject: `User ${user.email} signin`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+    audit({req, subject: `SignIn - user ${user.email}`, htmlContent: `SignIn of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
     // // save user's language as from request
     // User.findOneAndUpdate({
@@ -565,7 +565,7 @@ const signout = async (req, res, next) => {
     }
 
     // notify administration about logouts
-    //audit({req, subject: `User ${user.email} signout`, htmlContent: `User: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
+    //audit({req, subject: `SignOut - user ${user.email}`, htmlContent: `SignOut of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
     // invalidate access and refresh tokens
     User.findOneAndUpdate({
