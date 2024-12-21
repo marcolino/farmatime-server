@@ -41,6 +41,8 @@
   "Error resending signup code": "Erreur lors du renvoi du code d'inscription",
   "Error saving image {{imageName}}": "__STRING_NOT_TRANSLATED__",
   "Error while archiving": "Erreur lors de l'archivage",
+  "Error writing image to {{filepath}}": "Erreur lors de l'écriture de l'image dans {{filepath}}: {{err}}",
+  "Error writing image to {{filepath}}: {{err}}": "Erreur lors de l'écriture de l'image dans {{filepath}}: {{err}}",
   "Error writing image to {{filepathWaterMark}}": "__STRING_NOT_TRANSLATED__",
   "Errore nell'archiviazione": "Errore nell'archiviazione",
   "Expectation Failed": "",

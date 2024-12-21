@@ -73,6 +73,28 @@ const arraysContainSameObjects = (a1, a2, property) => {
   return true;
 };
 
+//const { readdir, stat } = require("fs/promises");
+//const { join } = require("path");
+const dirSize = async(dir) => {
+  const files = await fs.promises.readdir(dir, { withFileTypes: true });
+
+  const paths = files.map(async file => {
+    const fullpath = path.join(dir, file.name);
+
+    if (file.isDirectory()) return await dirSize(fullpath);
+
+    if (file.isFile()) {
+      const { size } = await fs.promises.stat(fullpath);
+      
+      return size;
+    }
+
+    return 0;
+  });
+
+  return (await Promise.all(paths)).flat(Infinity).reduce((i, size) => i + size, 0);
+};
+
 const normalizeEmail = (email) => {
   if (!email) {
     return null;
@@ -178,7 +200,7 @@ const JSONstringifyRecursive = (t, seen = new Set()) => {
   else if (typeof t == "bigint") throw TypeError("stringifyJSON cannot serialize BigInt")
   else if (typeof t == "number") return String(t)
   else if (typeof t == "boolean") return t ? "true" : "false"
-  else if (typeof t == "string") return "\"" + t.replace(/"/g, '\\"') + "\""
+  else if (typeof t == "string") return "\"" + t.replace(/"/g, "\"") + "\""
   else if (typeof t == "object") {
     const nextSeen = new Set(seen).add(t)
     return Array.isArray(t) 
@@ -197,6 +219,67 @@ const hashString = (value) => {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+const getFieldType = (schema, fieldPath) => {
+  const schemaType = schema.path(fieldPath);
+
+  if (!schemaType) {
+    return null;  // fieldPath does not exist in the schema
+  }
+
+  // if (schemaType.instance === "Array") {
+  //   return "Array";
+  // }
+
+  // if (schemaType.instance === "String") {
+  //   return "String";
+  // }
+
+  return schemaType.instance;
+};
+
+const diacriticMatchRegex = (string = "", exact = false) => {
+  const diacriticMap = {
+    "a": "[a,á,à,ä,â,ã,å,ā,ă,ą]",
+    "A": "[A,Á,À,Ä,Â,Ã,Å,Ā,Ă,Ą]",
+    "c": "[c,ç,ć,č,ĉ]",
+    "C": "[C,Ç,Ć,Č,Ĉ]",
+    "d": "[d,đ,ď]",
+    "D": "[D,Đ,Ď]",
+    "e": "[e,é,è,ë,ê,ē,ĕ,ė,ę,ě]",
+    "E": "[E,É,È,Ë,Ê,Ē,Ĕ,Ė,Ę,Ě]",
+    "g": "[g,ğ,ĝ,ġ,ģ]",
+    "G": "[G,Ğ,Ĝ,Ġ,Ģ]",
+    "h": "[h,ĥ,ħ]",
+    "H": "[H,Ĥ,Ħ]",
+    "i": "[i,í,ì,ï,î,ī,ĭ,į,ı]",
+    "I": "[I,Í,Ì,Ï,Î,Ī,Ĭ,Į,İ]",
+    "j": "[j,ĵ]",
+    "J": "[J,Ĵ]",
+    "k": "[k,ķ]",
+    "K": "[K,Ķ]",
+    "l": "[l,ĺ,ļ,ľ,ŀ,ł]",
+    "L": "[L,Ĺ,Ļ,Ľ,Ŀ,Ł]",
+    "n": "[n,ñ,ń,ņ,ň,ŉ]",
+    "N": "[N,Ñ,Ń,Ņ,Ň]",
+    "o": "[o,ó,ò,ö,ô,õ,ō,ŏ,ő]",
+    "O": "[O,Ó,Ò,Ö,Ô,Õ,Ō,Ŏ,Ő]",
+    "r": "[r,ŕ,ř,ŗ]",
+    "R": "[R,Ŕ,Ř,Ŗ]",
+    "s": "[s,ś,š,ş,ŝ]",
+    "S": "[S,Ś,Š,Ş,Ŝ]",
+    "t": "[t,ţ,ť,ŧ]",
+    "T": "[T,Ţ,Ť,Ŧ]",
+    "u": "[u,ü,ú,ù,û,ū,ŭ,ů,ű,ų]",
+    "U": "[U,Ü,Ú,Ù,Û,Ū,Ŭ,Ů,Ű,Ų]",
+    "w": "[w,ŵ]",
+    "W": "[W,Ŵ]",
+    "y": "[y,ý,ÿ,ŷ]",
+    "Y": "[Y,Ý,Ÿ,Ŷ]",
+    "z": "[z,ź,ž,ż]",
+    "Z": "[Z,Ź,Ž,Ż]"
+  };
+  return string.replace(/./g, (char) => (exact ? "^" : "") + (diacriticMap[char] || char) + (exact ? "$" : ""));
+}
 
 module.exports = {
   isString,
@@ -204,6 +287,7 @@ module.exports = {
   isArray,
   objectContains,
   arraysContainSameObjects,
+  dirSize,
   normalizeEmail,
   localeDateTime,
   remoteAddress,
@@ -212,4 +296,6 @@ module.exports = {
   inject,
   JSONstringifyRecursive,
   hashString,
+  getFieldType,
+  diacriticMatchRegex,
 };

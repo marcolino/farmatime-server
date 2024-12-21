@@ -1,45 +1,73 @@
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
-const { hashString } = require("./misc");
+const { hashString, dirSize } = require("../helpers/misc");
+const { audit } = require("../helpers/messaging");
 const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");
 
-const saveImageFile = async(file) => {
+const saveImageFile = async (req) => {
+  const file = req.file;
   const imageNameOriginal = file.originalname;
   const imageBuffer = file.buffer;
   const imageName = hashString(imageNameOriginal) + `.${config.products.images.format}`;
-  const filepath = path.join(__dirname, "../..", config.products.images.path, imageName);
-  const filepathWaterMark = path.join(__dirname, "../..", config.products.images.pathWaterMark, imageName);
+  const imageDir = path.join(__dirname, "../..", config.products.images.path);
+  const imageDirWaterMark = path.join(__dirname, "../..", config.products.images.pathWaterMark);
+  const imagePath = path.join(imageDir, imageName);
+  const imagePathWaterMark = path.join(imageDirWaterMark, imageName);
 
-  //console.log("__dirname:", __dirname);
-  //console.log("imageName:", imageName);
-  //const filepath = path.join(__dirname, "../../public/assets/products/images", imageName);
+  // create image folders, if not present
+  if (!fs.existsSync(imageDir)) {
+    logger.warn(`directory ${imageDir} does not exist, creating it!`);
+    fs.mkdirSync(imageDir, { recursive: true });
+  }
+  if (!fs.existsSync(imageDirWaterMark)) {
+    logger.warn(`directory ${imageDirWaterMark} does not exist, creating it!`);
+    fs.mkdirSync(imageDirWaterMark, { recursive: true });
+  }
+
+  // check persistent storage size, to avoid overcoming plan size limits
+  const size = await dirSize(imageDir);
+  logger.debug(`images directory {{imageDir}} size is`, size);
+  const sizeAfterSave = size + (imageBuffer.length * 3); // we save 2 images, without watermark and with watermark; we multiply by 3 to be on the safe side...
+  if (sizeAfterSave >= config.persistentStorage.size.overflow) {
+    const subject = i18n.t("Image file save size overflow limit reached");
+    const message = i18n.t("Persistent storage size overflow limit reached ({{overflow}}), image cannot be saved, storage plan should be boosted", { overflow: config.persistentStorage.size.overflow });
+    logger.error(message);
+    audit({req, subject, htmlContent: message});
+    throw new Error(message);
+  }
+  if (sizeAfterSave >= config.persistentStorage.size.watermark) {
+    const subject = i18n.t("Image file save size watermark limit reached");
+    const message = i18n.t("Persistent storage size watermark limit reached ({{watermark}}), image is saved, but storage plan should be boosted", { watermark: config.persistentStorage.size.watermark });
+    logger.warn(message);
+    audit({req, subject, htmlContent: message});
+  }
 
   try {
     imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
   } catch (err) {
-    logger.error(i18n.t("Error converting image: {{err}}", { err: err.message }));
+    logger.error(i18n.t("Error converting image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message }));
     throw err;
   }
   try { // save image to disk
-    fs.writeFileSync(filepath, imageBufferConvertedAndResized);
+    fs.writeFileSync(imagePath, imageBufferConvertedAndResized);
   } catch (err) {
-    logger.error(i18n.t("Error writing image to {{filepath}}", { filepath }));
+    logger.error(i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath, err: err.message }));
     throw err;
   }
 
   try { // add watermark
     imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
   } catch (err) {
-    logger.error(i18n.t("Error adding watermark to image: {{err}}", { err: err.message }));
+    logger.error(i18n.t("Error adding watermark to image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message }));
     throw err;
   }
   try { // save image to disk
-    fs.writeFileSync(filepathWaterMark, imageBufferWithWaterMark);
+    fs.writeFileSync(imagePathWaterMark, imageBufferWithWaterMark);
   } catch (err) {
-    logger.error(i18n.t("Error writing image to {{filepath}}", { filepath: filepathWaterMark }));
+    logger.error(i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath: imagePathWaterMark, err: err.message }));
     throw err;
   }
   return {
@@ -59,54 +87,61 @@ const imageConvertFormatAndLimitSize = async(imageBuffer) => {
       alphaQuality: config.products.images.alphaQualityPercent,
     })
     .toBuffer()
-  ;
-};
-
-const imageAddWaterMark = async(imageBuffer) => {
-  // const watermarkImagePath = path.join(__dirname, "..", "assets/images/watermark.png"); // the watermark image
-  // const watermarkPercentWidth = 33; // to config
-  // const watermarkPercentOpacity = 12; // to config
-  
-  // load the input image to get its dimensions
-  return await sharp(imageBuffer)
-    .metadata()
-    .then(async({ width }) => {
-
-      const watermarkOpacized = await sharp(path.join(__dirname, "..", config.app.ui.products.images.watermark.path))
-        .composite([{
-          input: Buffer.from([255, 255, 255, Math.round((config.app.ui.products.images.watermark.percentOpacity / 100) * 255)]),
-          raw: { width: 1, height: 1, channels: 4 },
-          tile: true,
-          blend: "dest-in"
-        }])
-        .toBuffer()
-      ;
-      
-      // resize the watermark relative to the input image width (e.g., 10% of the input image width)
-      return await sharp(watermarkOpacized)
-        .resize(Math.floor(width * (config.app.ui.products.images.watermark.percentWidth / 100))) // resize watermark
-        .greyscale() // make it greyscale
-        .linear(config.app.ui.products.images.watermark.contrast, 0) // increase the contrast
-        .toBuffer()
-      ;
-    })
-    .then(watermarkBuffer => {
-      return sharp(imageBuffer)
-        .composite([ // composite the watermark with the input image
-          {
-            input: watermarkBuffer,
-            gravity: "center", // position the watermark
-            blend: "over", // blending mode
-          }
-        ])
-        .toBuffer()
-      ;
-    })
     .catch(err => {
       logger.error("Error processing the image:", err);
       throw err;
     })
   ;
+};
+
+const imageAddWaterMark = async(imageBuffer) => {
+  try {
+    // resize the input image to the maximum dimensions first
+    const resizedImageBuffer = await sharp(imageBuffer)
+      .resize(config.products.images.maximumSidePixels, config.products.images.maximumSidePixels, {
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .toBuffer();
+
+    // process the watermark
+    const { width } = await sharp(resizedImageBuffer).metadata();
+
+    const watermarkOpacized = await sharp(
+      path.join(__dirname, "..", config.app.ui.products.images.watermark.path)
+    )
+      .composite([{
+        input: Buffer.from([255, 255, 255, Math.round((config.app.ui.products.images.watermark.percentOpacity / 100) * 255)]),
+        raw: { width: 1, height: 1, channels: 4 },
+        tile: true,
+        blend: "dest-in"
+      }])
+      .toBuffer();
+
+    const resizedWatermarkBuffer = await sharp(watermarkOpacized)
+      .resize(Math.floor(width * (config.app.ui.products.images.watermark.percentWidth / 100)))
+      .greyscale()
+      .linear(config.app.ui.products.images.watermark.contrast, 0)
+      .toBuffer();
+
+    // composite the watermark onto the resized input image
+    const finalImageBuffer = await sharp(resizedImageBuffer)
+      .composite([{
+        input: resizedWatermarkBuffer,
+        gravity: "center",
+        blend: "over",
+      }])
+      .webp({
+        quality: config.products.images.qualityPercent,
+        alphaQuality: config.products.images.alphaQualityPercent,
+      })
+      .toBuffer();
+
+    return finalImageBuffer;
+  } catch (err) {
+    logger.error("Error adding watermark to the image:", err);
+    throw err;
+  }
 };
 
 module.exports = {

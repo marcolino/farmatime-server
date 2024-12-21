@@ -72,7 +72,15 @@
 - trap regexp errors in model post find (no, convert regexp to string) - OK
 - forget about papertrail - OK
 - log meta (2nd, ... params) too - see https://chatgpt.com/c/6760ef50-1bb8-8003-96d3-693dded2f67f - OK
+- reduce watermark image size - OK
+- enforce 3GB persistent volume storage (total) if fly free tier 
+- do not create images statically when creating database products collection, since persistent volume is not yet mounted... (probably) - OK
 
+- add stack to all errors...
+- bettertstack: [{"LEVEL": "ERROR"}] => [ERROR]
+- remove err description from audit subject
+- remove last full err from audit body
+- remove Gmail filter to set already read messages from acme
 
 NEWFEATURE:
 - configurare un account su Cloudflare...

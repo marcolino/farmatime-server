@@ -2,15 +2,16 @@ const winston = require("winston");
 const stream = require("stream");
 const { Logtail } = require("@logtail/node");
 const { LogtailTransport } = require("@logtail/winston");
+const { decode } = require("html-entities");
 const config = require("../config");
 require("winston-syslog");
+
 
 let logger = null;
 const transports = [];
 const exceptionHandlers = [];
-const colorize = true;
+const colorize = false; // TODO: `true` does not seem to work on any transport...
 const logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
-
 
 const isString = (x) => {
   return (typeof x === "string" || x instanceof String);
@@ -23,7 +24,86 @@ class LogtailStream extends stream.Writable {
   }
 
   _write(info, encoding, callback) {
-    //const { message, metadata } = info; // use the formatted message
+    const { level, message, ...rest } = info;
+    const splatSymbol = Object.getOwnPropertySymbols(info).find(
+      (sym) => sym.toString() === "Symbol(splat)"
+    );
+    const splatArgs = splatSymbol ? info[splatSymbol] : [];
+
+    let logMessage = `[${level.toUpperCase()}] ${message}`;
+    if (splatArgs.length) {
+      logMessage += ` ${splatArgs
+        .map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg)))
+        .join(" ")}`;
+    }
+
+    // const cleanMetadata = Object.entries(rest)
+    //   .filter(([, value]) => value !== undefined && value !== null)
+    //   .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+
+    // decode any encoded characters
+    logMessage = decode(logMessage);
+
+    this.logtail
+      .log(logMessage, null) //Object.keys(cleanMetadata).length > 0 ? cleanMetadata : null)
+      .then(() => callback())
+      .catch(callback);
+  }
+}
+
+class LogtailStream_OLD extends stream.Writable {
+  constructor(logtail) {
+    super({ objectMode: true });
+    this.logtail = logtail;
+  }
+
+  _write(info, encoding, callback) {
+    // extract level and message
+    const { level, message, ...rest } = info;
+    const metadata = { ...rest };
+    delete metadata.timestamp; // we already have timestamps from Winston
+    delete metadata.TIMESTAMP;
+
+    // extract additional arguments from Symbol(splat)
+    const splatSymbol = Object.getOwnPropertySymbols(info).find(
+      (sym) => sym.toString() === "Symbol(splat)"
+    );
+    const splatArgs = splatSymbol ? info[splatSymbol] : [];
+
+    // combine level and message
+    let logMessage = `[${level.toUpperCase()}] ${message}`;
+
+    // add splat arguments to the message
+    if (splatArgs.length) {
+      logMessage += ` ${splatArgs
+        .map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg)))
+        .join(" ")}`
+      ;
+    }
+
+    // filter out empty metadata objects
+    const cleanMetadata = Object.entries(metadata)
+      .filter(([, value]) => value !== undefined && value !== null)
+      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
+    ;
+
+    // send the log data to Logtail, only including metadata if it's not empty
+    this.logtail
+      .log(logMessage, Object.keys(cleanMetadata).length > 0 ? cleanMetadata : null)
+      .then(() => callback())
+      .catch(callback)
+    ;
+  }
+}
+
+/*
+class LogtailStream extends stream.Writable {
+  constructor(logtail) {
+    super({ objectMode: true });
+    this.logtail = logtail;
+  }
+
+  _write(info, encoding, callback) {
     // extract level, message, and metadata
     const { level, message } = info;
 
@@ -44,20 +124,9 @@ class LogtailStream extends stream.Writable {
       .then(() => callback())
       .catch(callback)
     ;
-    
-    // // construct metadata including splat arguments
-    // const metadata = {
-    //   level: level.toUpperCase(), // ensure level is included
-    //   ...(splatArgs.length && { args: splatArgs }),
-    // };
-
-    // // send the log data to Logtail
-    // this.logtail.log(message, metadata)
-    //   .then(() => callback())
-    //   .catch(callback)
-    //;
   }
 }
+*/
 
 const formatWithArgs = winston.format.combine(
   winston.format.timestamp(),

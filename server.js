@@ -4,6 +4,7 @@ const cors = require("cors");
 const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const asyncErrors = require("express-async-errors");
 const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
 const db = require("./src/models");
@@ -11,7 +12,7 @@ const Env = require("./src/models/env.model");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
 const emailService = require("./src/services/email.service");
-const { localeDateTime, inject } = require("./src/helpers/misc");
+const { localeDateTime, inject, remoteAddress } = require("./src/helpers/misc");
 const i18n = require("./src/middlewares/i18n");
 const rateLimit = require("./src/middlewares/rateLimit");
 const checkReferer = require("./src/middlewares/checkReferer");
@@ -29,7 +30,7 @@ const configFileNameInjected = "config.json"; // injected config file name
 // (function enableGlobalFunctionLogging() {
 //   const originalFunctionPrototype = Function.prototype.call;
 //   Function.prototype.call = function(...args) {
-//     console.log(`-> ${this.name}(${args.slice(1).map(a => JSON.stringify(a)).join(', ')})`);
+//     console.log(`-> ${this.name}(${args.slice(1).map(a => JSON.stringify(a)).join(", ")})`);
 //     return originalFunctionPrototype.apply(this, args);
 //   };
 // }());
@@ -105,19 +106,15 @@ app.use(helmet.contentSecurityPolicy({
 // use compression
 app.use(compression());
 
-// configure Morgan to use the Winston stream, so it goes to betterstack, too, in production
-app.use(morgan("combined", {
-  stream: { // a Morgan stream
+// custom Morgan log format based (without user agent)
+morgan.format("api-logs", ":method :url HTTP/:http-version :status ':referrer' - :response-time ms");
+
+// log API requests with Morgan
+app.use(morgan("api-logs", {
+  stream: {
     write: (message) => {
-      // check if the message contains an API request (starting with "/api/")
-      if (
-        message.includes("\"GET /api/") ||
-        message.includes("\"POST /api/") ||
-        message.includes("\"PUT /api/") ||
-        message.includes("\"DELETE /api/") ||
-        message.includes("\"PATCH /api/")
-      ) {
-        logger.info(message.trim()); // use Winston's info level for HTTP request logs
+      if (message.includes("/api/")) {
+        logger.info(message.trim());
       }
     }
   }
@@ -251,15 +248,32 @@ app.get("*", (req, res) => {
 
 // handle errors in API routes
 app.use((err, req, res, next) => {
-  res.locals.error = err;
+  res.locals.error = err; // ???
   logger.error(`Server error: ${err.message}`);
   let status = err.status || 500;
+  let stack = err.stack; 
+   // Include stack trace in development only
   let message = `${err.message || req.t("Server error")}`
   if (status === 500) {
+    // notify support about errors
+    audit({
+      req,
+      subject: `Error ${message}`,
+      htmlContent: `<pre>
+Error - status: ${status}
+Mode: ${process.env.NODE_ENV}
+IP: ${remoteAddress(req)}
+Date: ${localeDateTime()}
+Stack: ${stack}
+Full error: ${err}
+</pre>`,
+    });
     message += ` -  ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")}`;
   }
-  // TODO: send email on 50* errors
-  return res.status(status).json({ message });
+  return res.status(status).json({
+    message,
+    ...(config.mode.development && { stack }),
+  });
 });
 
 // connect to database and let express server start listening for requests
@@ -281,13 +295,23 @@ async function start() {
     const host = "0.0.0.0";
     app.listen(port, host, () => {
       logger.info(`Server is running on ${host}:${port}`);
-      // notify administration abount server start up
+      // notify support abount server start up
       //audit({ subject: `server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
     });
   } catch (err) {
     logger.error(`Server listen error: ${err}`);
   }
 };
+
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught Exception:", err);
+  process.exit(1) // Optional: Exit or restart the app
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(2);
+});
 
 // export the app
 module.exports = app;

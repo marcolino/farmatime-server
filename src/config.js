@@ -56,6 +56,14 @@ const configBase = {
       "POST",
     ],
   },
+  db: {
+    products: {
+      search: {
+        mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
+        caseInsensitive: true, // if true, search ignoring case
+      },
+    },
+  },
   publicBasePath: "/public", // use for example as "/public/" if a public folder on server is needed
   clientSrc, // client src folder, to be able to inject the client app section of this config file
   auth: {
@@ -116,6 +124,12 @@ const configBase = {
       supportTypes: [ "email", "phone" ],
     },
   ],
+  persistentStorage: { // use if provider enforces a persistent storage limit for current plan
+    size: {
+      watermark: 2.5 * (1024 ** 3), // 2.5 GB
+      overflow: 3 * (1024 ** 3), // 3 GB
+    },
+  },
   products: {
     images: {
       path: "/public/assets/products/images",
@@ -123,7 +137,7 @@ const configBase = {
       maximumSidePixels: 1024,
       format: "webp",
       qualityPercent: 80,
-      alphaQualityPercent: 90,
+      alphaQualityPercent: 98,
       basepath: "/assets/products/images",
     },
     limitForNonDealers: 3,
@@ -131,7 +145,7 @@ const configBase = {
   logs: {
     file: {
       name: "logs/acme.log", // logs and exceptions file
-      maxsize: 5 * (1024 * 1024), // max logs file size: 5MB
+      maxsize: 5 * (1024 ** 2), // max logs file size: 5MB
     },
     betterstack: {
       enable: true,
@@ -150,7 +164,7 @@ const configBase = {
   },
   currency,
   upload: {
-    maxFileSize: 10 * 1024 * 1024, // 10 MB
+    maxFileSize: 10 * (1024 ** 2), // 10 MB
   },
   envReloadIntervalSeconds: 60, // the seconds interval when to reload env collection from database
   clientDomains: [
@@ -203,7 +217,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: !production, // if true, do not really send emails, use fake send
+    dryrun: false, // TODOOOOOOOOOO !production, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -298,14 +312,6 @@ const configBase = {
       },
       redirect: "follow",
       timeoutSeconds: production ? 20 : 30, // the maximum time in seconds to wait for an API response (production to free fly.io instance must be at lest 20 seconds...)
-    },
-    db: {
-      products: {
-        search: {
-          mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
-          caseInsensitive: true, // if true, search ignoring case
-        },
-      },
     },
     images: {
       publicPath: "/assets/products/images",

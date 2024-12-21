@@ -42,9 +42,11 @@ const RAW_RUNTIME_STATE =
           ["email-validator", "npm:2.0.4"],\
           ["eslint", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:9.16.0"],\
           ["express", "npm:4.19.2"],\
+          ["express-async-errors", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1"],\
           ["express-session", "npm:1.18.0"],\
           ["globals", "npm:15.13.0"],\
           ["helmet", "npm:7.1.0"],\
+          ["html-entities", "npm:2.5.2"],\
           ["i18next", "npm:22.5.1"],\
           ["i18next-fs-backend", "npm:2.3.2"],\
           ["i18next-http-middleware", "npm:3.6.0"],\
@@ -1267,9 +1269,11 @@ const RAW_RUNTIME_STATE =
           ["email-validator", "npm:2.0.4"],\
           ["eslint", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:9.16.0"],\
           ["express", "npm:4.19.2"],\
+          ["express-async-errors", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1"],\
           ["express-session", "npm:1.18.0"],\
           ["globals", "npm:15.13.0"],\
           ["helmet", "npm:7.1.0"],\
+          ["html-entities", "npm:2.5.2"],\
           ["i18next", "npm:22.5.1"],\
           ["i18next-fs-backend", "npm:2.3.2"],\
           ["i18next-http-middleware", "npm:3.6.0"],\
@@ -3218,6 +3222,28 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["express-async-errors", [\
+      ["npm:3.1.1", {\
+        "packageLocation": "./.yarn/cache/express-async-errors-npm-3.1.1-c0a6b1e552-dae2b88a64.zip/node_modules/express-async-errors/",\
+        "packageDependencies": [\
+          ["express-async-errors", "npm:3.1.1"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1", {\
+        "packageLocation": "./.yarn/__virtual__/express-async-errors-virtual-01e3e40d81/0/cache/express-async-errors-npm-3.1.1-c0a6b1e552-dae2b88a64.zip/node_modules/express-async-errors/",\
+        "packageDependencies": [\
+          ["express-async-errors", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1"],\
+          ["@types/express", null],\
+          ["express", "npm:4.19.2"]\
+        ],\
+        "packagePeers": [\
+          "@types/express",\
+          "express"\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["express-session", [\
       ["npm:1.18.0", {\
         "packageLocation": "./.yarn/cache/express-session-npm-1.18.0-a285922921-d0d8290615.zip/node_modules/express-session/",\
@@ -3956,6 +3982,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/hexoid-npm-1.0.0-2274609209-f2271b8b6b.zip/node_modules/hexoid/",\
         "packageDependencies": [\
           ["hexoid", "npm:1.0.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["html-entities", [\
+      ["npm:2.5.2", {\
+        "packageLocation": "./.yarn/cache/html-entities-npm-2.5.2-0b6113e376-4ec12ebdf2.zip/node_modules/html-entities/",\
+        "packageDependencies": [\
+          ["html-entities", "npm:2.5.2"]\
         ],\
         "linkType": "HARD"\
       }]\

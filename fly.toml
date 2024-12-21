@@ -24,3 +24,7 @@ primary_region = 'cdg'
 [env]
   # to avoid "PCI: Fatal: No config space access function found" errors... TODO: test it!
   NODE_OPTIONS='--max-old-space-size=4096'
+
+[mounts]
+  source="products"
+  destination="/app/public/assets/products"

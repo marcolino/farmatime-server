@@ -5,17 +5,17 @@ const path = require("path");
 const Product = require("../models/product.model");
 const { logger } = require("./logger.controller");
 const { saveImageFile } = require("../helpers/images");
-const { isObject, isArray, isDealerAtLeast } = require("../helpers/misc");
+const { isObject, isArray, isDealerAtLeast, getFieldType, diacriticMatchRegex } = require("../helpers/misc");
 const config = require("../config");
 
 
-const getAllProducts = async(req, res, next) => {
+const getAllProducts = async(req, res, next) => { // TODO: no need for this, use getProducts...
   try {
     const products = await Product.find().lean().exec();
   
     // TODO: handle a filter...
 
-    if (!products) {
+    if (!products) { // TODO: 
       return res.status(404).json({ message: req.t("No product found") });
     }
 
@@ -49,44 +49,88 @@ const getAllProducts = async(req, res, next) => {
   }
 };
 
-const getProducts = async(req, res, next) => {
+const getProducts = async (req, res, next) => {
+
+  // // remove diacritics from a string
+  // function removeDiacritics(str) {
+  //   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  // }
+
   try {
     filter = req.parameters.filter ?? {};
+    logger.info("+++ filter:", filter);
     if (typeof filter !== "object") {
       return res.status(400).json({ message: req.t("A filter must be an object") });
     }
 
+    //const buildMongooseFilter = (filter, caseSensitive = false, partialMatch = true) => {
+    logger.info("+++ search.caseInsensitive:", config.db.products.search.caseInsensitive);
+    logger.info("+++ search.mode:", config.db.products.search.mode);
+
+    // build mongo filter from input filter object
+    const mongoFilter = {};
+    for (const [key, value] of Object.entries(filter)) {
+      if (!value) continue; // ignore empty strings
+  
+      logger.info("+++ value:", value, typeof value);
+      const $options = config.db.products.search.caseInsensitive ? "i" : "";
+      let escapedValue = value;
+      try { // if value is a valid regex string, use it directly
+        new RegExp(value);
+        logger.info("+++ value is valid regex or a string:", value);
+        //mongoFilter[key] = { $regex: value/*regex*/, $options };
+      } catch { // escape special regex characters for literal matching
+        escapedValue = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        logger.info("+++ value is NOT valid regex, escaped value is:", escapedValue);
+      }
+
+      //const normalizedInput = removeDiacritics(escapedValue);
+      //const pattern = (config.db.products.search.mode === "EXACT") ? `^${normalizedInput}$` : `.*${normalizedInput}.*`;
+      const pattern = diacriticMatchRegex(escapedValue, (config.db.products.search.mode === "EXACT"));
+      mongoFilter[key] = { $regex: pattern, $options };
+      //mongoFilter[key] = { $text: { $search: normalizedInput } };
+
+      //  special handling for the array fields
+      if (getFieldType(Product.schema, key) === "Array") {
+        logger.info(`+++ key ${key} matched as ARRAY`);
+        //mongoFilter.models = { $elemMatch: filter.models };
+        //mongoFilter.models = { $elemMatch: { $regex: filter.models.$regex, $options: filter.models.$options } };
+        //const pattern = (config.db.products.search.mode === "EXACT") ? `^${escapedValue}$` : `.*${escapedValue}.*`;  
+        mongoFilter[key] = { $elemMatch: { $regex: pattern, $options } };
+      }
+      else logger.info(`+++ key ${key} NOT matched as ARRAY`);
+    }
+    logger.info("+++ mongoFilter built:", mongoFilter);
+
+    const mongoCollation = { locale: "en", strength: 1 }; // diacritic and case insensitive
+    logger.info("+++ mongoCollation built:", mongoCollation);
+
+  
+    // // special handling for the array fields
+    // if (mongoFilter.models) {
+    //   logger.info("+++ filter.models:", filter.models, typeof filter.models);
+    //   mongoFilter.models = { $elemMatch: filter.models };
+    // }
+    
     let limit = 0; // a limit() value of 0 is equivalent to setting no limit
     if (!await isDealerAtLeast(req.userId)) { // check if request is from a dealer, at least
       limit = config.products.limitForNonDealers;
     }
 
     // count the filter results (with no limit)
-    const totalCount = await Product.countDocuments(filter);
+    const totalCount = await Product.countDocuments(mongoFilter).collation(mongoCollation);
 
     // fetch the limited set of results
-    const products = await Product.find(filter)
+    const products = await Product.find(mongoFilter)
+      .collation(mongoCollation)
       .limit(limit)
       .select(["-__v"])
-      //.populate("roles", "-__v")
-      //.populate("plan", "-__v")
       .lean()
       .exec()
     ;
-
-    // let products = await Product.find(filter)
-    //   .select(["-__v"])
-    //   //.populate("roles", "-__v")
-    //   //.populate("plan", "-__v")
-    //   .lean()
-    //   .exec()
-    // ;
-    //
-    // let count = products.length;
-    // if (limit > 0) {
-    //   products = products.slice(0, limit);
-    // }
     
+    //product.id = product._id;
+
     return res.status(200).json({products, count: totalCount});
   } catch(err) {
     logger.error(`Error getting all products: ${err.message}`);
@@ -328,7 +372,7 @@ const uploadProductImage = (req, res, next) => {
     }
 
     try {
-      result = await saveImageFile(req.file);
+      result = await saveImageFile(req);
       product.imageNameOriginal = result.imageNameOriginal;
       product.imageName = result.imageName;
     } catch (err) {

@@ -3,8 +3,8 @@ const emailService = require("../services/email.service");
 const config = require("../config");
 
 const audit = async({ req, subject, htmlContent }) => {
-  const to = config.email.administration.to;
-  const toName = config.email.administration.toName;
+  const to = config.email.support.to;
+  const toName = config.email.support.toName;
   subject = `${(config.email.subject.prefix ? config.email.subject.prefix + " - " : "")}${subject}`;
   
   await emailService.send(req, { to, toName, subject, htmlContent });

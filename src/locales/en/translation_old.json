@@ -41,6 +41,8 @@
   "Error resending signup code": "Error resending signup code",
   "Error saving image {{imageName}}": "Error saving image {{imageName}}",
   "Error while archiving": "Error while archiving",
+  "Error writing image to {{filepath}}": "Error writing image to {{filepath}}",
+  "Error writing image to {{filepath}}: {{err}}": "Error writing image to {{filepath}}: {{err}}",
   "Error writing image to {{filepathWaterMark}}": "Error writing image to {{filepathWaterMark}}",
   "Errore nell'archiviazione": "Errore nell'archiviazione",
   "Expectation Failed": "",
