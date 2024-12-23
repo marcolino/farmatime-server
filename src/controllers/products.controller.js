@@ -9,7 +9,7 @@ const { isObject, isArray, isDealerAtLeast, getFieldType, diacriticMatchRegex } 
 const config = require("../config");
 
 
-const getAllProducts = async(req, res, next) => { // TODO: no need for this, use getProducts...
+const getAllProducts_DEPRECATED = async (req, res, next) => { // TODO: no need for this, use getProducts...
   try {
     const products = await Product.find().lean().exec();
   
@@ -58,12 +58,15 @@ const getProducts = async (req, res, next) => {
 
   try {
     filter = req.parameters.filter ?? {};
-    logger.info("+++ filter:", filter);
     if (typeof filter !== "object") {
       return res.status(400).json({ message: req.t("A filter must be an object") });
     }
 
-    //const buildMongooseFilter = (filter, caseSensitive = false, partialMatch = true) => {
+    // trim all filter values
+    logger.info("+++ filter before trim:", filter);
+    Object.keys(filter).forEach(k => filter[k] = filter[k].trim());
+    logger.info("+++ filter after trim:", filter);
+
     logger.info("+++ search.caseInsensitive:", config.db.products.search.caseInsensitive);
     logger.info("+++ search.mode:", config.db.products.search.mode);
 
@@ -86,9 +89,14 @@ const getProducts = async (req, res, next) => {
 
       //const normalizedInput = removeDiacritics(escapedValue);
       //const pattern = (config.db.products.search.mode === "EXACT") ? `^${normalizedInput}$` : `.*${normalizedInput}.*`;
-      const pattern = diacriticMatchRegex(escapedValue, (config.db.products.search.mode === "EXACT"));
-      mongoFilter[key] = { $regex: pattern, $options };
       //mongoFilter[key] = { $text: { $search: normalizedInput } };
+      const options = Product.schema.path(key).options;
+      if (options.custom?.searchable) { // this key is "searchable", normalize it across diacritics
+        const pattern = diacriticMatchRegex(escapedValue, (config.db.products.search.mode === "EXACT"));
+        mongoFilter[key] = { $regex: pattern, $options };
+      } else {
+        mongoFilter[key] = escapedValue;
+      }
 
       //  special handling for the array fields
       if (getFieldType(Product.schema, key) === "Array") {
@@ -133,8 +141,9 @@ const getProducts = async (req, res, next) => {
 
     return res.status(200).json({products, count: totalCount});
   } catch(err) {
-    logger.error(`Error getting all products: ${err.message}`);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    logger.error("Error getting all products:", err);
+    throw err;
+    //return next(Object.assign(new Error(err.message), { status: 500 }));
   };
 };
 
@@ -150,7 +159,7 @@ const getProduct = (req, res, next) => {
   //.populate("plan", "-__v")
   .exec(async(err, product) => {
     if (err) {
-      logger.error(`Error finding product: ${err}`);
+      logger.error("Error finding product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
       //return res.status(400).json({ message: req.t("Error finding product by id {{id}}", { id: productId }) });
     }
@@ -227,7 +236,7 @@ const deleteProduct = async(req, res, next) => {
       return res.status(400).json({ message: req.t("No product have been deleted") });
     }
   } catch (err) {
-    logger.error(`Could not delete product(s) with filter ${JSON.stringify(filter)}: ${err.messgae}`);
+    logger.error("Could not delete product(s) with filter ${JSON.stringify(filter)}:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -247,7 +256,7 @@ const insertProduct = async(req, res, next) => {
       return res.status(200).json({ id: product._id, message: req.t("Product has been inserted") });
     })
     .catch(err => {
-      logger.error(`Error inserting product: ${err}`);
+      logger.error("Error inserting product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     })
   ;
@@ -265,7 +274,7 @@ const updateProduct = async(req, res, next) => {
   })
   .exec(async(err, product) => {
     if (err) {
-      logger.error(`Error finding product: ${err}`);
+      logger.error("Error finding product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!product) {
@@ -364,7 +373,7 @@ const uploadProductImage = (req, res, next) => {
   })
   .exec(async(err, product) => {
     if (err) {
-      logger.error(`Error finding product: ${err}`);
+      logger.error("Error finding product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!product) {
@@ -407,7 +416,7 @@ const removeProduct = async(req, res, next) => {
   const payload = { isDeleted: true };
   Product.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
     if (err) {
-      logger.error(`Error finding product: ${err}`);
+      logger.error("Error finding product:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (data.nModified > 0) {
@@ -431,7 +440,7 @@ const propertyMdaCodeValidate = async(req, value, product) => { // validate and 
 };
 
 module.exports = {
-  getAllProducts,
+  //getAllProducts,
   getProducts,
   getProduct,
   getProductImageById,

@@ -32,8 +32,8 @@ class EmailService {
       // create transactional emails api instance 
       this.apiInstance = new Brevo.TransactionalEmailsApi();
     } catch (err) {
-      logger.error(`Error during setup of email service: ${err}`);
-      throw new Error(err.message);
+      logger.error("Error during setup of email service:", err);
+      throw err;
     }
     return true;
   }
@@ -56,8 +56,9 @@ class EmailService {
   async send(req, params) {
     try {
       if (!this.apiInstance) {
-        logger.error("Email service is not initialized, please call setup() first");
-        throw err;
+        const message = "Email service is not initialized, please call setup() first";
+        logger.error(message);
+        throw new Error(message);
       }
       if (!params) params = {};
       if (!params.to) return logger.error("Parameter 'to' is mandatory to send email");
@@ -119,8 +120,8 @@ class EmailService {
       logger.info(`Email sent to ${params.to} with message id ${response.messageId}`);
       return true;
     } catch (err) {
-      logger.error(`Error sending email to ${params.to}: ${err.message}`);
-      throw new Error(err.message);
+      logger.error(`Error sending email to ${params.to}:`, err);
+      throw err;
     }
   }
 
@@ -200,7 +201,7 @@ class EmailService {
       const templatesPath = path.join(__dirname, config.email.templatesPath, name + config.email.templatesExtension);
       return fs.readFileSync(templatesPath, { encoding: "utf-8" });
     } catch (err) {
-      logger.error(`Error reading template file name ${name}: ${err}`);
+      logger.error(`Error reading template file name ${name}:`, err);
       throw err;
     }
   }
@@ -216,7 +217,7 @@ class EmailService {
       const templatesPath = path.join(__dirname, config.email.templatesPath, "styles", name + ".css");
       return fs.readFileSync(templatesPath, { encoding: "utf-8" });
     } catch (err) {
-      logger.error(`Can't read template style file name ${name}: ${err}`);
+      logger.error(`Can't read template style file name ${name}:`, err);
       return null;
     }
   }

@@ -48,27 +48,31 @@ const saveImageFile = async (req) => {
   try {
     imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
   } catch (err) {
-    logger.error(i18n.t("Error converting image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message }));
-    throw err;
+    const message = i18n.t("Error converting image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message });
+    logger.error(message);
+    throw new Error(message);
   }
   try { // save image to disk
     fs.writeFileSync(imagePath, imageBufferConvertedAndResized);
   } catch (err) {
-    logger.error(i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath, err: err.message }));
-    throw err;
+    const message = i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath, err: err.message });
+    logger.error(message);
+    throw new Error(message);
   }
 
   try { // add watermark
     imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
   } catch (err) {
-    logger.error(i18n.t("Error adding watermark to image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message }));
-    throw err;
+    const message = i18n.t("Error adding watermark to image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message });
+    logger.error(message);
+    throw new Error(message);
   }
   try { // save image to disk
     fs.writeFileSync(imagePathWaterMark, imageBufferWithWaterMark);
   } catch (err) {
-    logger.error(i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath: imagePathWaterMark, err: err.message }));
-    throw err;
+    const message = i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath: imagePathWaterMark, err: err.message });
+    logger.error(message);
+    throw new Error(message);
   }
   return {
     imageNameOriginal,

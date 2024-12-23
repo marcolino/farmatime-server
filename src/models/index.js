@@ -115,8 +115,6 @@ const connect = async() => {
   }
 
   try {
-    //console.log("config.mode:", config.mode);
-    //console.log("connUri:", connUri);
     await mongoose.connect(connUri, {
       useFindAndModify: false,
       useNewUrlParser: true,
@@ -133,12 +131,12 @@ const connect = async() => {
 
     try {
       await populate() // populate database with initial contents if first time
-      //logger.info("Database populated");
     } catch (err) {
-      //logger.error("Database populate error:", err.message);
+      logger.error("Database populate error:", err);
       throw err;
     }
   } catch (err) {
+    logger.error("Database connection error:", err);
     throw err;
   }
 };
@@ -195,120 +193,9 @@ const populate = async() => {
       }));
     }
   } catch (err) {
-    logger.error(err);
     throw err;
   }
 };
-
-// /**
-//  * first time populate static reference documents
-//  */
-// const populateCHATGPT = () => {
-//   return new Promise((resolve, reject) => {
-//     User.estimatedDocumentCount((err, count) => {
-//       if (err) {
-//         logger.error("Error estimating users documents count:", err);
-//         return reject(err); // reject the promise if there is an error
-//       }
-
-//       if (count === 0) { // user collection is empty
-//         const allPromises = dbMock.users.map(user => {
-//           return new Promise((resolve, reject) => {
-//             new User(user).save(err => {
-//               if (err) {
-//                 logger.error("Error saving user:", err);
-//                 return reject(err);
-//               }
-//               logger.info(`added user ${user.firstName} ${user.lastName} to users collection`);
-//               resolve();
-//             });
-//           });
-//         });
-
-//         // wait for all save operations to complete
-//         Promise.all(allPromises)
-//           .then(resolve)
-//           .catch(reject);
-//       } else {
-//         // if users collection is not empty, resolve immediately
-//         resolve();
-//       }
-//     });
-//   });
-// };
-
-
-// const populate_ORIG = () => { // first time populate static reference documents
-//   User.estimatedDocumentCount((err, count) => {
-//     if (err) {
-//       logger.error("Error estimating users documents count:", err);
-//       throw(err);
-//     }
-//     if (count === 0) { // roles is empty
-//       dbMock.users.map(user => {
-//         new User(user).save(err => {
-//           if (err) {
-//             logger.error("Error saving user:", err);
-//             throw(err);
-//           }
-//           logger.info(`added user ${user.firstName} ${user.lastName} to users collection`);
-//         });
-//       });
-//     }
-//   });
-  
-//   Role.estimatedDocumentCount((err, count) => {
-//     if (err) {
-//       logger.error("Error estimating roles documents count:", err);
-//       throw(err);
-//     }
-//     if (count === 0) { // roles is empty
-//       let rolesSaved = 0;
-//       dbMock.roles.forEach(role => {
-//         new Role(role).save(err => {
-//           if (err) {
-//             logger.error(`error saving role ${role}:`, err);
-//             throw (err);
-//           }
-//           logger.info(`added role ${role.name} to roles collection`);
-//           rolesSaved++;
-
-//           if (rolesSaved === dbMock.roles.length) {
-//             logger.info("all roles have been saved");
-//             addRoleToUser("admin", config.defaultUsers.admin.email);
-//           }
-//         });
-//       });
-
-//     }
-//   });
-
-//   Plan.estimatedDocumentCount((err, count) => {
-//     if (err) {
-//       logger.error("error estimating plans documents count:", err);
-//       throw(err);
-//     }
-//     if (count === 0) { // plans is empty
-//       let plansSaved = 0;
-//       dbMock.plans.map(plan => {
-//         new Plan(
-//           plan
-//         ).save(err => {
-//           if (err) {
-//             logger.error(`error saving plan ${plan.name}:`, err);
-//             throw(err);
-//           }
-//           plansSaved++;
-
-//           if (plansSaved === dbMock.plans.length) {
-//             logger.info("all plans have been saved");
-//             addPlanToUser("unlimited", config.defaultUsers.admin.email);
-//           }
-//         });
-//       });
-//     }
-//   });
-// };
 
 // add admin role to admin user
 const addRoleToUser = async(roleName, userEmail) => {
@@ -365,54 +252,6 @@ const addPlanToUser = async(planName, userEmail) => {
     throw err; // Rethrow the error for further handling if needed
   }
 };
-
-// // add admin role to admin user
-// const addRoleToUser_NO_PROMISES = (roleName, userEmail) => {
-//   Role.findOne({ name: roleName }).exec((err, role) => {
-//     if (err) {
-//       logger.error(`error finding role "${roleName}":`, err);
-//       throw (err);
-//     }
-//     User.findOne({ email: config.defaultUsers.admin.email }).exec((err, user) => {
-//       if (err) {
-//         logger.error(`error finding "${userEmail}" user:`, err);
-//         throw (err);
-//       }
-//       user.roles.push(role._id);
-//       user.save(err => {
-//         if (err) {
-//           logger.error(`error adding "${roleName}" role to "${userEmail}" user:`, err);
-//           throw (err);
-//         }
-//         logger.info(`added "${roleName}" role to "${userEmail}" user`);
-//       });
-//     });
-//   });
-// }
-
-// // add top plan to admin user
-// const addPlanToUser_NO_PROMISES = (planName, userEmail) => {
-//   Plan.findOne({ name: planName }).exec((err, plan) => {
-//     if (err) {
-//       logger.error(`error finding plan "${planName}":`, err);
-//       throw (err);
-//     }
-//     User.findOne({ email: config.defaultUsers.admin.email }).exec((err, user) => {
-//       if (err) {
-//         logger.error(`error finding "${userEmail}" user:`, err);
-//         throw (err);
-//       }
-//       user.plan = plan;
-//       user.save(err => {
-//         if (err) {
-//           logger.error(`error adding "${planName}" plan to "${userEmail}" user:`, err);
-//           throw (err);
-//         }
-//         logger.info(`added "${planName}" plan to "${userEmail}" user`);
-//       });
-//     });
-//   });
-// }
 
 module.exports = {
   connect,

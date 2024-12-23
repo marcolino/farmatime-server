@@ -9,7 +9,7 @@ const verifyAccessToken = (req, res, next) => {
   let token = req.headers["authorization"];
 
   if (!token) {
-    return res.status(401).json({ message: req.t("You must be authenticated for this action"), code: "NO_TOKEN" });
+    return res.status(401).json({ message: req.t("You must be authenticated for this action (in verifyAccessToken)"), code: "NO_TOKEN" });
   }
 
   jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET, (err, decoded) => {

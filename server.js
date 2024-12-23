@@ -21,20 +21,13 @@ const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // injected config file name
 
-//logger.info("A", "Bb", "Ccc", {key: "value"});
-//logger.info("Current log modes:", config.mode);
-
-// /**
-//  * add console.log to every function automatically
-//  */
-// (function enableGlobalFunctionLogging() {
-//   const originalFunctionPrototype = Function.prototype.call;
-//   Function.prototype.call = function(...args) {
-//     console.log(`-> ${this.name}(${args.slice(1).map(a => JSON.stringify(a)).join(", ")})`);
-//     return originalFunctionPrototype.apply(this, args);
-//   };
-// }());
-
+// try {
+//   let; // TEST ERROR
+// } catch (err) {
+//   logger.error("Test error:", err);
+//   throw err;
+// }
+    
 // environment configuration
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
   logger.info("Production environment");
@@ -184,11 +177,6 @@ app.use((req, res, next) => {
   }
 });
 
-// app.use((req, res, next) => { // DEBUG ONLY
-//   if (req.url.startsWith("/social")) logger.info(`Social Request: ${req.method} ${req.url}`);
-//   next();
-// });
-
 // setup the email service
 emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 
@@ -204,7 +192,7 @@ const rootCoverage = path.join(__dirname, "coverage");
 
 // First, handle not found API routes BEFORE registering specific routes
 app.all(/^\/api(\/.*)?$/, (req, res, next) => {
-  // Use next() instead of returning 404 immediately
+  // use next() instead of returning 404 immediately
   next();
 });
 
@@ -247,12 +235,12 @@ app.get("*", (req, res) => {
 });
 
 // handle errors in API routes
-app.use((err, req, res, next) => {
-  res.locals.error = err; // ???
-  logger.error(`Server error: ${err.message}`);
+app.use((err, req, res, next) => { // next is needed to be considered error handling
+  //res.locals.error = err; // ???
+  logger.error("Server error:", err);
   let status = err.status || 500;
   let stack = err.stack; 
-   // Include stack trace in development only
+   // include stack trace in development only
   let message = `${err.message || req.t("Server error")}`
   if (status === 500) {
     // notify support about errors
@@ -265,7 +253,6 @@ Mode: ${process.env.NODE_ENV}
 IP: ${remoteAddress(req)}
 Date: ${localeDateTime()}
 Stack: ${stack}
-Full error: ${err}
 </pre>`,
     });
     message += ` -  ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")}`;
@@ -281,8 +268,8 @@ async function start() {
   try {
     await db.connect(); // connect to database, synchronously
   } catch (err) {
-    logger.error(`Database connection error: ${err}`, `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
-    process.exit(1);
+    logger.error("Database connection error:", err, `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
+    throw err;  //process.exit(1);
   }
 
   if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
@@ -299,24 +286,27 @@ async function start() {
       //audit({ subject: `server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
     });
   } catch (err) {
-    logger.error(`Server listen error: ${err}`);
+    logger.error("Server listen error:", err);
+    throw err;
   }
 };
 
+// handle all uncaught exceptions
 process.on("uncaughtException", (err) => {
   logger.error("Uncaught Exception:", err);
   process.exit(1) // Optional: Exit or restart the app
 });
 
+// handle all unhandled rejections
 process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
-  process.exit(2);
+  logger.error("Unhandled rejection at:", promise, "reason:", reason);
+  process.exit(1);
 });
-
-// export the app
-module.exports = app;
 
 // if not in test mode, start the server
 if (!config.mode.test) {
   start();
 }
+
+// export the app
+module.exports = app;

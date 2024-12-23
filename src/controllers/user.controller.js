@@ -41,7 +41,7 @@ const getAllUsersWithTokens = (req, res, next) => {
 
     return res.status(200).json({users});
   }).catch(err => {
-    logger.error(`Error getting all users with full info: ${err.message}`);
+    logger.error("Error getting all users with full info:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   });
 };
@@ -61,7 +61,7 @@ const getAllUsers = async(req, res, next) => {
     ;
     return res.status(200).json({users});
   } catch(err) {
-    logger.error(`Error getting all users: ${err.message}`);
+    logger.error("Error getting all users:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   };
 };
@@ -74,13 +74,13 @@ const getAllPlans = async(req, res, next) => {
     .sort({pricePerYear: 1})
     .exec(async(err, docs) => {
       if (err) {
-        logger.error(`Error getting plans: ${err}`);
+        logger.error("Error getting plans:", err);
         return next(Object.assign(new Error(err.message), { status: 500 }));
       }
       return res.status(200).json({ plans: docs });
     });
   } catch(err) {
-    logger.error(`Error getting all plans: ${err.message}`);
+    logger.error("Error getting all plans:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -93,13 +93,13 @@ const getAllRoles = async(req, res, next) => {
     .select(["name", "priority"]) //, "-_id"])
     .exec(async(err, docs) => {
       if (err) {
-        logger.error(`Error getting roles: ${err}`);
+        logger.error("Error getting roles:", err);
         return next(Object.assign(new Error(err.message), { status: 500 }));
       }
       return res.status(200).json({ roles: docs });
     })
   } catch(err) {
-    logger.error(`Error getting roles: ${err}`);
+    logger.error("Error getting roles:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -123,7 +123,7 @@ const getUser = async(req, res, next) => {
   .populate("plan", "-__v")
   .exec(async(err, user) => {
     if (err) {
-      logger.error(`Error finding user: ${err}`);
+      logger.error("Error finding user:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (!user) {
@@ -233,16 +233,16 @@ const updateUser = async (req, res, next) => {
     // session.endSession();
 
     return res.status(200).json({ user: updatedUser });
-  } catch (error) {
+  } catch (err) {
     // await session.abortTransaction();
     // session.endSession();
-    logger.error(`Error updating user: ${error.message}`);
-    if (error.codeName === "DuplicateKey") {
-      if (error.keyValue.email) {
-        return next(Object.assign(new Error(req.t("The email {{email}} is already in use", { email: error.keyValue.email })), { status: 400 }));
+    logger.error("Error updating user:", err);
+    if (err.codeName === "DuplicateKey") {
+      if (err.keyValue.email) {
+        return next(Object.assign(new Error(req.t("The email {{email}} is already in use", { email: err.keyValue.email })), { status: 400 }));
       }
     }
-    return next(Object.assign(new Error(error.message), { status: 500 }));
+    return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
 
@@ -311,9 +311,9 @@ const _updatePlan = async(req, userId) => {
 
     return plan;
     //return { message: req.t("Plan updated") };
-  } catch (error) {
-    logger.error(`Error in updatePlan: ${error}`);
-    throw error;
+  } catch (err) {
+    logger.error("Error in updatePlan:", err);
+    throw err;
   }
 };
 
@@ -367,7 +367,7 @@ const deleteUser = async(req, res, next) => {
       return res.status(400).json({ message: req.t("No user have been deleted") });
     }
   } catch (err) {
-    logger.error(`Could not delete user(s) with filter ${JSON.stringify(filter)}: ${err.messgae}`);
+    logger.error("Could not delete user(s) with filter ${JSON.stringify(filter)}:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -389,7 +389,7 @@ const removeUser = async(req, res, next) => {
   const payload = { isDeleted: true };
   User.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
     if (err) {
-      logger.error(`Error finding user: ${err}`);
+      logger.error("Error finding user:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
     if (data.nModified > 0) {
@@ -423,7 +423,7 @@ const sendEmailToUsers = async(req, res, next) => {
   .populate("plan", "-__v")
   .exec(async(err, users) => {  
     if (err) {
-      logger.error(`Error finding users: ${err}`);
+      logger.error("Error finding users:", err);
       const ret = { message: req.t("Error finding users"), reason: err.message };
       return res ? res.status(err.code).json(ret) : ret;
     }

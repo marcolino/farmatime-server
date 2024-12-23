@@ -41,7 +41,8 @@ const createCheckoutSession = async(req, res) => {
     logger.info(`Payment session created`);
     return res.status(200).json({session, product}); // return the session with the redirect url instead of redirecting directly
   } catch(err) {
-    logger.error(`Payment session creation error: ${err.message ?? err.raw?.message}`);
+    //logger.error(`Payment session creation error: ${err.message ?? err.raw?.message}`);
+    logger.error("Payment session creation error:", err);
     return res.status(400).json({ message: err.message ?? err.raw?.message });
   }
 };
@@ -55,7 +56,8 @@ const paymentSuccess = async(req, res) => {
     logger.info(`Payment successful for product ${product}${customer ? ` by customer ${customer.email}` : ""}`);
     return res.redirect(config.payment.stripe.paymentSuccessUrlClient + `?product=${product}`);
   } catch(err) {
-    logger.error(`error retrieving stripe info on payment success callback: ${err.message ?? err.raw?.message}`);
+    //logger.error(`error retrieving stripe info on payment success callback: ${err.message ?? err.raw?.message}`);
+    logger.error("Error retrieving stripe info on payment success callback:", err);
     return res.redirect(config.payment.stripe.paymentSuccessUrlClient + `?product=&error=${err.message ?? err.raw?.message}`);
   }
 };
@@ -69,7 +71,8 @@ const paymentCancel = async(req, res) => {
     logger.info(`Payment canceled for product ${product}${customer ? ` by customer ${customer.email}` : ""}`);
     return res.redirect(config.payment.stripe.paymentCancelUrlClient + `?product=${product}`);
   } catch(err) {
-    logger.error(`error retrieving stripe info on payment cancel callback: ${err.message ?? err.raw?.message}`);
+    //logger.error(`error retrieving stripe info on payment cancel callback: ${err.message ?? err.raw?.message}`);
+    logger.error("Error retrieving stripe info on payment cancel callback:", err);
     return res.redirect(config.payment.stripe.paymentCancelUrlClient + `?product=&error=${err.message ?? err.raw?.message}`);
   }
 };

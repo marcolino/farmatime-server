@@ -10,9 +10,15 @@ const ProductSchema = mongoose.Schema({
   },
   make: {
     type: String,
+    custom: {
+      searchable: true, // this field will be "searchable", i.e.: normalized across diacritics
+    }
   },
   models: [{
-    type: String
+    type: String,
+    custom: {
+      searchable: true, // this field will be "searchable", i.e.: normalized across diacritics
+    }
   }],
   application: {
     type: String,

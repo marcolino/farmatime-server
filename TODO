@@ -75,17 +75,20 @@
 - reduce watermark image size - OK
 - enforce 3GB persistent volume storage (total) if fly free tier 
 - do not create images statically when creating database products collection, since persistent volume is not yet mounted... (probably) - OK
+- remove err description from audit subject - OK
+- bettertstack: [{"LEVEL": "ERROR"}] => [ERROR] - OK
+- remove last full err from audit body - OK
+- remove Gmail filter to set already read messages from acme - OK
+- add stack to all errors... - OK
+- in production product images are not retained - see https://chatgpt.com/share/67639261-a938-8003-a70b-b90dc683aaef,
+  use fly.io persistent volumes, and add a check to avoid exceeding maximum allowed space in the free tier - OK
 
-- add stack to all errors...
-- bettertstack: [{"LEVEL": "ERROR"}] => [ERROR]
-- remove err description from audit subject
-- remove last full err from audit body
-- remove Gmail filter to set already read messages from acme
+- sometimes we keep seeing "Devi essere autenticato per questa azione" al logout
 
 NEWFEATURE:
 - configurare un account su Cloudflare...
-- gestire "justRegistered", se necessario
-- rimuovere gli account non confermati, periodicamente (quando sarà necessario)
-- aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
 - gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)
 - gestire email preferences (clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`)
+- gestire "justRegistered" (se sarà necessario)
+- rimuovere gli account non confermati, periodicamente (quando sarà necessario)
+- aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)

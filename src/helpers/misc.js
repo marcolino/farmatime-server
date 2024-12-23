@@ -145,7 +145,7 @@ const isAdministrator = async(userId) => {
     }
     return false;
   } catch (err) {
-    logger.error(`Cannot find user by id ${userId}`);
+    logger.error(`Cannot find user by id ${userId}:`, err);
     return false;
   }
 };
@@ -159,7 +159,7 @@ const isDealerAtLeast = async(userId) => {
     }
     return false;
   } catch (err) {
-    logger.error(`Cannot find user by id ${userId}`);
+    logger.error(`Cannot find user by id ${userId}:`, err);
     return false;
   }
 };

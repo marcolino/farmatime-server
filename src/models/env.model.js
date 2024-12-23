@@ -26,7 +26,7 @@ EnvSchema.statics.load = async function() {
       }, {});
       lastEnvLoadTime = currentTime;
     } catch (err) {
-      logger.error(`Error loading env from database: ${err}`);
+      logger.error("Error loading env from database:", err);
     }
   }
   return env;
@@ -41,7 +41,7 @@ EnvSchema.statics.store = async(newEnv) => {
     }
     //logger.info("Env stored to database");
   } catch (err) {
-    logger.error(`Error storing env to database: ${err}`);
+    logger.error("Error storing env to database:", err);
     return false;
   }
   return true;

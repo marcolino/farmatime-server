@@ -30,7 +30,7 @@ const googleCallback = (req, res, next) => {
   });
   passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial, info) => {
     if (err) {
-      logger.error(`Google authentication error: ${err}`);
+      logger.error("Google authentication error:", err);
       return next(err);  // handle error
     }
     req.userSocial = userSocial; // put userSocial in req
@@ -401,7 +401,7 @@ const signupVerification = async(req, res, next) => {
       },
       (err, user) => {
         if (err) {
-          logger.error(`Error finding user for the requested code: ${err}`);
+          logger.error("Error finding user for the requested code:", err);
           res.status(err.code).json({message: err.message})
         }
         if (!user) {
@@ -415,7 +415,7 @@ const signupVerification = async(req, res, next) => {
         user.isVerified = true;
         user.save(async(err, user) => {
           if (err) {
-            logger.error(`Error saving user in signup verification: ${err}`);
+            logger.error("Error saving user in signup verification:", err);
             return res.status(err.code).json({ message: err.message });
           }
           logger.info(`User signup: ${JSON.stringify(user)}`);
@@ -426,7 +426,7 @@ const signupVerification = async(req, res, next) => {
       }
     );
   } catch(err) {
-    logger.error(`Error verifying signup: ${err}`);
+    logger.error("Error verifying signup:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 }
@@ -514,20 +514,6 @@ const signin = async(req, res, next) => {
 
     // notify support about logins
     audit({req, subject: `SignIn - user ${user.email}`, htmlContent: `SignIn of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
-  
-    // // save user's language as from request
-    // User.findOneAndUpdate({
-    //   _id: user.id
-    // }, {
-    //   //$set: { language: req.language }
-    // }, {
-    //   new: true
-    // }).then((user) => {
-    //   logger.info(`Saved user's language: ${user.language}`);
-    // }).catch(err => {
-    //   logger.error(`Error saving user's language: ${err}`);
-    //   //res.status(500).send(err);
-    // })
 
     res.status(200).json({
       id: user._id,
@@ -580,7 +566,7 @@ const signout = async (req, res, next) => {
     }).then((user) => {
       logger.info(`User logged out: ${user.email}`);
     }).catch(err => {
-      logger.error(`Error logging out user: ${err}`);
+      logger.error("Error logging out user:", err);
       return next(Object.assign(new Error(err.message), { status: 500 }));
     })
 
@@ -635,7 +621,7 @@ const resetPassword = async(req, res, next) => {
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
   } catch(err) {
-    logger.error(`Error resetting password: ${err}`);
+    logger.error("Error resetting password:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -672,7 +658,7 @@ const resetPasswordConfirm = async(req, res, next) => {
     return res.status(200).json({message: req.t("Your password has been updated")});
 
   } catch(err) {
-    logger.error(`Error in reset password confirm: ${err}`);
+    logger.error("Error in reset password confirm:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -729,7 +715,7 @@ const resendResetPasswordCode = async(req, res, next) => {
     });
 
   } catch(err) {
-    logger.error(`Error resending reset password code: ${err}`);
+    logger.error("Error resending reset password code:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 };
@@ -740,7 +726,7 @@ const refreshToken = async(req, res, next) => {
   if (!token) { // refresh token is required
     logger.warn("refreshToken: session has no token");
     //return res.status(401).json({ message: req.t("Session has no token, please make a new signin request"), code: "NO_TOKEN" });
-    return res.status(401).json({ message: req.t("You must be authenticated for this action"), code: "NO_TOKEN" });
+    return res.status(401).json({ message: req.t("You must be authenticated for this action (in refreshToken)"), code: "NO_TOKEN" });
   }
 
   try {
@@ -778,7 +764,7 @@ const refreshToken = async(req, res, next) => {
       refreshToken: refreshTokenDoc.token,
     });
   } catch(err) {
-    logger.error(`Error refreshing token: ${err}`);
+    logger.error("Error refreshing token:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 
