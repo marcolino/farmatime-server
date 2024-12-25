@@ -173,8 +173,10 @@ const configBase = {
     "http://localhost:5005", // for development only
     "http://localhost:4173", // for staging only
   ],
-  clientEmailUnsubscribeUrl: `${baseUrl}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrl}/email-preferences`,
+  clientEmailUnsubscribeUrl: `${baseUrl}/email-unsubscribe`,
+  clientPushNotificationsPreferencesUrl: `${baseUrl}/push-notifications-preferences`,
+  clientPushNotificationsUnsubscribeUrl: `${baseUrl}/push-notifications-unsubscribe`,
   payment: {
     stripe: {
       enabled: false,

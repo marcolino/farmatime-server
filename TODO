@@ -83,7 +83,7 @@
 - in production product images are not retained - see https://chatgpt.com/share/67639261-a938-8003-a70b-b90dc683aaef,
   use fly.io persistent volumes, and add a check to avoid exceeding maximum allowed space in the free tier - OK
 
-- sometimes we keep seeing "Devi essere autenticato per questa azione" al logout
+- alle volte si vede ancora "Devi essere autenticato per questa azione" al logout (dovrebbe essere risolto)
 
 NEWFEATURE:
 - configurare un account su Cloudflare...

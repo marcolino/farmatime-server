@@ -8,8 +8,8 @@ const maintenanceStatus = async(req, res, next) => {
   res.status(200).json({ message: process.env.MAINTENANCE === "true" ? true : false });
 };
 
-const sendTestEmail = async(req, res, next) => {
-    try {
+const sendTestEmail = async (req, res, next) => {
+  try {
     await emailService.send(req, {
       to: "marcosolari@gmail.com",
       toName: "ACME Administrator",

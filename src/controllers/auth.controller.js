@@ -307,12 +307,16 @@ const signup = async(req, res, next) => {
 
     // send verification code
     try {
-      const signupVerification = user.generateSignupVerification(user._id);
-      await signupVerification.save(); // save the verification code
+      const signupVerification = user.generateVerificationCode(user._id);
+      await signupVerification.save(); // save the signup verification code
+      logger.info(`SIGNUP VERIFICATION CODE: ${notificationVerification.code}`);
   
-      logger.info(`VERIFICATION CODE: ${signupVerification.code}`);
+      // const notificationVerification = await user.generateVerificationCode(user._id);
+      // await notificationVerification.save(); // save the notification verification code
+      // logger.info(`NOTIFICATION VERIFICATION CODE: ${notificationVerification.code}`);
       
       await emailService.send(req, {
+        userId: user._id,
         to: user.email,
         subject: req.t("Signup Verification Code"),
         templateName: "signupVerificationCodeSent",
@@ -320,6 +324,7 @@ const signup = async(req, res, next) => {
           userFirstName: user.firstName,
           userLastName: user.lastName,
           signupVerificationCode: signupVerification.code,
+          //notificationVerificationCode: notificationVerification.code,
         },
       });
       return res.status(201).json({
@@ -352,7 +357,7 @@ const resendSignupVerificationCode = async(req, res, next) => {
         return res.status(400).json({ message: req.t("This account has already been verified, you can log in") });
       }
 
-      const signupVerification = await user.generateSignupVerification(user._id);
+      const signupVerification = await user.generateVerificationCode(user._id);
       await signupVerification.save(); // save the verification code
 
       await emailService.send(req, {
@@ -430,6 +435,60 @@ const signupVerification = async(req, res, next) => {
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 }
+
+const notificationVerification = async(req, res, next) => {
+  if (!req.parameters.code) {
+    return res.status(400).json({message: req.t("Code is mandatory")});
+  }
+
+  try {
+    // find a matching code
+    const code = await VerificationCode.findOne({ code: req.parameters.code });
+    if (!code) {
+      return res.status(400).json({ message: req.t("This code is not valid, it may be expired") });
+    }
+
+    // we found a code, find a matching user
+    User.findOne({
+        _id: code.userId
+      },
+      null,
+      {
+        allowUnverified: true,
+      },
+      (err, user) => {
+        if (err) {
+          logger.error("Error finding user for the requested code:", err);
+          res.status(err.code).json({message: err.message})
+        }
+        if (!user) {
+          return res.status(400).json({ message: req.t("A user for this code was not found") });
+        }
+        return res.status(200).json({ message: req.t("The code is valid") });
+      }
+    );
+  } catch(err) {
+    logger.error("Error verifying notification:", err);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
+  }
+  
+  // FROM AI
+  // const tokenData = tokens[token];
+  // if (!tokenData) {
+  //   return res.status(400).json({ error: "Invalid token" });
+  // }
+  // if (tokenData.expiresAt < new Date()) {
+  //   return res.status(400).json({ error: "Token expired" });
+  // }
+  // const user = users[tokenData.userId];
+  // if (!user) {
+  //   return res.status(400).json({ error: "User not found" });
+  // }
+  // // Invalidate the token (one-time use)
+  // delete tokens[token];
+  // res.json({ user });
+  
+};
 
 const signin = async(req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
@@ -774,6 +833,7 @@ module.exports = {
   signup,
   resendSignupVerificationCode,
   signupVerification,
+  notificationVerification,
   signin,
   signout,
   resetPassword,

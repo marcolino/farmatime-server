@@ -71,8 +71,8 @@ body {
 .email-button {
   display: block;
   width: max-content;
-  background-color: #1f2937;
-  color: #ffffff;
+  background-color: #00c354;
+  /*color: #ffffff;*/
   padding: 12px 20px;
   text-align: center;
   text-decoration: none;
@@ -83,7 +83,7 @@ body {
 /* footer */
 .email-footer {
   background-color: #a5dc6f;
-  color: #444444;
+  /*color: #444444;*/
   padding: 20px;
   text-align: center;
   font-size: 12px;

@@ -13,7 +13,7 @@
     <table role="presentation" class="email-container" width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td class="email-header">
-          <img src="https://acme-server-lingering-brook-4120.fly.dev/favicon-64x64.png" alt="ACME logo">
+          <img src="<%= sys_company_logo %>" alt="<%= sys_company_name %> logo">
           <h1><%= sys_company_name %></h1>
         </td>
       </tr>
@@ -25,7 +25,7 @@
       <tr>
         <td class="email-footer">
           <p><%= sys_company_copyright %>. <%= t("All rights reserved") %>.</p>
-          <p><a href="<%- sys_client_email_unsubscribe_link %>"><%= t("Unsubscribe") %></a> | <a href="sys_client_email_preferences_link"><%= t("Manage Preferences") %></a></p>
+          <p><a href="<%- sys_client_email_unsubscribe_link %>?<%- notificationVerificationCode %>"><%= t("Unsubscribe") %></a> | <a href="<%- sys_client_email_preferences_link %>?<%- notificationVerificationCode %>"><%= t("Manage Preferences") %></a></p>
         </td>
       </tr>
     </table>

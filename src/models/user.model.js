@@ -93,6 +93,30 @@ const UserSchema = mongoose.Schema({
       enum: config.app.ui.themes,
       default: config.app.ui.defaultTheme,
     },
+    subscriptions: {
+      email: {
+        all: {
+          type: Boolean,
+          default: true,
+        },
+        news: {
+          type: Boolean,
+          default: true,
+        },
+        offers: {
+          type: Boolean,
+          default: true,
+        },
+      },
+      pushNotifications: {
+        type: Boolean,
+        default: true,
+      },
+      // sms: {
+      //   type: Boolean,
+      //   default: false,
+      // },
+    }
   },
 }, {timestamps: true});
 
@@ -153,8 +177,18 @@ UserSchema.methods.generatePasswordResetCode = () => {
   };
 };
 
-UserSchema.methods.generateSignupVerification = (userId) => {
+UserSchema.methods.generateVerificationCode = (userId) => {
   const maxDigits = 6;
+
+  let payload = {
+    userId: userId,
+    code: generateRandomCode(maxDigits),
+  };
+  return new VerificationCode(payload);
+};
+
+UserSchema.methods.generateNotificationCode = (userId) => {
+  const maxDigits = 32;
 
   let payload = {
     userId: userId,

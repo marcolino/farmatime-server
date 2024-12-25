@@ -4,6 +4,7 @@ const path = require("path");
 const Brevo = require("sib-api-v3-sdk");
 const ejs = require("ejs");
 //const i18next = require("i18next");
+const User = require("../models/user.model");
 const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");
@@ -60,6 +61,26 @@ class EmailService {
         logger.error(message);
         throw new Error(message);
       }
+
+      // TODO: DEBUG ONLY!!!!!!!!!!!!!!!!!!
+      req.user = await User.findOne({ email: "marcosolari@gmail.com" })
+        .select(["-password", "-__v"])
+        //.lean()
+        .exec()
+      ; ////////////////////////////////////////
+      
+      // email send service needs an authenticatd user
+      if (!req.user) {
+        const message = "No user id in request, can't send email";
+        logger.error(message);
+        throw new Error(message);
+      }
+
+      // // create and save notifocation verification code
+      const notificationVerification = await req.user.generateNotificationCode(req.user._id);
+      await notificationVerification.save(); // save the notification verification code
+      logger.info(`NOTIFICATION VERIFICATION token: ${notificationVerification.code}`);    
+      
       if (!params) params = {};
       if (!params.to) return logger.error("Parameter 'to' is mandatory to send email");
       if (!params.subject) return logger.error("Parameter 'subject' is mandatory to send email");
@@ -69,7 +90,7 @@ class EmailService {
       if (!params.templateName) params.templateName = "base";
       if (!params.templateParams) params.templateParams = {};
       if (!params.templateParams.style) params.templateParams.style = "base";
-      //if (!params.body) params.body = null;
+      params.templateParams.notificationVerificationCode = notificationVerification.code;
       
       if (typeof params.to === "string") params.to = [params.to]; // accept also a single string with an email
 
@@ -128,10 +149,13 @@ class EmailService {
   renderTemplate(templateName, templateParams, locale) {
     i18n.changeLanguage(locale); // set the locale for this rendering
   
-    // load the template file
     try {
+      // load the template file
       const templateContent = this.readTemplate(templateName); 
-    
+
+      // explode classes to inline styles in template
+      templateContent = this.inlineClasses(templateContent);
+
       /**
        * detect template variables missing in templateParams
        *  - simple variable name: <%= variableName %>

@@ -175,7 +175,7 @@
   "We could not find user": "Impossibile trovare l'utente",
   "We could not get roles": "Impossibile trovare ruoli",
   "We were unable to find this user": "Impossibile trovare questo utente",
-  "welcome_message": "Benvenuto, {{name}}",
+  "You must be authenticated for this action": "Devi essere autenticato per questa azione",
   "You must be authenticated to access this page": "Devi essere autenticato per accedere a questa pagina",
   "You must be authorized for this action": "Devi essere autorizzato per questa azione",
   "You must be authorized to access this page": "Devi essere autorizzato per accedere a questa pagina",
