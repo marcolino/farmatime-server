@@ -22,14 +22,19 @@
           <p><%= t("welcome_message") %><%= userFirstName %></p>
           <p>Your order number is: <%= orderNumber %></p>
           <p>We wanted to inform you about [specific event or update]. This is an important audit regarding your account.</p>
-          <p>If you have any questions, feel free to <a href="mailto:support@yourcompany.com">contact us</a> at any time.</p>
-          <a href="[Action Link]" class="email-button" style="color: #FFFFFF; text-decoration: none;"><%= t('Take Action') %></a>
+          <p>If you have any questions, feel free to <a href="mailto:<%- sys_company_support_mailto %>">contact us</a> at any time.</p>
+          <a href="[Action Link]" class="email-action-link"><%= t('Take Action') %></a>
         </td>
       </tr>
       <tr>
         <td class="email-footer">
-          <p><%= sys_company_copyright %></p>
-          <p><a href="<%- sys_client_email_unsubscribe_link %>?<%- notificationVerificationCode %>"><%= t("Unsubscribe") %></a> | <a href="<%- sys_client_email_preferences_link %>?<%- notificationVerificationCode %>"><%= t("Manage Preferences") %></a></p>
+          <p>
+            <%= sys_company_copyright %>. <%= t("All rights reserved") %>.
+          </p>
+          <p>
+            <a href="<%- sys_client_email_unsubscribe_link %>?token=<%- notificationToken %>&language=<%- sys_language %>"><%= t("Unsubscribe") %></a> |
+            <a href="<%- sys_client_email_preferences_link %>?token=<%- notificationToken %>&language=<%- sys_language %>"><%= t("Manage Preferences") %></a>
+          </p>
         </td>
       </tr>
     </table>

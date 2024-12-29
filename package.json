@@ -39,7 +39,9 @@
     "fly-deploy": "NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) echo $NODE_ENV && fly deploy",
     "fly-logs": "fly logs",
     "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn i18n-check && yarn docker-build && yarn fly-deploy && yarn fly-logs",
-    "pub": "(cd ../acme-client/ && yarn build ) && yarn fly"
+    "pub": "(cd ../acme-client/ && yarn build ) && yarn fly && yarn sound-ok",
+    "sound-ok": "spd-say -p 100 'successo!' 2> /dev/null",
+    "sound-ko": "spd-say -p 45 'errore!' 2> /dev/null"
   },
   "keywords": [
     "node.js",
@@ -51,6 +53,7 @@
     "mongodb"
   ],
   "dependencies": {
+    "@css-inline/css-inline": "^0.14.3",
     "@logtail/node": "^0.5.2",
     "@logtail/winston": "^0.5.2",
     "axios": "^1.7.7",
@@ -80,6 +83,7 @@
     "sharp": "^0.33.5",
     "sib-api-v3-sdk": "^8.5.0",
     "stripe": "^8.214.0",
+    "uuid": "^11.0.3",
     "winston": "^3.7.2",
     "winston-syslog": "^2.5.0"
   },

@@ -36,7 +36,7 @@ body {
   text-align: center;
 }
 .email-header img {
-  max-width: 150px; /* adjust as needed */
+  max-width: 150px;
   height: auto;
   margin-bottom: 10px;
 }
@@ -62,23 +62,22 @@ body {
   color: #444444;
   margin: 0 0 20px;
 }
-.email-body a {
-  color: #1f2937;
-  text-decoration: none;
-  font-weight: bold;
-}
-/* button */
-.email-button {
+.email-action-link {
   display: block;
   width: max-content;
   background-color: #00c354;
-  /*color: #ffffff;*/
+  color: #ffffff;
   padding: 12px 20px;
   text-align: center;
   text-decoration: none;
   border-radius: 5px;
   margin: 20px auto 0;
-  font-size: 16px;
+  font-size: 20px;
+}
+.email-body a {
+  color: #1f2937;
+  text-decoration: none;
+  font-weight: bold;
 }
 /* footer */
 .email-footer {

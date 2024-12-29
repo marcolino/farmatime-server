@@ -137,6 +137,7 @@
   "Temporary Redirect": "",
   "The account is not yet verified": "L'account non è ancora verificato",
   "The code confirm your email is": "__STRING_NOT_TRANSLATED__",
+  "The code is valid": "__STRING_NOT_TRANSLATED__",
   "The code to confirm your registration is": "Il codice per confermare la tua registrazione è",
   "The code to reset your password is": "Il codice per reimpostare la tua password è",
   "The email address {{email}} is not associated with any account; double-check your email address and try again": "L'indirizzo email {{email}} non è associato con alcun account; ricontrolla il tuo indirizzo email e riprova",

@@ -102,8 +102,9 @@ const socialLogin = async(req, res, next) => {
     // check email is verified
     if (!user.isVerified) {
       return redirectToClientWithError(req, res, {
-        message: req.t("This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email"),
+        message: req.t("This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email") + ".",
         code: "ACCOUNT_WAITING_FOR_VERIFICATION",
+        codeDeliveryMedium: config.auth.codeDeliveryMedium,
       }); 
     }
   } else { // user with given email does not exist, create a new one
@@ -309,12 +310,8 @@ const signup = async(req, res, next) => {
     try {
       const signupVerification = user.generateVerificationCode(user._id);
       await signupVerification.save(); // save the signup verification code
-      logger.info(`SIGNUP VERIFICATION CODE: ${notificationVerification.code}`);
+      logger.info(`SIGNUP VERIFICATION CODE: ${signupVerification.code}`);
   
-      // const notificationVerification = await user.generateVerificationCode(user._id);
-      // await notificationVerification.save(); // save the notification verification code
-      // logger.info(`NOTIFICATION VERIFICATION CODE: ${notificationVerification.code}`);
-      
       await emailService.send(req, {
         userId: user._id,
         to: user.email,
@@ -324,7 +321,6 @@ const signup = async(req, res, next) => {
           userFirstName: user.firstName,
           userLastName: user.lastName,
           signupVerificationCode: signupVerification.code,
-          //notificationVerificationCode: notificationVerification.code,
         },
       });
       return res.status(201).json({
@@ -436,60 +432,6 @@ const signupVerification = async(req, res, next) => {
   }
 }
 
-const notificationVerification = async(req, res, next) => {
-  if (!req.parameters.code) {
-    return res.status(400).json({message: req.t("Code is mandatory")});
-  }
-
-  try {
-    // find a matching code
-    const code = await VerificationCode.findOne({ code: req.parameters.code });
-    if (!code) {
-      return res.status(400).json({ message: req.t("This code is not valid, it may be expired") });
-    }
-
-    // we found a code, find a matching user
-    User.findOne({
-        _id: code.userId
-      },
-      null,
-      {
-        allowUnverified: true,
-      },
-      (err, user) => {
-        if (err) {
-          logger.error("Error finding user for the requested code:", err);
-          res.status(err.code).json({message: err.message})
-        }
-        if (!user) {
-          return res.status(400).json({ message: req.t("A user for this code was not found") });
-        }
-        return res.status(200).json({ message: req.t("The code is valid") });
-      }
-    );
-  } catch(err) {
-    logger.error("Error verifying notification:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
-  }
-  
-  // FROM AI
-  // const tokenData = tokens[token];
-  // if (!tokenData) {
-  //   return res.status(400).json({ error: "Invalid token" });
-  // }
-  // if (tokenData.expiresAt < new Date()) {
-  //   return res.status(400).json({ error: "Token expired" });
-  // }
-  // const user = users[tokenData.userId];
-  // if (!user) {
-  //   return res.status(400).json({ error: "User not found" });
-  // }
-  // // Invalidate the token (one-time use)
-  // delete tokens[token];
-  // res.json({ user });
-  
-};
-
 const signin = async(req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
@@ -523,7 +465,9 @@ const signin = async(req, res, next) => {
     // check email is verified
     if (!user.isVerified) {
       return res.status(401).json({
-        code: "ACCOUNT_WAITING_FOR_VERIFICATION", message: req.t("This account is waiting for a verification; if you did register it, check your emails"),
+        message: req.t("This account is waiting for a verification; if you did register it, check your emails") + ".",
+        code: "ACCOUNT_WAITING_FOR_VERIFICATION",
+        codeDeliveryMedium: config.auth.codeDeliveryMedium,
       });
     }
 
@@ -829,11 +773,46 @@ const refreshToken = async(req, res, next) => {
 
 };
 
+const notificationVerification = async (req, res, next) => {
+  // verification is done in middleware
+  return res.status(200).json({userId: req.userId});
+};
+
+const notificationPreferencesSave = async (req, res, next) => {
+  if (!userId) userId = req.userId;
+  if (!await isAdministrator(userId)) {
+    const error = new Error(req.t("Sorry, you must have admin role to save notification preferences"));
+    error.code = 403;
+    throw error;
+  } else {
+    userId = req.parameters.userId;
+  }
+
+  if (!req.parameters.notificationPreferences) {
+    throw new Error(req.t("Notification preferences is mandatory"));
+  }
+
+  try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      throw new Error(req.t("User not found"));
+    }
+
+    user.preferences.notifications = req.parameters.notificationPreferences;
+    await user.save();
+
+    return res.status(200).json({ message: req.t("Notification preferences updated") });
+  } catch (err) {
+    logger.error("Error updating notification preferences:", err);
+    throw err;
+  }
+};
+
+
 module.exports = {
   signup,
   resendSignupVerificationCode,
   signupVerification,
-  notificationVerification,
   signin,
   signout,
   resetPassword,
@@ -846,4 +825,6 @@ module.exports = {
   facebookLogin,
   facebookCallback,
   facebookRevoke,
+  notificationVerification,
+  notificationPreferencesSave,
 };

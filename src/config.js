@@ -43,6 +43,7 @@ const configBase = {
     test,
   },
   baseUrl,
+  baseUrlPublic: urlPublic, // for image urls in emails, they must always be public urls
   api: {
     name: apiName,
     port: apiPort,
@@ -69,7 +70,7 @@ const configBase = {
   auth: {
     accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL
     refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL
-    verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
+    notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
   },
   // db: {
@@ -244,9 +245,29 @@ const configBase = {
       lastName: "admin surname",
     },
   },
+  defaultNotifications: { // defaults
+    email: {
+      newsUpdates: true,
+      tipsTutorials: false,
+      userResearch: false,
+      comments: false,
+      reminders: false,
+    },
+    push: {
+      comments: false,
+      reminders: false,
+      activity: false,
+    },
+    sms: {
+      transactionAlerts: true,
+      marketingMessages: false,
+    },
+  },
+
   envRequiredVariables: [
     "JWT_ACCESS_TOKEN_SECRET",
     "JWT_REFRESH_TOKEN_SECRET",
+    "JWT_NOTIFICATION_TOKEN_SECRET",
     "ADMIN_USER_DEFAULT_PASSWORD",
     "MONGO_SCHEME",
     "MONGO_URL",
@@ -336,7 +357,7 @@ const configBase = {
       clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
       clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
     },
-    cookies: {
+    cookies: { // defaults
       key: "cookieConsent",
       expirationDays: 365, // one year
     },

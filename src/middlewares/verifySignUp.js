@@ -20,10 +20,11 @@ const checkDuplicateEmail = (req, res, next) => {
           code: "ACCOUNT_DELETED",
         });
       }
-      if (!user.isVerified) { // notify user did already register, but we are waiting for  2nd channel verification
+      if (!user.isVerified) { // notify user did already register, but we are waiting for 2nd channel verification
         return res.status(401).json({
-          message: req.t("This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email"),
+          message: req.t("This account is waiting for a verification; if you did register it, check your emails") + ".",
           code: "ACCOUNT_WAITING_FOR_VERIFICATION",
+          codeDeliveryMedium: config.auth.codeDeliveryMedium,
         });
       }
       return res.status(400).json({

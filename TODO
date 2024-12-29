@@ -82,6 +82,7 @@
 - add stack to all errors... - OK
 - in production product images are not retained - see https://chatgpt.com/share/67639261-a938-8003-a70b-b90dc683aaef,
   use fly.io persistent volumes, and add a check to avoid exceeding maximum allowed space in the free tier - OK
+- replace mailto:support@yourcompany.com with config.email.support... - OK
 
 - alle volte si vede ancora "Devi essere autenticato per questa azione" al logout (dovrebbe essere risolto)
 

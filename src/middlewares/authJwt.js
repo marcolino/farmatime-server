@@ -6,7 +6,7 @@ const config = require("../config");
 const { TokenExpiredError } = jwt;
 
 const verifyAccessToken = (req, res, next) => {
-  let token = req.headers["authorization"];
+  const token = req.headers["authorization"];
 
   if (!token) {
     return res.status(401).json({ message: req.t("You must be authenticated for this action (in verifyAccessToken)"), code: "NO_TOKEN" });
@@ -19,12 +19,12 @@ const verifyAccessToken = (req, res, next) => {
       }
       return res.status(401).json({ message: req.t("Access token is not valid"), code: "BAD_TOKEN" });
     }
-    if (!config.mode.production) {
-      const { exp } = jwt.decode(token);
-      //logger.info(`Access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
-    }
+    // if (!config.mode.production) {
+    //   const { exp } = jwt.decode(token);
+    //   logger.info(`Access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
+    // }
     if (!decoded.id) { // jwt.verify did not error out but did not give an id, should not happen
-      return res.status(401).json({ message: req.t("Access token is not valid"), code: "WRONG_TOKEN" });
+      return res.status(401).json({ message: req.t("Access token has no user id"), code: "WRONG_TOKEN" });
     }
     req.userId = decoded.id;
     next();
@@ -32,12 +32,45 @@ const verifyAccessToken = (req, res, next) => {
 };
 
 const verifyAccessTokenAllowGuest = (req, res, next) => {
-  let token = req.headers["authorization"];
+  const token = req.headers["authorization"];
 
   if (!token) { // allow guests
     return next();
   }
   return verifyAccessToken(req, res, next);
+};
+
+const verifyNotificationToken = (req, res, next) => {
+  const token = req.parameters.token;
+  //const tokenFromHeaders = req.headers["authorization"];
+
+  // if (token) { // coming here from external (an email link for example)
+  //   req.parameters.navigationFrom = "external";
+  // } else {
+  //   req.parameters.navigationFrom = "internal";
+  // }
+
+  if (!token) {
+    return res.status(401).json({ message: req.t("Notification token not present"), code: "NO_TOKEN" });
+  }
+
+  jwt.verify(token, process.env.JWT_NOTIFICATION_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      if (err instanceof TokenExpiredError) {
+        return res.status(401).json({ message: req.t("Notification token expired"), code: "EXPIRED_TOKEN" });
+      }
+      return res.status(401).json({ message: req.t("Notification token is not valid"), code: "BAD_TOKEN" });
+    }
+    // if (!config.mode.production) {
+    //   const { exp } = jwt.decode(token);
+    //   logger.info(`Access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
+    // }
+    if (!decoded.id) { // jwt.verify did not error out but did not give an id, should not happen
+      return res.status(401).json({ message: req.t("Notification token has no user id"), code: "WRONG_TOKEN" });
+    }
+    req.userId = decoded.id;
+    next();
+  });
 };
 
 const isAdmin = async(req, res, next) => {
@@ -72,6 +105,7 @@ const cleanupExpiredTokens = async (req, res, next) => {
 module.exports = {
   verifyAccessToken,
   verifyAccessTokenAllowGuest,
+  verifyNotificationToken,
   isAdmin,
   cleanupExpiredTokens,
 };

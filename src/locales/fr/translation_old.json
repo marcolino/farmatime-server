@@ -134,6 +134,7 @@
   "Test auto translation system!": "Testez le système de traduction automatique\u00a0!",
   "The account is not yet verified": "Le compte n'est pas encore vérifié",
   "The code confirm your email is": "__STRING_NOT_TRANSLATED__",
+  "The code is valid": "__STRING_NOT_TRANSLATED__",
   "The code to confirm your registration is": "Le code pour confirmer votre inscription est",
   "The code to reset your password is": "Le code pour réinitialiser votre mot de passe est",
   "The email address {{email}} is not associated with any account; double-check your email address and try again": "L'adresse e-mail {{email}} n'est associée à aucun compte\u00a0; vérifiez votre adresse e-mail et réessayez",

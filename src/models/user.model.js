@@ -93,35 +93,59 @@ const UserSchema = mongoose.Schema({
       enum: config.app.ui.themes,
       default: config.app.ui.defaultTheme,
     },
-    subscriptions: {
+    notifications: {
       email: {
-        all: {
+        newsUpdates: {
           type: Boolean,
-          default: true,
+          default: config.defaultNotifications.email.newsUpdates,
         },
-        news: {
+        tipsTutorials: {
           type: Boolean,
-          default: true,
+          default: config.defaultNotifications.email.tipsTutorials,
         },
-        offers: {
+        userResearch: {
           type: Boolean,
-          default: true,
+          default: config.defaultNotifications.email.userResearch,
+        },
+        comments: {
+          type: Boolean,
+          default: config.defaultNotifications.email.comments,
+        },
+        reminders: {
+          type: Boolean,
+          default: config.defaultNotifications.email.reminders,
         },
       },
-      pushNotifications: {
-        type: Boolean,
-        default: true,
+      push: {
+        comments: {
+          type: Boolean,
+          default: config.defaultNotifications.push.comments,
+        },
+        reminders: {
+          type: Boolean,
+          default: config.defaultNotifications.push.reminders,
+        },
+        activity: {
+          type: Boolean,
+          default: config.defaultNotifications.push.activity,
+        },
       },
-      // sms: {
-      //   type: Boolean,
-      //   default: false,
-      // },
+      sms: {
+        transactionAlerts: {
+          type: Boolean,
+          default: config.defaultNotifications.sms.transactionAlerts,
+        },
+        marketingMessages: {
+          type: Boolean,
+          default: config.defaultNotifications.sms.marketingMessages,
+        },
+      },
     }
   },
 }, {timestamps: true});
 
 UserSchema.pre(/^find|^count/, function() {
-  const operation = this.op; // we might need the effective operation matched
+  //const operation = this.op; // we might need the effective operation matched
   const user = this;
   let condition = {};
   if (!this.options.allowDeleted) condition.isDeleted = false;
@@ -198,6 +222,15 @@ UserSchema.methods.generateNotificationCode = (userId) => {
 };
 
 function generateRandomCode(maxDigits) {
+  const charset = "123456789"; //"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
+  for (let i = 0; i < maxDigits; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    result += charset[randomIndex];
+  }
+  return result;
+
+  return Math.random().toString(36).slice(2).padStart(maxDigits, "0");
   const minValue = Math.pow(10, maxDigits - 1); // minimum value to avoid leading zeros
   const maxValue = Math.pow(10, maxDigits); // maximum value (exclusive)
   return String(Math.floor(Math.random() * (maxValue - minValue) + minValue)).padStart(maxDigits, "0");

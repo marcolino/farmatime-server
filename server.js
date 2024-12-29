@@ -294,13 +294,13 @@ async function start() {
 // handle all uncaught exceptions
 process.on("uncaughtException", (err) => {
   logger.error("Uncaught Exception:", err);
-  process.exit(1) // Optional: Exit or restart the app
+  //process.exit(1); // optional: exit or restart the app
 });
 
-// handle all unhandled rejections
+// handle all unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled rejection at:", promise, "reason:", reason);
-  process.exit(1);
+  logger.error("Unhandled rejection, promise:", promise, ", reason:", reason);
+  //process.exit(1); // optional: exit or restart the app
 });
 
 // if not in test mode, start the server

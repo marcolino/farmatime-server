@@ -37,7 +37,7 @@ sendSmtpEmail.htmlContent = `
         <h2>HELLO, $userFirstName</h2>
         <p>We wanted to inform you about [specific event or update]. This is an important audit regarding your account.</p>
         <p>If you have any questions, feel free to <a href="mailto:support@yourcompany.com">contact us</a> at any time.</p>
-        <a href="[Action Link]" class="email-button">Take Action</a>
+        <a href="[Action Link]" class="email-action-link">Take Action</a>
       </td>
     </tr>
     <tr>

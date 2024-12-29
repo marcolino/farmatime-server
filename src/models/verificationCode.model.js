@@ -18,8 +18,7 @@ const VerificationCodeSchema = mongoose.Schema({
     type: Date,
     required: "createdAt date is required in VerificationCode document",
     default: Date.now,
-    expires: config.auth.verificationCodeExpirationSeconds,
-    //expiresAfterSeconds: config.auth.verificationCodeExpirationSeconds,
+    expires: config.auth.verificationCodeExpirationSeconds * 2, // double verification code expiration time to allow "token is expired" errors
   }
 });
 

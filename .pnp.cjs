@@ -27,6 +27,7 @@ const RAW_RUNTIME_STATE =
       [null, {\
         "packageLocation": "./",\
         "packageDependencies": [\
+          ["@css-inline/css-inline", "npm:0.14.3"],\
           ["@logtail/node", "npm:0.5.2"],\
           ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.2"],\
           ["axios", "npm:1.7.7"],\
@@ -65,6 +66,7 @@ const RAW_RUNTIME_STATE =
           ["sharp", "npm:0.33.5"],\
           ["sib-api-v3-sdk", "npm:8.5.0"],\
           ["stripe", "npm:8.222.0"],\
+          ["uuid", "npm:11.0.3"],\
           ["winston", "npm:3.14.2"],\
           ["winston-syslog", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:2.7.1"]\
         ],\
@@ -317,6 +319,125 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@colors-colors-npm-1.6.0-47f686c4e2-66d00284a3.zip/node_modules/@colors/colors/",\
         "packageDependencies": [\
           ["@colors/colors", "npm:1.6.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/cache/@css-inline-css-inline-npm-0.14.3-3b5d0bdfed-b1817eb43e.zip/node_modules/@css-inline/css-inline/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline", "npm:0.14.3"],\
+          ["@css-inline/css-inline-android-arm-eabi", "npm:0.14.3"],\
+          ["@css-inline/css-inline-android-arm64", "npm:0.14.3"],\
+          ["@css-inline/css-inline-darwin-arm64", "npm:0.14.3"],\
+          ["@css-inline/css-inline-darwin-x64", "npm:0.14.3"],\
+          ["@css-inline/css-inline-linux-arm-gnueabihf", "npm:0.14.3"],\
+          ["@css-inline/css-inline-linux-arm64-gnu", "npm:0.14.3"],\
+          ["@css-inline/css-inline-linux-arm64-musl", "npm:0.14.3"],\
+          ["@css-inline/css-inline-linux-x64-gnu", "npm:0.14.3"],\
+          ["@css-inline/css-inline-linux-x64-musl", "npm:0.14.3"],\
+          ["@css-inline/css-inline-win32-arm64-msvc", "npm:0.14.3"],\
+          ["@css-inline/css-inline-win32-x64-msvc", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-android-arm-eabi", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-android-arm-eabi-npm-0.14.3-3b5988d301/node_modules/@css-inline/css-inline-android-arm-eabi/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-android-arm-eabi", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-android-arm64", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-android-arm64-npm-0.14.3-557dd20599/node_modules/@css-inline/css-inline-android-arm64/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-android-arm64", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-darwin-arm64", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-darwin-arm64-npm-0.14.3-dbe341bb43/node_modules/@css-inline/css-inline-darwin-arm64/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-darwin-arm64", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-darwin-x64", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-darwin-x64-npm-0.14.3-6f1a9068ec/node_modules/@css-inline/css-inline-darwin-x64/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-darwin-x64", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-linux-arm-gnueabihf", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-linux-arm-gnueabihf-npm-0.14.3-d920c2723b/node_modules/@css-inline/css-inline-linux-arm-gnueabihf/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-linux-arm-gnueabihf", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-linux-arm64-gnu", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-linux-arm64-gnu-npm-0.14.3-30b353817d/node_modules/@css-inline/css-inline-linux-arm64-gnu/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-linux-arm64-gnu", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-linux-arm64-musl", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-linux-arm64-musl-npm-0.14.3-4b6d42d67c/node_modules/@css-inline/css-inline-linux-arm64-musl/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-linux-arm64-musl", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-linux-x64-gnu", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-linux-x64-gnu-npm-0.14.3-d0a58c349e/node_modules/@css-inline/css-inline-linux-x64-gnu/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-linux-x64-gnu", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-linux-x64-musl", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-linux-x64-musl-npm-0.14.3-1b360595d2/node_modules/@css-inline/css-inline-linux-x64-musl/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-linux-x64-musl", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-win32-arm64-msvc", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-win32-arm64-msvc-npm-0.14.3-86aa7a2859/node_modules/@css-inline/css-inline-win32-arm64-msvc/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-win32-arm64-msvc", "npm:0.14.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@css-inline/css-inline-win32-x64-msvc", [\
+      ["npm:0.14.3", {\
+        "packageLocation": "./.yarn/unplugged/@css-inline-css-inline-win32-x64-msvc-npm-0.14.3-cf87429f5b/node_modules/@css-inline/css-inline-win32-x64-msvc/",\
+        "packageDependencies": [\
+          ["@css-inline/css-inline-win32-x64-msvc", "npm:0.14.3"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -1254,6 +1375,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["acme", "workspace:."],\
+          ["@css-inline/css-inline", "npm:0.14.3"],\
           ["@logtail/node", "npm:0.5.2"],\
           ["@logtail/winston", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:0.5.2"],\
           ["axios", "npm:1.7.7"],\
@@ -1292,6 +1414,7 @@ const RAW_RUNTIME_STATE =
           ["sharp", "npm:0.33.5"],\
           ["sib-api-v3-sdk", "npm:8.5.0"],\
           ["stripe", "npm:8.222.0"],\
+          ["uuid", "npm:11.0.3"],\
           ["winston", "npm:3.14.2"],\
           ["winston-syslog", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:2.7.1"]\
         ],\
@@ -7334,6 +7457,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["uuid", [\
+      ["npm:11.0.3", {\
+        "packageLocation": "./.yarn/cache/uuid-npm-11.0.3-abcb5b16c0-2513855631.zip/node_modules/uuid/",\
+        "packageDependencies": [\
+          ["uuid", "npm:11.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
       ["npm:8.3.2", {\
         "packageLocation": "./.yarn/cache/uuid-npm-8.3.2-eca0baba53-9a5f7aa1d6.zip/node_modules/uuid/",\
         "packageDependencies": [\

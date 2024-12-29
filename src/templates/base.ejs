@@ -24,8 +24,13 @@
       </tr>
       <tr>
         <td class="email-footer">
-          <p><%= sys_company_copyright %>. <%= t("All rights reserved") %>.</p>
-          <p><a href="<%- sys_client_email_unsubscribe_link %>?<%- notificationVerificationCode %>"><%= t("Unsubscribe") %></a> | <a href="<%- sys_client_email_preferences_link %>?<%- notificationVerificationCode %>"><%= t("Manage Preferences") %></a></p>
+          <p>
+            <%= sys_company_copyright %>. <%= t("All rights reserved") %>.
+          </p>
+          <p>
+            <a href="<%- sys_client_email_unsubscribe_link %>?token=<%- notificationToken %>&language=<%- sys_language %>"><%= t("Unsubscribe") %></a> |
+            <a href="<%- sys_client_email_preferences_link %>?token=<%- notificationToken %>&language=<%- sys_language %>"><%= t("Manage Preferences") %></a>
+          </p>
         </td>
       </tr>
     </table>

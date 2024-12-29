@@ -21,6 +21,25 @@ const dbMock = {
       lastName: config.defaultUsers.admin.lastName,
       isVerified: true,
       justRegistered: false,
+      // TODO: will they be inserted automatically, as from the schema, if we do not specify values here?
+      // notifications: {
+      //   "email": {
+      //     newsUpdates: true,
+      //     tipsTutorials: false,
+      //     userResearch: false,
+      //     comments: false,
+      //     reminders: false,
+      //   },
+      //   "push": {
+      //     comments: false,
+      //     reminders: false,
+      //     activity: false,
+      //   },
+      //   "sms": {
+      //     transactionAlerts: true,
+      //     marketingMessages: false,
+      //   },
+      // },
     },
   ],
   roles: config.roles,

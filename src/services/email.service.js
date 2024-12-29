@@ -3,8 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const Brevo = require("sib-api-v3-sdk");
 const ejs = require("ejs");
+const { inline } = require("@css-inline/css-inline");
 //const i18next = require("i18next");
 const User = require("../models/user.model");
+const NotificationToken = require("../models/notificationToken.model");
 const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");
@@ -18,7 +20,8 @@ class EmailService {
       sys_company_title: config.app.company.title,
       sys_company_mailto: config.app.company.mailto,
       sys_company_copyright: config.app.company.copyright,
-      sys_company_logo: `${config.baseUrl}/logo-main-header.png`,
+      sys_company_logo: `${config.baseUrlPublic}/logo-main-header.png`,
+      sys_company_support_mailto: config.email.support.to,
       sys_client_email_unsubscribe_link: config.clientEmailUnsubscribeUrl,
       sys_client_email_preferences_link: config.clientEmailPreferencesUrl,
     };
@@ -76,10 +79,14 @@ class EmailService {
         throw new Error(message);
       }
 
-      // // create and save notifocation verification code
-      const notificationVerification = await req.user.generateNotificationCode(req.user._id);
-      await notificationVerification.save(); // save the notification verification code
-      logger.info(`NOTIFICATION VERIFICATION token: ${notificationVerification.code}`);    
+      let notificationToken;
+      try {
+        notificationToken = await NotificationToken.createToken(req.user, "email");
+      } catch (err) {
+        const message = `Error creating email notification token: ${err.message}`;
+        logger.error(message);
+        throw new Error(message);
+      }
       
       if (!params) params = {};
       if (!params.to) return logger.error("Parameter 'to' is mandatory to send email");
@@ -90,7 +97,7 @@ class EmailService {
       if (!params.templateName) params.templateName = "base";
       if (!params.templateParams) params.templateParams = {};
       if (!params.templateParams.style) params.templateParams.style = "base";
-      params.templateParams.notificationVerificationCode = notificationVerification.code;
+      params.templateParams.notificationToken = notificationToken; // used to allow authenticate users who click on back reference links in emails
       
       if (typeof params.to === "string") params.to = [params.to]; // accept also a single string with an email
 
@@ -151,10 +158,7 @@ class EmailService {
   
     try {
       // load the template file
-      const templateContent = this.readTemplate(templateName); 
-
-      // explode classes to inline styles in template
-      templateContent = this.inlineClasses(templateContent);
+      const templateContent = this.readTemplate(templateName);
 
       /**
        * detect template variables missing in templateParams
@@ -205,13 +209,57 @@ class EmailService {
         //logger.info("All variables provided in template params are used in the template");
       }
 
-      return ejs.render(templateContent, {
+      const templateContentRendered = ejs.render(templateContent, {
         t: i18n.t.bind(i18n),
         ...templateParams,
       });
+
+      // inline css styles
+      const templateContentRenderedInlined = inline(templateContentRendered);
+      // // restore unescaped template strings
+      // const templateContentRenderedInlined = templateContentRenderedInlinedEscaped.
+      //   replace(/&lt;%/g, "<%").
+      //   replace(/%&gt;/g, "%>")
+      // ;
+      //fs.writeFileSync("/var/www/html/t.html", templateContentInlined);
+
+      //console.log("templateContentRenderedInlined:", templateContentRenderedInlined);
+      return templateContentRenderedInlined;
     } catch (err) {
       throw new Error(err.message);
     }
+  }
+
+  /**
+   * substitutes `class` tags in template contents,
+   * because many email clients do not respect classes, but only (come) inline styles
+   * 
+   * @param {string} name - the template name
+   * @returns {string} the template contents
+   */
+  async inlineClasses(html) {
+    // add system style
+    //const css = this.readTemplateStyle(styleName);
+
+    console.log("html:", html);
+    //console.log("css:", css);
+
+    return inline(html);
+    // try {
+    //   const result = await inlineCss(html, { url: "/", extraCss: css });
+    //   console.log("inlineCss result:", result);
+    // } catch (err) {
+    //   console.error("inline classes error:", err);
+    //   throw err;
+    // }
+    // inlineCss(html, { url: "/", extraCss: css })
+    // .then(result => {
+    //   console.log("inlineCss result:", result);
+    // })
+    // .catch(err => {
+    //   console.error("inline classes error:", err);
+    //   throw err;
+    // });
   }
 
   /**
