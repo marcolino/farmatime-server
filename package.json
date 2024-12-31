@@ -38,7 +38,7 @@
     "fly-import-secrets": "cat .env | fly secrets import",
     "fly-deploy": "NODE_ENV=$(grep NODE_ENV .env | cut -d '=' -f2) echo $NODE_ENV && fly deploy",
     "fly-logs": "fly logs",
-    "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn i18n-check && yarn docker-build && yarn fly-deploy && yarn fly-logs",
+    "fly": "yarn fly-upgrade && yarn fly-import-secrets && yarn i18n-check && yarn docker-build && yarn fly-deploy",
     "pub": "(cd ../acme-client/ && yarn build ) && yarn fly && yarn sound-ok",
     "sound-ok": "spd-say -p 100 'successo!' 2> /dev/null",
     "sound-ko": "spd-say -p 45 'errore!' 2> /dev/null"

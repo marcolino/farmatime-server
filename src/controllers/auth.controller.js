@@ -459,7 +459,10 @@ const signin = async(req, res, next) => {
 
     // check user is not deleted
     if (user.isDeleted) {
-      return res.status(401).json({ code: "ACCOUNT_DELETED", message: req.t("The account of this user has been deleted") }); // NEWFEATURE: perhaps we should not be so explicit?
+      return res.status(401).json({
+        message: req.t("The account of this user has been deleted"),
+        code: "ACCOUNT_DELETED",
+      }); // NEWFEATURE: perhaps we should not be so explicit?
     }
 
     // check email is verified
@@ -476,29 +479,28 @@ const signin = async(req, res, next) => {
       let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
       provider = provider.charAt(0).toUpperCase() + provider.slice(1)
       return res.status(401).json({
+        message: req.t("This email is associated to your {{provider}} social account; please use it to sign in, or register a new account", { provider }),
         accessToken: null,
-        message: req.t("This email is associated to your {{provider}} social account; please use it to sign in, or register a new account", { provider })
       });
     } else {
       // check input password with user's crypted password, then with passepartout password
       if (!user.comparePassword(req.parameters.password, user.password)) {
         if (!user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)) {
           return res.status(401).json({
-            accessToken: null,
             message: req.t("Wrong password"), // return "Wrong credentials", if we want to to give less surface to attackers
+            accessToken: null,
           });
         }
       }
     }
 
     // creacte new access token
-    //user.accessToken = await RefreshToken.createToken(user, config.auth.accessTokenExpirationSeconds);
     try {
       user.accessToken = await AccessToken.createToken(user);
     } catch (err) {
       return res.status(401).json({
+        message: req.t("Error creating access token: {{error}}", { error: err.message }),
         accessToken: null,
-        message: req.t("Error creating access token: {{error}}", { error: err.message })
       });
     }
 
@@ -508,8 +510,8 @@ const signin = async(req, res, next) => {
       user.refreshToken = await RefreshToken.createToken(user);
     } catch (err) {
       return res.status(401).json({
+        message: req.t("Error creating refresh token: {{error}}", { error: err.message }),
         accessToken: null,
-        message: req.t("Error creating refresh token: {{error}}", { error: err.message })
       });
     }
 
@@ -728,8 +730,10 @@ const refreshToken = async(req, res, next) => {
 
   if (!token) { // refresh token is required
     logger.warn("refreshToken: session has no token");
-    //return res.status(401).json({ message: req.t("Session has no token, please make a new signin request"), code: "NO_TOKEN" });
-    return res.status(401).json({ message: req.t("You must be authenticated for this action (in refreshToken)"), code: "NO_TOKEN" });
+    return res.status(401).json({
+      message: req.t("You must be authenticated for this action (in refreshToken)"), // TODO: remove "(in ...)"
+      code: "NO_TOKEN",
+    });
   }
 
   try {
@@ -745,17 +749,18 @@ const refreshToken = async(req, res, next) => {
     if (RefreshToken.isExpired(refreshTokenDoc)) {
       const refrestTokenId = RefreshToken.findByIdAndDelete(refreshTokenDoc._id).exec();
       if (refrestTokenId) {
-        logger.info("Expired refresh token deleted successfully");
+        logger.info("refreshToken: expired token deleted successfully");
         return res.status(401).json({ // refresh token is just expired
-          message: req.t("Session is expired, token removed, please make a new signin request"),
+          message: req.t("Session is expired, please make a new signin request"),
         });
       } else {
-        logger.warn("Expired refresh token not found");
+        logger.warn("refreshToken: expired refresh token not found");
         return res.status(401).json({ // refresh token is just expired
-          message: req.t("Session is expired, token already removed, please make a new signin request"),
+          message: req.t("Session is expired, please make a new signin request"),
         });
       }
     }
+
     logger.info(`RefreshToken will expire on ${refreshTokenDoc.expiresAt}`);
 
     let newAccessToken = jwt.sign({ id: refreshTokenDoc.user._id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
@@ -767,7 +772,7 @@ const refreshToken = async(req, res, next) => {
       refreshToken: refreshTokenDoc.token,
     });
   } catch(err) {
-    logger.error("Error refreshing token:", err);
+    logger.error("refreshToken: error refreshing token:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
 
@@ -775,18 +780,43 @@ const refreshToken = async(req, res, next) => {
 
 const notificationVerification = async (req, res, next) => {
   // verification is done in middleware
-  return res.status(200).json({userId: req.userId});
+  let user;
+  try {
+    user = await User.findOne({
+      _id: req.userId,
+    },
+    null,
+    {
+      // allowDeleted: true,
+      // allowUnverified: true,
+    })
+    .populate("roles", "-__v")
+    .populate("plan", "-__v")
+    .exec();
+    return res.status(200).json({user});
+  } catch (err) {
+    logger.error(`Error finding user in notificatiomn verification request: ${err.message}`);
+    return next(Object.assign(new Error(err.message), { status: 500 }));
+  }
 };
 
 const notificationPreferencesSave = async (req, res, next) => {
-  if (!userId) userId = req.userId;
-  if (!await isAdministrator(userId)) {
-    const error = new Error(req.t("Sorry, you must have admin role to save notification preferences"));
-    error.code = 403;
-    throw error;
-  } else {
-    userId = req.parameters.userId;
+  let userId = req.userId;
+  if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
+    // this test should be done in routing middleware, but doing it here allows for a more specific error message
+    if (!await isAdministrator(userId)) { // check if request is from admin
+      return res.status(403).json({ message: req.t("You must have admin role to save notification preferences for another user") });
+    } else {
+      userId = req.parameters.userId; // if admin, accept a specific user id in request
+    }
   }
+  // if (!await isAdministrator(userId)) {
+  //   const error = new Error(req.t("Sorry, you must have admin role to save notification preferences"));
+  //   error.code = 403;
+  //   throw error;
+  // } else {
+  //   userId = req.parameters.userId;
+  // }
 
   if (!req.parameters.notificationPreferences) {
     throw new Error(req.t("Notification preferences is mandatory"));

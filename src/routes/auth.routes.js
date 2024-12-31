@@ -9,6 +9,8 @@ module.exports = function(app) {
   app.post(`${path}/signup`, [verifySignUp.checkDuplicateEmail, verifySignUp.checkRolesExisted], controller.signup);
   app.post(`${path}/signupVerification`, controller.signupVerification);
   app.post(`${path}/notificationVerification`, [authJwt.verifyNotificationToken], controller.notificationVerification);
+  app.post(`${path}/notificationPreferencesSaveInternal`, [authJwt.verifyAccessToken], controller.notificationPreferencesSave);
+  app.post(`${path}/notificationPreferencesSaveExternal`, [authJwt.verifyNotificationToken], controller.notificationPreferencesSave);
   app.post(`${path}/signin`, [verifySignIn.checkValidEmail], controller.signin);
   app.post(`${path}/signout`, [/*authJwt.verifyAccessToken*/], controller.signout);
   app.post(`${path}/resendSignupVerificationCode`, controller.resendSignupVerificationCode);

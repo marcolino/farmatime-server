@@ -103,31 +103,15 @@ const UserSchema = mongoose.Schema({
           type: Boolean,
           default: config.defaultNotifications.email.tipsTutorials,
         },
-        userResearch: {
-          type: Boolean,
-          default: config.defaultNotifications.email.userResearch,
-        },
-        comments: {
-          type: Boolean,
-          default: config.defaultNotifications.email.comments,
-        },
         reminders: {
           type: Boolean,
           default: config.defaultNotifications.email.reminders,
         },
       },
       push: {
-        comments: {
-          type: Boolean,
-          default: config.defaultNotifications.push.comments,
-        },
         reminders: {
           type: Boolean,
           default: config.defaultNotifications.push.reminders,
-        },
-        activity: {
-          type: Boolean,
-          default: config.defaultNotifications.push.activity,
         },
       },
       sms: {
