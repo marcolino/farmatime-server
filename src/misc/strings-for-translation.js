@@ -2,7 +2,7 @@
  * Strings for translations: they are listed here for i18next-parse to find them
  */
 
-// error strings, not in source code
+// HTTP errors
 t("Moved permanently"); // 301, Spostato in modo permanente
 t("Found"); // 302, Trovato
 t("See other"); // 303, Vedi altro
@@ -18,3 +18,14 @@ t("Too many requests"); // 429, Troppe richieste
 t("Internal server error"); // 500, Errore interno del server
 t("Bad gateway"); // 502, Errore del gateway
 t("Service unavailable"); // 503, Servizio non disponibile
+
+// delivery options
+t("No delivery");
+t("Express delivery, 3 days");
+t("Standard delivery, 7 days");
+
+// roles
+t("user");
+t("dealer");
+t("operator");
+t("admin");

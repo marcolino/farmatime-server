@@ -21,25 +21,6 @@ const dbMock = {
       lastName: config.defaultUsers.admin.lastName,
       isVerified: true,
       justRegistered: false,
-      // TODO: will they be inserted automatically, as from the schema, if we do not specify values here?
-      // notifications: {
-      //   "email": {
-      //     newsUpdates: true,
-      //     tipsTutorials: false,
-      //     userResearch: false,
-      //     comments: false,
-      //     reminders: false,
-      //   },
-      //   "push": {
-      //     comments: false,
-      //     reminders: false,
-      //     activity: false,
-      //   },
-      //   "sms": {
-      //     transactionAlerts: true,
-      //     marketingMessages: false,
-      //   },
-      // },
     },
   ],
   roles: config.roles,
@@ -59,6 +40,7 @@ const dbMock = {
       regulator: "incorporato",
       notes: "E' un bel motorino",
       type: "motorino",
+      price: 99.99,
       imageNameOriginal: "332.jpg",
     },
     {
@@ -75,6 +57,7 @@ const dbMock = {
       regulator: "esterno",
       notes: "",
       type: "motorino",
+      price: 88.88,
       imageNameOriginal: "334_0.jpg",
     },
     {
@@ -91,6 +74,7 @@ const dbMock = {
       regulator: "incorporato",
       notes: "PULEGGIA MULTIRIGHE - AUTOVENTILATO",
       type: "alternatore",
+      price: 77.77,
       imageNameOriginal: "2702.jpg",
     },
     {
@@ -107,6 +91,7 @@ const dbMock = {
       regulator: "",
       notes: "",
       type: "motorino",
+      price: 66.66,
       imageNameOriginal: "334_0.jpg",
     },
   ]

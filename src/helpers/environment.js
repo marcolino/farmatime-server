@@ -25,7 +25,7 @@ const assertEnvironment = () => {
 
 const assertionsCheckFailure = async(htmlContent) => {
   // notify administration abount assertion failures
-  //return audit({ req: null, subject: "Assertion check failed", htmlContent});
+  return audit({ req: null, subject: "Assertion check failed", htmlContent});
 };
 
 module.exports = {

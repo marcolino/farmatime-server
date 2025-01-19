@@ -4,7 +4,6 @@ const cors = require("cors");
 const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 const helmet = require("helmet");
-const asyncErrors = require("express-async-errors");
 const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
 const db = require("./src/models");
@@ -33,20 +32,22 @@ if (config.mode.production) { // load environment variables from the provider "s
   logger.info("Production environment");
 }
 if (config.mode.staging) { // load environment variables from .env file
-  try {
-    require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-    logger.info("Staging environment");
-  } catch (err) {
-    logger.error("Error loading ./.env file:", err);
-  }
+  logger.info("Staging environment");
+  // try {
+  //   require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
+  // } catch (err) {
+  //   logger.error("Error loading ./.env file:", err);
+  // }
 }
 if (config.mode.development) { // load environment variables from .env.dev file
-  require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
+  // require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
   logger.info("Development environment");
 }
 if (config.payment.stripe.enabled) {
   logger.info(`Stripe payment mode is ${config.mode.livestripe}`);
 }
+
+//logger.info("Database connection path 1", `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
 
 const app = express();
 
@@ -54,44 +55,26 @@ const app = express();
 app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
-    defaultSrc: ["'self'"],
+    defaultSrc: [
+      "'self'"
+    ],
     connectSrc: [
       "'self'",
-      config.baseUrl,
-                                    "http://localhost:5000", // TODO...
-                                    "http://localhost:5005", // TODO...
-      "https://fonts.googleapis.com",
-      "https://fonts.gstatic.com",
-      "https://www.gravatar.com",
-      "https://secure.gravatar.com",
-      "https://a.tile.openstreetmap.org",
-      "https://b.tile.openstreetmap.org",
-      "https://c.tile.openstreetmap.org",
-      //"https://cdnjs.cloudflare.com",
-      "https://accounts.google.com", // allow Google OAuth endpoint
-      "https://oauth2.googleapis.com", // allow OAuth token exchange
+      ...config.security.allowedReferers.connectSrc,
     ],
     fontSrc: [
       "'self'",
-      "https://fonts.googleapis.com",
-      "https://fonts.gstatic.com",
+      ...config.security.allowedReferers.fontSrc,
     ],
     styleSrc: [
       "'self'",
       "'unsafe-inline'",
-      "https://fonts.googleapis.com",
-      "https://fonts.gstatic.com",
+      ...config.security.allowedReferers.styleSrc,
     ],
     imgSrc: [
       "'self'",
       "https: data: blob:",
-      "https://www.gravatar.com",
-      "https://secure.gravatar.com",
-      "https://a.tile.openstreetmap.org",
-      "https://b.tile.openstreetmap.org",
-      "https://c.tile.openstreetmap.org",
-      "https://cdnjs.cloudflare.com",
-      //"https://flagcdn.com",
+      ...config.security.allowedReferers.imgSrc,
     ]
   }
 }));
@@ -243,7 +226,7 @@ app.use((err, req, res, next) => { // next is needed to be considered error hand
    // include stack trace in development only
   let message = `${err.message || req.t("Server error")}`
   if (status === 500) {
-    // notify support about errors
+    // audit errors
     audit({
       req,
       subject: `Error ${message}`,

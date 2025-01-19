@@ -65,12 +65,12 @@ class EmailService {
         throw new Error(message);
       }
 
-      // TODO: DEBUG ONLY!!!!!!!!!!!!!!!!!!
+      // TODO: DEBUG ONLY !!! Always send to me, even for guest users...
       req.user = await User.findOne({ email: "marcosolari@gmail.com" })
         .select(["-password", "-__v"])
         //.lean()
         .exec()
-      ; ////////////////////////////////////////
+      ; ////////////////////////////////////////////////////////////////
       
       // email send service needs an authenticatd user
       if (!req.user) {

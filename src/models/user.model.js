@@ -64,6 +64,10 @@ const UserSchema = mongoose.Schema({
     type: String,
     max: 255
   },
+  stripeCustomerId: {
+    type: String,
+    max: 24
+  },
   isDeleted: {
     type: Boolean,
     default: false
@@ -106,6 +110,10 @@ const UserSchema = mongoose.Schema({
         reminders: {
           type: Boolean,
           default: config.defaultNotifications.email.reminders,
+        },
+        offers: {
+          type: Boolean,
+          default: config.defaultNotifications.email.offers,
         },
       },
       push: {

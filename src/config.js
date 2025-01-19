@@ -7,7 +7,8 @@ const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode
 const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
 const livestripe = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
 
-const apiPort = 5000;
+const apiPort = 5000; // development only
+const apiPortClient = 5005; // development only
 const apiName = "ACME";
 const appName = "acme";
 const description = "A powerful web app, easily customizable";
@@ -16,10 +17,20 @@ const charset = "UTF-8";
 const themeColor = "#a5dc6f";
 const cacheControl = "mag-age=1440";
 const currency = "EUR"; // default currency (ISO 4217:2015)
+const currencies = { // allowed currencies
+  "EUR": "€",
+  "USD": "$",
+  "CHF": "fr.",
+  "GBP": "£",
+};
 const company = "Sistemi Solari Rossi";
 const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
+const urlPublicClient = urlPublic;
+const urlLocalClient = `http://localhost:${apiPortClient}`;
+const baseUrlClient = production ? urlPublicClient : urlLocalClient;
+const baseUrlClientStaging = production ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
 //const serverCountry = "IT"; // server country
@@ -30,10 +41,24 @@ const customization = "mda"; // custom configuration to be merged with configBas
  * Import envronment variables from env file depending on current mode.
  * In production we don't have an env file, but a "secrets" environment from the provider
  */
+// console.log("production:", production);
 if (!production) {
-  require("dotenv").config({ path: staging ? "./.env" : "./.env.dev" });
+  //console.log("staging:", staging);
+  const envFile = staging ? "./.env" : "./.env.dev";
+  if (!fs.existsSync(envFile)) {
+    console.error(`Error: ${envFile} does not exist`);
+    process.exit(1);
+  }
+  const result = require("dotenv").config({ path: envFile, override: true });
+  if (result.error) {
+    console.error(`Failed to load ${envFile} file ${result.error}`);
+    process.exit(1); // exit the process with an error code
+  } else {
+    console.log(`${envFile} file loaded successfully`);
+  }
 }
-
+// console.log("Environment variables:", process.env);
+// console.log("Database connection path is", `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
 
 const configBase = {
   mode: {
@@ -44,6 +69,7 @@ const configBase = {
   },
   baseUrl,
   baseUrlPublic: urlPublic, // for image urls in emails, they must always be public urls
+  baseUrlClient, // base url of the client (while developing client base url and server base url differ, while in production baseUrl === baseUrlClient)
   api: {
     name: apiName,
     port: apiPort,
@@ -67,9 +93,47 @@ const configBase = {
   },
   publicBasePath: "/public", // use for example as "/public/" if a public folder on server is needed
   clientSrc, // client src folder, to be able to inject the client app section of this config file
+  security: {
+    allowedReferers: {
+      connectSrc: [
+        baseUrl,
+        baseUrlClient,
+        baseUrlClientStaging,
+        "https://accounts.google.com",
+        "https://oauth2.googleapis.com",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com",
+        "https://www.gravatar.com",
+        "https://secure.gravatar.com",
+        //"https://*.tile.openstreetmap.org", // do not use wildards, because also used literally in checkReferer
+        "https://a.tile.openstreetmap.org",
+        "https://b.tile.openstreetmap.org",
+        "https://c.tile.openstreetmap.org",
+        "https://checkout.stripe.com",
+      ],
+      fontSrc: [
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com",
+      ],
+      styleSrc: [
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com",
+      ],
+      imgSrc: [
+        "https://www.gravatar.com",
+        "https://secure.gravatar.com",
+        //"https://*.tile.openstreetmap.org", // do not use wildards, because also used literally in checkReferer
+        "https://a.tile.openstreetmap.org",
+        "https://b.tile.openstreetmap.org",
+        "https://c.tile.openstreetmap.org",
+        "https://cdnjs.cloudflare.com",
+      ]
+    }
+  },
   auth: {
     accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL
     refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL
+    refreshTokenExpirationDontRememberMeSeconds: 60 * 60, // 1 hour TTL
     notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL
     codeDeliveryMedium: "email", // "email" / "sms" / ...
   },
@@ -163,66 +227,73 @@ const configBase = {
       development: "debug",
     },
   },
-  currency,
+  currency, // default currency
+  currencies, // all accepted currencies
   upload: {
     maxFileSize: 10 * (1024 ** 2), // 10 MB
   },
   envReloadIntervalSeconds: 60, // the seconds interval when to reload env collection from database
   clientDomains: [
     baseUrl,
-    "http://localhost:5000", // for testing a production environment in a local container
-    "http://localhost:5005", // for development only
-    "http://localhost:4173", // for staging only
+    baseUrlClient,
+    baseUrlClientStaging,
   ],
-  clientEmailUnsubscribeUrl: `${baseUrl}/email-unsubscribe`,
-  clientEmailPreferencesUrl: `${baseUrl}/email-preferences`,
-  clientPushNotificationsUnsubscribeUrl: `${baseUrl}/push-notifications-unsubscribe`,
-  clientPushNotificationsPreferencesUrl: `${baseUrl}/push-notifications-preferences`,
-  clientSmsUnsubscribeUrl: `${baseUrl}/sms-unsubscribe`,
-  clientSmsPreferencesUrl: `${baseUrl}/sms-preferences`,
+  clientEmailUnsubscribeUrl: `${baseUrlClient}/email-unsubscribe`,
+  clientEmailPreferencesUrl: `${baseUrlClient}/email-preferences`,
+  clientPushNotificationsUnsubscribeUrl: `${baseUrlClient}/push-notifications-unsubscribe`,
+  clientPushNotificationsPreferencesUrl: `${baseUrlClient}/push-notifications-preferences`,
+  clientSmsUnsubscribeUrl: `${baseUrlClient}/sms-unsubscribe`,
+  clientSmsPreferencesUrl: `${baseUrlClient}/sms-preferences`,
   payment: {
     stripe: {
       enabled: false,
-      products: livestripe ? { // stripe mode is live
-        free: {
-          name: "Prodotto Gratuito LIVE",
-          product_id: "prod_LC4k3rwA64D45l",
-          price_id: "price_1KVgafFZEWHriL1u8PFSvxSy",
-        },
-        standard: {
-          name: "Prodotto Standard LIVE",
-          product_id: "prod_LC4lYicsBXPmIA",
-          price_id: "price_1KVgbfFZEWHriL1uR5BnWO9W",
-        },
-        unlimited: {
-          name: "Prodotto Illimitato LIVEKBJ",
-          price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
-        },
-      } : { // stripe mode is test
-        free: {
-          name: "Prodotto Gratuito (test)",
-          product_id: "prod_LC4q54jgFITE0U",
-          price_id: "price_1KVggqFZEWHriL1uD8hlzL3S",
-        },
-        standard: {
-          name: "Prodotto Standard (test)",
-          product_id: "prod_LC4tiakN3cKlSA",
-          price_id: "price_1KVgjRFZEWHriL1ujZm3tF2h",
-        },
-        unlimited: {
-          name: "Prodotto Illimitato (test)",
-          product_id: "prod_LC4og5H6lpSLoK",
-          price_id: "price_1KVgfKFZEWHriL1utJyT904c",
-        },
+      products: livestripe ? // products for a typical SAAS
+        { // stripe mode is live
+          free: {
+            name: "Prodotto Gratuito LIVE",
+            product_id: "prod_LC4k3rwA64D45l",
+            price_id: "price_1KVgafFZEWHriL1u8PFSvxSy",
+          },
+          standard: {
+            name: "Prodotto Standard LIVE",
+            product_id: "prod_LC4lYicsBXPmIA",
+            price_id: "price_1KVgbfFZEWHriL1uR5BnWO9W",
+          },
+          unlimited: {
+            name: "Prodotto Illimitato LIVEKBJ",
+            price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
+          },
+        }
+      :
+        { // stripe mode is test
+          free: {
+            name: "Prodotto Gratuito (test)",
+            product_id: "prod_LC4q54jgFITE0U",
+            price_id: "price_1KVggqFZEWHriL1uD8hlzL3S",
+          },
+          standard: {
+            name: "Prodotto Standard (test)",
+            product_id: "prod_LC4tiakN3cKlSA",
+            price_id: "price_1KVgjRFZEWHriL1ujZm3tF2h",
+          },
+          unlimited: {
+            name: "Prodotto Illimitato (test)",
+            product_id: "prod_LC4og5H6lpSLoK",
+            price_id: "price_1KVgfKFZEWHriL1utJyT904c",
+          },
+        }
+      ,
+      paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`,
+      paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`,
+      paymentSuccessUrlClient: `${baseUrlClient}/payment-success`,
+      paymentCancelUrlClient: `${baseUrlClient}/payment-cancel`,
+      checkout: {
+        shipping_allowed_countries: ["IT", "CH"], // the countries you ship to 
       },
-      paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`, // test me
-      paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`, // test me
-      paymentSuccessUrlClient: `${baseUrl}/payment-success`,
-      paymentCancelUrlClient: `${baseUrl}/payment-cancel`,
     },
   },
   email: {
-    dryrun: false, // TODOOOOOOOOOO !production, // if true, do not really send emails, use fake send
+    dryrun: false, // if true, do not really send emails, use fake send - TODO: use !production
     subject: {
       prefix: apiName,
     },
@@ -254,6 +325,7 @@ const configBase = {
       userResearch: false,
       comments: false,
       reminders: false,
+      offers: false,
     },
     push: {
       comments: false,
@@ -265,7 +337,6 @@ const configBase = {
       marketingMessages: false,
     },
   },
-
   envRequiredVariables: [
     "JWT_ACCESS_TOKEN_SECRET",
     "JWT_REFRESH_TOKEN_SECRET",
@@ -359,9 +430,16 @@ const configBase = {
       clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
       clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
     },
+    currency,
+    currencies,
     cookies: { // defaults
       key: "cookieConsent",
       expirationDays: 365, // one year
+      "default": { // default values
+        "technical": true,
+        "profiling": false,
+        "statistics": false
+      },
     },
     spinner: { // loading spinner
       /** choose one in type in:
@@ -424,7 +502,7 @@ const configBase = {
       backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
-      domain: "auth.sistemisolari.com", // TODO: removeme, used only in client, test-federated-login.js
+      //domain: "auth.sistemisolari.com", // TODO: removeme, used only in client, test-federated-login.js
       // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
       scope: [ "email", "openid" ],
       responseType: "code",
@@ -438,6 +516,19 @@ const configBase = {
         "Google",
         "Facebook",
       ],
+    },
+    ecommerce: {
+      enabled: true, // enable ecommerce flag - TODO: assert this flag before showing cart/buy/...
+      checkoutProvider: "Stripe",
+      gift: false, // enable gift flag (no invoice in the package, better packaging...)
+      delivery: {
+        enabled: true,
+        methods: [
+          { code: "none", description: "No delivery", price: 0 }, // see misc/strings-for-translation.js
+          { code: "express", description: "Express delivery, 3 days", price: 600 }, // see misc/strings-for-translation.js
+          { code: "standard", description: "Standard delivery, 7 days", price: 900 }, // see misc/strings-for-translation.js
+        ],
+      },
     },
     index: { // to inject index.html
       language: serverLocale, // TODO: update index.language when user changes locale
@@ -508,7 +599,7 @@ const deepMergeObjects = (target, source) => {
     }
   }
   // combine target and updated source
-  const retval = Object.assign(target || {}, source);
+  Object.assign(target || {}, source);
   return Object.assign(target || {}, source);
 }
 

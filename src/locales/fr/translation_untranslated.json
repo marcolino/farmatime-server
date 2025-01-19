@@ -130,7 +130,7 @@
   "User must be authenticated": "L'utilisateur doit être authentifié",
   "User not found": "Utilisateur non trouvé",
   "User oauth login creation/update error: {{error}}": "Erreur de création/mise à jour de connexion OAuth utilisateur : {{error}}",
-  "User with id {userId} not found": "Utilisateur avec l'identifiant {userId} non trouvé",
+  "User with id {userId} not found": "__STRING_NOT_TRANSLATED__",
   "We provide the best services in the industry, focusing on quality and customer satisfaction": "Nous fournissons les meilleurs services de l'industrie, en mettant l'accent sur la qualité et la satisfaction du client",
   "welcome_message": "__welcome_message",
   "Wrong password": "Mauvais mot de passe",

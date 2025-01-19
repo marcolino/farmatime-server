@@ -10,15 +10,15 @@ const ProductSchema = mongoose.Schema({
   },
   make: {
     type: String,
-    custom: {
-      searchable: true, // this field will be "searchable", i.e.: normalized across diacritics
-    }
+    // custom: {
+    //   searchable: true, // this field will be "searchable", i.e.: normalized across diacritics
+    // }
   },
   models: [{
     type: String,
-    custom: {
-      searchable: true, // this field will be "searchable", i.e.: normalized across diacritics
-    }
+    // custom: {
+    //   searchable: true, // this field will be "searchable", i.e.: normalized across diacritics
+    // }
   }],
   application: {
     type: String,
@@ -56,6 +56,16 @@ const ProductSchema = mongoose.Schema({
   notes: {
     type: String,
   },
+  price: {
+    type: Number,
+    get: getPrice, // get from integere cents to decimal units
+    set: setPrice, // set from decimal units to integer cents
+  },
+  currency: {
+    type: String,
+    enum: Object.keys(config.currencies),
+    default: config.currency,
+  },
   isDeleted: {
     type: Boolean,
     default: false
@@ -67,6 +77,17 @@ const ProductSchema = mongoose.Schema({
   //   strength: config.db.collation.strength,
   // },
 });
+
+function getPrice(num) {
+  return (num / 100).toFixed(2);
+}
+
+function setPrice(num) {
+  return num * 100;
+}
+
+ProductSchema.paths["make"].options.searchable = true;
+ProductSchema.paths["models"].options.searchable = true;
 
 // filter deleted documents by default for all `find` and `count` queries
 ProductSchema.pre(/^find|^count/, function(next) {
@@ -91,8 +112,14 @@ ProductSchema.pre(/^find|^count/, function(next) {
 //   next();
 // });
 
-ProductSchema.post(/^find/, function() {
-  // TODO: trap regular expression errors...
-});
+// ProductSchema.post(/^find/, function() {
+//   // trap regular expression errors...
+//   try {
+//     //console.log("Find operation completed");
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 module.exports = mongoose.model("Product", ProductSchema);

@@ -84,12 +84,14 @@
   use fly.io persistent volumes, and add a check to avoid exceeding maximum allowed space in the free tier - OK
 - replace mailto:support@yourcompany.com with config.email.support... - OK
 - alle volte si vede ancora "Devi essere autenticato per questa azione" al logout - OK
-
+- use API_KEY from ../acme-server/.env in scripts/translate - OK
+- integrate scripts/translate.py in yarn pub script (at requezt) - OK
 
 NEWFEATURE:
 - configurare un account su Cloudflare...
 - gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)
 - gestire email preferences (clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`)
 - gestire "justRegistered" (se sarà necessario)
-- rimuovere gli account non confermati, periodicamente (quando sarà necessario)
+- rimuovere gli account "non confermati", periodicamente (quando sarà necessario)
+- rimuovere gli account "rimossi", periodicamente (quando sarà necessario)
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)

@@ -168,7 +168,7 @@ const socialLogin = async(req, res, next) => {
 
   // create new refresh token
   try {
-    user.refreshToken = await RefreshToken.createToken(user);
+    user.refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
   } catch (err) {
     return redirectToClientWithError(req, res, {
       message: req.t("Error creating refresh token: {{error}}", { error: err.message })
@@ -177,7 +177,9 @@ const socialLogin = async(req, res, next) => {
 
   logger.info(`User social signin email: ${user.email}`);
 
-  // notify support about social logins
+  // audit social logins
+  // TODO: `IP: ${remoteAddress(req)}` and `on ${localeDateTime()}` should be set by audit function internally, everywhere we use audit() ...
+  // TODO: add a "mode" param to audit ("action", "warning", "error"), to be reflected with colors in body and emoticon in subject
   audit({ req, subject: `SignIn - user ${user.email} social (${provider})`, htmlContent: `SignIn social (${provider}) of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}` });
 
   user.save(async(err, user) => {
@@ -222,7 +224,7 @@ const redirectToClient = (req, res, success, payload) => {
   );
   const stringifiedPayload = JSON.stringify(payload);
   url.searchParams.set("data", stringifiedPayload);
-  return res.redirect(url);
+  res.redirect(url);
 };
 
 // social OAuth revoke
@@ -475,7 +477,7 @@ const signin = async(req, res, next) => {
     }
 
     // if user.password === "", it could be a social auth user...
-    if (!user.password && user.socialId) {
+    if (!user.password && user.socialId) { // TODO: test me!
       let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
       provider = provider.charAt(0).toUpperCase() + provider.slice(1)
       return res.status(401).json({
@@ -505,9 +507,8 @@ const signin = async(req, res, next) => {
     }
 
     // create new refresh token
-    //user.refreshToken = await RefreshToken.createToken(user, config.auth.refreshTokenExpirationSeconds);
     try {
-      user.refreshToken = await RefreshToken.createToken(user);
+      user.refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
     } catch (err) {
       return res.status(401).json({
         message: req.t("Error creating refresh token: {{error}}", { error: err.message }),
@@ -517,7 +518,7 @@ const signin = async(req, res, next) => {
 
     logger.info(`User signin: ${user.email}`);
 
-    // notify support about logins
+    // audit logins
     audit({req, subject: `SignIn - user ${user.email}`, htmlContent: `SignIn of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
 
     res.status(200).json({
@@ -555,7 +556,7 @@ const signout = async (req, res, next) => {
       return res.status(401).json({ message: req.t("User not found") });
     }
 
-    // notify support about logouts
+    // audit logouts
     //audit({req, subject: `SignOut - user ${user.email}`, htmlContent: `SignOut of user with email: ${user.email}, IP: ${remoteAddress(req)}, on ${localeDateTime()}`});
   
     // invalidate access and refresh tokens
@@ -731,7 +732,7 @@ const refreshToken = async(req, res, next) => {
   if (!token) { // refresh token is required
     logger.warn("refreshToken: session has no token");
     return res.status(401).json({
-      message: req.t("You must be authenticated for this action (in refreshToken)"), // TODO: remove "(in ...)"
+      message: req.t("You must be authenticated for this action"),
       code: "NO_TOKEN",
     });
   }
@@ -831,7 +832,7 @@ const notificationPreferencesSave = async (req, res, next) => {
     user.preferences.notifications = req.parameters.notificationPreferences;
     await user.save();
 
-    return res.status(200).json({ message: req.t("Notification preferences updated") });
+    return res.status(200).json({ message: req.t("Notification preferences updated"), user });
   } catch (err) {
     logger.error("Error updating notification preferences:", err);
     throw err;

@@ -98,7 +98,7 @@ const imageConvertFormatAndLimitSize = async(imageBuffer) => {
   ;
 };
 
-const imageAddWaterMark = async (imageBuffer) => {
+const imageAddWaterMark = async(imageBuffer) => {
   try {
     // resize the input image to the maximum dimensions first
     const resizedImageBuffer = await sharp(imageBuffer)
@@ -108,52 +108,33 @@ const imageAddWaterMark = async (imageBuffer) => {
       })
       .toBuffer();
 
-    // get metadata of the resized image
-    const { width, height } = await sharp(resizedImageBuffer).metadata();
-
     // process the watermark
-    const watermarkPath = path.join(__dirname, "..", config.app.ui.products.images.watermark.path);
-    const watermarkOpacized = await sharp(watermarkPath)
-      .composite([
-        {
-          input: Buffer.from([255, 255, 255, Math.round((config.app.ui.products.images.watermark.percentOpacity / 100) * 255)]),
-          raw: { width: 1, height: 1, channels: 4 },
-          tile: true,
-          blend: "dest-in",
-        },
-      ])
+    const { width } = await sharp(resizedImageBuffer).metadata();
+
+    const watermarkOpacized = await sharp(
+      path.join(__dirname, "..", config.app.ui.products.images.watermark.path)
+    )
+      .composite([{
+        input: Buffer.from([255, 255, 255, Math.round((config.app.ui.products.images.watermark.percentOpacity / 100) * 255)]),
+        raw: { width: 1, height: 1, channels: 4 },
+        tile: true,
+        blend: "dest-in"
+      }])
       .toBuffer();
 
-    let watermarkWidth = Math.floor(width * (config.app.ui.products.images.watermark.percentWidth / 100));
-    let resizedWatermarkBuffer = await sharp(watermarkOpacized)
-      .resize({ width: watermarkWidth })
+    const resizedWatermarkBuffer = await sharp(watermarkOpacized)
+      .resize(Math.floor(width * (config.app.ui.products.images.watermark.percentWidth / 100)))
       .greyscale()
       .linear(config.app.ui.products.images.watermark.contrast, 0)
       .toBuffer();
 
-    // check if the watermark height exceeds the image height
-    let watermarkMetadata = await sharp(resizedWatermarkBuffer).metadata();
-    if (watermarkMetadata.height > height) {
-      const scaleFactor = height / watermarkMetadata.height; // calculate the scale factor
-      watermarkWidth = Math.floor(watermarkWidth * scaleFactor); // adjust watermark width proportionally
-      resizedWatermarkBuffer = await sharp(watermarkOpacized)
-        .resize({ width: watermarkWidth })
-        .greyscale()
-        .linear(config.app.ui.products.images.watermark.contrast, 0)
-        .toBuffer();
-
-      watermarkMetadata = await sharp(resizedWatermarkBuffer).metadata(); // update metadata
-    }
-
     // composite the watermark onto the resized input image
     const finalImageBuffer = await sharp(resizedImageBuffer)
-      .composite([
-        {
-          input: resizedWatermarkBuffer,
-          gravity: "center",
-          blend: "over",
-        },
-      ])
+      .composite([{
+        input: resizedWatermarkBuffer,
+        gravity: "center",
+        blend: "over",
+      }])
       .webp({
         quality: config.products.images.qualityPercent,
         alphaQuality: config.products.images.alphaQualityPercent,

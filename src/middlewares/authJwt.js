@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { isAdministrator, localeDateTime } = require("../helpers/misc");
 const { logger } = require("../controllers/logger.controller");
-const config = require("../config");
+//const config = require("../config");
 
 const { TokenExpiredError } = jwt;
 
@@ -12,7 +12,7 @@ const verifyAccessToken = (req, res, next) => {
   if (!token) {
     logger.error("verifyAccessToken: no token");
     return res.status(401).json({
-      message: req.t("You must be authenticated for this action (in verifyAccessToken)"), // TODO: remove "(in ...)"
+      message: req.t("You must be authenticated for this action"),
       code: "NO_TOKEN"
     });
   }

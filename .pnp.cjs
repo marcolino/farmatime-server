@@ -38,12 +38,12 @@ const RAW_RUNTIME_STATE =
           ["codice-fiscale-js", "npm:2.3.22"],\
           ["compression", "npm:1.7.4"],\
           ["cors", "npm:2.8.5"],\
+          ["country-code-to-flag-emoji", "npm:1.3.3"],\
           ["dotenv", "npm:16.4.5"],\
           ["ejs", "npm:3.1.10"],\
           ["email-validator", "npm:2.0.4"],\
           ["eslint", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:9.16.0"],\
           ["express", "npm:4.19.2"],\
-          ["express-async-errors", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1"],\
           ["express-session", "npm:1.18.0"],\
           ["globals", "npm:15.13.0"],\
           ["helmet", "npm:7.1.0"],\
@@ -52,6 +52,7 @@ const RAW_RUNTIME_STATE =
           ["i18next-fs-backend", "npm:2.3.2"],\
           ["i18next-http-middleware", "npm:3.6.0"],\
           ["i18next-parser", "npm:9.0.2"],\
+          ["ip3country", "npm:5.0.0"],\
           ["jsonwebtoken", "npm:8.5.1"],\
           ["memorystore", "npm:1.6.7"],\
           ["mocha", "npm:9.2.2"],\
@@ -1386,12 +1387,12 @@ const RAW_RUNTIME_STATE =
           ["codice-fiscale-js", "npm:2.3.22"],\
           ["compression", "npm:1.7.4"],\
           ["cors", "npm:2.8.5"],\
+          ["country-code-to-flag-emoji", "npm:1.3.3"],\
           ["dotenv", "npm:16.4.5"],\
           ["ejs", "npm:3.1.10"],\
           ["email-validator", "npm:2.0.4"],\
           ["eslint", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:9.16.0"],\
           ["express", "npm:4.19.2"],\
-          ["express-async-errors", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1"],\
           ["express-session", "npm:1.18.0"],\
           ["globals", "npm:15.13.0"],\
           ["helmet", "npm:7.1.0"],\
@@ -1400,6 +1401,7 @@ const RAW_RUNTIME_STATE =
           ["i18next-fs-backend", "npm:2.3.2"],\
           ["i18next-http-middleware", "npm:3.6.0"],\
           ["i18next-parser", "npm:9.0.2"],\
+          ["ip3country", "npm:5.0.0"],\
           ["jsonwebtoken", "npm:8.5.1"],\
           ["memorystore", "npm:1.6.7"],\
           ["mocha", "npm:9.2.2"],\
@@ -2523,6 +2525,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["country-code-to-flag-emoji", [\
+      ["npm:1.3.3", {\
+        "packageLocation": "./.yarn/cache/country-code-to-flag-emoji-npm-1.3.3-0aa24a2ac2-51280658e7.zip/node_modules/country-code-to-flag-emoji/",\
+        "packageDependencies": [\
+          ["country-code-to-flag-emoji", "npm:1.3.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["cross-fetch", [\
       ["npm:4.0.0", {\
         "packageLocation": "./.yarn/cache/cross-fetch-npm-4.0.0-9c67668db4-e231a71926.zip/node_modules/cross-fetch/",\
@@ -3341,28 +3352,6 @@ const RAW_RUNTIME_STATE =
           ["type-is", "npm:1.6.18"],\
           ["utils-merge", "npm:1.0.1"],\
           ["vary", "npm:1.1.2"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["express-async-errors", [\
-      ["npm:3.1.1", {\
-        "packageLocation": "./.yarn/cache/express-async-errors-npm-3.1.1-c0a6b1e552-dae2b88a64.zip/node_modules/express-async-errors/",\
-        "packageDependencies": [\
-          ["express-async-errors", "npm:3.1.1"]\
-        ],\
-        "linkType": "SOFT"\
-      }],\
-      ["virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1", {\
-        "packageLocation": "./.yarn/__virtual__/express-async-errors-virtual-01e3e40d81/0/cache/express-async-errors-npm-3.1.1-c0a6b1e552-dae2b88a64.zip/node_modules/express-async-errors/",\
-        "packageDependencies": [\
-          ["express-async-errors", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:3.1.1"],\
-          ["@types/express", null],\
-          ["express", "npm:4.19.2"]\
-        ],\
-        "packagePeers": [\
-          "@types/express",\
-          "express"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -4357,6 +4346,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/ip-regex-npm-2.1.0-7eb0f6c4ab-331d95052a.zip/node_modules/ip-regex/",\
         "packageDependencies": [\
           ["ip-regex", "npm:2.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["ip3country", [\
+      ["npm:5.0.0", {\
+        "packageLocation": "./.yarn/cache/ip3country-npm-5.0.0-91f8bbd676-5ea7811013.zip/node_modules/ip3country/",\
+        "packageDependencies": [\
+          ["ip3country", "npm:5.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\

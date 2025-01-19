@@ -6,7 +6,7 @@ const path = "/api/misc";
 
 module.exports = app => {
   app.get(`${path}/ping`, controller.ping);
-  app.get(`${path}/maintenanceStatus`, controller.maintenanceStatus);
+  // app.get(`${path}/maintenanceStatus`, controller.maintenanceStatus);
   if (!config.mode.production) { // only available while developing
     app.get(`${path}/sendTestEmail`, controller.sendTestEmail);
   }
