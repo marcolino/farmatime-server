@@ -8,7 +8,8 @@ const { TokenExpiredError } = jwt;
 // middleware method to authenticate requests
 const verifyAccessToken = (req, res, next) => {
   try {
-    //console.log("DBG> verifyAccessToken - req.cookies:", req.cookies);
+    
+    console.log("DBG> verifyAccessToken - req.cookies:", req.cookies);
 
     // extract the token from the cookies
     const accessToken = req.cookies.accessToken;
@@ -41,19 +42,20 @@ const verifyAccessToken = (req, res, next) => {
 
             // refresh token is valid, issue a new access token
             const newAccessToken = jwt.sign({ id: refreshDecoded.id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
-              expiresIn: config.app.auth.accessTokenExpirationSeconds + "s",
+              expiresIn: config.app.auth.accessTokenExpirationSeconds + "s", // e.g., "15m"
             });
 
+            //const maxAgeRefreshToken = config.app.auth.refreshTokenExpirationDontRememberMeSeconds * 1000;
+
             // set the new access token in cookies
-            res.cookie("accessToken", newAccessToken, cookieOptions());
-            // res.cookie("accessToken", newAccessToken, { // TODO: get standard cookie...
-            //   httpOnly: true,
-            //   secure: false, // Use true in production
-            //   sameSite: "none",
-            //   //maxAge: config.app.auth.accessTokenExpirationSeconds * 1000, // match access token expiration
-            //   //maxAge: maxAgeRefreshToken * 2, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-            //   maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-            // });
+            res.cookie("accessToken", newAccessToken, { // TODO: get standard cookie...
+              httpOnly: true,
+              secure: false, // Use true in production
+              sameSite: "none",
+              //maxAge: config.app.auth.accessTokenExpirationSeconds * 1000, // match access token expiration
+              //maxAge: maxAgeRefreshToken * 2, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
+              maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
+            });
 
             // attach user ID to request object
             req.userId = refreshDecoded.id;
@@ -110,9 +112,71 @@ const verifyAccessTokenAllowGuest = (req, res, next) => {
   return verifyAccessToken(req, res, next);
 };
 
+/**
+ * old auth system, deprecated
+ *
+const verifyAccessToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  if (!token) {
+    logger.error("verifyAccessToken: no token");
+    return res.status(401).json({
+      message: req.t("You must be authenticated for this action"),
+      code: "NO_TOKEN"
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      if (err instanceof TokenExpiredError) {
+        logger.error("verifyAccessToken: token is expired");
+        return res.status(401).json({
+          message: req.t("Session is expired, please make a new signin request"),
+          code: "EXPIRED_TOKEN",
+        });
+      }
+      logger.error("verifyAccessToken: token error:", err.message);
+      return res.status(401).json({
+        message: req.t("Session is not valid ({{err}}), please make a new signin request", { err: err.message }),
+        code: "BAD_TOKEN",
+      });
+    }
+    // if (!config.mode.production) {
+    //   const { exp } = jwt.decode(token);
+    //   logger.info(`Access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
+    // }
+    if (!decoded.id) { // jwt.verify did not error out but did not give an id, should not happen
+      logger.error("verifyAccessToken: decoded token has no id");
+      return res.status(401).json({
+        message: req.t("Session is not valid ({{err}}), please make a new signin request", { err: "no user id" }),
+        code: "WRONG_TOKEN",
+      });
+    }
+    req.userId = decoded.id;
+    next();
+  });
+};
+
+const verifyAccessTokenAllowGuest = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  if (!token) { // allow guests
+    return next();
+  }
+  return verifyAccessToken(req, res, next);
+};
+*/
+
 const verifyNotificationToken = (req, res, next) => {
   const token = req.parameters.token;
- 
+  //const tokenFromHeaders = req.headers["authorization"];
+
+  // if (token) { // coming here from external (an email link for example)
+  //   req.parameters.navigationFrom = "external";
+  // } else {
+  //   req.parameters.navigationFrom = "internal";
+  // }
+
   if (!token) {
     return res.status(401).json({
       message: req.t("Notification token not present"),
@@ -177,19 +241,6 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-// options for HTTP-only cookies (secure, not accessible by javascript on the client)
-const cookieOptions = (setAge = true) => {
-  const options = {
-    httpOnly: true,
-    secure: config.mode.production,
-    samesite: config.mode.production ? "Strict" : "Lax",
-  };
-  return setAge ? {
-    ...options,
-    maxAge: config.app.auth.cookiesExpirationSeconds * 1000,
-  } : options;
-}
-
 // tokens cleanup functions
 const cleanupExpiredTokens = async (req, res, next) => { // we should not need this function, expired tokens should be automatically removed
   const expiredSinceSeconds = req.expiredSinceSeconds ?? 0;
@@ -210,6 +261,5 @@ module.exports = {
   verifyAccessTokenAllowGuest,
   verifyNotificationToken,
   isAdmin,
-  cookieOptions,
   cleanupExpiredTokens,
 };

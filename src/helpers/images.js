@@ -34,15 +34,17 @@ const saveImageFile = async (req) => {
   if (sizeAfterSave >= config.persistentStorage.size.overflow) {
     const subject = i18n.t("Image file save size overflow limit reached");
     const message = i18n.t("Persistent storage size overflow limit reached ({{overflow}}), image cannot be saved, storage plan should be boosted", { overflow: config.persistentStorage.size.overflow });
-    logger.error(message);
-    audit({req, subject, htmlContent: message});
+    const mode = "warning";
+    logger.warn(message);
+    audit({req, mode, subject, htmlContent: message});
     throw new Error(message);
   }
   if (sizeAfterSave >= config.persistentStorage.size.watermark) {
     const subject = i18n.t("Image file save size watermark limit reached");
     const message = i18n.t("Persistent storage size watermark limit reached ({{watermark}}), image is saved, but storage plan should be boosted", { watermark: config.persistentStorage.size.watermark });
-    logger.warn(message);
-    audit({req, subject, htmlContent: message});
+    const mode = "error";
+    logger.error(message);
+    audit({req, mode, subject, htmlContent: message});
   }
 
   try {

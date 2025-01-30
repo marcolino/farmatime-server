@@ -72,7 +72,11 @@ const getProducts = async (req, res/*, next*/) => {
     return res.status(200).json({products, count: totalCount});
   } catch(err) {
     logger.error("Error getting products:", err, err.stack);
-    throw err;
+    return res.status(500).json({
+      message: req.t("Error getting products" + ": " + err.message),
+      stack: err.stack,
+    }); // RETURN here
+    //throw err;
   };
 };
 

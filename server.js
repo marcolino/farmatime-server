@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -51,7 +52,7 @@ if (config.payment.stripe.enabled) {
 
 const app = express();
 
-//logger.log("HELMET:", helmet.contentSecurityPolicy.getDefaultDirectives());
+//logger.log("HELMET CSS:", helmet.contentSecurityPolicy.getDefaultDirectives());
 app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
@@ -79,6 +80,9 @@ app.use(helmet.contentSecurityPolicy({
   }
 }));
 
+// use cookie-parser middleware
+app.use(cookieParser());
+
 // use compression
 app.use(compression());
 
@@ -98,7 +102,14 @@ app.use(morgan("api-logs", {
 
 // enable CORS, and whitelist our urls
 app.use(cors({
-  origin: config.clientDomains, // the accepted client domains
+  //origin: config.clientDomains, // the accepted client domains
+  origin: (origin, callback) => {
+    if (!origin || config.clientDomains.includes(origin)) {
+      callback(null, origin);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
   methods: ["GET", "POST", "OPTIONS"], // allowed methods
   //allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
   credentials: true, // if cookies/auth headers are needed
@@ -122,12 +133,12 @@ app.use(rateLimit);
 // apply check referer middleware globally
 app.use(checkReferer);
 
-// add default headers
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
-  next();
-});
+// // add default headers
+// app.use((req, res, next) => {
+//   //res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
+//   next();
+// });
 
 // merge req.query and req.body to req.parameters
 app.use((req, res, next) => {
@@ -136,8 +147,8 @@ app.use((req, res, next) => {
 });
 
 // handle maintenance mode
-app.use(async(req, res, next) => {
-  const env = await Env.load(); // load env and access it
+app.use(async (req, res, next) => {
+  const env = await Env.load(); // load env and access it (it is cached for config.envReloadIntervalSeconds)
   if (env.MAINTENANCE === "true") {
     return res.status(503).json({ message: "On maintenance" });
   }
@@ -228,14 +239,13 @@ app.use((err, req, res, next) => { // next is needed to be considered error hand
   if (status === 500) {
     // audit errors
     audit({
-      req,
-      subject: `Error ${message}`,
-      htmlContent: `<pre>
-Error - status: ${status}
-Mode: ${process.env.NODE_ENV}
-IP: ${remoteAddress(req)}
-Date: ${localeDateTime()}
-Stack: ${stack}
+      req, mode: "error", subject: `Error: ${message}`, htmlContent: `
+<pre>
+  Status: ${status}
+  Mode: ${process.env.NODE_ENV}
+  IP: ${remoteAddress(req)}
+  Date: ${localeDateTime()}
+  Stack: ${stack}
 </pre>`,
     });
     message += ` -  ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")}`;
@@ -265,8 +275,8 @@ async function start() {
     const host = "0.0.0.0";
     app.listen(port, host, () => {
       logger.info(`Server is running on ${host}:${port}`);
-      // notify support abount server start up
-      //audit({ subject: `server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
+      // notify support about server start up
+      audit({req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
     });
   } catch (err) {
     logger.error("Server listen error:", err);
@@ -282,7 +292,12 @@ process.on("uncaughtException", (err) => {
 
 // handle all unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled rejection, promise:", promise, ", reason:", reason);
+  //logger.error("Unhandled rejection, promise:", promise, ", reason:", reason);
+  if (reason instanceof Error) {
+    logger.error(`Unhandled rejection at promise: ${promise}, reason: ${reason.message}, stack: ${reason.stack}`);
+  } else {
+    logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
+  }
   //process.exit(1); // optional: exit or restart the app
 });
 

@@ -130,13 +130,6 @@ const configBase = {
       ]
     }
   },
-  auth: {
-    accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL
-    refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL
-    refreshTokenExpirationDontRememberMeSeconds: 60 * 60, // 1 hour TTL
-    notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL
-    codeDeliveryMedium: "email", // "email" / "sms" / ...
-  },
   // db: {
   //   products: {
   //     search: {
@@ -293,7 +286,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: false, // if true, do not really send emails, use fake send - TODO: use !production
+    dryrun: development, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -409,6 +402,17 @@ const configBase = {
       redirect: "follow",
       timeoutSeconds: production ? 20 : 30, // the maximum time in seconds to wait for an API response (production to free fly.io instance must be at lest 20 seconds...)
     },
+    auth: {
+      cookiesExpirationSeconds: 60 * 60 * 24 * ((7 * 2) + 1), // 2 week + 1 day TTL: should be longer than refreshTokenExpirationSeconds, to avoid cookie expiration before tokens inside expiration
+      accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL: time after access token expires, and must be refreshed
+      refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL: time after refresh token expires, and user must sign in again (in case user did not check DontRememberMe)
+      refreshTokenExpirationDontRememberMeSeconds: 3600, //60 * 60, // 1 hour TTL: time after refresh token expires, and user must sign in again (in case user did check DontRememberMe)
+      notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL: time after notification token expires (in notifiction emails for example)
+      codeDeliveryMedium: "email", // "email" / "sms" / ...: the signup confirmation code delivery medium
+      clientSessionExpirationSeconds: 0, // time after which session "pre-expires": user is asked to logout if session is no longer in use - 0 means no expiration
+      clientSessionExpirationResponseMaximumSeconds: 900, // time after which - after a session "pre-expiration" prompt has been presented to user and no response is obtained, the session will be terminated, and user logged out
+      //"clientLastActivityCheckTimeoutSeconds": 3600, // unused...
+    },
     images: {
       publicPath: "/assets/products/images",
       publicPathWaterMark: "/assets/products/imagesWaterMark",
@@ -424,11 +428,6 @@ const configBase = {
       // use: "start_url": "/app"
       startUrl: "./", // start_url value in manifest
       display: "standalone", // display value in manifest
-    },
-    auth: {
-      clientSessionExpirationSeconds: 0, //60 * 60 * 72, // the seconds of user inactivity before we ask user for session continuation (should be less than auth.refreshTokenExpirationSeconds)
-      clientSessionExpirationResponseMaximumSeconds: 15 * 60, // the seconds the user has to respond to the question, before being forcibly logged out
-      clientLastActivityCheckTimeoutSeconds: 60 * 60 * 1, // the seconds timeout when we check if client session is expired for user inactivity
     },
     currency,
     currencies,
@@ -525,8 +524,8 @@ const configBase = {
         enabled: true,
         methods: [
           { code: "none", description: "No delivery", price: 0 }, // see misc/strings-for-translation.js
-          { code: "express", description: "Express delivery, 3 days", price: 600 }, // see misc/strings-for-translation.js
-          { code: "standard", description: "Standard delivery, 7 days", price: 900 }, // see misc/strings-for-translation.js
+          { code: "standard", description: "Standard delivery, 7 days", price: 600 }, // see misc/strings-for-translation.js
+          { code: "express", description: "Express delivery, 3 days", price: 900 }, // see misc/strings-for-translation.js
         ],
       },
     },

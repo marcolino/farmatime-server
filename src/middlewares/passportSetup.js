@@ -59,13 +59,13 @@ module.exports = (app) => {
   // sessions and passport initialization
   app.use(session({
     cookie: {
-      maxAge: config.auth.refreshTokenExpirationSeconds
+      maxAge: config.app.auth.refreshTokenExpirationSeconds // TODO: this or refreshTokenExpirationDontRememberMeSeconds ...
     },
     resave: false,
     saveUninitialized: false,
     secret: process.env.PASSPORT_SECRET,
     store: new MemoryStore({
-      checkPeriod: config.auth.refreshTokenExpirationSeconds // prune expired entries when maxAge expires
+      checkPeriod: config.app.auth.refreshTokenExpirationSeconds // prune expired entries when maxAge expires- TODO: this or refreshTokenExpirationDontRememberMeSeconds
     }),
   }))
   

@@ -17,7 +17,7 @@ module.exports = function(app) {
   app.post(`${path}/resetPassword`, controller.resetPassword);
   app.post(`${path}/resetPasswordConfirm`, controller.resetPasswordConfirm);
   app.post(`${path}/resendResetPasswordCode`, controller.resendResetPasswordCode);
-  app.post(`${path}/refreshtoken`, controller.refreshToken);
+  //app.post(`${path}/refreshtoken`, controller.refreshToken);
   app.get(`${path}/google`, controller.googleLogin);
   app.get(`${path}/google/callback`, controller.googleCallback);
   app.post(`${path}/google/revoke`, controller.googleRevoke);

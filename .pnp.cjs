@@ -37,8 +37,8 @@ const RAW_RUNTIME_STATE =
           ["chai-spies", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:1.1.0"],\
           ["codice-fiscale-js", "npm:2.3.22"],\
           ["compression", "npm:1.7.4"],\
+          ["cookie-parser", "npm:1.4.7"],\
           ["cors", "npm:2.8.5"],\
-          ["country-code-to-flag-emoji", "npm:1.3.3"],\
           ["dotenv", "npm:16.4.5"],\
           ["ejs", "npm:3.1.10"],\
           ["email-validator", "npm:2.0.4"],\
@@ -1386,8 +1386,8 @@ const RAW_RUNTIME_STATE =
           ["chai-spies", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:1.1.0"],\
           ["codice-fiscale-js", "npm:2.3.22"],\
           ["compression", "npm:1.7.4"],\
+          ["cookie-parser", "npm:1.4.7"],\
           ["cors", "npm:2.8.5"],\
-          ["country-code-to-flag-emoji", "npm:1.3.3"],\
           ["dotenv", "npm:16.4.5"],\
           ["ejs", "npm:3.1.10"],\
           ["email-validator", "npm:2.0.4"],\
@@ -2478,6 +2478,24 @@ const RAW_RUNTIME_STATE =
           ["cookie", "npm:0.6.0"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:0.7.2", {\
+        "packageLocation": "./.yarn/cache/cookie-npm-0.7.2-6ea9ee4231-24b286c556.zip/node_modules/cookie/",\
+        "packageDependencies": [\
+          ["cookie", "npm:0.7.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["cookie-parser", [\
+      ["npm:1.4.7", {\
+        "packageLocation": "./.yarn/cache/cookie-parser-npm-1.4.7-970a70a2fd-243fa13f21.zip/node_modules/cookie-parser/",\
+        "packageDependencies": [\
+          ["cookie-parser", "npm:1.4.7"],\
+          ["cookie", "npm:0.7.2"],\
+          ["cookie-signature", "npm:1.0.6"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["cookie-signature", [\
@@ -2521,15 +2539,6 @@ const RAW_RUNTIME_STATE =
           ["cors", "npm:2.8.5"],\
           ["object-assign", "npm:4.1.1"],\
           ["vary", "npm:1.1.2"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["country-code-to-flag-emoji", [\
-      ["npm:1.3.3", {\
-        "packageLocation": "./.yarn/cache/country-code-to-flag-emoji-npm-1.3.3-0aa24a2ac2-51280658e7.zip/node_modules/country-code-to-flag-emoji/",\
-        "packageDependencies": [\
-          ["country-code-to-flag-emoji", "npm:1.3.3"]\
         ],\
         "linkType": "HARD"\
       }]\

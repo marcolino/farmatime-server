@@ -17,13 +17,13 @@ const AccessTokenSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    //expires: config.auth.accessTokenExpirationSeconds,
+    //expires: config.app.auth.accessTokenExpirationSeconds,
   },
   expiresAt: {
     type: Date,
     default: () => {
       let expirationDate = new Date();
-      expirationDate.setSeconds(expirationDate.getSeconds() + config.auth.accessTokenExpirationSeconds);
+      expirationDate.setSeconds(expirationDate.getSeconds() + config.app.auth.accessTokenExpirationSeconds);
       return expirationDate;
     }
   },
@@ -39,10 +39,10 @@ const AccessTokenSchema = new mongoose.Schema({
 
 AccessTokenSchema.statics.createToken = async function (user) {
   let token = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: config.auth.accessTokenExpirationSeconds,
+    expiresIn: config.app.auth.accessTokenExpirationSeconds,
   });
 
-  const expiresAt = Date.now() + (config.auth.accessTokenExpirationSeconds * 1000);
+  const expiresAt = Date.now() + (config.app.auth.accessTokenExpirationSeconds * 1000);
   const object = new this({
     token,
     user: user._id,

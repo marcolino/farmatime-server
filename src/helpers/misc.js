@@ -129,12 +129,10 @@ const localeDateTime = (date = new Date()) => {
 };
 
 const remoteAddress = (req) => {
-  return (
-    req?.headers["x-forwarded-for"] ??
-    req?.connection.remoteAddress ??
-    req?.socket?.remoteAddress ??
-    req?.connection?.socket?.remoteAddress
-  ).replace(/^\w+:/, "");
+  const forwardedForAddress = req?.headers["x-forwarded-for"];
+  const connectionRemoteAddress = req?.connection.remoteAddress;
+  const remoteAddress = (forwardedForAddress ?? connectionRemoteAddress ?? "local").split(",")[0]; // we can have more than one address, comma separated: use the first one, if this is the case
+  return remoteAddress;
 };
 
 const isAdministrator = async(userId) => {
@@ -291,6 +289,36 @@ const diacriticsRemove = (string = "") => {
   return result;
 }
 
+const countryCodeToFlag = (countryCode) => {
+  // Validate the input to be exactly two characters long and all alphabetic
+  if (!countryCode || countryCode.length !== 2 || !/^[a-zA-Z]+$/.test(countryCode)) {
+    return '🏳️'; // White Flag Emoji for unknown or invalid country codes
+  }
+
+  // Convert the country code to uppercase to match the regional indicator symbols
+  const code = countryCode.toUpperCase();
+  
+  // Calculate the offset for the regional indicator symbols
+  const offset = 127397;
+  
+  // Convert each letter in the country code to its corresponding regional indicator symbol
+  const flag = Array.from(code).map(letter => String.fromCodePoint(letter.charCodeAt(0) + offset)).join('');
+  
+  return flag;
+};
+
+/**
+ * Format money
+ * 
+ * number: {integer} value in cents
+ * currency: {string} currency symbol
+ * 
+ * return: {string} formatted value
+ */
+const formatMoney = (number, locale = config.app.serverLocale, currency = config.currency) => {
+  return (number / 100).toLocaleString(locale, { style: "currency", currency });
+};
+
 module.exports = {
   isString,
   isObject,
@@ -309,4 +337,6 @@ module.exports = {
   getFieldType,
   diacriticMatchRegex,
   diacriticsRemove,
+  countryCodeToFlag,
+  formatMoney,
 };

@@ -87,6 +87,11 @@
 - use API_KEY from ../acme-server/.env in scripts/translate - OK
 - integrate scripts/translate.py in yarn pub script (at requezt) - OK
 
+- setup and test a working staging environment: same as prod, but with a different database and different baseUrl
+- IP to flag: se sono 2, scegliere il primo (?)
+- mode: [ACTION], non è bello...
+
+
 NEWFEATURE:
 - configurare un account su Cloudflare...
 - gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)

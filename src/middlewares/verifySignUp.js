@@ -24,7 +24,7 @@ const checkDuplicateEmail = (req, res, next) => {
         return res.status(401).json({
           message: req.t("This account is waiting for a verification; if you did register it, check your emails") + ".",
           code: "ACCOUNT_WAITING_FOR_VERIFICATION",
-          codeDeliveryMedium: config.auth.codeDeliveryMedium,
+          codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
         });
       }
       return res.status(400).json({

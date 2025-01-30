@@ -22,20 +22,27 @@ const RefreshTokenSchema = new mongoose.Schema({
 });
 
 RefreshTokenSchema.statics.createToken = async function (user, rememberMe) {
-  let token = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_TOKEN_SECRET, {
-    expiresIn: config.auth.refreshTokenExpirationSeconds,
-  });
+  let expiresIn = (rememberMe ?
+    config.app.auth.refreshTokenExpirationSeconds
+    :
+    config.app.auth.refreshTokenExpirationDontRememberMeSeconds
+  );
+  let token = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn });
 
+  // TODO: remove this console.log...
+  console.log(`refresh token create, lasts for ${expiresIn} seconds`);
+  /////////////////////////////////////////////////////////////////////////
+  
   const expiresAt = Date.now() + (
     (rememberMe ?
-      config.auth.refreshTokenExpirationSeconds
+      config.app.auth.refreshTokenExpirationSeconds
     :
-      config.auth.refreshTokenExpirationDontRememberMeSeconds
+      config.app.auth.refreshTokenExpirationDontRememberMeSeconds
     ) * 1000);
   const object = new this({
     token,
     user: user._id,
-    expiresAt: expiresAt,
+    expiresAt,
   });
   try {
     await object.save();

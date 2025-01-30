@@ -65,27 +65,31 @@ class EmailService {
         throw new Error(message);
       }
 
-      // TODO: DEBUG ONLY !!! Always send to me, even for guest users...
-      req.user = await User.findOne({ email: "marcosolari@gmail.com" })
-        .select(["-password", "-__v"])
-        //.lean()
-        .exec()
-      ; ////////////////////////////////////////////////////////////////
-      
-      // email send service needs an authenticatd user
-      if (!req.user) {
-        const message = "No user id in request, can't send email";
-        logger.error(message);
-        throw new Error(message);
-      }
-
       let notificationToken;
-      try {
-        notificationToken = await NotificationToken.createToken(req.user, "email");
-      } catch (err) {
-        const message = `Error creating email notification token: ${err.message}`;
-        logger.error(message);
-        throw new Error(message);
+      if (req) {
+        // TODO: DEBUG ONLY !!! Always send to me, even for guest users...
+        req.user = await User.findOne({ email: "marcosolari@gmail.com" })
+          .select(["-password", "-__v"])
+          //.lean()
+          .exec()
+          ; ////////////////////////////////////////////////////////////////
+        
+        // email send service needs an authenticatd user
+        if (!req.user) {
+          const message = "No user found, can't send email";
+          logger.error(message);
+          throw new Error(message);
+        }
+
+        try {
+          notificationToken = await NotificationToken.createToken(req.user, "email");
+        } catch (err) {
+          const message = `Error creating email notification token: ${err.message}`;
+          logger.error(message);
+          throw new Error(message);
+        }
+      } else {
+        notificationToken = null;
       }
       
       if (!params) params = {};
@@ -105,8 +109,10 @@ class EmailService {
       if (params.htmlContent) { // use this as htmlContent, and avoid templates
         htmlContent = params.htmlContent;
       } else {
+        const language = req?.language ?? config.app.serverLocale;
+
         // add language and dir from request
-        params.templateParams.sys_language = req ? req.language : config.app.serverLocale;
+        params.templateParams.sys_language = language;
 
         // add system placeholders to template params
         params.templateParams = { ...params.templateParams, ...this.systemPlaceholders };
@@ -121,7 +127,7 @@ class EmailService {
         }
 
         // render template to htmlContent, with templateName, templateParams and language
-        htmlContent = this.renderTemplate(params.templateName, params.templateParams, req.language);
+        htmlContent = this.renderTemplate(params.templateName, params.templateParams, language);
       }
 
       // create smtp email object
