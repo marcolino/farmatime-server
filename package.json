@@ -11,6 +11,7 @@
   },
   "main": "server.js",
   "scripts": {
+    "s": "NODE_ENV=development nodemon --ignore client/ -w '.' -w s.js",
     "start-dev": "NODE_ENV=development nodemon --ignore client/ -w '.' -w server.js",
     "start-dev-reloading": "NODE_ENV=development nodemon --ignore client/ -w '.' -w .env -x 'node server.js || touch server.js'",
     "start-dev-trace-warnings": "NODE_ENV=development node --trace-warnings server.js",

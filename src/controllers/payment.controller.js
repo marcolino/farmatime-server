@@ -9,28 +9,39 @@ const { audit } = require("../helpers/messaging");
 const { formatMoney } = require("../helpers/misc");
 const config = require("../config");
 
-const stripe = stripeModule(
-  (process.env.STRIPE_MODE === "live") ?
-    process.env.STRIPE_API_KEY_LIVE
-  :
-    process.env.STRIPE_API_KEY_TEST
-  )
-  ;
-//console.log("*** STRIPE:", stripe);
+// const stripe = stripeModule( // TODO: use (process.env.STRIPE_MODE === "live") ?
+//   (process.env.STRIPE_MODE === "live") ?
+//     process.env.STRIPE_API_KEY_LIVE
+//   :
+//     process.env.STRIPE_API_KEY_TEST
+//   );
 
-const getMode = async(req, res) => {
-  res.status(200).json({mode: process.env.STRIPE_MODE});
-};
+// initialize Stripe module
+const stripe = stripeModule(config.mode.stripelive ?
+  process.env.STRIPE_API_KEY_LIVE :
+  process.env.STRIPE_API_KEY_TEST
+);
+
+// const getMode = async(req, res) => {
+//   res.status(200).json({mode: config.mode.stripelive ? "live" : "test"});
+// };
 
 const createCheckoutSession = async (req, res) => {
   const cart = req.parameters.cart; // cart is an object with items array
   console.log("CART: ", cart);
   const line_items = cart.items.map(item => {
+    // warning: we have to use public url, becauss Stripe needs to reach public images
+    imageUrl = config.mode.production ?
+      `${config.baseUrlPublic}/assets/products/images/${item.imageName}`
+    : // while developing we show a public static image placeholder, stripe cannot access local images...
+      `${config.baseUrlPublic}/assets/images/ImagePlaceholder.jpg`
+    ;
     return {
       price_data: {
         currency: config.currency,
         product_data: {
           name: item.mdaCode,
+          images: [ imageUrl ],
           ...(item.notes && { description: item.notes }), // conditionally add description, Stripe is quite picky here...
         },
         unit_amount: item.price, // stripe expects integer (cents)
@@ -106,7 +117,10 @@ const paymentSuccess = async(req, res) => {
 
     const items = await stripe.checkout.sessions.listLineItems(session.id);
     logger.info(`Session ${req.parameters.session_id} payment successful for ${items.data.length} product${items.data.length > 1 ? "s" : ""}${customer ? ` by customer ${customer.email}` : ""}`);
-    audit({req, mode: "action", subject: `Payment successful`, htmlContent: `Payment successful for ${items.data.length} product${items.data.length > 1 ? "s" : ""}:\n` +
+    audit({
+      req, mode: "action", subject: `Payment successful`, htmlContent: `
+        <p>Payment successful for ${items.data.length} product${items.data.length > 1 ? "s" : ""}:</p>
+      ` +
         items.data.map(item =>
           `<ul>
             <li>description: ${item.description}</li>
@@ -118,14 +132,30 @@ const paymentSuccess = async(req, res) => {
           </ul>`
         ).join("\n")
       + (customer ? `
-        By customer:
+        <p>By customer:</p>
         <ul>
           <li>name: ${customer.name}</li>
           <li>email: ${customer.email}</li>
         </ul>
       `
-     :
+      :
         "(no customer info)"
+      )
+      + (shippingInfo ? `
+        <p>Shipping info:</p>
+        <p>Name: ${shippingInfo.name}</p>
+        <p>Address:</p>
+        <ul>
+          <li>city: ${shippingInfo.address?.city}</li>
+          <li>country: ${shippingInfo.address?.country}</li>
+          <li>street: ${shippingInfo.address?.line1}</li>
+          ` + (shippingInfo.address?.line2 ? `<li> ${shippingInfo.address?.line2}</li>` : ``) + `
+          <li>postal code: ${shippingInfo.address?.postal_code}</li>
+          <li>state: ${shippingInfo.address?.state}</li>
+        </ul>
+      `
+      :
+        "(no shipping info)"
       )
     });
     res.redirect(config.payment.stripe.paymentSuccessUrlClient);
@@ -140,7 +170,7 @@ const paymentCancel = async(req, res) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(req.parameters.session_id);
     const customer = session.customer ? await stripe.customers.retrieve(session.customer) : null;
-    const items = await stripe.checkout.sessions.listLineItems(session.id);
+    //const items = await stripe.checkout.sessions.listLineItems(session.id);
     logger.info(`Payment canceled`);
     audit({req, mode: "action", subject: "Payment canceled", htmlContent: `
         Session id: ${req.parameters.session_id}\n
@@ -164,7 +194,7 @@ const paymentCancel = async(req, res) => {
 };
 
 module.exports = {
-  getMode,
+  //getMode,
   createCheckoutSession,
   paymentSuccess,
   paymentCancel,

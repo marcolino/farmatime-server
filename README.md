@@ -25,6 +25,18 @@ acme-server provides the following features:
 - Admin UI
 - acme-server Console & CLI
 
+# Dependencies
+
+## for the server:
+ - node
+ - git-crypt
+ - python
+
+## for the client
+ - yarn
+ - python
+
+
 # Getting Started
 
 You can get started with acme-server immediately on the acme-server Cloud. 

@@ -21,34 +21,20 @@ const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // injected config file name
 
-// try {
-//   let; // TEST ERROR
-// } catch (err) {
-//   logger.error("Test error:", err);
-//   throw err;
-// }
-    
 // environment configuration
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
   logger.info("Production environment");
-}
-if (config.mode.staging) { // load environment variables from .env file
-  logger.info("Staging environment");
-  // try {
-  //   require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
-  // } catch (err) {
-  //   logger.error("Error loading ./.env file:", err);
-  // }
 }
 if (config.mode.development) { // load environment variables from .env.dev file
   // require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
   logger.info("Development environment");
 }
-if (config.payment.stripe.enabled) {
-  logger.info(`Stripe payment mode is ${config.mode.livestripe}`);
+if (config.mode.staging) {
+  logger.info("Staging mode");
 }
-
-//logger.info("Database connection path 1", `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
+if (config.payment.stripe.enabled) {
+  logger.info(`Stripe is enabled, and Stripe mode is ${config.mode.stripelive}`);
+}
 
 const app = express();
 
@@ -102,8 +88,7 @@ app.use(morgan("api-logs", {
 
 // enable CORS, and whitelist our urls
 app.use(cors({
-  //origin: config.clientDomains, // the accepted client domains
-  origin: (origin, callback) => {
+  origin: (origin, callback) => { // define the accepted client domains
     if (!origin || config.clientDomains.includes(origin)) {
       callback(null, origin);
     } else {
@@ -113,22 +98,21 @@ app.use(cors({
   methods: ["GET", "POST", "OPTIONS"], // allowed methods
   //allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
   credentials: true, // if cookies/auth headers are needed
-  //exposedHeaders: ["X-Maintenance-Status"],
 }));
 
 // initialize Passport and session management using the middleware
 passportSetup(app);
 
-// parse requests of content-type - application/json
+// parse requests of content-type: application/json
 app.use(express.json({
   limit: config.api.payloadLimit, // limit payload to avoid too much data to be uploaded
 }));
 
-// use i18n
-app.use(i18nextMiddleware.handle(i18n/*ext*/));
-
 // apply rate limiting middleware globally
 app.use(rateLimit);
+
+// use i18n
+app.use(i18nextMiddleware.handle(i18n));
 
 // apply check referer middleware globally
 app.use(checkReferer);
@@ -171,11 +155,11 @@ app.use((req, res, next) => {
   }
 });
 
-// setup the email service
-emailService.setup(process.env.BREVO_EMAIL_API_KEY);
-
 // assert environment to be fully compliant with expectations
 assertEnvironment();
+
+// setup the email service
+emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 
 // the client root: the folder with the frontend site
 const rootClient = path.join(__dirname, "client", "build");
@@ -184,7 +168,7 @@ const rootClientSrc = path.join(__dirname, config.clientSrc);
 // the coverage root (used while developing only)
 const rootCoverage = path.join(__dirname, "coverage");
 
-// First, handle not found API routes BEFORE registering specific routes
+// before standard routes handle not found API routes BEFORE registering specific routes
 app.all(/^\/api(\/.*)?$/, (req, res, next) => {
   // use next() instead of returning 404 immediately
   next();
@@ -205,6 +189,7 @@ if (config.publicBasePath) {
 // handle static routes
 app.use("/", express.static(rootClient)); // base client root
 
+// handle route for coverage
 if (!config.mode.production) {
   app.use("/coverage", express.static(rootCoverage)); // coverage root
 }
@@ -214,15 +199,6 @@ app.all(/^\/api(\/.*)?$/, (req, res) => {
   return res.status(404).json({ message: "Not found" });
 })
 
-// // handle client route for base urls
-// app.get("/", async(req, res) => {
-//   //res.setHeader("Expires", new Date(Date.now() + 3600000).toUTCString()); 
-//   // if (process.env.MAINTENANCE === "true") {
-//   //   res.header("X-Maintenance-Status", "true");
-//   // }
-//   res.sendFile(path.resolve(rootClient, "index.html"));
-// });
-
 // handle client routes for all other urls
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(rootClient, "index.html"));
@@ -230,14 +206,12 @@ app.get("*", (req, res) => {
 
 // handle errors in API routes
 app.use((err, req, res, next) => { // next is needed to be considered error handling
-  //res.locals.error = err; // ???
   logger.error("Server error:", err);
   let status = err.status || 500;
   let stack = err.stack; 
    // include stack trace in development only
   let message = `${err.message || req.t("Server error")}`
-  if (status === 500) {
-    // audit errors
+  if (status === 500) { // audit errors
     audit({
       req, mode: "error", subject: `Error: ${message}`, htmlContent: `
 <pre>
@@ -275,8 +249,8 @@ async function start() {
     const host = "0.0.0.0";
     app.listen(port, host, () => {
       logger.info(`Server is running on ${host}:${port}`);
-      // notify support about server start up
-      audit({req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
+      config.mode.production && // audit server start up
+        audit({ req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
     });
   } catch (err) {
     logger.error("Server listen error:", err);
@@ -287,18 +261,15 @@ async function start() {
 // handle all uncaught exceptions
 process.on("uncaughtException", (err) => {
   logger.error("Uncaught Exception:", err);
-  //process.exit(1); // optional: exit or restart the app
 });
 
 // handle all unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
-  //logger.error("Unhandled rejection, promise:", promise, ", reason:", reason);
   if (reason instanceof Error) {
     logger.error(`Unhandled rejection at promise: ${promise}, reason: ${reason.message}, stack: ${reason.stack}`);
   } else {
     logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
   }
-  //process.exit(1); // optional: exit or restart the app
 });
 
 // if not in test mode, start the server

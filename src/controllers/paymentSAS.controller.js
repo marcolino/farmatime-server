@@ -6,7 +6,7 @@ const stripeModule = require("stripe");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
-const stripe = stripeModule(
+const stripe = stripeModule( // TODO: use config.mode.stripelive
   (process.env.STRIPE_MODE === "live") ?
     process.env.STRIPE_API_KEY_LIVE
   :
@@ -14,9 +14,9 @@ const stripe = stripeModule(
   )
 ;
 
-const getMode = async(req, res) => {
-  res.status(200).json({mode: process.env.STRIPE_MODE});
-};
+// const getMode = async(req, res) => {
+//   res.status(200).json({mode: config.mode.stripelive ? "live" : "test"});
+// };
 
 const createCheckoutSession = async(req, res) => {
   const product = req.parameters.product;
@@ -78,7 +78,7 @@ const paymentCancel = async(req, res) => {
 };
 
 module.exports = {
-  getMode,
+  //getMode,
   createCheckoutSession,
   paymentSuccess,
   paymentCancel,

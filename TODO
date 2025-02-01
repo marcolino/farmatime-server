@@ -86,10 +86,11 @@
 - alle volte si vede ancora "Devi essere autenticato per questa azione" al logout - OK
 - use API_KEY from ../acme-server/.env in scripts/translate - OK
 - integrate scripts/translate.py in yarn pub script (at requezt) - OK
+- IP to flag: se sono 2, scegliere il primo - OK
+- audit mode: [ACTION], non è bello... - OK
+- in "Payment successful" audit message body, include customer's delivery options and address... - OK
 
 - setup and test a working staging environment: same as prod, but with a different database and different baseUrl
-- IP to flag: se sono 2, scegliere il primo (?)
-- mode: [ACTION], non è bello...
 
 
 NEWFEATURE:

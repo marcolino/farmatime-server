@@ -2,10 +2,10 @@ const path = require("path");
 const fs = require("fs");
 
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
-const production = (!test && (process.env.NODE_ENV === "production")); // production mode (production behaviour, production db on public host)
-const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
+const production = (!test && (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
 const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
-const livestripe = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
+const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
+const stripelive = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
@@ -63,9 +63,10 @@ if (!production) {
 const configBase = {
   mode: {
     production,
-    staging,
     development,
+    staging,
     test,
+    stripelive,
   },
   baseUrl,
   baseUrlPublic: urlPublic, // for image urls in emails, they must always be public urls
@@ -240,7 +241,7 @@ const configBase = {
   payment: {
     stripe: {
       enabled: false,
-      products: livestripe ? // products for a typical SAAS
+      products: stripelive ? // products for a typical SAAS
         { // stripe mode is live
           free: {
             name: "Prodotto Gratuito LIVE",
@@ -286,7 +287,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: development, // if true, do not really send emails, use fake send
+    dryrun: false, // TODO: development, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
