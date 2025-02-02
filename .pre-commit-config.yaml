@@ -10,5 +10,6 @@ repos:
                 '--exclude-files', 'test',
                 '--exclude-files', 'logs/*',
                 '--exclude-files', 'src/locales/*',
+                '--exclude-files', '.env',
                 '--exclude-secrets', 'cat .env \| fly secrets import'
               ]
