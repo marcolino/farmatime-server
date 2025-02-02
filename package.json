@@ -11,7 +11,6 @@
   },
   "main": "server.js",
   "scripts": {
-    "s": "NODE_ENV=development nodemon --ignore client/ -w '.' -w s.js",
     "start-dev": "NODE_ENV=development nodemon --ignore client/ -w '.' -w server.js",
     "start-dev-reloading": "NODE_ENV=development nodemon --ignore client/ -w '.' -w .env -x 'node server.js || touch server.js'",
     "start-dev-trace-warnings": "NODE_ENV=development node --trace-warnings server.js",
@@ -33,7 +32,7 @@
     "docker-run-dev": "docker run --network='host' --env-file .env.dev -e NODE_ENV=development acmeserver",
     "docker-build-staging": "docker build --build-arg NODE_ENV=staging -t acmeserver:latest .",
     "docker-run-staging": "docker run --network='host' --env-file .env -e NODE_ENV=staging acmeserver",
-    "docker-build": "docker build --build-arg NODE_ENV=production -t acmeserver:latest .",
+    "docker-build": "sh -c 'scripts/buildEnvTemplate.sh' && docker build --build-arg NODE_ENV=production -t acmeserver:latest .",
     "docker-run": "# no sense to use production server url, use always localhost:5000 as server url! - docker run --network='host' --env-file .env -e NODE_ENV=production acmeserver",
     "fly-create-volume": "fly volume create products -r cdg -y",
     "fly-upgrade": "fly version upgrade",

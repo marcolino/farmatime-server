@@ -112,3 +112,29 @@ If you want to avoid manually running `git-crypt unlock` every time, you can:
 3. **Files are decrypted** and usable locally. 🔓
 
 By following this, you’ll retain the convenience of Git while keeping secrets safe. Test this workflow on a dummy repo to ensure it works for your setup!
+
+
+Summary:
+
+Example Final Setup:
+
+.gitignore:
+# Ignore plaintext .env
+.env
+.gitattributes:
+
+# Encrypt .env with git-crypt
+.env filter=git-crypt diff=git-crypt
+
+# Initialize git-crypt
+git-crypt init
+git-crypt export-key ../git-crypt-key  # Backup the key
+
+# Add and commit .env and .env.dev
+echo "SECRET_KEY=12345" > .env
+git add -f .env .env.dev
+git commit -m "Add encrypted .env and .env.dev"
+git push
+
+# Unlock the repo (on a new machine)
+git-crypt unlock ../git-crypt-key
