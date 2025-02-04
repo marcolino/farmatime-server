@@ -134,7 +134,7 @@ const connect = async() => {
     });
 
     try {
-      await populate() // populate database with initial contents if first time
+      await populate(); // populate database with initial contents if first time
     } catch (err) {
       logger.error("Database populate error:", err);
       throw err;

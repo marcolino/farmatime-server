@@ -106,7 +106,6 @@
   "See other": "Vedi altro",
   "Service unavailable": "Servizio non disponibile",
   "Session is expired, please make a new signin request": "La sessione è scaduta, ripeti la login, per favore",
-  "Session is not valid ({{err}}), please make a new signin request": "La sessione non è valida ({{err}}), si prega di effettuare una nuova richiesta di accesso",
   "Session is not valid, please make a new signin request": "La sessione non è valida, si prega di effettuare una nuova richiesta di accesso.",
   "Sign out successful": "Disconnessione riuscita",
   "Signup Verification Code": "Codice di verifica iscrizione",

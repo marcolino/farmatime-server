@@ -8,8 +8,15 @@ ip3country.init();
 
 const audit = async ({ req, mode, subject, htmlContent }) => {
   // set "mode" symbol (dev/prod)
-  const modeSymbol = config.mode.development ? "🚧" : "🌐";
+  const modeSymbol =
+    config.mode.development ? "🚧" :
+    config.mode.production ? (config.mode.staging ? "🚀" : "🌐") :
+    "�" // unforeseen mode
+  ;
   
+  const baseUrl = config.baseUrl;
+
+
   // get remote IP address
   const address = remoteAddress(req);
 
@@ -62,7 +69,7 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
       <br />
       <br />
       <div style="font-size: ${footerFontSize}; font-sweight: ${footerFontWeight}; color: ${footerColor}">
-        Mode is ${config.mode.development ? "development" : "production"}, request from IP ${remoteAddress(req)}, country ${remoteCountry} ${remoteFlag} at ${localeDateTime()}
+        Environment is ${config.mode.development ? "development" : "production"}, staging mode is ${config.mode.staging ? "true" : "false"}, request for url ${baseUrl} from IP ${remoteAddress(req)}, country ${remoteCountry} ${remoteFlag} at ${localeDateTime()}
       </div>
     </div>
   `;

@@ -89,9 +89,11 @@
 - IP to flag: se sono 2, scegliere il primo - OK
 - audit mode: [ACTION], non è bello... - OK
 - in "Payment successful" audit message body, include customer's delivery options and address... - OK
+- setup and test a working staging environment: same as prod, but with a different database and different baseUrl - OK
 
-- setup and test a working staging environment: same as prod, but with a different database and different baseUrl
-
+- assert config.ecommerce.enabled flag
+- update index.language, index.dir, index.charset when user changes locale
+- winston colorize does not aseem to work in any transport
 
 NEWFEATURE:
 - configurare un account su Cloudflare...

@@ -36,7 +36,7 @@ const objectContains = (big, small) => {
     }
   }
   
-  for (p in small) {
+  for (let p in small) {
     if (small.hasOwnProperty(p) && !big.hasOwnProperty(p)) {
       return p; // allows big[p] to be set to undefined
     }
@@ -189,33 +189,34 @@ const inject = (rootClient, rootClientSrc, outputFile, dataToInject) => {
   } catch (err) {
     throw `Error injecting config file ${rootClientSrcOutputFilePath}: ${err}`;
   }
-}
+};
 
 const JSONstringifyRecursive = (t, seen = new Set()) => {
-  if (seen.has(t)) throw TypeError("stringifyJSON cannot serialize cyclic structures")
-  else if (t === undefined) return undefined
-  else if (t === null) return "null"
-  else if (typeof t == "bigint") throw TypeError("stringifyJSON cannot serialize BigInt")
-  else if (typeof t == "number") return String(t)
-  else if (typeof t == "boolean") return t ? "true" : "false"
-  else if (typeof t == "string") return "\"" + t.replace(/"/g, "\"") + "\""
+  if (seen.has(t)) throw TypeError("stringifyJSON cannot serialize cyclic structures");
+  else if (t === undefined) return undefined;
+  else if (t === null) return "null";
+  else if (typeof t == "bigint") throw TypeError("stringifyJSON cannot serialize BigInt");
+  else if (typeof t == "number") return String(t);
+  else if (typeof t == "boolean") return t ? "true" : "false";
+  else if (typeof t == "string") return "\"" + t.replace(/"/g, "\"") + "\"";
   else if (typeof t == "object") {
-    const nextSeen = new Set(seen).add(t)
-    return Array.isArray(t) 
-      ? "[" + Array.from(t, v => stringifyJSON(v, nextSeen) ?? "null").join(",") + "]"
-      : "{" + Object.entries(t)
-                .map(([k,v]) => [stringifyJSON(k, nextSeen), stringifyJSON(v, nextSeen)])
-                .filter(([k,v]) => v !== undefined)
-                .map(entry => entry.join(":"))
-                .join(",") + "}"
+    const nextSeen = new Set(seen).add(t);
+    return Array.isArray(t) ?
+    "[" + Array.from(t, v => stringifyJSON(v, nextSeen) ?? "null").join(",") + "]" :
+    "{" + Object.entries(t)
+      .map(([k, v]) => [stringifyJSON(k, nextSeen), stringifyJSON(v, nextSeen)])
+      .filter(([k, v]) => v !== undefined)
+      .map(entry => entry.join(":"))
+      .join(",") + "}"
+    ;
   }
-  else return undefined
-}
+  else return undefined;
+};
 
 // utility to hash a string
 const hashString = (value) => {
   return crypto.createHash("sha256").update(value).digest("hex");
-}
+};
 
 const getFieldType = (schema, fieldPath) => {
   const schemaType = schema.path(fieldPath);
@@ -278,7 +279,7 @@ const diacriticMap = {
 
 const diacriticMatchRegex = (string = "", exact = false) => {
   return string.replace(/./g, (char) => (exact ? "^" : "") + (diacriticMap[char] || char) + (exact ? "$" : ""));
-}
+};
 
 const diacriticsRemove = (string = "") => {
   let result = string;
@@ -287,7 +288,7 @@ const diacriticsRemove = (string = "") => {
     result = result.replace(regex, standardChar);
   }
   return result;
-}
+};
 
 const countryCodeToFlag = (countryCode) => {
   // Validate the input to be exactly two characters long and all alphabetic

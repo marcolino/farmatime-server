@@ -74,10 +74,10 @@ NotificationTokenSchema.statics.isExpired = (token) => {
     }
     return false; // valid
   } catch (err) {
-    logger.error(`Error decoding token ${token}:`, err)
+    logger.error(`Error decoding token ${token}:`, err);
     return false;
   }
-}
+};
 
 // get seconds to token expiration
 NotificationTokenSchema.statics.secondsToExpiration = (token) => {
@@ -85,10 +85,10 @@ NotificationTokenSchema.statics.secondsToExpiration = (token) => {
     const { exp } = jwt.decode(token.token);
     return ((exp * 1000) - Date.now()) / 1000;
   } catch (err) {
-    logger.error(`Error decoding token ${token}:`, err)
+    logger.error(`Error decoding token ${token}:`, err);
     return 0;
   }
-}
+};
 
 // individual token checks
 NotificationTokenSchema.pre("validate", (next) => {

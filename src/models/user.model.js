@@ -221,11 +221,6 @@ function generateRandomCode(maxDigits) {
     result += charset[randomIndex];
   }
   return result;
-
-  return Math.random().toString(36).slice(2).padStart(maxDigits, "0");
-  const minValue = Math.pow(10, maxDigits - 1); // minimum value to avoid leading zeros
-  const maxValue = Math.pow(10, maxDigits); // maximum value (exclusive)
-  return String(Math.floor(Math.random() * (maxValue - minValue) + minValue)).padStart(maxDigits, "0");
 }
 
 module.exports = mongoose.model("User", UserSchema);

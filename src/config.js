@@ -24,13 +24,14 @@ const currencies = { // allowed currencies
   "GBP": "£",
 };
 const company = "Sistemi Solari Rossi";
-const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
+//const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
+const urlPublic = staging ? "https://acme-staging.fly.dev" : "https://acme-prod.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;
 const urlLocalClient = `http://localhost:${apiPortClient}`;
 const baseUrlClient = production ? urlPublicClient : urlLocalClient;
-const baseUrlClientStaging = production ? "" : "http://localhost:4173";
+const baseUrlClientPreview = production ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
 //const serverCountry = "IT"; // server country
@@ -38,13 +39,12 @@ const serverLocale = "it"; // server locale
 const customization = "mda"; // custom configuration to be merged with configBase
 
 /**
- * Import envronment variables from env file depending on current mode.
- * In production we don't have an env file, but a "secrets" environment from the provider
+ * Import envronment variables from env file.
+ * IMPORTANT: in production we don"t have an env file, but a "secrets" environment from the provider
  */
-// console.log("production:", production);
 if (!production) {
   //console.log("staging:", staging);
-  const envFile = staging ? "./.env" : "./.env.dev";
+  const envFile = ".env";
   if (!fs.existsSync(envFile)) {
     console.error(`Error: ${envFile} does not exist`);
     process.exit(1);
@@ -99,7 +99,7 @@ const configBase = {
       connectSrc: [
         baseUrl,
         baseUrlClient,
-        baseUrlClientStaging,
+        baseUrlClientPreview,
         "https://accounts.google.com",
         "https://oauth2.googleapis.com",
         "https://fonts.googleapis.com",
@@ -230,7 +230,7 @@ const configBase = {
   clientDomains: [
     baseUrl,
     baseUrlClient,
-    baseUrlClientStaging,
+    baseUrlClientPreview,
   ],
   clientEmailUnsubscribeUrl: `${baseUrlClient}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrlClient}/email-preferences`,
@@ -242,41 +242,39 @@ const configBase = {
     stripe: {
       enabled: false,
       products: stripelive ? // products for a typical SAAS
-        { // stripe mode is live
-          free: {
-            name: "Prodotto Gratuito LIVE",
-            product_id: "prod_LC4k3rwA64D45l",
-            price_id: "price_1KVgafFZEWHriL1u8PFSvxSy",
-          },
-          standard: {
-            name: "Prodotto Standard LIVE",
-            product_id: "prod_LC4lYicsBXPmIA",
-            price_id: "price_1KVgbfFZEWHriL1uR5BnWO9W",
-          },
-          unlimited: {
-            name: "Prodotto Illimitato LIVEKBJ",
-            price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
-          },
-        }
-      :
-        { // stripe mode is test
-          free: {
-            name: "Prodotto Gratuito (test)",
-            product_id: "prod_LC4q54jgFITE0U",
-            price_id: "price_1KVggqFZEWHriL1uD8hlzL3S",
-          },
-          standard: {
-            name: "Prodotto Standard (test)",
-            product_id: "prod_LC4tiakN3cKlSA",
-            price_id: "price_1KVgjRFZEWHriL1ujZm3tF2h",
-          },
-          unlimited: {
-            name: "Prodotto Illimitato (test)",
-            product_id: "prod_LC4og5H6lpSLoK",
-            price_id: "price_1KVgfKFZEWHriL1utJyT904c",
-          },
-        }
-      ,
+      { // stripe mode is live
+        free: {
+          name: "Prodotto Gratuito LIVE",
+          product_id: "prod_LC4k3rwA64D45l",
+          price_id: "price_1KVgafFZEWHriL1u8PFSvxSy",
+        },
+        standard: {
+          name: "Prodotto Standard LIVE",
+          product_id: "prod_LC4lYicsBXPmIA",
+          price_id: "price_1KVgbfFZEWHriL1uR5BnWO9W",
+        },
+        unlimited: {
+          name: "Prodotto Illimitato LIVEKBJ",
+          price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
+        },
+      } :
+      { // stripe mode is test
+        free: {
+          name: "Prodotto Gratuito (test)",
+          product_id: "prod_LC4q54jgFITE0U",
+          price_id: "price_1KVggqFZEWHriL1uD8hlzL3S",
+        },
+        standard: {
+          name: "Prodotto Standard (test)",
+          product_id: "prod_LC4tiakN3cKlSA",
+          price_id: "price_1KVgjRFZEWHriL1ujZm3tF2h",
+        },
+        unlimited: {
+          name: "Prodotto Illimitato (test)",
+          product_id: "prod_LC4og5H6lpSLoK",
+          price_id: "price_1KVgfKFZEWHriL1utJyT904c",
+        },
+      },
       paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`,
       paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`,
       paymentSuccessUrlClient: `${baseUrlClient}/payment-success`,
@@ -287,7 +285,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: false, // TODO: development, // if true, do not really send emails, use fake send
+    dryrun: development, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -371,7 +369,7 @@ const configBase = {
       mailto: "mailto:marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
-        name: "sistemisolarirossi.it", // TODO...
+        name: "sistemisolarirossi.it", // TODO: use real home site name
         url: baseUrl,
       },
       owner: {
@@ -502,23 +500,17 @@ const configBase = {
       backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
-      //domain: "auth.sistemisolari.com", // TODO: removeme, used only in client, test-federated-login.js
-      // OK for Google // scope: [ "phone", "email", "profile", "openid", "aws.cognito.signin.user.admin" ],
       scope: [ "email", "openid" ],
       responseType: "code",
       redirectSignIn: baseUrl,
-      redirectSignOut: baseUrl, // TODO: use me!!!
-      scope: {
-        google: ["profile", "email"],
-        facebook: ["email"],
-      },
-      federatedSigninProviders: [ // we currently handle "Facebook", "Google"
+      redirectSignOut: baseUrl,
+      federatedSigninProviders: [
         "Google",
         "Facebook",
       ],
     },
     ecommerce: {
-      enabled: true, // enable ecommerce flag - TODO: assert this flag before showing cart/buy/...
+      enabled: true, // enable ecommerce flag
       checkoutProvider: "Stripe",
       gift: false, // enable gift flag (no invoice in the package, better packaging...)
       delivery: {
@@ -531,9 +523,9 @@ const configBase = {
       },
     },
     index: { // to inject index.html
-      language: serverLocale, // TODO: update index.language when user changes locale
-      dir: dir, // TODO: update index.dir when user changes locale
-      charset: charset, // TODO: update index.charset when user changes locale
+      language: serverLocale,
+      dir: dir,
+      charset: charset,
       description: description,
       themeColor: themeColor,
       cacheControl: cacheControl,
@@ -546,7 +538,7 @@ const configBase = {
           url: `${baseUrl}/apple-touch-icon.png`,
           alt: `${apiName} logo image`,
         },
-        locale: serverLocale, // TODO: update index.og.locale when user changes locale
+        locale: serverLocale,
         site_name: apiName,
       },
       twitter: {
@@ -601,7 +593,7 @@ const deepMergeObjects = (target, source) => {
   // combine target and updated source
   Object.assign(target || {}, source);
   return Object.assign(target || {}, source);
-}
+};
 
 const config = deepMergeObjects(configBase, configCustom);
 

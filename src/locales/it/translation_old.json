@@ -133,6 +133,7 @@
   "Session is expired, token already removed, please make a new signin request": "La sessione è scaduta, token già rimosso, ripeti la login, per favore",
   "Session is expired, token removed, please make a new signin request": "La sessione è scaduta, token rimosso, ripeti la login, per favore",
   "Session is just expired, please make a new signin request": "La sessione è appena scaduta, ripeti la login, per favore",
+  "Session is not valid ({{err}}), please make a new signin request": "La sessione non è valida ({{err}}), si prega di effettuare una nuova richiesta di accesso",
   "Sheet {{sheet}} not found": "Foglio {{sheet} non trovato",
   "Sorry, this user is not allowed elevate plan": "Spiacenti, questo utente non è autorizzato ad elevare il piano",
   "Sorry, this user is not allowed elevate roles": "Spiacenti, questo utente non è autorizzato ad elevare i ruoli",

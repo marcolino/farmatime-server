@@ -173,13 +173,12 @@ try {
     }),
     new winston.transports.Console({
       format: formatWithArgs,
-      level:
-        config.mode.production ? config.logs.levelMap.production :
+      level: // order matters: if production, staging can be true or false
         config.mode.staging ? config.logs.levelMap.staging :
+        config.mode.production ? config.logs.levelMap.production :
         config.mode.development ? config.logs.levelMap.development :
         config.mode.test ? config.logs.levelMap.test :
-        "debug"
-      ,
+        "debug",
       handleExceptions: true,
       colorize,
     })

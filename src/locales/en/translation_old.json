@@ -131,6 +131,7 @@
   "Session is expired, token already removed, please make a new signin request": "Session is expired, token already removed, please make a new signin request",
   "Session is expired, token removed, please make a new signin request": "Session is expired, token removed, please make a new signin request",
   "Session is just expired, please make a new signin request": "Session is just expired, please make a new signin request",
+  "Session is not valid ({{err}}), please make a new signin request": "Session is not valid ({{err}}), please make a new signin request",
   "Sheet {{sheet}} not found": "Sheet {{sheet}} not found",
   "Sorry, this user is not allowed elevate plan": "",
   "Sorry, this user is not allowed elevate roles": "Sorry, this user is not allowed elevate roles",

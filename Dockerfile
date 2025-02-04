@@ -1,16 +1,17 @@
 # syntax = docker/dockerfile:1
 
-# adjust NODE_VERSION as desired
+# adjust node and yarn versions as desired (use the versions installed locally)
 ARG NODE_VERSION=18.16.0
-FROM node:${NODE_VERSION}-slim AS base
 
+# import VM from a node slim as base
+FROM node:${NODE_VERSION}-slim AS base
 LABEL fly_launch_runtime="Node.js"
 
 # node.js app lives here
 WORKDIR /app
 
 # initialize Yarn project
-ARG YARN_VERSION=4.5.0
+ARG YARN_VERSION=4.6.0
 RUN yarn set version ${YARN_VERSION}
 
 # throw-away build stage to reduce size of final image
@@ -34,8 +35,7 @@ FROM base
 
 # install runtime dependencies (including curl) in the final stage
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-    curl dnsutils && \
+    apt-get install --no-install-recommends -y curl dnsutils && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy built application from the build stage

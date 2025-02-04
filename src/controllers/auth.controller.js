@@ -67,7 +67,7 @@ const facebookCallback = (req, res, next) => {
 const socialLogin = async(req, res, next) => {
   if (!req?.userSocial) { // TODO: understand when this can happen and how to handle it...
     logger.error("Social authentication incomplete");
-    return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") })
+    return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
   }
 
   const roleName = "user";
@@ -422,9 +422,9 @@ const resendSignupVerificationCode = async(req, res, next) => {
   }
 };
 
-const signupVerification = async(req, res, next) => {
+const signupVerification = async (req, res, next) => {
   if (!req.parameters.code) {
-    return res.status(400).json({message: req.t("Code is mandatory")});
+    return res.status(400).json({ message: req.t("Code is mandatory") });
   }
 
   try {
@@ -436,8 +436,8 @@ const signupVerification = async(req, res, next) => {
 
     // we found a code, find a matching user
     User.findOne({
-        _id: code.userId
-      },
+      _id: code.userId
+    },
       null,
       {
         allowUnverified: true,
@@ -445,7 +445,7 @@ const signupVerification = async(req, res, next) => {
       (err, user) => {
         if (err) {
           logger.error("Error finding user for the requested code:", err);
-          res.status(err.code).json({message: err.message})
+          res.status(err.code).json({ message: err.message });
         }
         if (!user) {
           return res.status(400).json({ message: req.t("A user for this code was not found") });
@@ -456,7 +456,7 @@ const signupVerification = async(req, res, next) => {
 
         // verify and save the user
         user.isVerified = true;
-        user.save(async(err, user) => {
+        user.save(async (err, user) => {
           if (err) {
             logger.error("Error saving user in signup verification:", err);
             return res.status(err.code).json({ message: err.message });
@@ -468,11 +468,11 @@ const signupVerification = async(req, res, next) => {
         });
       }
     );
-  } catch(err) {
+  } catch (err) {
     logger.error("Error verifying signup:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
-}
+};
 
 const signin = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
@@ -674,9 +674,11 @@ const resetPassword = async(req, res, next) => {
       // send email
       const subject = req.t("Password change request");
       const to = user.email;
-      const from = process.env.FROM_EMAIL;
+      const from = process.env.FROM_EMAIL; // TODO: use config...
       logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
-      config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
+      if (config.mode.production) {
+        logger.info(`Reset password code: ${user.resetPasswordCode}`);
+      }
 
       await emailService.send(req, {
         to: user.email,
@@ -767,9 +769,11 @@ const resendResetPasswordCode = async(req, res, next) => {
 
       const subject = req.t("Reset Password Verification Code");
       const to = user.email;
-      const from = process.env.FROM_EMAIL;
+      const from = process.env.FROM_EMAIL; // TODO: use config...
       logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
-      config.mode.production && logger.info(`Reset password code: ${user.resetPasswordCode}`);
+      if (config.mode.production) {
+        logger.info(`Reset password code: ${user.resetPasswordCode}`);
+      }
 
       await emailService.send(req, {
         to: user.email,

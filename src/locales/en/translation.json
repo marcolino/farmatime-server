@@ -102,7 +102,6 @@
   "See other": "See other",
   "Service unavailable": "Service unavailable",
   "Session is expired, please make a new signin request": "Session is expired, please make a new signin request",
-  "Session is not valid ({{err}}), please make a new signin request": "Session is not valid ({{err}}), please make a new signin request",
   "Session is not valid, please make a new signin request": "Session is not valid, please make a new signin request",
   "Sign out successful": "Sign out successful",
   "Signup Verification Code": "Signup Verification Code",

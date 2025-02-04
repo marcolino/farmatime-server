@@ -1,5 +1,6 @@
 const path = require("path");
 
+/*
 // environment configuration
 if (process.env.NODE_ENV === "production") { // load environment variables
   require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
@@ -13,6 +14,8 @@ if (process.env.NODE_ENV === "development") { // load environment variables
   require("dotenv").config({ path: path.resolve(__dirname, "../.env.dev") });
   //console.info("Development environment");
 }
+*/
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const config = require("../src/config");
 const { inject } = require("../src/helpers/misc");

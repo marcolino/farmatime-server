@@ -86,8 +86,8 @@ function setPrice(num) {
   return num * 100;
 }
 
-ProductSchema.paths["make"].options.searchable = true;
-ProductSchema.paths["models"].options.searchable = true;
+ProductSchema.paths.make.options.searchable = true;
+ProductSchema.paths.models.options.searchable = true;
 
 // filter deleted documents by default for all `find` and `count` queries
 ProductSchema.pre(/^find|^count/, function(next) {

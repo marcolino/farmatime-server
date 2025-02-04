@@ -29,9 +29,7 @@ RefreshTokenSchema.statics.createToken = async function (user, rememberMe) {
   );
   let token = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn });
 
-  // TODO: remove this console.log...
-  console.log(`refresh token create, lasts for ${expiresIn} seconds`);
-  /////////////////////////////////////////////////////////////////////////
+  //console.log(`refresh token create, lasts for ${expiresIn} seconds`);
   
   const expiresAt = Date.now() + (
     (rememberMe ?
@@ -61,10 +59,10 @@ RefreshTokenSchema.statics.isExpired = (token) => {
     }
     return false; // valid
   } catch (err) {
-    logger.error(`Error decoding token ${token}:`, err)
+    logger.error(`Error decoding token ${token}:`, err);
     return false; // assume it is expired...
   }
-}
+};
 
 // get seconds to token expiration
 RefreshTokenSchema.statics.secondsToExpiration = (token) => {
@@ -72,10 +70,10 @@ RefreshTokenSchema.statics.secondsToExpiration = (token) => {
     const { exp } = jwt.decode(token.token);
     return ((exp * 1000) - Date.now()) / 1000;
   } catch (err) {
-    logger.error(`Error decoding token ${token}:`, err)
+    logger.error(`Error decoding token ${token}:`, err);
     return 0; // assume 0 seconds to expiration
   }
-}
+};
 
 const RefreshToken = mongoose.model("RefreshToken", RefreshTokenSchema);
 

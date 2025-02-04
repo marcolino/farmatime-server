@@ -1,17 +1,9 @@
 {
-  "entry": ["server.js", "src/**/*.js}"],
-  "extensions": [".js"],
   "ignoreUnresolved": [],
   "ignoreUnused": [],
   "ignoreUnimported": [
+    "src/config.mda.js",
+    "src/helpers/customEjsLexer.js",
     "src/misc/strings-for-translation.js"
-  ],
-  "ignorePatterns": [
-    "**/.github/**",
-    "**/.nyc_output/",
-    "**/.vscode/**",
-    "**/.yarn/**",
-    "**/test/**"
-  ],
-  "respectGitignore": true
+  ]
 }

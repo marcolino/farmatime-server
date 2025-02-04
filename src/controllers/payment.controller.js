@@ -9,22 +9,12 @@ const { audit } = require("../helpers/messaging");
 const { formatMoney } = require("../helpers/misc");
 const config = require("../config");
 
-// const stripe = stripeModule( // TODO: use (process.env.STRIPE_MODE === "live") ?
-//   (process.env.STRIPE_MODE === "live") ?
-//     process.env.STRIPE_API_KEY_LIVE
-//   :
-//     process.env.STRIPE_API_KEY_TEST
-//   );
 
 // initialize Stripe module
 const stripe = stripeModule(config.mode.stripelive ?
   process.env.STRIPE_API_KEY_LIVE :
   process.env.STRIPE_API_KEY_TEST
 );
-
-// const getMode = async(req, res) => {
-//   res.status(200).json({mode: config.mode.stripelive ? "live" : "test"});
-// };
 
 const createCheckoutSession = async (req, res) => {
   const cart = req.parameters.cart; // cart is an object with items array
@@ -41,13 +31,13 @@ const createCheckoutSession = async (req, res) => {
         currency: config.currency,
         product_data: {
           name: item.mdaCode,
-          images: [ imageUrl ],
+          images: [imageUrl],
           ...(item.notes && { description: item.notes }), // conditionally add description, Stripe is quite picky here...
         },
         unit_amount: item.price, // stripe expects integer (cents)
       },
       quantity: item.quantity,
-    }
+    };
   });
 
   const user = await User.findById(req.userId);
@@ -130,8 +120,8 @@ const paymentSuccess = async(req, res) => {
             <li>price tax: ${formatMoney(item.amount_tax)}</li>
             <li>price total: ${formatMoney(item.amount_total)}</li>
           </ul>`
-        ).join("\n")
-      + (customer ? `
+        ).join("\n") +
+      (customer ? `
         <p>By customer:</p>
         <ul>
           <li>name: ${customer.name}</li>
@@ -140,8 +130,8 @@ const paymentSuccess = async(req, res) => {
       `
       :
         "(no customer info)"
-      )
-      + (shippingInfo ? `
+      ) +
+      (shippingInfo ? `
         <p>Shipping info:</p>
         <p>Name: ${shippingInfo.name}</p>
         <p>Address:</p>
@@ -175,8 +165,8 @@ const paymentCancel = async(req, res) => {
     audit({req, mode: "action", subject: "Payment canceled", htmlContent: `
         Session id: ${req.parameters.session_id}\n
         Payment canceled\n
-      `
-      + (customer ? `
+      ` +
+      (customer ? `
         By customer:
          <li>name: ${customer.name}
          <li>email: ${customer.email}
@@ -198,4 +188,4 @@ module.exports = {
   createCheckoutSession,
   paymentSuccess,
   paymentCancel,
-}
+};

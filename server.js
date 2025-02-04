@@ -25,8 +25,7 @@ const configFileNameInjected = "config.json"; // injected config file name
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
   logger.info("Production environment");
 }
-if (config.mode.development) { // load environment variables from .env.dev file
-  // require("dotenv").config({ path: path.resolve(__dirname, "./.env.dev") });
+if (config.mode.development) {
   logger.info("Development environment");
 }
 if (config.mode.staging) {
@@ -197,7 +196,7 @@ if (!config.mode.production) {
 // handle not found API routes
 app.all(/^\/api(\/.*)?$/, (req, res) => {
   return res.status(404).json({ message: "Not found" });
-})
+});
 
 // handle client routes for all other urls
 app.get("*", (req, res) => {
@@ -210,7 +209,7 @@ app.use((err, req, res, next) => { // next is needed to be considered error hand
   let status = err.status || 500;
   let stack = err.stack; 
    // include stack trace in development only
-  let message = `${err.message || req.t("Server error")}`
+  let message = `${err.message || req.t("Server error")}`;
   if (status === 500) { // audit errors
     audit({
       req, mode: "error", subject: `Error: ${message}`, htmlContent: `
@@ -249,14 +248,15 @@ async function start() {
     const host = "0.0.0.0";
     app.listen(port, host, () => {
       logger.info(`Server is running on ${host}:${port}`);
-      config.mode.production && // audit server start up
+      if (config.mode.production) { // audit server start up
         audit({ req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
+      }
     });
   } catch (err) {
     logger.error("Server listen error:", err);
     throw err;
   }
-};
+}
 
 // handle all uncaught exceptions
 process.on("uncaughtException", (err) => {

@@ -63,7 +63,7 @@ const getAllUsers = async(req, res, next) => {
   } catch(err) {
     logger.error("Error getting all users:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
-  };
+  }
 };
 
 // get all plans
@@ -90,14 +90,14 @@ const getAllRoles = async(req, res, next) => {
   try {
     // the first element in the returned array is the "default" role
     Role.find({})
-    .select(["name", "priority"]) //, "-_id"])
-    .exec(async(err, docs) => {
-      if (err) {
-        logger.error("Error getting roles:", err);
-        return next(Object.assign(new Error(err.message), { status: 500 }));
-      }
-      return res.status(200).json({ roles: docs });
-    })
+      .select(["name", "priority"]) //, "-_id"])
+      .exec(async (err, docs) => {
+        if (err) {
+          logger.error("Error getting roles:", err);
+          return next(Object.assign(new Error(err.message), { status: 500 }));
+        }
+        return res.status(200).json({ roles: docs });
+      });
   } catch(err) {
     logger.error("Error getting roles:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
@@ -211,9 +211,6 @@ const updateUser = async (req, res, next) => {
     }
 
     if (preferences) {
-      // TODO: implement `propertyPreferencesValidate`
-      // const [message, value] = await propertyPreferencesValidate(req, email, userId);
-      // if (message) return res.status(400).json({ message });
       updateData.preferences = preferences;
     }
 
@@ -352,7 +349,7 @@ const deleteUser = async(req, res, next) => {
     filter = {};
   } else
   if (isObject(filter)) {
-    ;
+    // do nothing
   } else
   if (isArray(filter)) {
     filter = { _id: { $in: filter } };
@@ -379,7 +376,7 @@ const removeUser = async(req, res, next) => {
     filter = {};
   } else
   if (isObject(filter)) {
-    ;
+    // do nothing
   } else
   if (isArray(filter)) {
     filter = { _id: { $in: filter } };
@@ -408,7 +405,7 @@ const sendEmailToUsers = async(req, res, next) => {
     filter = {};
   } else
   if (isObject(filter)) {
-    ;
+    // do nothing
   } else
   if (isArray(filter)) {
     filter = { _id: { $in: filter } };
@@ -445,9 +442,9 @@ const sendEmailToUsers = async(req, res, next) => {
           style,
         });
       } catch (err) {
-        logger.error(`Error sending email to users: ${err}`)
+        logger.error(`Error sending email to users: ${err}`);
         return next(Object.assign(new Error(err.message), { status: 500 }));
-      };
+      }
     }
     return res.status(200).json({ "message": req.t("All emails sent") });
   });
@@ -468,7 +465,7 @@ const expandEmailTags = (user, subject, body) => {
   subject = expand(subject);
   body = expand(body);
   return [subject, body];
-}
+};
 
 // user properties validation
 const propertyEmailValidate = async(req, value, userId) => { // validate and normalize email
@@ -504,7 +501,7 @@ const propertyLastNameValidate = (req, value, user) => { // validate and normali
 
 const propertyPhoneValidate = (req, value, user) => { // validate and normalize phone number
   value = value?.trim();
-  if (!value.match(/\d/g).length === 10) {
+  if (value.match(/\d/g).length !== 10) {
     return [ req.t("Phone is not valid, sorry"), value ];
   }
   return [null, value];

@@ -51,23 +51,17 @@ module.exports = (app) => {
   });
 
   // sessions and passport initialization
-  // app.use(session({
-  //   secret: process.env.PASSPORT_SECRET,
-  //   resave: true,
-  //   saveUninitialized: true,
-  // }));
-  // sessions and passport initialization
   app.use(session({
     cookie: {
-      maxAge: config.app.auth.refreshTokenExpirationSeconds // TODO: this or refreshTokenExpirationDontRememberMeSeconds ...
+      maxAge: config.app.auth.refreshTokenExpirationSeconds
     },
     resave: false,
     saveUninitialized: false,
     secret: process.env.PASSPORT_SECRET,
     store: new MemoryStore({
-      checkPeriod: config.app.auth.refreshTokenExpirationSeconds // prune expired entries when maxAge expires- TODO: this or refreshTokenExpirationDontRememberMeSeconds
+      checkPeriod: config.app.auth.refreshTokenExpirationSeconds // prune expired entries when maxAge expires
     }),
-  }))
+  }));
   
   // initialize Passport and use session
   app.use(passport.initialize());

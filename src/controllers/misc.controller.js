@@ -25,7 +25,7 @@ const sendTestEmail = async (req, res, next) => {
     const error = new Error(err.message);
     error.status = 500;
     next(error);
-  };
+  }
 };
 
 module.exports = {

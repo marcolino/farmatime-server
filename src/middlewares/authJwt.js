@@ -46,15 +46,7 @@ const verifyAccessToken = (req, res, next) => {
 
             // set the new access token in cookies
             res.cookie("accessToken", newAccessToken, cookieOptions());
-            // res.cookie("accessToken", newAccessToken, { // TODO: get standard cookie...
-            //   httpOnly: true,
-            //   secure: false, // Use true in production
-            //   sameSite: "none",
-            //   //maxAge: config.app.auth.accessTokenExpirationSeconds * 1000, // match access token expiration
-            //   //maxAge: maxAgeRefreshToken * 2, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-            //   maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-            // });
-
+           
             // attach user ID to request object
             req.userId = refreshDecoded.id;
             logger.info("access token refresh successful");
@@ -94,8 +86,8 @@ const verifyAccessToken = (req, res, next) => {
     logger.error("verifyAccessToken: token verification failed:", err.message);
     return res.status(401).json({
       message:
-        req.t("Session is not valid, please make a new signin request")
-          + (config.mode.development ? ` (${err.message})` : ""),
+        req.t("Session is not valid, please make a new signin request") +
+        (config.mode.development ? ` (${err.message})` : ""),
       code: "INVALID_TOKEN",
     });
   }
@@ -149,7 +141,7 @@ const verifyNotificationToken = (req, res, next) => {
 };
 
 const isAdmin = async (req, res, next) => {
-  if (!req.userId) { // TODO: ok?
+  if (!req.userId) {
     return res.status(403).json({
       message: req.t("No user"),
       code: "NoUser",
@@ -188,7 +180,7 @@ const cookieOptions = (setAge = true) => {
     ...options,
     maxAge: config.app.auth.cookiesExpirationSeconds * 1000,
   } : options;
-}
+};
 
 // tokens cleanup functions
 const cleanupExpiredTokens = async (req, res, next) => { // we should not need this function, expired tokens should be automatically removed
@@ -203,7 +195,7 @@ const cleanupExpiredTokens = async (req, res, next) => { // we should not need t
   await RefreshToken.deleteMany({
     expiresAt: { $lt: expirationTime }
   });
-}
+};
 
 module.exports = {
   verifyAccessToken,

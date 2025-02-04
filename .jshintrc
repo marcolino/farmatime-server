@@ -1,0 +1,8 @@
+{
+  "esversion": 11,
+  //"latedef": false,
+  //"browser": true,
+  //"undef": false,
+  //"freeze": false
+  "-W002": true
+}

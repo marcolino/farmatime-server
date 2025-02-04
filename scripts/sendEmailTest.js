@@ -11,7 +11,7 @@ let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
 
 // Set up your email details here
-sendSmtpEmail.sender = {email: "sistemisolarirossi@gmail.com"}
+sendSmtpEmail.sender = { email: "sistemisolarirossi@gmail.com" };
 sendSmtpEmail.to = [ {email: "marcosolari@gmail.com"} ];
 sendSmtpEmail.subject = "Testing from Node.js";
 sendSmtpEmail.htmlContent = `

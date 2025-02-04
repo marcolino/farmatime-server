@@ -3,7 +3,7 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'acme-server-lingering-brook-4120'
+app = 'acme-staging'
 primary_region = 'cdg'
 
 [build]
@@ -22,9 +22,10 @@ primary_region = 'cdg'
   cpus = 1
 
 [env]
-  # to avoid "PCI: Fatal: No config space access function found" errors... TODO: test it!
-  NODE_OPTIONS='--max-old-space-size=4096'
+  NODE_ENV = 'staging'
+  # to avoid "PCI: Fatal: No config space access function found" errors
+  NODE_OPTIONS = '--max-old-space-size=4096'
 
 [mounts]
-  source="products"
-  destination="/app/public/assets/products"
+  source = 'products_staging'
+  destination = '/app/public/assets/products'
