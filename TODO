@@ -94,6 +94,9 @@
 - assert config.ecommerce.enabled flag
 - update index.language, index.dir, index.charset when user changes locale
 - winston colorize does not aseem to work in any transport
+- make tests (use AI for this...)
+- reinstall from scratch (possibly on a fresh system), and compile README file
+
 
 NEWFEATURE:
 - configurare un account su Cloudflare...
