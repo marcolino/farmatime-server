@@ -19,6 +19,8 @@ const stripe = stripeModule(config.mode.stripelive ?
 const createCheckoutSession = async (req, res) => {
   const cart = req.parameters.cart; // cart is an object with items array
   console.log("CART: ", cart);
+
+  // create line items
   const line_items = cart.items.map(item => {
     // warning: we have to use public url, becauss Stripe needs to reach public images
     imageUrl = config.mode.production ?
@@ -40,44 +42,71 @@ const createCheckoutSession = async (req, res) => {
     };
   });
 
-  const user = await User.findById(req.userId);
-  if (!user) throw new Error(req.t("User with id {userId} not found", { userId }));
-  try {
-    let stripeCustomerId;
-    if (user.stripeCustomerId) { // user already has a customer id, she did buy already: use it
-      stripeCustomerId = user.stripeCustomerId;
-    } else {
-      // user does not have a customer id, she did never buy before: create a customer
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: `${user.firstName} ${user.lastName}`,
-        metadata: {
-          userId: req.userId, // optional, to map our userId with the Stripe customer
-        },
-      });
-      stripeCustomerId = customer.id;
+  // create customer
+  let user, stripeCustomerId;
+  if (req.userId) { // user is authenticated
+    user = await User.findById(req.userId);
+    if (!user) {
+      //throw new Error(req.t("User with id {userId} not found", { userId: req.userId }));
+      let message = req.t("User with id {userId} not found", { userId: req.userId });
+      return res.status(403).json({ message });
     }
-    user.stripeCustomerId = stripeCustomerId;
-    await user.save(); // save customer id to user
+    try {
+      if (user.stripeCustomerId) { // user already has a customer id, she did buy already: use it
+        stripeCustomerId = user.stripeCustomerId;
+      } else {
+        // user does not have a customer id, she did never buy before: create a customer
+        const customer = await stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`,
+          metadata: {
+            userId: req.userId, // optional, to map our userId with the Stripe customer
+          },
+        });
+        stripeCustomerId = customer.id;
+      }
+      user.stripeCustomerId = stripeCustomerId;
+      await user.save(); // save customer id to user
+      logger.info(`Payment customer created`);
+    } catch (err) {
+      logger.error("Payment checkout customer creation error:", err);
+      audit({ req, mode: "error", subject: `Payment checkout customer creation error`, htmlContent: `Payment checkout customer creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
+      return res.status(400).json({ message: err.message });
+    }
+  } else { // user is not authenticated, do not pass a customer to stripe.checkout.sessions.create
+  }
 
+  // create session
+  try {
     const session = await stripe.checkout.sessions.create({
-      line_items,
       mode: "payment",
+      line_items,
       shipping_address_collection: { // ask stripe to collect customer's shipping address
         allowed_countries: config.payment.stripe.checkout.shipping_allowed_countries,
       },
-      customer: stripeCustomerId,
+      ...(stripeCustomerId && { customer: stripeCustomerId }),
       success_url: `${config.payment.stripe.paymentSuccessUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${config.payment.stripe.paymentCancelUrl}?session_id={CHECKOUT_SESSION_ID}`,
+      metadata: {
+        isGift: cart.isGift, // pass custom metadata here
+        userId: user?.id, // user id
+      },
     });
     if (!session?.url) { // incomplete response, we miss the redirect url
       throw new Error("no session url");
     }
     logger.info(`Payment checkout session created`);
-    audit({req, mode: "action", subject: `Payment checkout session created`, htmlContent: `Payment checkout session created for user ${user.firstName} ${user.lastName} (email: ${user.email})`});
+    audit({
+      req,
+      mode: "action",
+      subject: `Payment checkout session created`,
+      htmlContent: user ?
+      `Payment checkout session created for user ${user.firstName} ${user.lastName} (email: ${user.email})` :
+      `Payment checkout session created for guest user`
+    });
 
     // if user did accept to receive offers emails, set it in user's prefereces
-    if (cart.acceptToReceiveOffersEmails) {
+    if (user && cart.acceptToReceiveOffersEmails) {
       user.preferences.notifications.email.offers = true;
       await user.save();
     }

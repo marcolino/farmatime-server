@@ -512,7 +512,7 @@ const configBase = {
     ecommerce: {
       enabled: true, // enable ecommerce flag
       checkoutProvider: "Stripe",
-      gift: false, // enable gift flag (no invoice in the package, better packaging...)
+      gift: true, // enable gift flag (no invoice in the package, better packaging...)
       delivery: {
         enabled: true,
         methods: [

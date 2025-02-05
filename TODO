@@ -91,7 +91,7 @@
 - in "Payment successful" audit message body, include customer's delivery options and address... - OK
 - setup and test a working staging environment: same as prod, but with a different database and different baseUrl - OK
 
-- assert config.ecommerce.enabled flag
+- finish handling isGift (use it in audit of payment completed)
 - update index.language, index.dir, index.charset when user changes locale
 - winston colorize does not aseem to work in any transport
 - make tests (use AI for this...)
