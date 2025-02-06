@@ -16,34 +16,37 @@
     "start-dev-trace-warnings": "NODE_ENV=development node --trace-warnings server.js",
     "start": "node server.js",
     "inject": "node scripts/inject.js",
+
     "test": "nyc --reporter=html mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log; scripts/test2badge",
     "coverage": "xdg-open http://localhost:5000/coverage/",
 
     "i18n-pre": "bash -c 'for dir in $(cat ../acme-client/src/config.json | jq -r \".locales | keys[]\"); do mkdir -p \"src/locales/$dir/\"; done'",
     "i18n": "yarn i18n-pre; i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
-    "i18n-translate": "bash -c \"source ~/.venv/bin/activate && scripts/translate.py\"",
+    "i18n-translate": "node scripts/translate.mjs",
     "i18n-check": "sh -c 'yarn i18n && missing=$(grep --only-matching __STRING_NOT_TRANSLATED__ src/locales/*/translation.json | wc -l); if [ $missing -gt 0 ]; then echo \"$missing strings have to be translated!\"; exit 1; fi'",
 
     "deps-check": "npx unimported > /dev/null",
+    "eslint-check": "eslint server.js src/",
     "jshint-check": "jshint server.js src/",
-    "check": "yarn i18n-check && yarn deps-check && yarn jshint-check && echo \"All checks passed\"",
+    "checks": "yarn i18n-check && yarn deps-check && yarn jshint-check && yarn eslint-check && echo \"All checks passed\"",
 
     "client-build": "( cd ../acme-client/ && yarn build )",
     "fly-upgrade": "fly version upgrade",
     "fly-create-app-production": "flyctl apps list | grep -q 'acme-prod' || flyctl apps create 'acme-prod'",
-    "fly-create-app-staging":    "flyctl apps list | grep -q 'acme-staging' || flyctl apps create 'acme-staging'",
+    "fly-create-app-staging": "flyctl apps list | grep -q 'acme-staging' || flyctl apps create 'acme-staging'",
     "fly-create-volume-products-production": "flyctl volumes list -a 'acme-prod' | grep -q 'products' || flyctl volumes create products -a 'acme-prod' --size 1",
-    "fly-create-volume-products-staging":    "flyctl volumes list -a 'acme-staging' | grep -q 'products-staging' || flyctl volumes create products-staging -a 'acme-staging' --size 1",
-    "fly-import-secrets-staging":    "cat .env | fly secrets import -a 'acme-staging'",
+    "fly-create-volume-products-staging": "flyctl volumes list -a 'acme-staging' | grep -q 'products-staging' || flyctl volumes create products-staging -a 'acme-staging' --size 1",
+    "fly-import-secrets-staging": "cat .env | fly secrets import -a 'acme-staging'",
     "fly-import-secrets-production": "cat .env | fly secrets import -a 'acme-prod'",
     "fly-prepare-production": "yarn fly-create-app-production && yarn fly-create-volume-products-production && fly-import-secrets-production",
-    "fly-prepare-staging":    "yarn fly-create-app-staging && yarn fly-create-volume-products-staging && fly-import-secrets-staging",
-    "fly-pre-deploy-staging":    "yarn check && yarn fly-upgrade && yarn fly-prepare-production",
-    "fly-pre-deploy-production": "yarn check && yarn fly-upgrade && yarn fly-prepare-staging",
-    "fly-deploy-staging":    "fly deploy -c 'fly-staging.toml'",
+    "fly-prepare-staging": "yarn fly-create-app-staging && yarn fly-create-volume-products-staging && fly-import-secrets-staging",
+    "fly-pre-deploy-staging": "yarn checks && yarn fly-upgrade && yarn fly-prepare-production",
+    "fly-pre-deploy-production": "yarn checks && yarn fly-upgrade && yarn fly-prepare-staging",
+    "fly-deploy-staging": "fly deploy -c 'fly-staging.toml'",
     "fly-deploy-production": "fly deploy -c 'fly-production.toml'",
+    
     "pub-staging": "NODE_ENV=staging    yarn client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging",
-    "pub":         "NODE_ENV=production yarn client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production"
+    "pub": "NODE_ENV=production yarn client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production"
   },
   "keywords": [
     "node.js",
@@ -90,14 +93,20 @@
     "winston-syslog": "^2.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.19.0",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "chai-spies": "^1.0.0",
+    "eslint": "^9.19.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-node": "^11.1.0",
+    "globals": "^15.14.0",
     "i18next-parser": "9.0.2",
     "jshint": "^2.13.6",
     "mocha": "^9.2.2",
     "nodemon": "^2.0.15",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "openai": "^4.83.0"
   },
   "packageManager": "yarn@4.6.0",
   "dependenciesMetadata": {

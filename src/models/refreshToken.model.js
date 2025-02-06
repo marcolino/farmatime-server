@@ -33,8 +33,7 @@ RefreshTokenSchema.statics.createToken = async function (user, rememberMe) {
   
   const expiresAt = Date.now() + (
     (rememberMe ?
-      config.app.auth.refreshTokenExpirationSeconds
-    :
+      config.app.auth.refreshTokenExpirationSeconds :
       config.app.auth.refreshTokenExpirationDontRememberMeSeconds
     ) * 1000);
   const object = new this({

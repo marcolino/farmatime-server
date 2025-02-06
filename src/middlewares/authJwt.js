@@ -149,23 +149,23 @@ const isAdmin = async (req, res, next) => {
   }
   const result = await isAdministrator(req.userId);
   switch (result) {
-    case "InternalServerError":
-      return res.status(500).json({
-        message: req.t("Internal server error"),
-        code: result
-      });
-    case "UserNotFound":
-      return res.status(403).json({
-        message: req.t("User not found"),
-        code: result
-      });
-    case false:
-      return res.status(403).json({
-        message: req.t("You must have admin role for this action"),
-        code: result
-      });
-    case true:
-      return next(); // proceed only if admin
+  case "InternalServerError":
+    return res.status(500).json({
+      message: req.t("Internal server error"),
+      code: result
+    });
+  case "UserNotFound":
+    return res.status(403).json({
+      message: req.t("User not found"),
+      code: result
+    });
+  case false:
+    return res.status(403).json({
+      message: req.t("You must have admin role for this action"),
+      code: result
+    });
+  case true:
+    return next(); // proceed only if admin
   }
 };
 
@@ -182,8 +182,9 @@ const cookieOptions = (setAge = true) => {
   } : options;
 };
 
+/*
 // tokens cleanup functions
-const cleanupExpiredTokens = async (req, res, next) => { // we should not need this function, expired tokens should be automatically removed
+const cleanupExpiredTokens = async (req,) => { // we should not need this function, expired tokens should be automatically removed
   const expiredSinceSeconds = req.expiredSinceSeconds ?? 0;
   const expirationTime = new Date();
   expirationTime.setSeconds(expirationTime.getSeconds() + expiredSinceSeconds);
@@ -196,6 +197,7 @@ const cleanupExpiredTokens = async (req, res, next) => { // we should not need t
     expiresAt: { $lt: expirationTime }
   });
 };
+*/
 
 module.exports = {
   verifyAccessToken,
@@ -203,5 +205,5 @@ module.exports = {
   verifyNotificationToken,
   isAdmin,
   cookieOptions,
-  cleanupExpiredTokens,
+  //cleanupExpiredTokens,
 };

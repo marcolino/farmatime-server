@@ -12,7 +12,7 @@ const config = require("../config");
 const getProducts = async (req, res/*, next*/) => {
 
   try {
-    filter = req.parameters.filter ?? {};
+    const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
       return res.status(400).json({ message: req.t("A filter must be an object") });
     }
@@ -90,38 +90,39 @@ const getProduct = (req, res, next) => {
   })
   //.populate("roles", "-__v")
   //.populate("plan", "-__v")
-  .exec(async(err, product) => {
-    if (err) {
-      logger.error("Error finding product:", err);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-      //return res.status(400).json({ message: req.t("Error finding product by id {{id}}", { id: productId }) });
-    }
-    if (!product) {
-      return res.status(400).json({ message: req.t("Could not find any product by id {{id}}", { id: productId }) });
-    }
-    //res.status(200).json({product});
-    const productData = {
-      id: product._id,
-      mdaCode: product.mdaCode,
-      oemCode: product.oemCode,
-      make: product.make,
-      models: product.models,
-      application: product.application,
-      kw: product.kw,
-      volt: product.volt,
-      teeth: product.teeth,
-      rotation: product.rotation,
-      ampere: product.ampere,
-      regulator: product.regulator,
-      notes: product.notes,
-      type: product.type,
-      imageNameOriginal: product.imageNameOriginal,
-      imageName: product.imageName,
-      imageNameWaterMark: product.imageNameWaterMark,
-    };
-    return res.status(200).json({ product: productData });
+    .exec(async(err, product) => {
+      if (err) {
+        logger.error("Error finding product:", err);
+        return next(Object.assign(new Error(err.message), { status: 500 }));
+        //return res.status(400).json({ message: req.t("Error finding product by id {{id}}", { id: productId }) });
+      }
+      if (!product) {
+        return res.status(400).json({ message: req.t("Could not find any product by id {{id}}", { id: productId }) });
+      }
+      //res.status(200).json({product});
+      const productData = {
+        id: product._id,
+        mdaCode: product.mdaCode,
+        oemCode: product.oemCode,
+        make: product.make,
+        models: product.models,
+        application: product.application,
+        kw: product.kw,
+        volt: product.volt,
+        teeth: product.teeth,
+        rotation: product.rotation,
+        ampere: product.ampere,
+        regulator: product.regulator,
+        notes: product.notes,
+        type: product.type,
+        imageNameOriginal: product.imageNameOriginal,
+        imageName: product.imageName,
+        imageNameWaterMark: product.imageNameWaterMark,
+      };
+      return res.status(200).json({ product: productData });
 
-  });
+    })
+  ;
   // if (!product) {
   //   return res.status(404).json({ message: req.t("Product by id {{id}} not found", { id: p.id }) });
   // }
@@ -148,19 +149,21 @@ const getProductAllTypes = (req, res) => {
 };
 
 // deletes a product: delete it from database
-const deleteProduct = async(req, res, next) => {
+const deleteProduct = async (req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL products!
     filter = {};
-  } else
-  if (isObject(filter)) {
-    // do nothing
-  } else
-  if (isArray(filter)) {
-    filter = { _id: { $in: filter } };
-  } else
-    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
-
+  } else {
+    if (isObject(filter)) {
+      // do nothing
+    } else {
+      if (isArray(filter)) {
+        filter = { _id: { $in: filter } };
+      } else {
+        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+      }
+    }
+  }
   try {
     const data = await Product.deleteMany(filter);
     if (data.deletedCount > 0) {
@@ -304,31 +307,32 @@ const uploadProductImage = (req, res, next) => {
   Product.findOne({
     _id: productId
   })
-  .exec(async(err, product) => {
-    if (err) {
-      logger.error("Error finding product:", err);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
-    if (!product) {
-      return res.status(400).json({ message: req.t("Product not found") });
-    }
-
-    try {
-      result = await saveImageFile(req);
-      product.imageNameOriginal = result.imageNameOriginal;
-      product.imageName = result.imageName;
-    } catch (err) {
-      return res.status(400).json({ message: err.message });
-    }
-
-    product.save(async(err/*, product*/) => {
+    .exec(async(err, product) => {
       if (err) {
-        return res.status(err.code).json({ message: err.message });
+        logger.error("Error finding product:", err);
+        return next(Object.assign(new Error(err.message), { status: 500 }));
       }
-    });
+      if (!product) {
+        return res.status(400).json({ message: req.t("Product not found") });
+      }
 
-    return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{file}}", { fileName: product.imageName, file: req.file }) });
-  });
+      try {
+        const result = await saveImageFile(req);
+        product.imageNameOriginal = result.imageNameOriginal;
+        product.imageName = result.imageName;
+      } catch (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      product.save(async(err/*, product*/) => {
+        if (err) {
+          return res.status(err.code).json({ message: err.message });
+        }
+      });
+
+      return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{file}}", { fileName: product.imageName, file: req.file }) });
+    })
+  ;
 };
 
 
@@ -337,14 +341,17 @@ const removeProduct = async(req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL products!
     filter = {};
-  } else
-  if (isObject(filter)) {
-    // do nothing
-  } else
-  if (isArray(filter)) {
-    filter = { _id: { $in: filter } };
-  } else
-    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+  } else {
+    if (isObject(filter)) {
+      // do nothing
+    } else {
+      if (isArray(filter)) {
+        filter = { _id: { $in: filter } };
+      } else {
+        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+      }
+    }
+  }
 
   const payload = { isDeleted: true };
   Product.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {

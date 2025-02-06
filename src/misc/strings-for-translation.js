@@ -1,6 +1,7 @@
 /**
  * Strings for translations: they are listed here for i18next-parse to find them
  */
+/* eslint-disable no-undef */
 
 // HTTP errors
 t("Moved permanently"); // 301, Spostato in modo permanente

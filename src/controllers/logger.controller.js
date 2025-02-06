@@ -24,7 +24,7 @@ class LogtailStream extends stream.Writable {
   }
 
   _write(info, encoding, callback) {
-    const { level, message, ...rest } = info;
+    const { level, message/*, ...rest*/ } = info;
     const splatSymbol = Object.getOwnPropertySymbols(info).find(
       (sym) => sym.toString() === "Symbol(splat)"
     );
@@ -50,83 +50,6 @@ class LogtailStream extends stream.Writable {
       .catch(callback);
   }
 }
-
-class LogtailStream_OLD extends stream.Writable {
-  constructor(logtail) {
-    super({ objectMode: true });
-    this.logtail = logtail;
-  }
-
-  _write(info, encoding, callback) {
-    // extract level and message
-    const { level, message, ...rest } = info;
-    const metadata = { ...rest };
-    delete metadata.timestamp; // we already have timestamps from Winston
-    delete metadata.TIMESTAMP;
-
-    // extract additional arguments from Symbol(splat)
-    const splatSymbol = Object.getOwnPropertySymbols(info).find(
-      (sym) => sym.toString() === "Symbol(splat)"
-    );
-    const splatArgs = splatSymbol ? info[splatSymbol] : [];
-
-    // combine level and message
-    let logMessage = `[${level.toUpperCase()}] ${message}`;
-
-    // add splat arguments to the message
-    if (splatArgs.length) {
-      logMessage += ` ${splatArgs
-        .map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg)))
-        .join(" ")}`
-      ;
-    }
-
-    // filter out empty metadata objects
-    const cleanMetadata = Object.entries(metadata)
-      .filter(([, value]) => value !== undefined && value !== null)
-      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {})
-    ;
-
-    // send the log data to Logtail, only including metadata if it's not empty
-    this.logtail
-      .log(logMessage, Object.keys(cleanMetadata).length > 0 ? cleanMetadata : null)
-      .then(() => callback())
-      .catch(callback)
-    ;
-  }
-}
-
-/*
-class LogtailStream extends stream.Writable {
-  constructor(logtail) {
-    super({ objectMode: true });
-    this.logtail = logtail;
-  }
-
-  _write(info, encoding, callback) {
-    // extract level, message, and metadata
-    const { level, message } = info;
-
-    // extract additional arguments from Symbol(splat)
-    const splatSymbol = Object.getOwnPropertySymbols(info).find((sym) => sym.toString() === "Symbol(splat)");
-    const splatArgs = splatSymbol ? info[splatSymbol] : [];
-
-    // combine level and message
-    let logMessage = `[${level.toUpperCase()}] ${message}`;
-
-    // add splat arguments to the message
-    if (splatArgs.length) {
-      logMessage += ` ${splatArgs.map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg))).join(" ")}`;
-    }
-
-    // send the log data to Logtail
-    this.logtail.log(logMessage, {})
-      .then(() => callback())
-      .catch(callback)
-    ;
-  }
-}
-*/
 
 const formatWithArgs = winston.format.combine(
   winston.format.timestamp(),
@@ -175,16 +98,16 @@ try {
       format: formatWithArgs,
       level: // order matters: if production, staging can be true or false
         config.mode.staging ? config.logs.levelMap.staging :
-        config.mode.production ? config.logs.levelMap.production :
-        config.mode.development ? config.logs.levelMap.development :
-        config.mode.test ? config.logs.levelMap.test :
-        "debug",
+        config.mode.production ? config.logs.levelMap.production : // eslint-disable-line indent
+        config.mode.development ? config.logs.levelMap.development : // eslint-disable-line indent
+        config.mode.test ? config.logs.levelMap.test : // eslint-disable-line indent
+        "debug", // eslint-disable-line indent
       handleExceptions: true,
       colorize,
     })
   );
 } catch (err) {
-  console.error("Winston transports creation error:", err);
+  console.error("Winston transports creation error:", err); // eslint-disable-line no-console
   throw err;
 }
 
@@ -194,7 +117,7 @@ try {
     new LogtailTransport(logtail)
   );
 } catch (err) {
-  console.error("Winston exceptions handlers creation error:", err);
+  console.error("Winston exceptions handlers creation error:", err); // eslint-disable-line no-console
   throw err;
 }
 
@@ -209,7 +132,7 @@ try {
     exceptionHandlers,
   });
 } catch (err) {
-  console.error("Winston logger creation error:", err);
+  console.error("Winston logger creation error:", err); // eslint-disable-line no-console
   throw err;
 }
 

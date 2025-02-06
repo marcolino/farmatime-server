@@ -1,6 +1,6 @@
 const emailService = require("../services/email.service");
 
-const ping = async(req, res, next) => {
+const ping = async(req, res) => {
   res.status(200).json({ message: "👍" });
 };
 

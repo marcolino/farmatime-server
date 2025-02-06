@@ -27,7 +27,7 @@ const objectContains = (big, small) => {
   }
 
   for (let p in big) {
-    if (!big.hasOwnProperty(p)) continue;
+    if (!Object.prototype.hasOwnProperty.call(big, p)) continue;
   
     if (big[p] === small[p]) continue; // if they have the same strict value or identity then they are equal
   
@@ -37,7 +37,7 @@ const objectContains = (big, small) => {
   }
   
   for (let p in small) {
-    if (small.hasOwnProperty(p) && !big.hasOwnProperty(p)) {
+    if (Object.prototype.hasOwnProperty.call(small, p) && !Object.prototype.hasOwnProperty.call(big, p)) {
       return p; // allows big[p] to be set to undefined
     }
     if (typeof small[p] === "string" || typeof small[p] === "number" || typeof small[p] === "boolean" || typeof small[p] === "undefined") {
@@ -191,27 +191,30 @@ const inject = (rootClient, rootClientSrc, outputFile, dataToInject) => {
   }
 };
 
+/*
 const JSONstringifyRecursive = (t, seen = new Set()) => {
-  if (seen.has(t)) throw TypeError("stringifyJSON cannot serialize cyclic structures");
+  if (seen.has(t)) throw TypeError("JSONstringifyRecursive cannot serialize cyclic structures");
   else if (t === undefined) return undefined;
   else if (t === null) return "null";
-  else if (typeof t == "bigint") throw TypeError("stringifyJSON cannot serialize BigInt");
+  else if (typeof t == "bigint") throw TypeError("JSONstringifyRecursive cannot serialize BigInt");
   else if (typeof t == "number") return String(t);
   else if (typeof t == "boolean") return t ? "true" : "false";
   else if (typeof t == "string") return "\"" + t.replace(/"/g, "\"") + "\"";
   else if (typeof t == "object") {
     const nextSeen = new Set(seen).add(t);
     return Array.isArray(t) ?
-    "[" + Array.from(t, v => stringifyJSON(v, nextSeen) ?? "null").join(",") + "]" :
-    "{" + Object.entries(t)
-      .map(([k, v]) => [stringifyJSON(k, nextSeen), stringifyJSON(v, nextSeen)])
-      .filter(([k, v]) => v !== undefined)
-      .map(entry => entry.join(":"))
-      .join(",") + "}"
+      "[" + Array.from(t, v => JSONstringifyRecursive(v, nextSeen) ?? "null").join(",") + "]" :
+      "{" +
+      Object.entries(t)
+        .map(([k, v]) => [JSONstringifyRecursive(k, nextSeen), JSONstringifyRecursive(v, nextSeen)])
+        .filter(([_k, v]) => v !== undefined)
+        .map(entry => entry.join(":"))
+        .join(",") + "}"
     ;
   }
   else return undefined;
 };
+*/
 
 // utility to hash a string
 const hashString = (value) => {
@@ -333,7 +336,7 @@ module.exports = {
   isAdministrator,
   isDealerAtLeast,
   inject,
-  JSONstringifyRecursive,
+  //JSONstringifyRecursive,
   hashString,
   getFieldType,
   diacriticMatchRegex,

@@ -32,7 +32,7 @@ module.exports = (app) => {
     profileFields: ["id", "displayName", "email"]
 
   }, (accessToken, refreshToken, profile, done) => { // Google profile data is returned here
-    console.log("Google Auth Callback in Passport:", {
+    console.log("Google Auth Callback in Passport:", { // eslint-disable-line no-console
       profile: profile?._json,
       baseUrl: config.baseUrl,
       env: process.env.NODE_ENV

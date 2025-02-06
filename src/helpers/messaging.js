@@ -10,8 +10,8 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   // set "mode" symbol (dev/prod)
   const modeSymbol =
     config.mode.development ? "🚧" :
-    config.mode.production ? (config.mode.staging ? "🚀" : "🌐") :
-    "�" // unforeseen mode
+    config.mode.production ? (config.mode.staging ? "🚀" : "🌐") : // eslint-disable-line indent
+    "�" // eslint-disable-line indent -- unforeseen mode
   ;
   
   const baseUrl = config.baseUrl;
@@ -29,26 +29,26 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   
   let actionColor, actionSymbol;
   switch (mode) {
-    case "action":
-      actionColor = "darkgreen";
-      actionSymbol = "🟢";
-      break;
-    case "warning":
-      actionColor = "darkorange";
-      actionSymbol = "🟠";
-      break;
-    case "error":
-      actionColor = "darktred";
-      actionSymbol = "🔴";
-      break;
-    case "":
-      actionColor = "darkgray";
-      actionSymbol = "⚫";
-      break;
-    default:
-      actionColor = "darkblue";
-      actionSymbol = "🔵";
-      break;
+  case "action":
+    actionColor = "darkgreen";
+    actionSymbol = "🟢";
+    break;
+  case "warning":
+    actionColor = "darkorange";
+    actionSymbol = "🟠";
+    break;
+  case "error":
+    actionColor = "darktred";
+    actionSymbol = "🔴";
+    break;
+  case "":
+    actionColor = "darkgray";
+    actionSymbol = "⚫";
+    break;
+  default:
+    actionColor = "darkblue";
+    actionSymbol = "🔵";
+    break;
   }
   const fontFamily = "Courier";
   const bodyFontSize = "16px";
@@ -79,7 +79,7 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
 
 const notification = async({ req, to, subject, htmlContent }) => {
   to = to ?? config.email.administration.to;
-  subject = `${config.email.subject.prefix ? config.email.subject.prefix + " " + modeSymbol + " - " : ""} ${subject}`;
+  subject = `${config.email.subject.prefix ? config.email.subject.prefix + " - " : ""} ${subject}`;
 
   await emailService.send(req, { to, subject, htmlContent });
 };

@@ -40,7 +40,7 @@ const checkRolesExisted = (req, res, next) => {
   if (req.parameters.roles) {
     for (let i = 0; i < req.parameters.roles.length; i++) {
       const role = req.parameters.roles[i];
-      if (!db.roles.map(role => role.name).includes(role)) {
+      if (!config.roles.map(role => role.name).includes(role)) {
         return res.status(400).json({
           message: req.t("Role {{role}} does not exist", { role })
         });

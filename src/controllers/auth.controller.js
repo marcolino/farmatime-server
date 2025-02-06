@@ -3,7 +3,7 @@ const validateEmail = require("email-validator");
 const { cookieOptions } = require("../middlewares/authJwt");
 const emailService = require("../services/email.service");
 const { audit } = require("../helpers/messaging");
-const { normalizeEmail, localeDateTime, remoteAddress } = require("../helpers/misc");
+const { normalizeEmail, localeDateTime } = require("../helpers/misc");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
@@ -11,12 +11,13 @@ const Plan = require("../models/plan.model");
 const AccessToken = require("../models/accessToken.model");
 const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
+const { isAdministrator } = require("../helpers/misc");
 const passport = require("passport");
 const config = require("../config");
 
 // Google OAuth login
 const googleLogin = (req, res, next) => {
-  console.log("googleLogin");
+  //console.log("googleLogin");
   const rememberMe = req.parameters.rememberMe || false;
   const state = JSON.stringify({ rememberMe }); // encode it as a string
   passport.authenticate("google", {
@@ -27,17 +28,17 @@ const googleLogin = (req, res, next) => {
 
 // Google OAuth callback
 const googleCallback = (req, res, next) => {
-  console.log('googleCallback Debug:', {
-    query: req.query,
-    headers: req.headers,
-    baseUrl: config.baseUrl,
-    environment: process.env.NODE_ENV,
-  });
+  // console.log('googleCallback Debug:', {
+  //   query: req.query,
+  //   headers: req.headers,
+  //   baseUrl: config.baseUrl,
+  //   environment: process.env.NODE_ENV,
+  // });
 
   const state = req.query.state ? JSON.parse(req.query.state) : {};
   req.parameters.rememberMe = state.rememberMe || false; // put rememberMe flag in req parameters
 
-  passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial, info) => {
+  passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial/*, info*/) => {
     if (err) {
       logger.error("Google authentication error:", err);
       return next(err);  // handle error
@@ -54,7 +55,7 @@ const facebookLogin = (req, res, next) => {
 
 // Facebook OAuth callback
 const facebookCallback = (req, res, next) => {
-  passport.authenticate("facebook", { failureRedirect: "/" }, (err, userSocial, info) => {
+  passport.authenticate("facebook", { failureRedirect: "/" }, (err, userSocial/*, info*/) => {
     if (err) {
       logger.error(`Facebook authentication error: ${err}`);
       return next(err);  // handle error
@@ -64,8 +65,8 @@ const facebookCallback = (req, res, next) => {
   })(req, res, next);
 };
 
-const socialLogin = async(req, res, next) => {
-  if (!req?.userSocial) { // TODO: understand when this can happen and how to handle it...
+const socialLogin = async(req, res) => {
+  if (!req?.userSocial) { // can userSocial be undefined?
     logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
   }
@@ -81,17 +82,16 @@ const socialLogin = async(req, res, next) => {
   // check if a user with the given email exists already
   let user;
   try {
-    user = await User.findOne({
-      email,
-    },
-    null,
-    {
-      allowDeleted: true,
-      allowUnverified: true,
-    })
-    .populate("roles", "-__v")
-    .populate("plan", "-__v")
-    .exec();
+    user = await User.findOne(
+      { email },
+      null,
+      {
+        allowDeleted: true,
+        allowUnverified: true,
+      })
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+      .exec();
   } catch (err) {
     logger.error(`Error finding user in social ${provider} signin request: ${err.message}`);
     return redirectToClientWithError(req, res, {
@@ -166,26 +166,6 @@ const socialLogin = async(req, res, next) => {
     });
   }
 
-  /*
-  // create new access token
-  try {
-    user.accessToken = await AccessToken.createToken(user);
-  } catch (err) {
-    return redirectToClientWithError(req, res, {
-      message: req.t("Error creating access token: {{error}}", { error: err.message })
-    });
-  }
-
-  // create new refresh token
-  try {
-    user.refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
-  } catch (err) {
-    return redirectToClientWithError(req, res, {
-      message: req.t("Error creating refresh token: {{error}}", { error: err.message })
-    });
-  }
-  */
-
   logger.info(`User social signin email: ${user.email}`);
 
   // audit social logins
@@ -258,8 +238,7 @@ const redirectToClientWithError = (req, res, payload) => {
 const redirectToClient = (req, res, success, payload) => {
   const url = new URL(
     success ?
-      `${config.baseUrl}/social-signin-success`
-    :
+      `${config.baseUrl}/social-signin-success` :
       `${config.baseUrl}/social-signin-error`
   );
   const stringifiedPayload = JSON.stringify(payload);
@@ -268,18 +247,18 @@ const redirectToClient = (req, res, success, payload) => {
 };
 
 // social OAuth revoke
-const socialRevoke = async(req, res, next) => {
+const socialRevoke = async(req, res) => {
   logger.log("socialRevoke");
 
   // TODO: check the providers give these data
-  const { userId, appId, issuedAt, provider } = req.body;
+  const { userId, provider, issuedAt/*, appId, */ } = req.body;
   
   // TODO:
   // 1. verify the authenticity of the request
   // 2. update your database to reflect that the user has revoked access
   // 3. perform any cleanup necessary for your application
   
-  logger.log(`Access revoked for provider ${provider}, user ${user_id} at ${issued_at}`);
+  logger.log(`Access revoked for provider ${provider}, user ${userId} at ${issuedAt}`);
 
   return res.status(200).json({
     message: `Revocation notification received from provider ${provider} for user id ${userId}`
@@ -331,7 +310,7 @@ const signup = async(req, res, next) => {
     return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName })});
   }
 
-  user = new User({
+  const user = new User({
     email,
     password: req.parameters.password,
     firstName: req.parameters.firstName,
@@ -382,13 +361,10 @@ const signup = async(req, res, next) => {
 const resendSignupVerificationCode = async(req, res, next) => {
   try {
     const email = normalizeEmail(req.parameters.email);
-    const user = await User.findOne({
-      email
-    },
+    const user = await User.findOne(
+      { email },
       null,
-      {
-        allowUnverified: true,
-      },
+      { allowUnverified: true },
     );
     if (user) {
       if (user.isVerified) {
@@ -435,13 +411,10 @@ const signupVerification = async (req, res, next) => {
     }
 
     // we found a code, find a matching user
-    User.findOne({
-      _id: code.userId
-    },
+    User.findOne(
+      { _id: code.userId },
       null,
-      {
-        allowUnverified: true,
-      },
+      { allowUnverified: true },
       (err, user) => {
         if (err) {
           logger.error("Error finding user for the requested code:", err);
@@ -608,7 +581,7 @@ const signout = async (req, res, next) => {
 
   User.findOne({ email }).exec(async(err, user) => {
     if (err) {
-      logger.error(req.t("Error finding user in signout request: {{err}}", { err: error.message }));
+      logger.error(req.t("Error finding user in signout request: {{err}}", { err: err.message }));
       return next(Object.assign(new Error(err.message), { status: 500 }));
     }
 
@@ -716,7 +689,7 @@ const resetPasswordConfirm = async(req, res, next) => {
     if (!code) {
       return res.status(400).json({message: req.t("Password reset code not found"), code: "CODE_NOT_FOUND"});
     }
-     // if we want to distinguish among invalid / expired we have to split the following query
+    // if we want to distinguish among invalid / expired we have to split the following query
     const user = await User.findOne({
       email,
       resetPasswordCode: code,
@@ -803,72 +776,18 @@ const resendResetPasswordCode = async(req, res, next) => {
   }
 };
 
-// TODO: using httpOnly cookies, this function should not be used...
-/*
-const DEPRECATED_refreshToken = async(req, res, next) => {
-  try {
-    const { refreshToken } = req.cookies; // use token in httpOnly cookies
-
-    if (!refreshToken) { // refresh token is required
-      logger.warn("refreshToken: session has no token");
-      return res.status(401).json({
-        message: req.t("You must be authenticated for this action"
-          + (config.mode.development ? " (refreshToken: session has no token)" : "")
-        ),
-        code: "NO_TOKEN",
-      });
-    }
-
-    const user = await RefreshToken.verifyAndDecode(refreshToken);
-    if (!user) {
-      logger.warn("refreshToken: refresh token can't be verified");
-      return res.status(403).json({
-        message: req.t("Authentication is not valid"
-          + (config.mode.development ? " (refreshToken: refresh token can't be verified)" : "")
-        )
-      });
-    }
-
-    // create new tokens
-    const newAccessToken = await AccessToken.createToken(user);
-    const newRefreshToken = await RefreshToken.createToken(user, user.rememberMe);
-
-    // const maxAgeAccessToken = config.app.auth.accessTokenExpirationSeconds * 1000; // set access token max age (milliseconds) 
-    // const maxAgeRefreshToken = (req.parameters.isRememberMe ? // set refresh token max age (milliseconds) based on remember me
-    //   config.app.auth.refreshTokenExpirationDontRememberMeSeconds :
-    //   config.app.auth.refreshTokenExpirationSeconds
-    // ) * 1000;
-
-    // set the cookies again
-    res.cookie("accessToken", accessToken, cookieOptions());
-    res.cookie("refreshToken", refreshToken, cookieOptions());
-
-    res.status(200).json({ message: req.t("Tokens refreshed") });
-  } catch (err) {
-    logger.error("refreshToken: exception refreshing token"
-      + config.mode.development ? ` (${err.message})` : "");
-    return res.status(401).json({
-      message: req.t("Could not refresh tokens")
-      + (config.mode.development ? ` (refreshToken: exception refreshing token: ${err.message})` : "")
-    });
-  }
-*/
-
 const notificationVerification = async (req, res, next) => {
   // verification is done in middleware
   let user;
   try {
-    user = await User.findOne({
-      _id: req.userId,
-    },
-    null,
-    {
-      // allowDeleted: true,
-      // allowUnverified: true,
-    })
-    .populate("roles", "-__v")
-    .populate("plan", "-__v")
-    .exec();
+    user = await User.findOne(
+      { _id: req.userId },
+      null,
+    )
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+      .exec()
+    ;
     return res.status(200).json({user});
   } catch (err) {
     logger.error(`Error finding user in notificatiomn verification request: ${err.message}`);
@@ -876,7 +795,7 @@ const notificationVerification = async (req, res, next) => {
   }
 };
 
-const notificationPreferencesSave = async (req, res, next) => {
+const notificationPreferencesSave = async (req, res) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     // this test should be done in routing middleware, but doing it here allows for a more specific error message

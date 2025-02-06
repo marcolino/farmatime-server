@@ -1,7 +1,6 @@
-//const i18n = require("./middlewares/i18n");
 const apiName = "MDA";
 const appName = "mda";
-const company = "M.D.A. s.r.l.";
+//const company = "M.D.A. s.r.l.";
 
 const config = {
   api: {

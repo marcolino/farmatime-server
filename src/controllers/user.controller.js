@@ -13,19 +13,18 @@ const getAllUsersWithTokens = (req, res, next) => {
   // get all users and refresh tokens
   Promise.all([
     User.find()
-    .select(["-password", "-__v"])
-    .populate("roles", "-__v")
-    .populate("plan", "-__v")
-    .lean()
-    .exec(),
+      .select(["-password", "-__v"])
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+      .lean(),
     RefreshToken.find({ // refresh tokens auto-expire, no need to check for expiration... just filter for user._id ...
       expiresAt: {
         $gte: new Date(), 
       }
     })
-    .select("token user expiresAt -_id")
-    .lean()
-    .exec()
+      .select("token user expiresAt -_id")
+      .lean()
+      .exec()
   ]).then(([users, refreshTokens]) => {
     users.map(user => {
       refreshTokens.map(refreshToken => {
@@ -48,7 +47,7 @@ const getAllUsersWithTokens = (req, res, next) => {
 
 const getAllUsers = async(req, res, next) => {
   try {
-    filter = req.parameters.filter ?? {};
+    const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
       return res.status(400).json({ message: req.t("A filter must be an object") });
     }
@@ -70,15 +69,16 @@ const getAllUsers = async(req, res, next) => {
 const getAllPlans = async(req, res, next) => {
   try {
     Plan.find({})
-    .select(["name", "supportTypes", "priceCurrency", "pricePerYear"])
-    .sort({pricePerYear: 1})
-    .exec(async(err, docs) => {
-      if (err) {
-        logger.error("Error getting plans:", err);
-        return next(Object.assign(new Error(err.message), { status: 500 }));
-      }
-      return res.status(200).json({ plans: docs });
-    });
+      .select(["name", "supportTypes", "priceCurrency", "pricePerYear"])
+      .sort({pricePerYear: 1})
+      .exec(async(err, docs) => {
+        if (err) {
+          logger.error("Error getting plans:", err);
+          return next(Object.assign(new Error(err.message), { status: 500 }));
+        }
+        return res.status(200).json({ plans: docs });
+      })
+    ;
   } catch(err) {
     logger.error("Error getting all plans:", err);
     return next(Object.assign(new Error(err.message), { status: 500 }));
@@ -119,18 +119,19 @@ const getUser = async(req, res, next) => {
   User.findOne({
     _id: userId
   })
-  .populate("roles", "-__v")
-  .populate("plan", "-__v")
-  .exec(async(err, user) => {
-    if (err) {
-      logger.error("Error finding user:", err);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
-    if (!user) {
-      return res.status(400).json({ message: req.t("Could not find this user") });
-    }
-    res.status(200).json({user});
-  });
+    .populate("roles", "-__v")
+    .populate("plan", "-__v")
+    .exec(async(err, user) => {
+      if (err) {
+        logger.error("Error finding user:", err);
+        return next(Object.assign(new Error(err.message), { status: 500 }));
+      }
+      if (!user) {
+        return res.status(400).json({ message: req.t("Could not find this user") });
+      }
+      res.status(200).json({user});
+    })
+  ;
 };
 
 /**
@@ -219,8 +220,10 @@ const updateUser = async (req, res, next) => {
       userId,
       { $set: updateData },
       { new: true/*, session*/ }
-    ).populate("roles", "-__v")
-     .populate("plan", "-__v");
+    )
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+    ;
 
     if (!updatedUser) {
       throw new Error(req.t("User not found"));
@@ -315,31 +318,28 @@ const _updatePlan = async(req, userId) => {
 };
 
 // promotes a user to "dealer" role
-const promoteToDealer = async(req, res, next) => {
+const promoteToDealer = async(req, res) => {
   const roleName = "dealer";
   const userId = req.parameters.userId;
 
-  try {
-    const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
-    if (!user) {
-      throw new Error(req.t("No user by id {{userId}} found!", { userId }));
-    }
-
-    const role = await Role.findOne({ name: roleName });
-    if (!role) {
-      throw new Error(req.t("No role {{roleName}} found!", { roleName }));
-    }
-
-    if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
-      user.roles.push(role);
-      await user.save();
-      return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }), count: 1 });
-    } else {
-      return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }), count: 0 });
-    }
-  } catch (err) {
-    throw err;
+  const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
+  if (!user) {
+    throw new Error(req.t("No user by id {{userId}} found!", { userId }));
   }
+
+  const role = await Role.findOne({ name: roleName });
+  if (!role) {
+    throw new Error(req.t("No role {{roleName}} found!", { roleName }));
+  }
+
+  if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
+    user.roles.push(role);
+    await user.save();
+    return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }), count: 1 });
+  } else {
+    return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }), count: 0 });
+  }
+
 };
 
 // deletes a user: delete it from database
@@ -347,14 +347,17 @@ const deleteUser = async(req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
-  } else
-  if (isObject(filter)) {
-    // do nothing
-  } else
-  if (isArray(filter)) {
-    filter = { _id: { $in: filter } };
-  } else
-    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+  } else {
+    if (isObject(filter)) {
+      // do nothing
+    } else {
+      if (isArray(filter)) {
+        filter = { _id: { $in: filter } };
+      } else {
+        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+      }
+    }
+  }
 
   try {
     const data = await User.deleteMany(filter);
@@ -370,18 +373,21 @@ const deleteUser = async(req, res, next) => {
 };
 
 // removes a user: mark it as deleted, but do not delete from database
-const removeUser = async(req, res, next) => {
+const removeUser = async (req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
-  } else
-  if (isObject(filter)) {
-    // do nothing
-  } else
-  if (isArray(filter)) {
-    filter = { _id: { $in: filter } };
-  } else
-    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+  } else {
+    if (isObject(filter)) {
+      // do nothing
+    } else {
+      if (isArray(filter)) {
+        filter = { _id: { $in: filter } };
+      } else {
+        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+      }
+    }
+  }
 
   const payload = { isDeleted: true };
   User.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
@@ -403,51 +409,55 @@ const sendEmailToUsers = async(req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
-  } else
-  if (isObject(filter)) {
-    // do nothing
-  } else
-  if (isArray(filter)) {
-    filter = { _id: { $in: filter } };
-  } else
-    return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+  } else {
+    if (isObject(filter)) {
+      // do nothing
+    } else {
+      if (isArray(filter)) {
+        filter = { _id: { $in: filter } };
+      } else {
+        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+      }
+    }
+  }
 
   // let subject = req.parameters?.subject;
   // let body = req.parameters?.body;
 
   User.find(filter)
-  .populate("roles", "-__v")
-  .populate("plan", "-__v")
-  .exec(async(err, users) => {  
-    if (err) {
-      logger.error("Error finding users:", err);
-      const ret = { message: req.t("Error finding users"), reason: err.message };
-      return res ? res.status(err.code).json(ret) : ret;
-    }
-    if (!users || users.length === 0) {
-      logger.warn(`No user found with filter ${filter}`);
-      return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
-    }
-    
-    for (const user of users) {
-      const to = user.email;
-      const [subject, body] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
-      const style = "base"; // style is currently fixed
-      try {
-        req.language = user.language; // get user language
-        await emailService.send(req, {
-          to,
-          subject,
-          body,
-          style,
-        });
-      } catch (err) {
-        logger.error(`Error sending email to users: ${err}`);
-        return next(Object.assign(new Error(err.message), { status: 500 }));
+    .populate("roles", "-__v")
+    .populate("plan", "-__v")
+    .exec(async(err, users) => {  
+      if (err) {
+        logger.error("Error finding users:", err);
+        const ret = { message: req.t("Error finding users"), reason: err.message };
+        return res ? res.status(err.code).json(ret) : ret;
       }
-    }
-    return res.status(200).json({ "message": req.t("All emails sent") });
-  });
+      if (!users || users.length === 0) {
+        logger.warn(`No user found with filter ${filter}`);
+        return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
+      }
+      
+      for (const user of users) {
+        const to = user.email;
+        const [subject, body] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
+        const style = "base"; // style is currently fixed
+        try {
+          req.language = user.language; // get user language
+          await emailService.send(req, {
+            to,
+            subject,
+            body,
+            style,
+          });
+        } catch (err) {
+          logger.error(`Error sending email to users: ${err}`);
+          return next(Object.assign(new Error(err.message), { status: 500 }));
+        }
+      }
+      return res.status(200).json({ "message": req.t("All emails sent") });
+    })
+  ;
 };
 
 const expandEmailTags = (user, subject, body) => {
@@ -483,7 +493,7 @@ const propertyEmailValidate = async(req, value, userId) => { // validate and nor
   return [null, value];
 };
 
-const propertyFirstNameValidate = (req, value, user) => { // validate and normalize first name
+const propertyFirstNameValidate = (req, value/*, user*/) => { // validate and normalize first name
   value = value?.trim();
   if (!value) {
     return [ req.t("First name cannot be empty, sorry"), value ];
@@ -491,7 +501,7 @@ const propertyFirstNameValidate = (req, value, user) => { // validate and normal
   return [null, value];
 };
 
-const propertyLastNameValidate = (req, value, user) => { // validate and normalize last name
+const propertyLastNameValidate = (req, value/*, user*/) => { // validate and normalize last name
   value = value?.trim();
   if (!value) {
     return [ req.t("Last name cannot be empty, sorry"), value ];
@@ -499,7 +509,7 @@ const propertyLastNameValidate = (req, value, user) => { // validate and normali
   return [null, value];
 };
 
-const propertyPhoneValidate = (req, value, user) => { // validate and normalize phone number
+const propertyPhoneValidate = (req, value/*, user*/) => { // validate and normalize phone number
   value = value?.trim();
   if (value.match(/\d/g).length !== 10) {
     return [ req.t("Phone is not valid, sorry"), value ];
@@ -507,7 +517,7 @@ const propertyPhoneValidate = (req, value, user) => { // validate and normalize 
   return [null, value];
 };
 
-const propertyFiscalCodeValidate = (req, value, user) => { // validate and normalize (italian) fiscal code
+const propertyFiscalCodeValidate = (req, value/*, user*/) => { // validate and normalize (italian) fiscal code
   value = value?.trim();
   if (!codiceFiscaleValidate.check(value)) {
     return [ req.t("Fiscal code is not valid, sorry"), value ];

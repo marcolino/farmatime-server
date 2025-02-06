@@ -17,7 +17,7 @@ const checkReferer = (req, res, next) => {
   // referer is not allowed
   logger.error("Referer/Origin Rejected:", { referer });
   res.status(403).json({ 
-    message: t("Invalid referer"),
+    message: i18n.t("Invalid referer"),
     details: { referer }
   });
 };

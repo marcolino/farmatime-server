@@ -46,8 +46,9 @@ NotificationTokenSchema.statics.createToken = async function (user, type) {
   let token = jwt.sign(
     { id: user.id, jti: uuidv4() }, // add a unique "jti" claim, to avoid token duplications
     process.env.JWT_NOTIFICATION_TOKEN_SECRET, {
-    expiresIn: config.app.auth.notificationTokenExpirationSeconds,
-  });
+      expiresIn: config.app.auth.notificationTokenExpirationSeconds,
+    }
+  );
 
   const expiresAt = Date.now() + (config.app.auth.notificationTokenExpirationSeconds * 1000);
   const object = new this({

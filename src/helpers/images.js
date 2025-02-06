@@ -47,6 +47,7 @@ const saveImageFile = async (req) => {
     audit({req, mode, subject, htmlContent: message});
   }
 
+  let imageBufferConvertedAndResized;
   try {
     imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
   } catch (err) {
@@ -62,6 +63,7 @@ const saveImageFile = async (req) => {
     throw new Error(message);
   }
 
+  let imageBufferWithWaterMark;
   try { // add watermark
     imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
   } catch (err) {

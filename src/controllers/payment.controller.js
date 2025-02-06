@@ -18,14 +18,14 @@ const stripe = stripeModule(config.mode.stripelive ?
 
 const createCheckoutSession = async (req, res) => {
   const cart = req.parameters.cart; // cart is an object with items array
-  console.log("CART: ", cart);
+  //console.log("CART: ", cart);
 
   // create line items
   const line_items = cart.items.map(item => {
     // warning: we have to use public url, becauss Stripe needs to reach public images
-    imageUrl = config.mode.production ?
-      `${config.baseUrlPublic}/assets/products/images/${item.imageName}`
-    : // while developing we show a public static image placeholder, stripe cannot access local images...
+    const imageUrl = config.mode.production ?
+      `${config.baseUrlPublic}/assets/products/images/${item.imageName}` :
+      // while developing we show a public static image placeholder, stripe cannot access local images...
       `${config.baseUrlPublic}/assets/images/ImagePlaceholder.jpg`
     ;
     return {
@@ -101,8 +101,8 @@ const createCheckoutSession = async (req, res) => {
       mode: "action",
       subject: `Payment checkout session created`,
       htmlContent: user ?
-      `Payment checkout session created for user ${user.firstName} ${user.lastName} (email: ${user.email})` :
-      `Payment checkout session created for guest user`
+        `Payment checkout session created for user ${user.firstName} ${user.lastName} (email: ${user.email})` :
+        `Payment checkout session created for guest user`
     });
 
     // if user did accept to receive offers emails, set it in user's prefereces
@@ -125,11 +125,11 @@ const paymentSuccess = async(req, res) => {
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
       expand: ["customer", "payment_intent"], // include customer and payment details
     });
-    console.log("**************** SESSION:", session);
+    //console.log("**************** SESSION:", session); // eslint-disable-line no-console
     const customer = session.customer;
-    console.log("**************** CUSTOMER:", customer);
+    //console.log("**************** CUSTOMER:", customer); // eslint-disable-line no-console
     const shippingInfo = session.shipping_details;
-    console.log("**************** SHIPPINGINFO:", shippingInfo);
+    //console.log("**************** SHIPPINGINFO:", shippingInfo); // eslint-disable-line no-console
 
     // const session = await stripe.checkout.sessions.retrieve(req.parameters.session_id);
     // const customer = session.customer ? await stripe.customers.retrieve(session.customer) : null;
@@ -156,8 +156,7 @@ const paymentSuccess = async(req, res) => {
           <li>name: ${customer.name}</li>
           <li>email: ${customer.email}</li>
         </ul>
-      `
-      :
+      ` :
         "(no customer info)"
       ) +
       (shippingInfo ? `
@@ -172,8 +171,7 @@ const paymentSuccess = async(req, res) => {
           <li>postal code: ${shippingInfo.address?.postal_code}</li>
           <li>state: ${shippingInfo.address?.state}</li>
         </ul>
-      `
-      :
+      ` :
         "(no shipping info)"
       )
     });
@@ -199,8 +197,7 @@ const paymentCancel = async(req, res) => {
         By customer:
          <li>name: ${customer.name}
          <li>email: ${customer.email}
-      `
-     :
+      ` :
         "(no customer info)"
       )
     });

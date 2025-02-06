@@ -100,17 +100,14 @@ const dbMock = {
 
 const connect = async() => {
   // set up database connection uri
-  const connUri =
-    (config.mode.production || config.mode.staging) ? // production/staging db uri
-      `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}`
-    :
+  const connUri = (
+    config.mode.production || config.mode.staging) ? // production/staging db uri
+    `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
     config.mode.development ? // development db uri
-      `${process.env.MONGO_DEV_SCHEME}://${process.env.MONGO_DEV_URL}/${process.env.MONGO_DEV_DB}`
-    :
-    config.mode.test ? // test db uri
-      `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}`
-    :
-      null
+      `${process.env.MONGO_DEV_SCHEME}://${process.env.MONGO_DEV_URL}/${process.env.MONGO_DEV_DB}` :
+      config.mode.test ? // test db uri
+        `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}` :
+        null
   ;
   if (!connUri) {
     const err = `Unforeseen mode ${JSON.stringify(config.mode)}, cannot connect database`;
@@ -149,55 +146,51 @@ const connect = async() => {
  * first time populate static reference documents
  */
 const populate = async() => {
-  try {
-    // check if env collection is empty
-    const envCount = await Env.estimatedDocumentCount();
-    if (envCount === 0) {
-      await Promise.all(dbMock.env.map(async(e) => {
-        await new Env(e).save();
-        logger.info(`added env ${e.key} = ${e.value} to env collection`);
-      }));
-    }
+  // check if env collection is empty
+  const envCount = await Env.estimatedDocumentCount();
+  if (envCount === 0) {
+    await Promise.all(dbMock.env.map(async(e) => {
+      await new Env(e).save();
+      logger.info(`added env ${e.key} = ${e.value} to env collection`);
+    }));
+  }
 
-    // check if users collection is empty
-    const userCount = await User.estimatedDocumentCount();
-    if (userCount === 0) {
-      await Promise.all(dbMock.users.map(async(user) => {
-        await new User(user).save();
-        logger.info(`added user ${user.firstName} ${user.lastName} to users collection`);
-      }));
-    }
+  // check if users collection is empty
+  const userCount = await User.estimatedDocumentCount();
+  if (userCount === 0) {
+    await Promise.all(dbMock.users.map(async(user) => {
+      await new User(user).save();
+      logger.info(`added user ${user.firstName} ${user.lastName} to users collection`);
+    }));
+  }
 
-    // check if roles collection is empty
-    const roleCount = await Role.estimatedDocumentCount();
-    if (roleCount === 0) {
-      await Promise.all(dbMock.roles.map(async(role) => {
-        await new Role(role).save();
-        logger.info(`added role ${role.name} to roles collection`);
-      }));
-      await addRoleToUser("admin", config.defaultUsers.admin.email);
-    }
+  // check if roles collection is empty
+  const roleCount = await Role.estimatedDocumentCount();
+  if (roleCount === 0) {
+    await Promise.all(dbMock.roles.map(async(role) => {
+      await new Role(role).save();
+      logger.info(`added role ${role.name} to roles collection`);
+    }));
+    await addRoleToUser("admin", config.defaultUsers.admin.email);
+  }
 
-    // check if plans collection is empty
-    const planCount = await Plan.estimatedDocumentCount();
-    if (planCount === 0) {
-      await Promise.all(dbMock.plans.map(async(plan) => {
-        await new Plan(plan).save();
-      }));
-      logger.info("all plans have been saved");
-      await addPlanToUser("unlimited", config.defaultUsers.admin.email);
-    }
+  // check if plans collection is empty
+  const planCount = await Plan.estimatedDocumentCount();
+  if (planCount === 0) {
+    await Promise.all(dbMock.plans.map(async(plan) => {
+      await new Plan(plan).save();
+    }));
+    logger.info("all plans have been saved");
+    await addPlanToUser("unlimited", config.defaultUsers.admin.email);
+  }
 
-    // check if products collection is empty
-    const productCount = await Product.estimatedDocumentCount();
-    if (productCount === 0) {
-      await Promise.all(dbMock.products.map(async(product) => {
-        const productNew = await new Product(product).save();
-        logger.info(`added product ${productNew._id} to products collection`);
-      }));
-    }
-  } catch (err) {
-    throw err;
+  // check if products collection is empty
+  const productCount = await Product.estimatedDocumentCount();
+  if (productCount === 0) {
+    await Promise.all(dbMock.products.map(async(product) => {
+      const productNew = await new Product(product).save();
+      logger.info(`added product ${productNew._id} to products collection`);
+    }));
   }
 };
 

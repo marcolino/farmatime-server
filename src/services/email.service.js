@@ -245,8 +245,8 @@ class EmailService {
   async inlineClasses(html) {
     // add system style
     //const css = this.readTemplateStyle(styleName);
-
-    console.log("html:", html);
+    
+    //console.log("html:", html);
     //console.log("css:", css);
 
     return inline(html);

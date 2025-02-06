@@ -204,11 +204,11 @@ app.get("*", (req, res) => {
 });
 
 // handle errors in API routes
-app.use((err, req, res, next) => { // next is needed to be considered error handling
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next is needed to be considered error handling
   logger.error("Server error:", err);
   let status = err.status || 500;
   let stack = err.stack; 
-   // include stack trace in development only
+  // include stack trace in development only
   let message = `${err.message || req.t("Server error")}`;
   if (status === 500) { // audit errors
     audit({
