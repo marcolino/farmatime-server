@@ -1,10 +1,44 @@
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/acme-server?style=flat)](version)
 [![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/acme-server?style=flat)](license)
-[![Mocha tests ok](https://github.com/marcolino/acme-server/blob/main/public/badges/mocha.svg)](tests)
 
-[acme-server](https://github.com/marcolino/acme-server/) is an open‑source server side project for a general-purpose web app implementing a generic SAAS.
+<!--[![Mocha tests ok](https://github.com/marcolino/acme-server/blob/main/public/badges/mocha.svg)](tests)-->
+![Test Status](https://github.com/marcolino/acme-server/actions/workflows/test.yml/badge.svg)
 
-acme-server ...
+![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/acme-server)
+![GitHub forks](https://img.shields.io/github/forks/marcolino/acme-server?style=social)
+![GitHub contributors](https://img.shields.io/github/contributors/marcolino/acme-server)
+![Maintenance](https://img.shields.io/maintenance/yes/2025)
+![GitHub issues](https://img.shields.io/github/issues/marcolino/acme-server)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/marcolino/acme-server)
+![GitHub repo size](https://img.shields.io/github/repo-size/marcolino/acme-server)
+
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/marcolino/acme-server/ci.yml?branch=main)
+![Known Vulnerabilities](https://snyk.io/test/github/marcolino/acme-server/badge.svg)
+
+![React](https://img.shields.io/badge/react-18.2.0-blue?logo=react)
+![Express](https://img.shields.io/badge/express-4.17.1-lightgrey?logo=express)
+![MongoDB](https://img.shields.io/badge/mongoDB-4.4-green?logo=mongodb)
+
+
+
+# Summary
+[acme-server](https://github.com/marcolino/acme-server/) is an open‑source server side project for a general-purpose web app implementing a showcase site, with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
+It is strictly coupled with [acme-client], the client project.
+
+# Technology
+  ### on the server:
+  - node.js
+  ### on the client:
+  - 
+
+
+# Services
+
+# Dependencies
+
+
+# Installation
+...
 
 # Tests Coverage
 [Mocha unit+e2e tests coverage](https://marcolino.github.io/acme-server/coverage/index.html) 
