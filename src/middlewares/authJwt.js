@@ -8,8 +8,6 @@ const { TokenExpiredError } = jwt;
 // middleware method to authenticate requests
 const verifyAccessToken = (req, res, next) => {
   try {
-    //console.log("DBG> verifyAccessToken - req.cookies:", req.cookies);
-
     // extract the token from the cookies
     const accessToken = req.cookies.accessToken;
 
@@ -72,8 +70,6 @@ const verifyAccessToken = (req, res, next) => {
         return next(); // Safe to proceed
       }
     });
-
-    //return next(); // WRONG!!!
   } catch (err) {
     if (err instanceof TokenExpiredError) {
       logger.error("verifyAccessToken: token expired");
@@ -100,6 +96,24 @@ const verifyAccessTokenAllowGuest = (req, res, next) => {
     return next();
   }
   return verifyAccessToken(req, res, next);
+};
+
+verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser = async (req, res, next) => {
+  verifyAccessToken(req, res, async () => { // only proceed with valid tokens
+    if (req.parameters.userId) { // a userId was requested: check if she is admin
+      if (req.parameters.userId === req.userId) {
+        return next(); // the requested user id is the same as the requesting user's id: accept request
+      } else { // the requested user id is different from the requesting user's id: check if admin
+        if (await isAdministrator(req.userId)) { // the requesting user's id is admin: accept request
+          return next();
+        } else { // the requesting user's id is not admin: deny request
+          return res.status(403).json({ message: req.t("You must have admin role to access another user's data") });
+        }
+      }
+    } else {
+      return next(); // a userId was not requested: allow request
+    }
+  });
 };
 
 const verifyNotificationToken = (req, res, next) => {
@@ -202,6 +216,7 @@ const cleanupExpiredTokens = async (req,) => { // we should not need this functi
 module.exports = {
   verifyAccessToken,
   verifyAccessTokenAllowGuest,
+  verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser,
   verifyNotificationToken,
   isAdmin,
   cookieOptions,

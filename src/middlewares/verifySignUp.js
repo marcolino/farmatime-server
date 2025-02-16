@@ -1,18 +1,16 @@
 const User = require("../models/user.model");
 const config = require("../config");
 
-const checkDuplicateEmail = (req, res, next) => {
-  User.findOne({
-    email: req.parameters.email
-  },
-  null,
-  {
-    allowDeleted: true,
-    allowUnverified: true,
-  }).exec((err, user) => {
-    if (err) {
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
+const checkDuplicateEmail = async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      email: req.parameters.email
+    },
+    null,
+    {
+      allowDeleted: true,
+      allowUnverified: true,
+    });
     if (user) {
       if (user.isDeleted) { // notify user has been deleted, for the moment it is not usable
         return res.status(400).json({
@@ -33,7 +31,9 @@ const checkDuplicateEmail = (req, res, next) => {
       });
     }
     return next();
-  });
+  } catch (err) {
+    return next(Object.assign(new Error(req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), { status: 500, stack: secureStack(err) })));
+  }
 };
 
 const checkRolesExisted = (req, res, next) => {

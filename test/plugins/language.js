@@ -1,32 +1,26 @@
-//const chai = require("chai");
-const chaiHttp = require("chai-http");
+function supertestWithLanguage(language) {
+  return function (server) {
+    const request = require("supertest")(server);
 
-function chaiHttpWithLanguage(language) {
-  return function (chai, utils) {
-    const { request } = chai;
+    // intercept all HTTP methods
+    const methods = ["get", "post", "put", "delete", "patch", "head", "options"];
+    methods.forEach((method) => {
+      const originalMethod = request[method].bind(request);
 
-    // override the request method
-    chai.request = function (server) {
-      const req = request(server);
+      request[method] = function (path) {
+        const httpReq = originalMethod(path);
 
-      // intercept all HTTP methods (get, post, put, etc.)
-      const methods = ["get", "post", "put", "delete", "patch", "head", "options"];
-      methods.forEach((method) => {
-        const originalMethod = req[method].bind(req);
+        //console.log(`Setting Accept-Language: ${language} for ${method.toUpperCase()} ${path}`);
+        
+        // Set the header before the request is sent
+        return httpReq.set("Accept-Language", language);
+      };
+    });
 
-        req[method] = function (path) {
-          const httpReq = originalMethod(path);
-
-          // set the header before the request is sent
-          httpReq.set("Accept-Language", language);
-          return httpReq;
-        };
-      });
-      return req;
-    };
+    return request;
   };
 }
 
 module.exports = {
-  chaiHttpWithLanguage,
+  supertestWithLanguage,
 };

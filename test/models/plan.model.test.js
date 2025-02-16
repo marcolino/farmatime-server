@@ -1,44 +1,31 @@
 /**
- * User model tests
+ * Plan model tests
  */
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const should = chai.should();
-const expect = chai.expect;
-const server = require("../../server");
-const User = require("../../src/models/user.model");
+const server = require("../server.test");
 const Plan = require("../../src/models/plan.model");
-const { chaiHttpWithLanguage } = require("../plugins/language");
-const { config } = require("../config.test");
+//const config = require("../config.test");
 
-chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
-chai.use(chaiHttpWithLanguage(config.language));
+describe("Plan model", async function() {
 
-let accessTokenUser, accessTokenAdmin;
-
-describe("API tests - Plan model", async function() {
-
-  before(async() => { // before these tests we empty the database
+  before(async () => { // before these tests we empty the database
   });
 
-  it("plan model should accept any value different by -1 (\"unlimited\")", function(done) {
-    Plan.findOne({}, (err, plan) => {
-      if (err) {
-        return done(err);
-      }
-      should.exist(plan);
+  it("plan model should accept any value different by -1 (\"unlimited\")", async () => {
+    try {
+      const plan = await Plan.findOne();
+      server.expect(plan).to.exist;
       //const number = 123;
       //plan.cigNumberAllowed = number;
-      plan.save((err, plan) => {
-        should.not.exist(err);
-        should.exist(plan);
-        //expect(plan.cigNumberAllowed).to.equal(number);
-        done();
-      });
-    });
+      const planNew = await plan.save();
+      server.should.exist(planNew);
+    } catch (err) {
+      console.error(`Error: ${err}`);
+      throw new Error();
+    }
+
   });
 
-  it("plan model should convert -1 (\"unlimited\") value to a number (MAX_SAFE_INTEGER)", function(done) {
+  it("plan model should convert -1 (\"unlimited\") value to a number (MAX_SAFE_INTEGER)", async () => {
     Plan.findOne({}, (err, plan) => {
       if (err) {
         return done(err);
@@ -50,7 +37,7 @@ describe("API tests - Plan model", async function() {
         should.exist(plan);
         //expect(plan.cigNumberAllowed).to.equal(Number.MAX_SAFE_INTEGER);
         done();
-      })
+      });
     });
   });
 });

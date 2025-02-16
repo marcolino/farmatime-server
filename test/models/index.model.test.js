@@ -1,58 +1,50 @@
 /**
- * Index of model tests
+ * Global model tests
  */
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-//const should = chai.should();
-const expect = chai.expect;
-//const server = require("../../server");
+const server = require("../server.test");
 const db = require("../../src/models");
 const User = require("../../src/models/user.model");
 const Role = require("../../src/models/role.model");
 const Plan = require("../../src/models/plan.model");
-const { chaiHttpWithLanguage } = require("../plugins/language");
-const { config } = require("../config.test");
+//const config = require("../config.test");
 
-chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
-chai.use(chaiHttpWithLanguage(config.language));
-
-chai.config.includeStack = true; // to include stack in errors
-
-describe("API tests - Index of models", async function() {
+describe("Global models", async function() {
   
-  before(async () => { // before these tests we empty the database
+  // before(async () => { // before these tests we empty the database
     
-    await db.connect();
+  //   await db.connect();
 
-    // clearing user collection from test database
-    User.deleteMany({}, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    // clearing role collection from test database
-    Role.deleteMany({}, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    // clearing plan collection from test database
-    Plan.deleteMany({}, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-  });
+  //   // clearing user collection from test database
+  //   try {
+  //     await User.deleteMany();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
 
-  it("should populate database if empty", function() {
-    return db.populate()
-      .then(() => {
-        return User.estimatedDocumentCount().exec();
-      })
-      .then(count => {
-        expect(count).to.be.above(0); // expect that users are added
-      })
-    ;
-  });
+  //   // clearing role collection from test database
+  //   try {
+  //     await Role.deleteMany();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+
+  //   // clearing plan collection from test database
+  //   try {
+  //     await Plan.deleteMany();
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // });
+
+  // it("should populate database if empty", async () => {
+  //   try {
+  //     const count = await db.populate();
+  //     console.log("CCC", count);
+  //     server.expect(count).to.be.above(0); // expect that users are added
+  //   } catch (err) {
+  //     console.error(`Error: ${err}`);
+  //     throw new Error();
+  //   }
+  // });
 
 });

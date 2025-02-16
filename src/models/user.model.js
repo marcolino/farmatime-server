@@ -150,14 +150,14 @@ UserSchema.pre("save", function(next) {
 
   if (!user.isModified("password")) return next();
   
-  user.hashPassword(user.password, async(err, hash) => {
+  user.hashPassword(user.password, async (err, hash) => {
     if (err) return next(err);
     user.password = hash;
     next();
   });
 });
 
-UserSchema.methods.hashPassword = async(password, callback) => {
+UserSchema.methods.hashPassword = async (password, callback) => {
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return callback(err);
     try {
@@ -168,7 +168,7 @@ UserSchema.methods.hashPassword = async(password, callback) => {
         if (err) return callback(err);
         return callback(null, hash);
       });
-    } catch(err) {
+    } catch (err) {
       logger.error("bcrypt.hash error:", err);
       return callback(err, null);
     }

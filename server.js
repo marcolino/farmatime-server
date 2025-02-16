@@ -116,13 +116,6 @@ app.use(i18nextMiddleware.handle(i18n));
 // apply check referer middleware globally
 app.use(checkReferer);
 
-// // add default headers
-// app.use((req, res, next) => {
-//   //res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization");
-//   next();
-// });
-
 // merge req.query and req.body to req.parameters
 app.use((req, res, next) => {
   req.parameters = Object.assign({}, req.query, req.body);
@@ -225,18 +218,15 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   }
   return res.status(status).json({
     message,
-    ...(config.mode.development && { stack }),
+    ...((config.mode.development || config.mode.test) && (status === 500) && { stack }),
   });
 });
 
-// connect to database and let express server start listening for requests
+
+// let express server start listening for requests
 async function start() {
-  try {
-    await db.connect(); // connect to database, synchronously
-  } catch (err) {
-    logger.error("Database connection error:", err, `${process.env.MONGO_SCHEME}://${process.env.MONGO_URL}/${process.env.MONGO_DB}`);
-    throw err;  //process.exit(1);
-  }
+
+  await db.dbReady; // await the database to be ready
 
   if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
     // inject client app config to configFileNameInjected

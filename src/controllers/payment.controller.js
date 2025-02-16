@@ -6,7 +6,7 @@ const stripeModule = require("stripe");
 const User = require("../models/user.model");
 const { logger } = require("../controllers/logger.controller");
 const { audit } = require("../helpers/messaging");
-const { formatMoney } = require("../helpers/misc");
+const { formatMoney, secureStack } = require("../helpers/misc");
 const config = require("../config");
 
 
@@ -16,9 +16,12 @@ const stripe = stripeModule(config.mode.stripelive ?
   process.env.STRIPE_API_KEY_TEST
 );
 
-const createCheckoutSession = async (req, res) => {
+const createCheckoutSession = async (req, res, next) => {
   const cart = req.parameters.cart; // cart is an object with items array
-  //console.log("CART: ", cart);
+
+  if (!cart || !cart.items || cart.items.length === 0) {
+    return res.status(400).json({ message: req.t("Empty cart") });
+  }
 
   // create line items
   const line_items = cart.items.map(item => {
@@ -47,8 +50,7 @@ const createCheckoutSession = async (req, res) => {
   if (req.userId) { // user is authenticated
     user = await User.findById(req.userId);
     if (!user) {
-      //throw new Error(req.t("User with id {userId} not found", { userId: req.userId }));
-      let message = req.t("User with id {userId} not found", { userId: req.userId });
+      let message = req.t("User with id {{userId}} not found", { userId: req.userId });
       return res.status(403).json({ message });
     }
     try {
@@ -73,7 +75,7 @@ const createCheckoutSession = async (req, res) => {
       audit({ req, mode: "error", subject: `Payment checkout customer creation error`, htmlContent: `Payment checkout customer creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
       return res.status(400).json({ message: err.message });
     }
-  } else { // user is not authenticated, do not pass a customer to stripe.checkout.sessions.create
+  } else { // user is not authenticated: simply do not pass a customer to stripe.checkout.sessions.create
   }
 
   // create session
@@ -112,14 +114,13 @@ const createCheckoutSession = async (req, res) => {
     }
 
     return res.status(200).json({ session, user }); // return the session with the redirect url, and the user, possibly with updated notifications
-  } catch(err) {
-    logger.error("Payment checkout session creation error:", err);
+  } catch (err) {
     audit({req, mode: "error", subject: `Payment checkout session creation error`, htmlContent: `Payment checkout session creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
-    return res.status(400).json({ message: err.message });
+    return next(Object.assign(new Error(req.t("Payment checkout session creation error: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
-const paymentSuccess = async(req, res) => {
+const paymentSuccess = async (req, res, next) => {
   //const currency = config.currencies[config.currency];
   try {
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
@@ -177,13 +178,11 @@ const paymentSuccess = async(req, res) => {
     });
     res.redirect(config.payment.stripe.paymentSuccessUrlClient);
   } catch (err) { // should not happen...
-    const message = "Error retrieving payment info on payment success callback";
-    logger.error(message + ":", err.message);
-    throw new Error(message + ":" + err.message);
+    return next(Object.assign(new Error(req.t("Error retrieving payment info on payment success callback: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
-const paymentCancel = async(req, res) => {
+const paymentCancel = async (req, res, next) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(req.parameters.session_id);
     const customer = session.customer ? await stripe.customers.retrieve(session.customer) : null;
@@ -203,14 +202,11 @@ const paymentCancel = async(req, res) => {
     });
     res.redirect(config.payment.stripe.paymentCancelUrlClient);
   } catch (err) { // should not happen...
-    const message = "Error retrieving payment info on payment cancel callback";
-    logger.error(message + ":", err.message);
-    throw new Error(message + ":" + err.message);
+    return next(Object.assign(new Error(req.t("Error retrieving payment info on payment cancel callback: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
 module.exports = {
-  //getMode,
   createCheckoutSession,
   paymentSuccess,
   paymentCancel,

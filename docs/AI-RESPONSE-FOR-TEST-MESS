@@ -1,0 +1,165 @@
+Q: 
+If in my main test file I do:
+
+before(async () => {
+  
+  console.log("BEFORE");
+  await db.ensureMongooseConnection();
+
+then db.ensureMongooseConnection is called BEFORE server completes main database connection:
+
+BEFORE
+Mongoose not connected, reconnecting...
+  1) "before all" hook in "{root}"
+INFO: 2025-02-12T10:01:58.232Z Database connected
+populate (database acme_test)
+
+So I think that in my test file, when I do:
+
+const app = require("../../server");
+and then
+const agent = request(app);
+
+I should someway wait for database to be connected, before proceeding...
+Right ? If so, how to do it ?
+  
+  
+  
+A :
+Yes, you are absolutely correct! The core issue is a race condition between your test setup and the initialization of your Express app, specifically the database connection.Your test is attempting to connect to the database * before * your`app` has finished establishing its own connection.
+
+Here's how to solve this, with a breakdown of why each step is important:
+
+**Solution: Ensure Database Connection Before Running Tests**
+
+The best approach is to export a promise from your `server.js` (or wherever you initialize your database) that resolves *only after* the database connection is successfully established. Then, `await` that promise in your test setup.
+
+**Step 1: Modify `server.js` to Export a "Database Ready" Promise**
+
+```javascript
+// server.js (or your main app file)
+const mongoose = require('mongoose');
+const config = require('./config'); // Adjust path
+const logger = require('./controllers/logger.controller');
+
+let dbConnectionPromise; // Store the promise here
+
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(config.mongo.uri, config.mongo.options);
+    logger.info("Database connected");
+    console.log("Database connected");
+  } catch (err) {
+    logger.error("Database connection error:", err);
+    console.error("Database connection error:", err);
+    throw err; // Re-throw to prevent the app from starting with no DB connection
+  }
+}
+
+dbConnectionPromise = connectToDatabase(); // Start the connection immediately
+
+// Export the promise AND the app
+module.exports = {
+  app: require('./app'), // Assuming you have an app.js or similar
+  dbConnectionReady: dbConnectionPromise,
+};
+```
+
+Key Changes:
+
+*   **`dbConnectionPromise`:**  A variable to hold the promise that represents the database connection.
+*   **`connectToDatabase()` function:**  This encapsulates the connection logic.  It's now an `async` function.
+*   **`dbConnectionPromise = connectToDatabase()`:**  Crucially, we call `connectToDatabase()` immediately, which *starts* the database connection process.  We then store the *promise* returned by `connectToDatabase()`.
+*   **Export `dbConnectionReady`:** We export the `dbConnectionPromise` so our tests can wait for it to resolve.
+*   **Re-throwing errors:** The `connectToDatabase()` function now re-throws the error. This makes sure that the app doesn't start if the database connection fails.
+
+**Step 2: Modify Your Test Setup**
+
+```javascript
+// Your test file (e.g., test/your-test.js)
+const { app, dbConnectionReady } = require('../../server'); // Adjust path
+const request = require('supertest');
+const db = require('../utils/db'); // Assuming you have a db utility file
+const mongoose = require('mongoose');
+
+const agent = request(app);
+
+before(async () => {
+  console.log("BEFORE: Waiting for database connection...");
+  await dbConnectionReady; // Wait for the database to connect
+  console.log("BEFORE: Database connected, proceeding with tests...");
+
+  // Now it's safe to populate the database
+  console.log("Populating database...");
+  await db.populate();
+  console.log("Database populated.");
+});
+
+// Your tests...
+```
+
+Key Changes:
+
+*   **Import `dbConnectionReady`:**  Import the promise from your `server.js`.
+*   **`await dbConnectionReady`:**  *This is the most important line*.  This tells your test setup to *pause* execution until the database connection is successfully established. Only then will the `before` hook continue.
+*   **Logging:**  The `console.log` statements help you track the order of execution.
+*   **`db.populate()` after awaiting the connection** Call to populate only after the database is connected.
+
+**Why This Works**
+
+1.  **Guaranteed Order:**  The `await dbConnectionReady;` line ensures that the test setup *waits* for the database to connect before proceeding.
+2.  **Proper Context:** The `app` is now fully initialized *after* the database connection is established. This prevents race conditions.
+3.  **Clear Error Handling:** If the database connection fails in `server.js`, the re-thrown error will prevent the app from starting, and your tests will also fail (as they should).
+
+**Additional Considerations**
+
+*   **Test Database Configuration:** Double-check that your `config.mongo.test.uri` is correctly configured for your test environment.
+*   **Mongoose Connection Options:** Review your Mongoose connection options (e.g., `config.mongo.options`) to ensure they are appropriate for your test environment. Consider increasing `serverSelectionTimeoutMS` as mentioned earlier.
+*   **Error Handling in Tests:** Add `try...catch` blocks around your `before` hook to handle any errors that might occur during the database connection or population process.
+
+**Complete Example (`server.js`)**
+
+```javascript
+// server.js
+const mongoose = require('mongoose');
+const express = require('express');
+const config = require('./config'); // Adjust path
+const logger = require('./controllers/logger.controller');
+
+let dbConnectionPromise;
+
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(config.mongo.uri, config.mongo.options);
+    logger.info("Database connected");
+    console.log("Database connected");
+  } catch (err) {
+    logger.error("Database connection error:", err);
+    console.error("Database connection error:", err);
+    throw err;
+  }
+}
+
+dbConnectionPromise = connectToDatabase();
+
+const app = express();
+// ... your Express app configuration ...
+
+// Optionally, start the server only after the database is connected:
+dbConnectionPromise.then(() => {
+  app.listen(config.port, () => {
+    logger.info(`Server listening on port ${config.port}`);
+    console.log(`Server listening on port ${config.port}`);
+  });
+}).catch(err => {
+  logger.error("Failed to start server:", err);
+  console.error("Failed to start server:", err);
+});
+
+module.exports = {
+  app: app,
+  dbConnectionReady: dbConnectionPromise,
+};
+```
+
+By implementing this solution, you should eliminate the race condition and ensure that your tests always run with a properly connected database. Remember to thoroughly test your changes to confirm that everything is working as expected.

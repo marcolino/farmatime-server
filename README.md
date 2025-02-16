@@ -1,3 +1,6 @@
+<div center style="font-size: 5em; font-weight: bold; text-align: center;">WORK IN PROGRESS</div>
+<div center style="font-size: 3em; font-weight: bold; text-align: center; margin-bottom: 500px">Please come back soon</div>
+
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/acme-server?style=flat)](version)
 [![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/acme-server?style=flat)](license)
 
@@ -19,26 +22,37 @@
 ![Express](https://img.shields.io/badge/express-4.17.1-lightgrey?logo=express)
 ![MongoDB](https://img.shields.io/badge/mongoDB-4.4-green?logo=mongodb)
 
-
-
 # Summary
-[acme-server](https://github.com/marcolino/acme-server/) is an open‑source server side project for a general-purpose web app implementing a showcase site, with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
-It is strictly coupled with [acme-client], the client project.
+[acme-server](https://github.com/marcolino/acme-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site , with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
+It is strictly coupled with [acme-client](https://github.com/marcolino/acme-client/), the client project.
 
 # Technology
   ### on the server:
   - node.js
   ### on the client:
-  - 
+  - ...
 
 
 # Services
 
 # Dependencies
 
+## For the server:
+ - node.js
+ - npm
+ - git-crypt
+
+## For the client
+ - npm
+
+> Note: for tests we depend on chai 4.*, because it is the last version compatible with CommonJS, and the whole project is CommonJS.
 
 # Installation
+ - npm install -g yarn
+ - yarn
 ...
+
+# Configuration
 
 # Tests Coverage
 [Mocha unit+e2e tests coverage](https://marcolino.github.io/acme-server/coverage/index.html) 
@@ -58,17 +72,6 @@ acme-server provides the following features:
 - Custom Code
 - Admin UI
 - acme-server Console & CLI
-
-# Dependencies
-
-## for the server:
- - node
- - git-crypt
- - python
-
-## for the client
- - yarn
- - python
 
 
 # Getting Started
@@ -108,29 +111,29 @@ Follow these simple instructions to set up a local development environment.
   ```bash
   git clone https://github.com/marcolino/acme-server.git
   cd acme-server
-  npm install
+  yarn install
   ```
 
-2. Run the [setup script](https://github.com/acme-server/acme-server/blob/master/scripts/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
+2. Run the [setup script](https://github.com/acme-server/acme-server/blob/master/scripts/setup.js), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
 
   ```bash
-  npm run setup:dev
+  yarn setup:dev
   ```
 
 3. Spin up all required infrastructure (Postgres, Kafka, etc.) using Docker Compose:
 
   ```bash
   # To be able to view logs
-  npm run docker:dev
+  yarn docker:dev
 
-  # Or, if you prefer to run it at the background
-  npm run docker:dev -- -d
+  # Or, if you prefer to run it in background
+  yarn docker:dev -- -d
   ```
 
 4. Apply database migrations:
 
   ```bash
-  npm run db:migrate:deploy
+  yarn db:migrate:deploy
   ```
 
 5. To start developing, run the `serve` target of the desired app:
@@ -140,7 +143,7 @@ Follow these simple instructions to set up a local development environment.
   yarn start-dev 
   ```
 
-+ **Please note that in order to be able to run the app's client properly, you need to `serve-dev` both the server and client.**
++ **Please note that in order to be able to run the app's client properly, you need to `yarn start-dev` both the server and client.**
 
 That's it, you are good to go! Happy hacking! 👾
 

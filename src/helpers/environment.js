@@ -2,6 +2,7 @@ const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 const { audit } = require("../helpers/messaging");
 
+
 const assertEnvironment = () => {
   if (!process.env) {
     let err = "Missing env!";
@@ -19,12 +20,11 @@ const assertEnvironment = () => {
     assertionsCheckFailure(err);
     return false;
   }
-
   return true;
 };
 
-const assertionsCheckFailure = async(htmlContent) => {
-  // notify administration abount assertion failures
+const assertionsCheckFailure = async (htmlContent) => {
+  // notify administration about assertion failures
   return audit({req: null, mode: "error", subject: "Assertion check failed", htmlContent});
 };
 

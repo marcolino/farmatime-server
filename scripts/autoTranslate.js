@@ -21,7 +21,7 @@ process.argv.forEach((val, index) => {
   const inputFile = val;
   const filePath = path.resolve(inputFile);
   
-  (async() => {
+  (async () => {
     const actualLanguage = path.basename(path.dirname(filePath));
 
     // read the JSON file

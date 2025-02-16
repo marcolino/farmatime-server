@@ -4,8 +4,9 @@ const path = require("path");
 const crypto = require("crypto");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
-const { logger }  = require("../controllers/logger.controller");
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
+
 
 const isString = (x) => {
   return (typeof x === "string" || x instanceof String);
@@ -75,7 +76,7 @@ const arraysContainSameObjects = (a1, a2, property) => {
 
 //const { readdir, stat } = require("fs/promises");
 //const { join } = require("path");
-const dirSize = async(dir) => {
+const dirSize = async (dir) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
   const paths = files.map(async file => {
@@ -135,7 +136,7 @@ const remoteAddress = (req) => {
   return remoteAddress;
 };
 
-const isAdministrator = async(userId) => {
+const isAdministrator = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
     if (user.roles.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)) {
@@ -148,7 +149,7 @@ const isAdministrator = async(userId) => {
   }
 };
 
-const isDealerAtLeast = async(userId) => {
+const isDealerAtLeast = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
     const dealerRole = await Role.findOne({ name: "dealer" }).lean();
@@ -323,6 +324,23 @@ const formatMoney = (number, locale = config.app.serverLocale, currency = config
   return (number / 100).toLocaleString(locale, { style: "currency", currency });
 };
 
+/**
+ * Returns stack only if not in production
+ * 
+ * err: {object} error object
+ * 
+ * return:
+ *   {string} a fixed string if in production
+ *   {string} error stack if not in production
+ */
+const secureStack = (err) => {
+  if (config.mode.production) {
+    return "stack omitted in production";
+  } else {
+    return err.stack;
+  }
+};
+
 module.exports = {
   isString,
   isObject,
@@ -343,4 +361,5 @@ module.exports = {
   diacriticsRemove,
   countryCodeToFlag,
   formatMoney,
+  secureStack,
 };

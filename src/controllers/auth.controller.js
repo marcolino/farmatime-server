@@ -11,9 +11,10 @@ const Plan = require("../models/plan.model");
 const AccessToken = require("../models/accessToken.model");
 const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
-const { isAdministrator } = require("../helpers/misc");
+const { isAdministrator, secureStack } = require("../helpers/misc");
 const passport = require("passport");
 const config = require("../config");
+
 
 // Google OAuth login
 const googleLogin = (req, res, next) => {
@@ -43,6 +44,7 @@ const googleCallback = (req, res, next) => {
       logger.error("Google authentication error:", err);
       return next(err);  // handle error
     }
+    //console.log("User logged in with Google social OAuth:", user);
     req.userSocial = userSocial; // put userSocial in req
     return socialLogin(req, res, next);
   })(req, res, next);
@@ -60,12 +62,13 @@ const facebookCallback = (req, res, next) => {
       logger.error(`Facebook authentication error: ${err}`);
       return next(err);  // handle error
     }
+    //console.log("User logged in with Fcebook social OAuth:", user);
     req.userSocial = userSocial; // put userSocial in request
     return socialLogin(req, res, next);
   })(req, res, next);
 };
 
-const socialLogin = async(req, res) => {
+const socialLogin = async (req, res, next) => {
   if (!req?.userSocial) { // can userSocial be undefined?
     logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
@@ -91,7 +94,8 @@ const socialLogin = async(req, res) => {
       })
       .populate("roles", "-__v")
       .populate("plan", "-__v")
-      .exec();
+      .exec()
+    ;
   } catch (err) {
     logger.error(`Error finding user in social ${provider} signin request: ${err.message}`);
     return redirectToClientWithError(req, res, {
@@ -138,14 +142,12 @@ const socialLogin = async(req, res) => {
     try {
       plan = await Plan.findOne({ name: planName });
     } catch (err) {
-      logger.error(`Error finding plan ${planName}: ${err}`);
-      //return next(Object.assign(new Error(err.message), { status: 500 }));
+      logger.error(`Error finding plan ${planName}: ${err.message}`);
       return redirectToClientWithError(req, res, {
-        message: req.t("Error finding plan {{planName}}: {{error}}", { planName, error:err.message })
+        message: req.t("Error finding plan {{planName}}: {{err}}", { planName, err: err.message })
       }); 
     }
     if (!plan) {
-      //return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName }) });
       return redirectToClientWithError(req, res, {
         message: req.t("Invalid plan name {{planName}}", { planName })
       }); 
@@ -171,14 +173,14 @@ const socialLogin = async(req, res) => {
   // audit social logins
   audit({ req, mode: "action", subject: `User social sign in`, htmlContent: `Social sign in with (${provider}) provider of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
 
-  user.save(async(err) => {
-    if (err) {
-      logger.error(`User oauth login creation/update error: ${err}`);
-      return redirectToClientWithError(req, res, {
-        message: req.t("User login oauth creation/update error: {{error}}", { error: err.message })
-      }); 
-    }
-  });
+  try {
+    await user.save();
+  } catch (err) {
+    //logger.error(`User oauth login creation/update error: ${err}`);
+    return redirectToClientWithError(req, res, {
+      message: req.t("User social login creation/update error: {{error}}", { error: err.message })
+    }); 
+  }
 
   const payload = {
     id: user._id,
@@ -247,7 +249,7 @@ const redirectToClient = (req, res, success, payload) => {
 };
 
 // social OAuth revoke
-const socialRevoke = async(req, res) => {
+const socialRevoke = async (req, res, next) => {
   logger.log("socialRevoke");
 
   // TODO: check the providers give these data
@@ -268,7 +270,7 @@ const socialRevoke = async(req, res) => {
 const googleRevoke = socialRevoke;
 const facebookRevoke = socialRevoke;
 
-const signup = async(req, res, next) => {
+const signup = async (req, res, next) => {
   let roleName = "user";
   let planName = "free";
   let role, plan;
@@ -289,10 +291,13 @@ const signup = async(req, res, next) => {
 
   // get the role
   try {
-    role = await Role.findOne({name: roleName});
-  } catch(err) {
+    role = await Role.findOne({ name: roleName });
+  } catch (err) {
     logger.error(`Error finding role ${roleName}: ${err}`);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+
+    // TODO: change all (?) next(Object.assign with res.status( ...
+    //return next(Object.assign(new Error(err.message), { status: 500 }));
+    return res.status(500).json({ message: req.t("Error finding role {{ roleName }}: {{ err }}", { roleName, err: err.message }), stack: secureStack(err) });
   }
   if (!role) {
     return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName })});
@@ -302,7 +307,7 @@ const signup = async(req, res, next) => {
   // get plan
   try {
     plan = await Plan.findOne({name: planName});
-  } catch(err) {
+  } catch (err) {
     logger.error(`Error finding plan ${planName}: ${err}`);
     return next(Object.assign(new Error(err.message), { status: 500 }));
   }
@@ -319,47 +324,49 @@ const signup = async(req, res, next) => {
     plan: plan._id,
   });
 
-  user.save(async(err, user) => {
-    if (err) {
-      // we don't check duplicated user email (err.code === 11000)
-      // as it is done already as a route middleware
-      logger.error(`New user creation error: ${err}`);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
+  try {
+    user.save();
+  } catch (err) {
+    // we don't check duplicated user email (err.code === 11000)
+    // as it is done already as a route middleware
+    logger.error(`New user creation error: ${err}`);
+    return next(Object.assign(new Error(err.message), { status: 500, stack: secureStack(err) }));
+  }
+    
+  // send verification code
+  try {
+    const signupVerification = user.generateVerificationCode(user._id);
+    await signupVerification.save(); // save the signup verification code
+    logger.info(`SIGNUP VERIFICATION CODE: ${signupVerification.code}`);
 
-    // send verification code
-    try {
-      const signupVerification = user.generateVerificationCode(user._id);
-      await signupVerification.save(); // save the signup verification code
-      logger.info(`SIGNUP VERIFICATION CODE: ${signupVerification.code}`);
-  
-      await emailService.send(req, {
-        userId: user._id,
-        to: user.email,
-        subject: req.t("Signup Verification Code"),
-        templateName: "signupVerificationCodeSent",
-        templateParams: {
-          userFirstName: user.firstName,
-          userLastName: user.lastName,
-          signupVerificationCode: signupVerification.code,
-        },
-      });
-      return res.status(201).json({
-        message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
-        codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
-        codeDeliveryEmail: user.email,
-        ...(!config.mode.production) && { code: signupVerification.code } // to enble test mode to verify signup
-      });
-    } catch(err) {
-      logger.error(`Error sending verification code via ${config.app.auth.codeDeliveryMedium}: ${err}`);
-      //return res.status(err.code).json({ message: req.t("Error sending verification code") + ": " + err.message + ".\n" + req.t("Please contact support at {{email}}", { email: config.email.support.to }) });
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
-  });
+    await emailService.send(req, {
+      userId: user._id,
+      to: user.email,
+      subject: req.t("Signup Verification Code"),
+      templateName: "signupVerificationCodeSent",
+      templateParams: {
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
+        signupVerificationCode: signupVerification.code,
+      },
+    });
+    return res.status(201).json({
+      message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
+      codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
+      codeDeliveryEmail: user.email,
+      ...(!config.mode.production) && { code: signupVerification.code } // to enble test mode to verify signup
+    });
+  } catch (err) {
+    //logger.error(`Error sending verification code via ${config.app.auth.codeDeliveryMedium}: ${err}`);
+    return next(Object.assign(new Error(req.t("Error sending verification code via {{medium}}: {{ err }}", { medium: config.app.auth.codeDeliveryMedium, err: err.message }), { status: 400, stack: secureStack(err) })));
+  }
 };
 
-const resendSignupVerificationCode = async(req, res, next) => {
+const resendSignupVerificationCode = async (req, res, next) => {
   try {
+    if (!req.parameters?.email) {
+      return res.status(400).json({ message: req.t("Please specify an email") });
+    }
     const email = normalizeEmail(req.parameters.email);
     const user = await User.findOne(
       { email },
@@ -392,9 +399,9 @@ const resendSignupVerificationCode = async(req, res, next) => {
       ...(!config.mode.production) && { code: signupVerification.code } // to enble non production modes to confirm signup
     });
 
-  } catch(err) {
-    logger.error(`Error resending signup code: ${err}`);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+  } catch (err) {
+    //logger.error(`Error resending signup code: ${err}`);
+    return next(Object.assign(new Error(req.t("Error resending signup code: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
@@ -411,61 +418,56 @@ const signupVerification = async (req, res, next) => {
     }
 
     // we found a code, find a matching user
-    User.findOne(
-      { _id: code.userId },
-      null,
-      { allowUnverified: true },
-      (err, user) => {
-        if (err) {
-          logger.error("Error finding user for the requested code:", err);
-          res.status(err.code).json({ message: err.message });
-        }
-        if (!user) {
-          return res.status(400).json({ message: req.t("A user for this code was not found") });
-        }
-        if (user.isVerified) {
-          return res.status(400).json({ message: req.t("This account has already been verified") });
-        }
-
-        // verify and save the user
-        user.isVerified = true;
-        user.save(async (err, user) => {
-          if (err) {
-            logger.error("Error saving user in signup verification:", err);
-            return res.status(err.code).json({ message: err.message });
-          }
-          logger.info(`User signup: ${JSON.stringify(user)}`);
-          // notify support about registrations
-          audit({ req, mode: "action", subject: `User sign up`, htmlContent: `Sign up of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
-          return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
-        });
+    try {
+      const user = await User.findOne(
+        { _id: code.userId },
+        null,
+        { allowUnverified: true },
+      );
+      if (!user) {
+        return res.status(400).json({ message: req.t("A user for this code was not found") });
       }
-    );
+      if (user.isVerified) {
+        return res.status(400).json({ message: req.t("This account has already been verified") });
+      }
+
+      // verify and save the user
+      user.isVerified = true;
+      try {
+        const userNew = await user.save();
+        logger.info(`User signup: ${JSON.stringify(userNew)}`);
+        // notify support about registrations
+        audit({ req, mode: "action", subject: `User sign up`, htmlContent: `Sign up of user ${userNew.firstName} ${userNew.lastName} (email: ${userNew.email})` });
+        return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
+      } catch (err) {
+        //logger.error("Error saving user in signup verification:", err);
+        return next(Object.assign(new Error(req.t("Error saving user in signup verification: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+      }
+    } catch (err) {
+      //logger.error("Error finding user in signup verification:", err);
+      return next(Object.assign(new Error(req.t("Error finding user in signup verification: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    }
   } catch (err) {
-    logger.error("Error verifying signup:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    //logger.error("Error verifying signup:", err);
+    return next(Object.assign(new Error(req.t("Error verifying signup: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
 const signin = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
-
-  User.findOne(
-    { email },
-    null,
-    {
-      allowDeleted: true,
-      allowUnverified: true,
-    }
-  )
+  try {
+    User.findOne(
+      { email },
+      null,
+      {
+        allowDeleted: true,
+        allowUnverified: true,
+      }
+    )
     .populate("roles", "-__v")
     .populate("plan", "-__v")
-    .exec(async (err, user) => {
-      if (err) {
-        logger.error(req.t("Error finding user in signin request: {{err}}", { err: err.message }));
-        return next(Object.assign(new Error(err.message), { status: 500 }));
-      }
-
+    .exec()
+    .then(async user => {
       // check if user is found
       if (!user) {
         return res.status(401).json({ message: req.t("User not found") });
@@ -517,34 +519,8 @@ const signin = async (req, res, next) => {
         const accessToken = await AccessToken.createToken(user);
         const refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
 
-        // const maxAgeAccessToken = config.app.auth.accessTokenExpirationSeconds * 1000; // set access token max age (milliseconds) 
-        // const maxAgeRefreshToken = (req.parameters.isRememberMe ? // set refresh token max age (milliseconds) based on remember me
-        //   config.app.auth.refreshTokenExpirationDontRememberMeSeconds :
-        //   config.app.auth.refreshTokenExpirationSeconds
-        // ) * 1000;
-
-        // // set tokens in HTTP-only cookies
-        // const cookieOptions = {
-        //   httpOnly: true,
-        //   secure: config.mode.production, // use secure cookies in production
-        //   sameSite: config.mode.production ? "Strict" : "Lax",
-        //   //maxAge: maxAgeRefreshToken, // max age depends on rememberMe flag
-        // };
-
         res.cookie("accessToken", accessToken, cookieOptions());
-        // res.cookie("accessToken", accessToken, {
-        //   ...cookieOptions,
-        //   //maxAge: maxAgeAccessToken,
-        //   //maxAge: maxAgeRefreshToken * 2, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-        //   maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-        // });
         res.cookie("refreshToken", refreshToken, cookieOptions());
-        // res.cookie("refreshToken", refreshToken, {
-        //   ...cookieOptions,
-        //   //maxAge: maxAgeRefreshToken,
-        //   //maxAge: maxAgeRefreshToken * 2, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-        //   maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-        // });
 
         logger.info(`User signed in: ${user.email}`);
         if (config.mode.development) {
@@ -556,7 +532,7 @@ const signin = async (req, res, next) => {
         }
 
         // audit logins
-        audit({req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})`});
+        audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
 
         res.status(200).json({
           id: user._id,
@@ -569,85 +545,77 @@ const signin = async (req, res, next) => {
           preferences: user.preferences.toObject(),
         });
       } catch (err) {
-        logger.error(req.t("Error creating tokens: {{error}}", { error: err.message }));
-        return res.status(500).json({ message: req.t("Internal server error") });
+        //logger.error(req.t("Error creating tokens: {{err}}", { err: err.message }));
+        return next(Object.assign(new Error(req.t("Error creating tokens: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
       }
-    })
-  ;
+    });
+  } catch (err) {
+    if (err) {
+      //logger.error(req.t("Error finding user in signin request: {{err}}", { err: err.message }));
+      return next(Object.assign(new Error(req.t("Error finding user in signin request: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    }
+  } 
 };
 
 const signout = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
-  User.findOne({ email }).exec(async(err, user) => {
-    if (err) {
-      logger.error(req.t("Error finding user in signout request: {{err}}", { err: err.message }));
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
+  try {
+    User.findOne({ email })
+    .then(async user => {
 
-    // check user is found
-    if (!user) {
-      return res.status(401).json({ message: req.t("User not found") });
-    }
+      // check user is found
+      if (!user) {
+        return res.status(401).json({ message: req.t("User not found") });
+      }
 
-    // audit logouts
-    //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
-  
-    // invalidate access and refresh tokens
-    try {
-      await User.findOneAndUpdate({
-        _id: user.id
-      }, {
-        $set: {
-          accessToken: null,
-          refreshToken: null
-        }
-      });
-      logger.info(`User logged out: ${user.email}`);
-    } catch(err) {
-      logger.error("Error logging out user:", err);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
-
-    // clear HTTP-only auth cookies
-    // res.clearCookie("accessToken", {
-    //   httpOnly: true,
-    //   secure: config.mode.production,
-    //   sameSite: config.mode.production ? "Strict" : "Lax",
-    // });
-    // res.clearCookie("refreshToken", {
-    //   httpOnly: true,
-    //   secure: config.mode.production,
-    //   sameSite: config.mode.production ? "Strict" : "Lax",
-    // });
+      // audit logouts
+      //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
     
-    res.clearCookie("accessToken", cookieOptions(false));
-    res.clearCookie("refreshToken", cookieOptions(false));
+      // invalidate access and refresh tokens
+      try {
+        await User.findOneAndUpdate({
+          _id: user.id
+        }, {
+          $set: {
+            accessToken: null,
+            refreshToken: null
+          }
+        });
+        logger.info(`User signed out: ${user.email}`);
+      } catch (err) {
+        return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+      }
 
-    return res.status(200).json({ message: req.t("Sign out successful") });
-  });
+      // clear HTTP-only auth cookies
+      res.clearCookie("accessToken", cookieOptions(false));
+      res.clearCookie("refreshToken", cookieOptions(false));
+
+      return res.status(200).json({ message: req.t("Sign out successful") });
+    });
+  } catch (err) {
+    //logger.error(req.t("Error in signout request: {{err}}", { err: err.message }));
+    return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+  }
 };
 
-const resetPassword = async(req, res, next) => {
+const resetPassword = async (req, res, next) => {
   try {
     const { email } = req.parameters;
     if (!email) return res.status(400).json({ message: req.t("No email address to be reset")});
-    const user = await User.findOne({
-      email
-    });
+    const user = await User.findOne({ email });
     if (user) {
       // generate and set password reset code
       const resetPassword = user.generatePasswordResetCode();
       user.resetPasswordCode = resetPassword.code;
       user.resetPasswordExpires = resetPassword.expires;
 
-      // save the updated user object
-      await user.save();
+      await user.save(); // save the updated user
 
       // send email
       const subject = req.t("Password change request");
       const to = user.email;
-      const from = process.env.FROM_EMAIL; // TODO: use config...
+      const from = config.email.administration.from;
       logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
       if (config.mode.production) {
         logger.info(`Reset password code: ${user.resetPasswordCode}`);
@@ -674,13 +642,13 @@ const resetPassword = async(req, res, next) => {
       codeDeliveryEmail: user?.email,
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
-  } catch(err) {
-    logger.error("Error resetting password:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+  } catch (err) {
+    //logger.error("Error resetting password:", err);
+    return next(Object.assign(new Error(req.t("Error resetting password: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
-const resetPasswordConfirm = async(req, res, next) => {
+const resetPasswordConfirm = async (req, res, next) => {
   try {
     const { email } = req.parameters;
     const { password } = req.parameters;
@@ -706,14 +674,13 @@ const resetPasswordConfirm = async(req, res, next) => {
     user.resetPasswordCode = undefined;
     user.resetPasswordExpires = undefined;
 
-    // save the updated user object
-    await user.save();
+    await user.save(); // save the updated user
 
     return res.status(200).json({message: req.t("Your password has been updated")});
 
-  } catch(err) {
-    logger.error("Error in reset password confirm:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+  } catch (err) {
+    //logger.error("Error in reset password confirm:", err);
+    return next(Object.assign(new Error(req.t("Error in reset password confirm: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
@@ -722,17 +689,17 @@ const resetPasswordConfirm = async(req, res, next) => {
  * @desc resend password reset code
  * @access public
  */
-const resendResetPasswordCode = async(req, res, next) => {
+const resendResetPasswordCode = async (req, res, next) => {
   try {
-    const { email } = req.parameters;
+    if (!validateEmail.validate(req.parameters.email)) {
+      return res.status(400).json({ message: req.t("Please supply a valid email") });
+    }
+    const email = normalizeEmail(req.parameters.email);
 
-    const user = await User.findOne({
-      email
-    });
+    const user = await User.findOne({ email });
     if (user) {
       //if (user.isVerified) return res.status(400).json({ message: req.t("This account has already been verified") + ". " + req.t("You can log in")});
 
-      // user.generatePasswordResetCode();
       const resetPassword = user.generatePasswordResetCode();
       user.resetPasswordCode = resetPassword.code;
       user.resetPasswordExpires = resetPassword.expires;
@@ -770,9 +737,9 @@ const resendResetPasswordCode = async(req, res, next) => {
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
 
-  } catch(err) {
-    logger.error("Error resending reset password code:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+  } catch (err) {
+    //logger.error("Error resending reset password code:", err);
+    return next(Object.assign(new Error(req.t("Error resending reset password code: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
@@ -790,12 +757,12 @@ const notificationVerification = async (req, res, next) => {
     ;
     return res.status(200).json({user});
   } catch (err) {
-    logger.error(`Error finding user in notificatiomn verification request: ${err.message}`);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    //logger.error(`Error finding user in notification verification request: ${err.message}`);
+    return next(Object.assign(new Error(req.t("Error finding user in notification verification request: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
-const notificationPreferencesSave = async (req, res) => {
+const notificationPreferencesSave = async (req, res, next) => {
   let userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
     // this test should be done in routing middleware, but doing it here allows for a more specific error message
@@ -828,8 +795,8 @@ const notificationPreferencesSave = async (req, res) => {
 
     return res.status(200).json({ message: req.t("Notification preferences updated"), user });
   } catch (err) {
-    logger.error("Error updating notification preferences:", err);
-    throw err;
+    //logger.error("Error updating notification preferences:", err);
+    return next(Object.assign(new Error(req.t("Error updating notification preferences: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
@@ -843,7 +810,6 @@ module.exports = {
   resetPassword,
   resetPasswordConfirm,
   resendResetPasswordCode,
-  //refreshToken,
   googleLogin,
   googleCallback,
   googleRevoke,

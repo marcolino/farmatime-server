@@ -82,6 +82,7 @@ const configBase = {
     ],
   },
   db: {
+    debug: false,
     products: {
       search: {
         mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
@@ -268,7 +269,7 @@ const configBase = {
     },
   },
   email: {
-    dryrun: development, // if true, do not really send emails, use fake send
+    dryrun: test || development, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
@@ -289,8 +290,14 @@ const configBase = {
     admin: {
       email: "marcosolari@gmail.com",
       password: process.env.ADMIN_USER_DEFAULT_PASSWORD,
-      firstName: "admin name",
-      lastName: "admin surname",
+      firstName: "Marco",
+      lastName: "Solari",
+    },
+    user: {
+      email: "antonio.rossi@arsistemi.it",
+      password: "password",
+      firstName: "Antonio",
+      lastName: "Rossi",
     },
   },
   defaultNotifications: { // defaults

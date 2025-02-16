@@ -11,9 +11,9 @@ const upload = multer({ storage });
 module.exports = app => {
   //app.get(`${path}/getAllProducts`, [authJwt.verifyAccessToken], controller.getAllProducts);
   app.get(`${path}/getProducts`, [authJwt.verifyAccessTokenAllowGuest], controller.getProducts);
-  app.post(`${path}/getProduct`, [authJwt.verifyAccessTokenAllowGuest], controller.getProduct);
-  app.post(`${path}/getProductImageById/:imageId`, [authJwt.verifyAccessToken], controller.getProductImageById);
-  app.post(`${path}/getProductAllTypes`, [authJwt.verifyAccessToken], controller.getProductAllTypes);
+  app.get(`${path}/getProduct`, [authJwt.verifyAccessTokenAllowGuest], controller.getProduct);
+  app.get(`${path}/getProductImageById/:imageId`, [authJwt.verifyAccessToken], controller.getProductImageById);
+  app.get(`${path}/getProductAllTypes`, [authJwt.verifyAccessToken], controller.getProductAllTypes);
   app.post(`${path}/insertProduct`, [authJwt.verifyAccessToken], controller.insertProduct);
   app.post(`${path}/updateProduct`, [authJwt.verifyAccessToken], controller.updateProduct);
   app.post(`${path}/uploadProductImage`, [authJwt.verifyAccessToken, upload.single("image")], controller.uploadProductImage);

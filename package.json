@@ -6,7 +6,7 @@
   "license": "ISC",
   "engines": {
     "node": "18.x",
-    "npm": "9.x",
+    "npm": "10.x",
     "yarn": "4.x"
   },
   "main": "server.js",
@@ -16,20 +16,19 @@
     "start-dev-trace-warnings": "NODE_ENV=development node --trace-warnings server.js",
     "start": "node server.js",
     "inject": "node scripts/inject.js",
-
-    "test": "nyc --reporter=html mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log; scripts/test2badge",
-    "coverage": "xdg-open http://localhost:5000/coverage/",
-
+    "test": "NODE_ENV=test && nyc mocha --exit --timeout 5000 --slow 150 --bail test/",
+    "test-silent": "NODE_ENV=test && mocha --exit --timeout 5000 --slow 150 --bail --reporter min test/",
+    "test:coverage": "echo TODO...",
+    "test-ORIG": "nyc --reporter=html mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log; scripts/test2badge",
+    "coverage_ORIG": "xdg-open http://localhost:5000/coverage/",
     "i18n-pre": "bash -c 'for dir in $(cat ../acme-client/src/config.json | jq -r \".locales | keys[]\"); do mkdir -p \"src/locales/$dir/\"; done'",
     "i18n": "yarn i18n-pre; i18next 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
     "i18n-translate": "node scripts/translate.mjs",
     "i18n-check": "sh -c 'yarn i18n && missing=$(grep --only-matching __STRING_NOT_TRANSLATED__ src/locales/*/translation.json | wc -l); if [ $missing -gt 0 ]; then echo \"$missing strings have to be translated!\"; exit 1; fi'",
-
     "deps-check": "npx unimported > /dev/null",
     "eslint-check": "eslint server.js src/",
     "jshint-check": "jshint server.js src/",
     "checks": "yarn i18n-check && yarn deps-check && yarn jshint-check && yarn eslint-check && echo \"All checks passed\"",
-
     "client-build": "( cd ../acme-client/ && yarn build )",
     "fly-upgrade": "fly version upgrade",
     "fly-create-app-production": "flyctl apps list | grep -q 'acme-prod' || flyctl apps create 'acme-prod'",
@@ -44,7 +43,6 @@
     "fly-pre-deploy-production": "yarn checks && yarn fly-upgrade && yarn fly-prepare-staging",
     "fly-deploy-staging": "fly deploy -c 'fly-staging.toml'",
     "fly-deploy-production": "fly deploy -c 'fly-production.toml'",
-    
     "pub-staging": "NODE_ENV=staging    yarn client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging",
     "pub": "NODE_ENV=production yarn client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production"
   },
@@ -78,13 +76,15 @@
     "i18next-http-middleware": "^3.2.2",
     "ip3country": "5.0.0",
     "jsonwebtoken": ">=9.0.0",
-    "memorystore": "^1.6.7",
+    "memorystore": "^1.6.7",  
     "mongoose": ">=6.13.6",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "nyc": "^17.1.0",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
+    "request": "^2.88.2",
     "sharp": "^0.33.5",
     "sib-api-v3-sdk": "^8.5.0",
     "stripe": "^8.214.0",
@@ -92,10 +92,14 @@
     "winston": "^3.7.2",
     "winston-syslog": "^2.5.0"
   },
+  "dependenciesMeta": {
+    "vitest": {
+      "built": false
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
-    "chai": "^4.3.6",
-    "chai-http": "^4.3.0",
+    "chai": "4.3.7",
     "chai-spies": "^1.0.0",
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
@@ -103,10 +107,11 @@
     "globals": "^15.14.0",
     "i18next-parser": "9.0.2",
     "jshint": "^2.13.6",
-    "mocha": "^9.2.2",
+    "mocha": "^11.1.0",
     "nodemon": "^2.0.15",
-    "nyc": "^15.1.0",
-    "openai": "^4.83.0"
+    "openai": "^4.83.0",
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0"
   },
   "packageManager": "yarn@4.6.0",
   "dependenciesMetadata": {

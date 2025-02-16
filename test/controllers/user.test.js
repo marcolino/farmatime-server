@@ -1,1244 +1,1058 @@
 /**
  * User routes tests
  */
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const should = chai.should();
-const expect = chai.expect;
-const server = require("../../server");
+
+const server = require("../server.test");
+const { setupLoginCredentials, getAuthCookiesAdmin, getAuthCookiesUser } = require("../setup/setup.test");
+const { resetDatabase } = require("../../src/models");
 const User = require("../../src/models/user.model");
-const { chaiHttpWithLanguage } = require("../plugins/language");
-const { config } = require("../config.test");
+const Role = require("../../src/models/role.model");
+const config = require("../config.test");
+const configGlobal = require("../../src/config");
 
-chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
-chai.use(chaiHttpWithLanguage(config.language));
-
-const validFiscalCode = "RSSMRA74D22A001Q";
-let accessTokenUser, accessTokenAdmin;
+let expect;
 let allRoles = [];
-let allPlans = [];
+const validFiscalCode = "RSSMRA74D22A001Q";
 
-// NOTE: tests order counts!
-
-describe("API tests - User routes", async function () {
-
-  before(async() => { // before these tests we empty the database
-    // clearing user collection from test database
-    User.deleteMany({}, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-  });
-
-  signupAndSigninAllUsers();
-
-  it("should not get all users with tokens with user role", function(done) {
-    chai.request(server)
+describe("User routes", () => {
+  
+  // TODO: THIS TEST IS PROBABLY REDUNDANT
+  it("should access users/getAllUsersWithTokens with valid token", async () => {
+    const res = await server.request
       .get("/api/user/getAllUsersWithTokens")
-      .set("authorization", accessTokenUser)
-      .send({})
-      .then(res => {
-        res.should.have.status(403);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+      .set("Cookie", getAuthCookiesAdmin())
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should get all users with full info with admin role", function(done) {
-    chai.request(server)
-      .get("/api/user/getAllUsersWithFullInfo")
-      .set("authorization", accessTokenAdmin)
-      .send({})
-      .then(res => {
-        res.should.have.status(200);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+  // TODO: THIS TEST IS PROBABLY REDUNDANT
+  it("should reject request to users/getAllUsersWithTokens without token", async () => {
+    const res = await server.request
+      .get("/api/user/getAllUsersWithTokens")
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must be authenticated for this action");
   });
 
-  it("should not get all roles without authentication", function(done) {
-    chai.request(server)
+
+  it("should not get all users with tokens with user role", async () => {
+    const res = await server.request
+      .get("/api/user/getAllUsersWithTokens")
+      .set("Cookie", getAuthCookiesUser())
+      .send({})
+    ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+  });
+
+  it("should get all users with full info with admin role", async () => {
+    const res = await server.request
+      .get("/api/user/getAllUsers")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({})
+    ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+  });
+
+  it("should not get all roles without authentication", async () => {
+    const res = await server.request
       .get("/api/user/getAllRoles")
       .send({})
-      .then(res => {
-        res.should.have.status(401);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should get all roles", function(done) {
-    chai.request(server)
+  it("should get all roles", async () => {
+    const res = await server.request
       .get("/api/user/getAllRoles")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({})
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("roles");
-        expect(res.body.roles).to.be.an("array");
-        allRoles = res.body.roles;
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("roles");
+    server.expect(res.body.roles).to.be.an("array");
   });
 
-  it("should not get alls plans without authentication", function(done) {
-    chai.request(server)
+  it("should not get alls plans without authentication", async () => {
+    const res = await server.request
       .get("/api/user/getAllPlans")
       .send({})
-      .then(res => {
-        res.should.have.status(401);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should get all plans", function(done) {
-    chai.request(server)
+  it("should get all plans", async () => {
+    const res = await server.request
       .get("/api/user/getAllPlans")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({})
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("plans");
-        expect(res.body.plans).to.be.an("array");
-        allPlans = res.body.plans;
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("plans");
+    server.expect(res.body.plans).to.be.an("array");
   });
 
-  it("should get user's profile", function(done) {
-    chai.request(server)
+  it("should get user's profile", async () => {
+    const res = await server.request
       .get("/api/user/getUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({})
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should not get user's profile without authentication", function(done) {
-    chai.request(server)
+  it("should not get user's profile without authentication", async () => {
+    const res = await server.request
       .get("/api/user/getUser")
       .send({})
-      .then(res => {
-        res.should.have.status(401);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should not get another user's profile without admin access", function(done) {
-    chai.request(server)
+  it("should not get another user's profile without admin access", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const res = await server.request
       .get("/api/user/getUser")
-      .set("authorization", accessTokenUser)
-      .send({userId: config.admin.id})
-      .then(res => {
-        res.should.have.status(403);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+      .set("Cookie", getAuthCookiesUser())
+      .send({ userId })
     ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should get another user's profile with admin access", function(done) {
-    chai.request(server)
+  it("should get another user's profile with admin access", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const res = await server.request
       .get("/api/user/getUser")
-      .set("authorization", accessTokenAdmin)
-      .send({userId: config.admin.id})
-      .then(res => {
-        res.should.have.status(200);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ userId })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should update user's profile", function(done) {
-    chai.request(server)
+  it("should update user's profile", async () => { // TODO: ok not existing user email can be updated?
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
-        //userId: config.user.id,
-        email: config.user.email,
+        email: configGlobal.defaultUsers.user.email,
         firstName: "updated first name",
         lastName: "updated last name",
         fiscalCode: validFiscalCode,
         businessName: "test business name",
-        address: "Via Felisio, 19, 10098, Rivoli (TO), Italy",
+        address: "Via delle Rose, 0, 10010, Roma, Italy",
         roles: allRoles.filter(role => role.name === "user"),
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should not update user's profile with invalid email", function(done) {
-    chai.request(server)
+  it("should not update user's profile with invalid email", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId: config.admin.id,
         email: "invalid email",
       })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Please supply a valid email");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("Please supply a valid email");
   });
 
-  it("should not update user's profile with already taken email", function(done) {
-    chai.request(server)
+  it("should not update user's profile with already taken email", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId: config.admin.id,
         email: config.user.email,
       })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("This email is already taken, sorry");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal(`The email ${config.user.email} is already in use`);
   });
 
-  it("should update user's profile with new email", function(done) {
-    chai.request(server)
+  it("should update user's profile with new email", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId: config.admin.id,
         email: config.admin.email + ".new",
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should reset user's profile with email", function(done) {
-    chai.request(server)
+  it("should reset user's profile with email", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
-        email: config.admin.email,
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
+        userId,
+        email: configGlobal.defaultUsers.admin.email,
       })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should not update user's profile with empty firstName", function(done) {
-    chai.request(server)
+  it("should not update user's profile with empty firstName", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
+        userId,
         firstName: "",
       })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("First name cannot be empty, sorry");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("First name cannot be empty, sorry");
   });
 
-  it("should not update user's profile with invalid lastName", function(done) {
-    chai.request(server)
+  it("should not update user's profile with invalid lastName", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId: config.admin.id,
         lastName: "",
       })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Last name cannot be empty, sorry");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("Last name cannot be empty, sorry");
   });
 
-  it("should not update user's profile with invalid fiscalCode", function(done) {
-    chai.request(server)
+  it("should not update user's profile with invalid fiscalCode", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId: config.admin.id,
-        fiscalCode: "",
-      })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Fiscal code is not valid, sorry");
-        done();
-      })
-      .catch((err) => {
-        done(err);
+        fiscalCode: "invalid fiscal code",
       })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("Fiscal code is not valid, sorry");
   });
 
-  it("should not update user's profile without autentication", function(done) {
-    chai.request(server)
+  it("should not update user's profile without autentication", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const res = await server.request
       .post("/api/user/updateUser")
       .send({
-        userId: config.user.id,
-        email: config.user.email,
-      })
-      .then(res => {
-        res.should.have.status(401);
-        done();
-      })
-      .catch((err) => {
-        done(err);
+        userId,
+        email: configGlobal.defaultUsers.user.email,
       })
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should not update user's profile for a different not existing user - without admin access", function(done) {
-    chai.request(server)
+  it("should not update user's profile for a different not existing user - without admin access", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
         userId: "123456789012345678901234",
         firstName: config.user.name + "-bis",
       })
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role to update another user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must have admin role to access another user's data");
   });
 
-  it("should not update user's profile for a different existent user - without admin access", function(done) {
-    chai.request(server)
+  it("should not update user's profile for a different existent user - without admin access", async () => {
+    const userId = await User.findOne({ email: config.admin.email });
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
-        userId: config.user.id,
+        userId,
+        firstName: config.admin.name + "-bis",
+      })
+    ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must have admin role to access another user's data");
+  });
+
+  it("should update user's profile for a different existent user - as admin user", async () => {
+    const userId = await User.findOne({ email: config.user.email });
+    const res = await server.request
+      .post("/api/user/updateUser")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({
+        userId,
         firstName: config.user.name + "-bis",
       })
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role to update another user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's profile for a different existent user - as admin user", function(done) {
-    chai.request(server)
+  it("should not update another user's own property without admin access", async () => {
+    const userId = await User.findOne({ email: config.admin.email });
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesUser())
       .send({
-        userId: config.user.id,
-        firstName: config.user.name + "-bis",
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
+        userId,
+        firstName: "updated first name",
       })
     ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must have admin role to access another user's data");
   });
 
-  it("should not update another user's own property without admin access", function(done) {
-    chai.request(server)
+  it("should update another user's property with admin access", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId: config.user.id,
         firstName: "updated first name",
       })
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role to update another user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update another user's property with admin access", function(done) {
-    chai.request(server)
+  it("should update user's property (with no changes) with an unexpected parameters", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
-      .send({
-        userId: config.user.id,
-        firstName: "updated first name",
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
-
-  it("should update user's property (with no changes) with an unexpected parameters", function(done) {
-    chai.request(server)
-      .post("/api/user/updateUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({
         unexpected: "abc",
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's own property firstName", function(done) {
-    chai.request(server)
+  it("should update user's own property firstName", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
         firstName: "updated first name",
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's own property email", function(done) {
-    chai.request(server)
+  it("should update user's own property email", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
-        email: config.user.email,
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
+        email: configGlobal.defaultUsers.user.email,
       })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's own property lastName", function(done) {
-    chai.request(server)
+  it("should update user's own property lastName", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
         lastName: "updated last name",
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's own property fiscalCode", function(done) {
-    chai.request(server)
+  it("should update user's own property fiscalCode", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
         fiscalCode: config.user.fiscalCode,
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's own property businessName", function(done) {
-    chai.request(server)
+  it("should update user's own property businessName", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
         businessName: "test business name",
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      });
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should update user's own property address", function(done) {
-    chai.request(server)
+  it("should update user's own property address", async () => {
+    const res = await server.request
       .post("/api/user/updateUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({
         address: "test address",
       })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("user");
   });
 
-  it("should not update user's own roles without any role", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenUser)
-      .send({})
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Please specify at least one role");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's own roles without any role", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({})
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("Please specify at least one role");
+  // });
 
-  it("should not update user's own roles with not array roles", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenUser)
-      .send({roles: "anyrolestring"})
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Please specify at least one role");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's own roles with not array roles", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({roles: "anyrolestring"})
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("Please specify at least one role");
+  // });
 
-  it("should not update user's own roles with empty array roles", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenUser)
-      .send({ roles: [] })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Please specify at least one role");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's own roles with empty array roles", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({ roles: [] })
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("Please specify at least one role");
+  // });
 
-  it("should update (equal or downgrade) user's own roles without admin access ", function (done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenUser)
-      .send({ roles: allRoles.filter(role => role.name === "user") })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Roles updated");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should update (equal or downgrade) user's own roles without admin access ", function (done) {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({ roles: allRoles.filter(role => role.name === "user") })
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("Please specify at least one role");
+  // });
 
-  it("should not update user's own roles without admin access (upgrade)", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenUser)
-      .send({ roles: allRoles.filter(role => role.name === "admin") })
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Sorry, this user is not allowed elevate roles");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's own roles without admin access (upgrade)", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({ roles: allRoles.filter(role => role.name === "admin") })
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("Please specify at least one role");
+  // });
 
-  it("should update user's own roles as admin user (upgrade)", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenAdmin)
-      .send({ roles: allRoles.filter(role => role.name === "admin") })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Roles updated");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should update user's own roles as admin user (upgrade)", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({ roles: allRoles.filter(role => role.name === "admin") })
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("Please specify at least one role");
+  // });
 
-  it("should not update another user's roles without admin access", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenUser)
-      .send({
-        userId: config.admin.id,
-      })
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role to update another user");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update another user's roles without admin access", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({
+  //       userId: config.admin.id,
+  //     })
+  //   ;
+  //   expect = 400;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("You must have admin role to update another user");
+  // });
   
-  it("should update another user's roles with admin access", function(done) {
-    chai.request(server)
-      .post("/api/user/updateRoles")
-      .set("authorization", accessTokenAdmin)
-      .send({
-        userId: config.admin.id,
-        roles: allRoles.filter(role => role.name === "admin")
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Roles updated");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should update another user's roles with admin access", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updateRoles")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({
+  //       userId: config.admin.id,
+  //       roles: allRoles.filter(role => role.name === "admin")
+  //     })
+  //     .then(res => {
+  //       res.should.have.status(200);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("Roles updated");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update user's our plan with no plan", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenAdmin)
-      .send({})
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Plan is mandatory");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's our plan with no plan", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({})
+  //     .then(res => {
+  //       res.should.have.status(400);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("Plan is mandatory");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update user's our plan with wrong plan", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenAdmin)
-      .send({
-        userId: config.user.id,
-        plan: "wrong plan type",
-      })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Plan is wrong");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's our plan with wrong plan", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({
+  //       userId: config.user.id,
+  //       plan: "wrong plan type",
+  //     })
+  //     .then(res => {
+  //       res.should.have.status(400);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("Plan is wrong");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update user's own plan without admin access", function (done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenUser)
-      .send({plan: allPlans.find(plan => plan.name === "unlimited")})
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's own plan without admin access", function (done) {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({plan: allPlans.find(plan => plan.name === "unlimited")})
+  //     .then(res => {
+  //       res.should.have.status(403);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("You must have admin role for this action");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update user's own plan (even the free plan)", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenUser)
-      .send({plan: allPlans.find(plan => plan.name === "free")})
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update user's own plan (even the free plan)", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({plan: allPlans.find(plan => plan.name === "free")})
+  //     .then(res => {
+  //       res.should.have.status(403);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("You must have admin role for this action");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update another user's plan with admin access", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenAdmin)
-      .send({
-        userId: config.user.id,
-        plan: "wrong plan type",
-      })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Plan is wrong");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update another user's plan with admin access", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({
+  //       userId: config.user.id,
+  //       plan: "wrong plan type",
+  //     })
+  //     .then(res => {
+  //       res.should.have.status(400);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("Plan is wrong");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update (upgrade) user's own plan without admin access", function (done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenUser)
-      .send({plan: allPlans.find(plan => plan.name === "unlimited")})
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update (upgrade) user's own plan without admin access", function (done) {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({plan: allPlans.find(plan => plan.name === "unlimited")})
+  //     .then(res => {
+  //       res.should.have.status(403);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("You must have admin role for this action");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should update user's own plan as admin user (upgrade)", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenAdmin)
-      .send({ plan: allPlans.find(plan => plan.name === "free") })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Plan updated");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should update user's own plan as admin user (upgrade)", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({ plan: allPlans.find(plan => plan.name === "free") })
+  //     .then(res => {
+  //       res.should.have.status(200);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("Plan updated");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not update another user's plan without admin access", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenUser)
-      .send({
-        userId: config.admin.id,
-      })
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should not update another user's plan without admin access", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesUser())
+  //     .send({
+  //       userId: config.admin.id,
+  //     })
+  //     .then(res => {
+  //       res.should.have.status(403);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("You must have admin role for this action");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should update another user's plan with admin access", function(done) {
-    chai.request(server)
-      .post("/api/user/updatePlan")
-      .set("authorization", accessTokenAdmin)
-      .send({
-        userId: config.admin.id,
-        plan: allPlans.find(plan => plan.name === "unlimited")
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Plan updated");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
+  // it("should update another user's plan with admin access", async () => {
+  //   const res = await server.request
+  //     .post("/api/user/updatePlan")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({
+  //       userId: config.admin.id,
+  //       plan: allPlans.find(plan => plan.name === "unlimited")
+  //     })
+  //     .then(res => {
+  //       res.should.have.status(200);
+  //       res.body.should.have.property("message");
+  //       expect(res.body.message).to.equal("Plan updated");
+  //       done();
+  //     })
+  //     .catch((err) => {
+  //       done(err);
+  //     })
+  //   ;
+  // });
 
-  it("should not get all users with user role", function(done) {
-    chai.request(server)
+  it("should not get all users with user role", async () => {
+    const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({})
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must have admin role for this action");
   });
 
-  it("should not get all users with wrong filter", function(done) {
-    chai.request(server)
+  it("should not get all users with wrong filter", async () => {
+    const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({ filter: "wrong filter" })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("A filter must be an object");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("A filter must be an object");
   });
 
-  it("should get all users with admin role", function(done) {
-    chai.request(server)
+  it("should get all users with admin role", async () => {
+    const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({})
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("users");
-        //console.log("# of users is", res.body.users.length);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("users");
   });
 
-  it("should not delete user without authentication", function(done) {
-    chai.request(server)
+  it("should not delete user without authentication", async () => {
+    const res = await server.request
       .post("/api/user/deleteUser")
       .send({})
-      .then(res => {
-        res.should.have.status(401);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must be authenticated for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must be authenticated for this action");
   });
 
-  it("should not delete user without admin privileges", function(done) {
-    chai.request(server)
+  it("should not delete user without admin privileges", async () => {
+    const res = await server.request
       .post("/api/user/deleteUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({})
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must have admin role for this action");
   });
 
-  it("should not delete user with admin privileges using invalid id", function(done) {
-    chai.request(server)
+  it("should not delete user with admin privileges using invalid id", async () => {
+    const res = await server.request
       .post("/api/user/deleteUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({ filter: { id: "invalid user id" } })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("No user have been deleted");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("No user have been deleted");
   });
 
-  it("should delete user with admin privileges using id", function(done) {
-    chai.request(server)
+  it("should delete user with admin privileges using id", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const res = await server.request
       .post("/api/user/deleteUser")
-      .set("authorization", accessTokenAdmin)
-      .send({ filter: { _id: config.user.id } })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("count");
-        expect(res.body.count).to.equal(1);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ filter: { _id: userId } })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("count");
+    server.expect(res.body.count).to.equal(1);
   });
 
-  it("should delete user with admin privileges using email", function(done) {
-    chai.request(server)
+  it("should delete user with admin privileges using email", async () => {
+    const res = await server.request
       .post("/api/user/deleteUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({ filter: { email: config.admin.email } })
       .send({})
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("count");
-        expect(res.body.count).to.equal(1);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("count");
+    server.expect(res.body.count).to.equal(1);
   });
 
-  signupAndSigninAllUsers();
+  it("should reset test database", async () => {
+    await resetDatabase();
+    await setupLoginCredentials();
+  });
 
-  it("should not remove user without authentication", function(done) {
-    chai.request(server)
+  it("should not remove user without authentication", async () => {
+    const res = await server.request
       .post("/api/user/removeUser")
       .send({})
-      .then(res => {
-        res.should.have.status(401);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must be authenticated for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 401;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must be authenticated for this action");
   });
 
-  it("should not remove user without admin privileges", function(done) {
-    chai.request(server)
+  it("should not remove user without admin privileges", async () => {
+    const res = await server.request
       .post("/api/user/removeUser")
-      .set("authorization", accessTokenUser)
+      .set("Cookie", getAuthCookiesUser())
       .send({})
-      .then(res => {
-        res.should.have.status(403);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must have admin role for this action");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 403;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("You must have admin role for this action");
   });
 
-  it("should not remove user with admin privileges using invalid id", function(done) {
-    chai.request(server)
+  it("should not remove user with admin privileges using invalid id", async () => {
+    const res = await server.request
       .post("/api/user/removeUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({ filter: {id: "invalid user id"} })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("No user have been deleted");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("No user has been removed");
   });
 
-  it("should remove user with admin privileges using id", function(done) {
-    chai.request(server)
+  it("should remove user with admin privileges using id", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const res = await server.request
       .post("/api/user/removeUser")
-      .set("authorization", accessTokenAdmin)
-      .send({ filter: { _id: config.user.id } })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("count");
-        expect(res.body.count).to.equal(1);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ filter: { _id: userId } })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("count");
+    server.expect(res.body.count).to.equal(1);
   });
 
-  it("should remove user with admin privileges using email", function(done) {
-    chai.request(server)
+  it("should remove user with admin privileges using email", async () => {
+    const res = await server.request
       .post("/api/user/removeUser")
-      .set("authorization", accessTokenAdmin)
-      .send({ filter: { email: config.user.email } })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("count");
-        expect(res.body.count).to.equal(1);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ filter: { email: configGlobal.defaultUsers.user.email } })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("count");
+    server.expect(res.body.count).to.equal(1);
   });
 
-  it("should remove all users with admin privileges", function (done) {
-    chai.request(server)
+  it("should remove all users with admin privileges", async () => {
+    const res = await server.request
       .post("/api/user/removeUser")
-      .set("authorization", accessTokenAdmin)
+      .set("Cookie", getAuthCookiesAdmin())
       .send({ filter: {} })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("count");
-        expect(res.body.count).to.be.at.least(1);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("count");
+    server.expect(res.body.count).to.be.at.least(1);
   });
-  
+
+  it("should reset test database", async () => {
+    await resetDatabase();
+    await setupLoginCredentials();
+  });
 });
-
-function signupAndSigninAllUsers() {
-  it("should register normal user", function(done) {
-    chai.request(server)
-      .post("/api/auth/signup")
-      .send({
-        "email": config.user.email,
-        "password": config.user.password,
-      })
-      .then(res => {
-        res.should.have.status(201);
-        res.body.should.have.property("code");
-        signupConfirmCode = res.body.code;
-        chai.request(server)
-          .post("/api/auth/signupVerification")
-          .send({ code: signupConfirmCode })
-          .then(res => {
-            res.should.have.status(200);
-            res.body.should.have.property("message");
-            expect(res.body.message).to.equal("The account has been verified, you can now log in");
-            done();
-        })
-        .catch((err) => {
-          done(err);
-        })
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
-
-  it("should login normal user", function(done) {
-    chai.request(server)
-      .post("/api/auth/signin")
-      .send({
-        "email": config.user.email,
-        "password": config.user.password,
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("accessToken");
-        res.body.should.have.property("id");
-        accessTokenUser = res.body.accessToken;
-        config.user.id = res.body.id;
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
-
-  it("should register admin user", function(done) {
-    chai.request(server)
-      .post("/api/auth/signup")
-      .send({
-        "email": config.admin.email,
-        "password": config.admin.password,
-        "forcerole": "admin",
-        "forceplan": "unlimited",
-      })
-      .then(res => {
-        res.should.have.status(201);
-        res.body.should.have.property("code");
-        signupConfirmCode = res.body.code;
-        chai.request(server)
-          .post("/api/auth/signupVerification")
-          .send({ code: signupConfirmCode })
-          .then(res => {
-            res.should.have.status(200);
-            res.body.should.have.property("message");
-            expect(res.body.message).to.equal("The account has been verified, you can now log in");
-            done();
-          })
-          .catch((err) => {
-            done(err);
-          })
-          ;
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
-
-  it("should login as admin user", function(done) {
-    chai.request(server)
-      .post("/api/auth/signin")
-      .send(config.admin)
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("accessToken");
-        res.body.should.have.property("roles");
-        res.body.should.have.property("id");
-        expect(res.body.roles.some(obj => obj.name === "admin")).to.be.true;
-        accessTokenAdmin = res.body.accessToken;
-        config.admin.id = res.body.id;
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
-};

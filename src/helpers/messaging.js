@@ -77,7 +77,7 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   await emailService.send(req, { to, toName, subject, htmlContent });
 };
 
-const notification = async({ req, to, subject, htmlContent }) => {
+const notification = async ({ req, to, subject, htmlContent }) => {
   to = to ?? config.email.administration.to;
   subject = `${config.email.subject.prefix ? config.email.subject.prefix + " - " : ""} ${subject}`;
 

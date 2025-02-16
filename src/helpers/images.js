@@ -35,7 +35,7 @@ const saveImageFile = async (req) => {
     const subject = i18n.t("Image file save size overflow limit reached");
     const message = i18n.t("Persistent storage size overflow limit reached ({{overflow}}), image cannot be saved, storage plan should be boosted", { overflow: config.persistentStorage.size.overflow });
     const mode = "warning";
-    logger.warn(message);
+    //logger.warn(message);
     audit({req, mode, subject, htmlContent: message});
     throw new Error(message);
   }
@@ -43,7 +43,7 @@ const saveImageFile = async (req) => {
     const subject = i18n.t("Image file save size watermark limit reached");
     const message = i18n.t("Persistent storage size watermark limit reached ({{watermark}}), image is saved, but storage plan should be boosted", { watermark: config.persistentStorage.size.watermark });
     const mode = "error";
-    logger.error(message);
+    //logger.error(message);
     audit({req, mode, subject, htmlContent: message});
   }
 
@@ -52,14 +52,14 @@ const saveImageFile = async (req) => {
     imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
   } catch (err) {
     const message = i18n.t("Error converting image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message });
-    logger.error(message);
+    //logger.error(message);
     throw new Error(message);
   }
   try { // save image to disk
     fs.writeFileSync(imagePath, imageBufferConvertedAndResized);
   } catch (err) {
     const message = i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath, err: err.message });
-    logger.error(message);
+    //logger.error(message);
     throw new Error(message);
   }
 
@@ -84,7 +84,7 @@ const saveImageFile = async (req) => {
   };
 };
 
-const imageConvertFormatAndLimitSize = async(imageBuffer) => {
+const imageConvertFormatAndLimitSize = async (imageBuffer) => {
   return await sharp(imageBuffer)
     .resize(config.products.images.maximumSidePixels, config.products.images.maximumSidePixels, {
       fit: "inside",
@@ -95,7 +95,7 @@ const imageConvertFormatAndLimitSize = async(imageBuffer) => {
       alphaQuality: config.products.images.alphaQualityPercent,
     })
     .toBuffer()
-    .catch(err => {
+    .catch (err => {
       logger.error("Error processing the image:", err);
       throw err;
     })

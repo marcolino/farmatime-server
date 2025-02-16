@@ -70,7 +70,7 @@ class EmailService {
         // TODO: DEBUG ONLY !!! Always send to me, even for guest users...
         req.user = await User.findOne({ email: "marcosolari@gmail.com" })
           .select(["-password", "-__v"])
-          .exec()
+          //.exec()
         ;
         
         // email send service needs an authenticatd user
@@ -261,7 +261,7 @@ class EmailService {
     // .then(result => {
     //   console.log("inlineCss result:", result);
     // })
-    // .catch(err => {
+    // .catch (err => {
     //   console.error("inline classes error:", err);
     //   throw err;
     // });

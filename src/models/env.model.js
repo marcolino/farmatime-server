@@ -28,12 +28,13 @@ EnvSchema.statics.load = async function() {
     } catch (err) {
       logger.error("Error loading env from database:", err);
     }
+    //logger.info("Env loaded from database");
   }
   return env;
 };
 
 // store env to MongoDB
-EnvSchema.statics.store = async(newEnv) => {
+EnvSchema.statics.store = async (newEnv) => {
   try {
     // iterate over the newEnv object and upsert each key-value pair in the collection
     for (const [key, value] of Object.entries(newEnv)) {

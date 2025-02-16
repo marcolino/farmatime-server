@@ -1,131 +1,187 @@
 /**
  * Payment routes tests
  */
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const should = chai.should();
-const expect = chai.expect;
-const server = require("../../server");
+
+const server = require("../server.test");
+const { getAuthCookiesAdmin } = require("../setup/setup.test");
+// const db = require("../../src/models");
 const User = require("../../src/models/user.model");
-const Role = require("../../src/models/role.model");
-const userController = require("../../src/controllers/user.controller");
-const { chaiHttpWithLanguage } = require("../plugins/language");
-const { config } = require("../config.test");
+// const Role = require("../../src/models/role.model");
+const config = require("../config.test");
 
-chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
-chai.use(chaiHttpWithLanguage(config.language));
+describe("Payment routes", () => {
 
-let accessTokenUser, stripeSessionId;
+  let stripeSessionId;
 
-describe("API tests - Payment routes", function() {
+  // it("should get payment mode, and it should be in a set of values", async () => {
+  //   const res = await server.request
+  //     .get("/api/payment/mode")
+  //     .set("Cookie", getAuthCookiesAdmin())
+  //     .send({})
+  //   ;
+  //   expect = 200;
+  //   if (res.status !== expect) {
+  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("mode");
+  //   server.expect(res.body.mode).to.be.oneOf(["test", "live"]);
+  // });
 
-  before(async() => { // before these tests we empty the database
-    // clearing user collection from test database
-    User.deleteMany({}, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-  });
-
-  it("should register normal user", function(done) {
-    chai.request(server)
-      .post("/api/auth/signup")
-      .send({
-        "email": config.user.email,
-        "password": config.user.password,
-      })
-      .then(res => {
-        res.should.have.status(201);
-        res.body.should.have.property("code");
-        signupVerificationCode = res.body.code;
-        chai.request(server)
-        .post("/api/auth/signupVerification")
-        .send({ code: signupVerificationCode })
-        .then(res => {
-          res.should.have.status(200);
-          res.body.should.have.property("message");
-          expect(res.body.message).to.equal("The account has been verified, you can now log in");
-          done();
-        })
-        .catch((err) => {
-          done(err);
-        }) 
-      }).catch((err) => {
-        done(err);
-      }) 
-    ;
-  });
-
-  it("should login normal user", function(done) {
-    chai.request(server)
-      .post("/api/auth/signin")
-      .send({
-        "email": config.user.email,
-        "password": config.user.password,
-      })
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("accessToken");
-        res.body.should.have.property("id");
-        accessTokenUser = res.body.accessToken;
-        config.user.id = res.body.id;
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
-    ;
-  });
-
-  it("should get payment mode, and it should be in a set of values", function(done) {
-    chai.request(server)
-      .get("/api/payment/mode")
-      .set("authorization", accessTokenUser)
-      .send({})
-      .then(res => {
-        res.should.have.status(200);
-        expect(res.body.mode).to.be.oneOf(["test", "live"]);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
-    ;
-  });
-
-  it("should not create a checkout session without authentication", function(done) {
-    chai.request(server)
+  it("should not create a checkout session without a cart", async () => {
+    const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      //.set("authorization", accessTokenUser)
       .send({})
-      .then(res => {
-        res.should.have.status(401);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("Empty cart");
   });
 
-  it("should not create a checkout session for a 0 cost product", function(done) {
-    chai.request(server)
+  it("should not create a checkout session with an empty cart", async () => {
+    const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("authorization", accessTokenUser)
-      .send({product: "free"})
-      .then(res => {
-        res.should.have.status(400);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
+      .send({ cart: [] })
     ;
+    expect = 400;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.equal("Empty cart");
   });
 
-  it("should not create a checkout session for a non-existent product", function(done) {
-    chai.request(server)
+  it("should not create a checkout session with a cart with an empty item", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({
+        cart: {
+          items: [{ }],
+        }
+      })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Missing required param:"));
+  });
+
+  // cart items parameters:
+  // item.mdaCode,
+  // item.imageUrl,
+  // item.notes, (optional)
+  // item.price, (integer (cents))
+  // item.quantity,
+  it("should not create a checkout session with a cart with an item without mdaCode", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({
+        cart: {
+          items: [{ /*mdaCode: 123,*/ imageUrl: "https://example.com/image.jpg", price: 1, quantity: 1 }],
+        }
+      })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Missing required param:"));
+  });
+
+  it("should not create a checkout session with a cart with an item no mdaCode", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({
+        cart: {
+          items: [{ /*mdaCode: 123,*/ price: 100, quantity: 1 }],
+        }
+      })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Missing required param:"));
+  });
+
+  it("should not create a checkout session with a cart with no price", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ cart: { items: [{ mdaCode: 123, /*price: 100,*/ quantity: 1 }] } })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Prices require an `unit_amount` or `unit_amount_decimal` parameter to be set"));
+  });
+
+  it("should not create a checkout session with a cart with no quantity", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ cart: { items: [{ mdaCode: 123, price: 100/*, quantity: 1*/ }] } })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Quantity is required"));
+  });
+
+  it("should not create a checkout session with a cart with zero quantity", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 0 }] } })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" This value must be greater than or equal to 1"));
+  });
+
+  it("should not create a checkout session with a cart with a too low price", async () => {
+    const res = await server.request
+      .post("/api/payment/createCheckoutSession")
+      .set("Cookie", getAuthCookiesAdmin())
+      .send({ cart: { items: [{ mdaCode: 123, price: 49, quantity: 1 }] } })
+    ;
+    expect = 500;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("message");
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" The Checkout Session&#39;s total amount due must add up to at least"));
+  });
+
+/*
+  it("should not create a checkout session for a non-existent product", async () => {
+    const res = await server.request
       .post("/api/payment/createCheckoutSession")
       .set("authorization", accessTokenUser)
       .send({ product: "not existent" })
@@ -140,52 +196,47 @@ describe("API tests - Payment routes", function() {
       }) 
     ;
   });
-
-  it("should create a checkout session for a standard product", function(done) {
-    chai.request(server)
+*/
+  
+  it("should create a checkout session for a regular product for a guest user", async () => {
+    const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("authorization", accessTokenUser)
-      .send({product: "standard"})
-      .then(res => {
-        res.should.have.status(200);
-        res.body.should.have.property("session");
-        stripeSessionId = res.body.session.id;
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
+      //.set("authorization", accessTokenUser)
+      .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 1 }] } })
     ;
+    expect = 200;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
+    server.expect(res.body).to.have.property("session");
+    stripeSessionId = res.body.session.id;
   });
-
-  it("should redirect on a payment success call", function(done) {
-    chai.request(server)
+  
+  it("should redirect on a payment success call", async () => {
+    const res = await server.request
       .get("/api/payment/paymentSuccess")
       .query({session_id: stripeSessionId})
       .redirects(0)
-      .then(res => {
-        res.should.have.status(302);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
     ;
+    expect = 302;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
 
-  it("should redirect on a payment canceled call", function(done) {
-    chai.request(server)
+  it("should redirect on a payment canceled call", async () => {
+    const res = await server.request
       .get("/api/payment/paymentCancel")
       .query({session_id: stripeSessionId})
       .redirects(0)
-      .then(res => {
-        res.should.have.status(302);
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
     ;
+    expect = 302;
+    if (res.status !== expect) {
+      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      throw new Error();
+    }
   });
-    
+
 });

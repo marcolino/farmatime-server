@@ -59,7 +59,7 @@ NotificationTokenSchema.statics.createToken = async function (user, type) {
   });
   try {
     await object.save();
-  } catch(err) {
+  } catch (err) {
     throw new Error(err.message);
   }
   return token;

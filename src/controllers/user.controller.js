@@ -6,12 +6,13 @@ const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
 const Role = require("../models/role.model");
 const RefreshToken = require("../models/refreshToken.model");
-const { isObject, isArray, normalizeEmail, isAdministrator } = require("../helpers/misc");
+const { isObject, isArray, normalizeEmail, isAdministrator, secureStack } = require("../helpers/misc");
 const emailService = require("../services/email.service");
 
-const getAllUsersWithTokens = (req, res, next) => {
+const getAllUsersWithTokens = async (req, res, next) => {
   // get all users and refresh tokens
-  Promise.all([
+  /* old version:
+    Promise.all([
     User.find()
       .select(["-password", "-__v"])
       .populate("roles", "-__v")
@@ -26,10 +27,29 @@ const getAllUsersWithTokens = (req, res, next) => {
       .lean()
       .exec()
   ]).then(([users, refreshTokens]) => {
+  */
+  try {
+    const [users, refreshTokens] = await Promise.all([
+      User.find()
+        .select(["-password", "-__v"])
+        .populate("roles", "-__v")
+        .populate("plan", "-__v")
+        .lean(),
+      RefreshToken.find({ // refresh tokens auto-expire, no need to check for expiration... just filter for user._id ...
+        expiresAt: {
+          $gte: new Date(),
+        }
+      })
+        .select("token user expiresAt -_id")
+        .lean()
+        .exec()
+    ]);
     users.map(user => {
       refreshTokens.map(refreshToken => {
-        if ((String(refreshToken.user) === String(user._id)) && (!user.refreshToken || user.refreshToken?.expiresAt < refreshToken?.expiresAt.toISOString())) {
-          //user.refreshToken = (({ token, expiresAt }) => ({ token, expiresAt }))(refreshToken);
+        if (
+          (String(refreshToken.user) === String(user._id)) &&
+          (!user.refreshToken || user.refreshToken?.expiresAt < refreshToken?.expiresAt.toISOString())
+        ) {
           user.refreshToken = {
             token: refreshToken.token,
             expiresAt: refreshToken.expiresAt
@@ -39,13 +59,13 @@ const getAllUsersWithTokens = (req, res, next) => {
     });
 
     return res.status(200).json({users});
-  }).catch(err => {
-    logger.error("Error getting all users with full info:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
-  });
+  } catch (err) {
+    //logger.error("Error getting all users with full info:", err);
+    return next(Object.assign(new Error(req.t("Error getting all users with full info: {{err}}", { err: err.message }), { status: 500, stack: secureStack })));
+  }
 };
 
-const getAllUsers = async(req, res, next) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
@@ -59,131 +79,127 @@ const getAllUsers = async(req, res, next) => {
       .exec()
     ;
     return res.status(200).json({users});
-  } catch(err) {
-    logger.error("Error getting all users:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+  } catch (err) {
+    //logger.error("Error getting all users:", err);
+    return next(Object.assign(new Error(req.t("Error getting all users: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
 // get all plans
-const getAllPlans = async(req, res, next) => {
+const getAllPlans = async (req, res, next) => {
   try {
-    Plan.find({})
+    const docs = await Plan.find({})
       .select(["name", "supportTypes", "priceCurrency", "pricePerYear"])
-      .sort({pricePerYear: 1})
-      .exec(async(err, docs) => {
-        if (err) {
-          logger.error("Error getting plans:", err);
-          return next(Object.assign(new Error(err.message), { status: 500 }));
-        }
-        return res.status(200).json({ plans: docs });
-      })
+      .sort({ pricePerYear: 1 })
+      //.exec()
     ;
-  } catch(err) {
-    logger.error("Error getting all plans:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    return res.status(200).json({ plans: docs });
+  } catch (err) {
+    //logger.error("Error getting all plans:", err);
+    return next(Object.assign(new Error(req.t("Error getting all plans: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
 // get all roles
-const getAllRoles = async(req, res, next) => {
+const getAllRoles = async (req, res, next) => {
   try {
     // the first element in the returned array is the "default" role
-    Role.find({})
+    const docs = await Role.find({})
       .select(["name", "priority"]) //, "-_id"])
-      .exec(async (err, docs) => {
-        if (err) {
-          logger.error("Error getting roles:", err);
-          return next(Object.assign(new Error(err.message), { status: 500 }));
-        }
-        return res.status(200).json({ roles: docs });
-      });
-  } catch(err) {
-    logger.error("Error getting roles:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    ;
+    return res.status(200).json({ roles: docs });
+  } catch (err) {
+    //logger.error("Error getting roles:", err);
+    return next(Object.assign(new Error(req.t("Error getting roles: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
-const getUser = async(req, res, next) => {
-  let userId = req.userId;
-  if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
-    // this test should be done in routing middleware, but doing it here allows for a more specific error message
-    if (!await isAdministrator(userId)) { // check if request is from admin
-      return res.status(403).json({ message: req.t("You must have admin role to access another user") });
-    } else {
-      userId = req.parameters.userId; // if admin, accept a specific user id in request
-    }
-  }
-  //if (!userId) return res.status(400).json({ message: req.t("User must be authenticated") });
+const getUser = async (req, res, next) => {
+  let userId = req.parameters.userId ?? req.userId;
+  // if (req.parameters.userId && req.parameters.userId !== userId) { // request to update another user's profile
+  //   // this test should be done in routing middleware, but doing it here allows for a more specific error message
+  //   if (!await isAdministrator(userId)) { // check if request is from admin
+  //     return res.status(403).json({ message: req.t("You must have admin role to access another user") });
+  //   } else {
+  //     userId = req.parameters.userId; // if admin, accept a specific user id in request
+  //   }
+  // }
+  // //if (!userId) rets.status(400).json({ message: req.t("User must be authenticated") });
 
-  User.findOne({
-    _id: userId
-  })
-    .populate("roles", "-__v")
-    .populate("plan", "-__v")
-    .exec(async(err, user) => {
-      if (err) {
-        logger.error("Error finding user:", err);
-        return next(Object.assign(new Error(err.message), { status: 500 }));
-      }
-      if (!user) {
-        return res.status(400).json({ message: req.t("Could not find this user") });
-      }
-      res.status(200).json({user});
+  try {
+    const user = await User.findOne({
+      _id: userId
     })
-  ;
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+    ;
+    if (!user) {
+      return res.status(400).json({ message: req.t("Could not find this user") });
+    }
+    res.status(200).json({ user });
+  } catch (err) {
+    //logger.error("Error finding user:", err);
+    return next(Object.assign(new Error(req.t("Error finding user: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+  }
 };
 
 /**
  * Update current user's profile
  */
 const updateUser = async (req, res, next) => {
-  // const session = await mongoose.startSession();
-  // session.startTransaction();
-  try {
-    let userId = req.userId;
-    if (req.parameters.userId && req.parameters.userId !== userId) {
-      // this test should be done in routing middleware, but doing it here allows for a more specific error message
-      if (!(await isAdministrator(userId))) {
-        return res.status(403).json({ message: req.t("You must have admin role to update another user") });
-      }
-      userId = req.parameters.userId;
-    }
+  let userId = req.parameters.userId ?? req.userId;
+//     let userId = req.userId;
+// console.log("req.userId:", req.userId);
+//     console.log("req.parameters.userId:", req.parameters.userId);
+//     console.log("req.parameters.userId !== undefined:", req.parameters.userId !== undefined);
+//     console.log("req.parameters.userId !== userId:", req.parameters.userId !== userId);
+//     if (req.parameters.userId !== undefined && req.parameters.userId !== userId) {
+//       console.log("aaaa");
+//       // this test should be done in routing middleware, but doing it here allows for a more specific error message
+//       if (!(await isAdministrator(userId))) {
+//         console.log("!admin");
+//         return res.status(403).json({ message: req.t("You must have admin role to update another user") });
+//       }
+//       console.log("admin");
+//       userId = req.parameters.userId;
+//     }
+//     console.log("xxxx - userId:", userId);
 
+  try {
     // collect update data
     const updateData = {};
     const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan, preferences } = req.parameters;
 
-    if (email) {
+    if (email !== undefined) {
       const [message, value] = await propertyEmailValidate(req, email, userId);
       if (message) return res.status(400).json({ message });
       updateData.email = value;
     }
-    if (firstName) {
+    if (firstName !== undefined) {
       const [message, value] = propertyFirstNameValidate(req, firstName);
       if (message) return res.status(400).json({ message });
       updateData.firstName = value;
     }
-    if (lastName) {
+    if (lastName !== undefined) {
       const [message, value] = propertyLastNameValidate(req, lastName);
       if (message) return res.status(400).json({ message });
       updateData.lastName = value;
     }
-    if (phone) {
+    if (phone !== undefined) {
       const [message, value] = propertyPhoneValidate(req, phone);
       if (message) return res.status(400).json({ message });
       updateData.phone = value;
     }
-    if (fiscalCode) {
+    if (fiscalCode !== undefined) {
       const [message, value] = propertyFiscalCodeValidate(req, fiscalCode);
       if (message) return res.status(400).json({ message });
       updateData.fiscalCode = value;
     }
-    if (businessName) updateData.businessName = businessName;
+    if (businessName !== undefined) updateData.businessName = businessName;
     if (address) updateData.address = address;
 
     // handle role updates with priority checks
-    if (roles && Array.isArray(roles) && roles.length > 0) {
+    if (roles !== undefined && Array.isArray(roles) && roles.length > 0) {
       const user = await User.findById(userId).populate("roles"); //.session(session);
       if (!user) throw new Error(req.t("User not found"));
       const newRoles = await Role.find({ _id: { $in: roles } }); //.session(session);
@@ -199,11 +215,11 @@ const updateUser = async (req, res, next) => {
     }
 
     // handle plan update
-    if (plan && typeof plan === "string" && plan.length > 0) {
+    if (plan !== undefined && typeof plan === "string" && plan.length > 0) {
       const user = await User.findById(userId).populate("plan");// .session(session);
       if (!user) throw new Error(req.t("User not found"));
       const newPlan = await Plan.find({ _id: { $in: plan } }); //.session(session);
-      if (!(await isAdministrator(req.userId))) {
+      if (!(await isAdministrator(/*req.*/userId))) {
         if (newPlan !== user.plan) {
           return res.status(403).json({ message: req.t("You must have admin role to update a user's plan") });
         }
@@ -211,7 +227,7 @@ const updateUser = async (req, res, next) => {
       updateData.plan = newPlan._id; // put plan id in updateData
     }
 
-    if (preferences) {
+    if (preferences !== undefined) {
       updateData.preferences = preferences;
     }
 
@@ -219,7 +235,7 @@ const updateUser = async (req, res, next) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updateData },
-      { new: true/*, session*/ }
+      { new: true }
     )
       .populate("roles", "-__v")
       .populate("plan", "-__v")
@@ -228,25 +244,20 @@ const updateUser = async (req, res, next) => {
     if (!updatedUser) {
       throw new Error(req.t("User not found"));
     }
-
-    // await session.commitTransaction();
-    // session.endSession();
-
     return res.status(200).json({ user: updatedUser });
   } catch (err) {
-    // await session.abortTransaction();
-    // session.endSession();
     logger.error("Error updating user:", err);
     if (err.codeName === "DuplicateKey") {
-      if (err.keyValue.email) {
+      if (err.keyValue.email) { // TODO: TEST THIS USE CASE, ALSO TO TEST return next(Object.assign( ... 400 ...) ...
         return next(Object.assign(new Error(req.t("The email {{email}} is already in use", { email: err.keyValue.email })), { status: 400 }));
       }
     }
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    return next(Object.assign(new Error(req.t("Error updating user: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
-const _updateRoles = async(req, userId) => {
+/*
+const _updateRoles = async (req, userId) => {
   if (!userId) userId = req.userId;
   if (req.parameters.userId && req.parameters.userId !== userId) {
     if (!await isAdministrator(userId)) {
@@ -280,8 +291,10 @@ const _updateRoles = async(req, userId) => {
   await user.save();
   return roles;
 };
+*/
 
-const _updatePlan = async(req, userId) => {
+/*
+const _updatePlan = async (req, userId) => {
   if (!userId) userId = req.userId;
   if (!await isAdministrator(userId)) {
     const error = new Error(req.t("Sorry, you must have admin role to update plans"));
@@ -316,34 +329,38 @@ const _updatePlan = async(req, userId) => {
     throw err;
   }
 };
+*/
 
 // promotes a user to "dealer" role
-const promoteToDealer = async(req, res) => {
+const promoteToDealer = async (req, res) => {
   const roleName = "dealer";
   const userId = req.parameters.userId;
 
-  const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
-  if (!user) {
-    throw new Error(req.t("No user by id {{userId}} found!", { userId }));
-  }
+  try {
+    const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
+    if (!user) {
+      throw new Error(req.t("No user by id {{userId}} found!", { userId }));
+    }
 
-  const role = await Role.findOne({ name: roleName });
-  if (!role) {
-    throw new Error(req.t("No role {{roleName}} found!", { roleName }));
-  }
+    const role = await Role.findOne({ name: roleName });
+    if (!role) {
+      throw new Error(req.t("No role {{roleName}} found!", { roleName }));
+    }
 
-  if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
-    user.roles.push(role);
-    await user.save();
-    return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }), count: 1 });
-  } else {
-    return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }), count: 0 });
+    if (!user.roles.some(r => r._id.toString() === role._id.toString())) {
+      user.roles.push(role);
+      await user.save();
+      return res.status(200).json({ message: req.t("User has been promoted to role {{roleName}}", { roleName }), count: 1 });
+    } else {
+      return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }), count: 0 });
+    }
+  } catch (err) {
+    return next(Object.assign(new Error(req.t("Error promoting user to {{role}}: {{err}}", { role: roleName, err: err.message }), { status: 500, stack: secureStack(err) })));
   }
-
 };
 
 // deletes a user: delete it from database
-const deleteUser = async(req, res, next) => {
+const deleteUser = async (req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
@@ -367,8 +384,8 @@ const deleteUser = async(req, res, next) => {
       return res.status(400).json({ message: req.t("No user have been deleted") });
     }
   } catch (err) {
-    logger.error("Could not delete user(s) with filter ${JSON.stringify(filter)}:", err);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    //logger.error("Could not delete user(s) with filter ${JSON.stringify(filter)}:", err);
+    return next(Object.assign(new Error(req.t("Could not delete user(s) with filter {{filter}}: {{err}}", { filter: JSON.stringify(filter), err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
 
@@ -388,24 +405,23 @@ const removeUser = async (req, res, next) => {
       }
     }
   }
-
+  
   const payload = { isDeleted: true };
-  User.updateMany(filter, payload, {new: true, lean: true}, async(err, data) => {
-    if (err) {
-      logger.error("Error finding user:", err);
-      return next(Object.assign(new Error(err.message), { status: 500 }));
-    }
-    if (data.nModified > 0) {
-      return res.status(200).json({ message: req.t("{{count}} user(s) have been removed", { count: data.nModified }), count: data.nModified });
+  try {
+    const data = await User.updateMany(filter, payload, { new: true, lean: true });
+    if (data.modifiedCount > 0) {
+      return res.status(200).json({ message: req.t("{{count}} user has been removed", { count: data.modifiedCount }), count: data.modifiedCount });
     } else {
-      return res.status(400).json({ message: req.t("No user have been removed") });
+      return res.status(400).json({ message: req.t("No user has been removed") });
     }
-  });
-
+  } catch (err) {
+    //logger.error("Error finding user:", err);
+    return next(Object.assign(new Error(req.t("Error finding user: {{err}}", {err: err.message}), { status: 500, stack: secureStack(err) })));
+  }
 };
 
 // send an email to a list of users
-const sendEmailToUsers = async(req, res, next) => {
+const sendEmailToUsers = async (req, res, next) => {
   let filter = req.parameters?.filter;
   if (filter === "*") { // attention here, we are deleting ALL users!
     filter = {};
@@ -421,43 +437,41 @@ const sendEmailToUsers = async(req, res, next) => {
     }
   }
 
-  // let subject = req.parameters?.subject;
-  // let body = req.parameters?.body;
-
-  User.find(filter)
-    .populate("roles", "-__v")
-    .populate("plan", "-__v")
-    .exec(async(err, users) => {  
-      if (err) {
-        logger.error("Error finding users:", err);
-        const ret = { message: req.t("Error finding users"), reason: err.message };
-        return res ? res.status(err.code).json(ret) : ret;
-      }
-      if (!users || users.length === 0) {
-        logger.warn(`No user found with filter ${filter}`);
-        return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
-      }
+  try {
+    const users = await User.find(filter)
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+      .exec()
+      ;
+    if (!users || users.length === 0) {
+      logger.warn(`No user found with filter ${filter}`);
+      return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
+    }
       
-      for (const user of users) {
-        const to = user.email;
-        const [subject, body] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
-        const style = "base"; // style is currently fixed
-        try {
-          req.language = user.language; // get user language
-          await emailService.send(req, {
-            to,
-            subject,
-            body,
-            style,
-          });
-        } catch (err) {
-          logger.error(`Error sending email to users: ${err}`);
-          return next(Object.assign(new Error(err.message), { status: 500 }));
-        }
+    for (const user of users) {
+      const to = user.email;
+      const [subject, body] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
+      const style = "base"; // style is currently fixed
+      try {
+        req.language = user.language; // get user language
+        await emailService.send(req, {
+          to,
+          subject,
+          body,
+          style,
+        });
+      } catch (err) {
+        //logger.error(`Error sending email to users: ${err}`);
+        return next(Object.assign(new Error(req.t("Error sending email to users: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
       }
-      return res.status(200).json({ "message": req.t("All emails sent") });
-    })
-  ;
+    }
+    return res.status(200).json({ "message": req.t("All emails sent") });
+  } catch (err) {
+    //logger.error("Error finding users:", err);
+    //const ret = { message: req.t("Error finding users: {{err}", {err: err.message });
+    //return res ? res.status(err.code).json(ret) : ret;
+    return next(Object.assign(new Error(req.t("Error finding users: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+  }
 };
 
 const expandEmailTags = (user, subject, body) => {
@@ -478,19 +492,23 @@ const expandEmailTags = (user, subject, body) => {
 };
 
 // user properties validation
-const propertyEmailValidate = async(req, value, userId) => { // validate and normalize email
-  if (!emailValidate.validate(value)) {
-    return [ req.t("Please supply a valid email"), value];
-  } 
-  value = normalizeEmail(value);
-
-  // be sure email - if changed - is not taken already
-  const user = await User.findOne({ _id: userId });
-  if (value !== normalizeEmail(user.email)) {
-    const check = await User.findOne({ email: value });
-    if (check) return [ req.t("This email is already taken, sorry"), value ];
+const propertyEmailValidate = async (req, email, userId) => { // validate and normalize email
+  if (!emailValidate.validate(email)) {
+    return [ req.t("Please supply a valid email"), email];
   }
-  return [null, value];
+
+  const normalizedEmail = normalizeEmail(email);
+  //console.log("normalizedEmail:", normalizedEmail);
+
+  // check if email exists but belongs to the same user
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  //console.log("existingUser:", existingUser);
+  if (existingUser && existingUser._id.toString() !== userId.toString()) {
+    return [req.t("The email {{email}} is already in use", { email }), null];
+  }
+  
+  // email is valid and either doesn't exist or belongs to this user
+  return [null, normalizedEmail];
 };
 
 const propertyFirstNameValidate = (req, value/*, user*/) => { // validate and normalize first name
@@ -533,8 +551,8 @@ module.exports = {
   getAllRoles,
   getUser,
   updateUser, 
-  _updateRoles,
-  _updatePlan,
+  //_updateRoles,
+  //_updatePlan,
   promoteToDealer,
   deleteUser,
   removeUser,

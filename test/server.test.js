@@ -1,38 +1,41 @@
-/**
- * Server tests
- */
 const chai = require("chai");
-const chaiHttp = require("chai-http");
-const should = chai.should();
-const expect = chai.expect;
+const spies = require("chai-spies");
+const sinon = require("sinon");
 const server = require("../server");
 const db = require("../src/models");
 const User = require("../src/models/user.model");
 const Role = require("../src/models/role.model");
-const Plan = require("../src/models/plan.model");
-const { chaiHttpWithLanguage } = require("./plugins/language");
-const { config } = require("./config.test");
+const { supertestWithLanguage } = require("./plugins/language");
+const config = require("./config.test");
 
-chai.use(chaiHttp); // use chaiHttp to make the actual HTTP requests
-chai.use(chaiHttpWithLanguage(config.language));
+chai.use(spies);
+chai.should();
+const requestWithLanguage = supertestWithLanguage(config.language)(server); // use supertest adding an Accept-HEader language in config.language
 
-//let accessTokenUser, accessTokenAdmin;
+console.log("Server unit tests");
 
-describe("API tests - Server", async function() {
-
-  it("should correctly handle not found route", function(done) {
-    chai.request(server)
-      .post("/api/not-found-route")
-      .then(res => {
-        res.should.have.status(404);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("Not found");
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      })
-    ;
-  });
-
+process.on("unhandledRejection", (reason, promise) => { // this should not happen!
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  process.exit(1); // terminate the process here
 });
+
+module.exports = {
+  chai,
+  sinon,
+  request: requestWithLanguage,
+  expect: chai.expect,
+  db,
+  User,
+  Role,
+  config,
+};
+
+// require all tests here, to choose the sequence
+
+require("./basic/basic.test");
+require("./helpers/environment.test");
+require("./controllers/auth.test");
+require("./controllers/auth-social.test");
+require("./controllers/user.test");
+require("./controllers/payment.test");
+require("./controllers/product.test");
