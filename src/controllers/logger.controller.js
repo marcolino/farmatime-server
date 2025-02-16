@@ -1,17 +1,22 @@
 const winston = require("winston");
 const stream = require("stream");
-const { Logtail } = require("@logtail/node");
-const { LogtailTransport } = require("@logtail/winston");
+// const { Logtail } = require("@logtail/node");
+// const { LogtailTransport } = require("@logtail/winston");
 const { decode } = require("html-entities");
 const config = require("../config");
 require("winston-syslog");
-
+let logtail;
+const { Logtail } = require("@logtail/node");
+const { LogtailTransport } = require("@logtail/winston");
+if (!config.mode.test) {
+  logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
+}
 
 let logger = null;
 const transports = [];
 const exceptionHandlers = [];
 const colorize = false; // TODO: `true` does not seem to work on any transport...
-const logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
+//const logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
 
 const isString = (x) => {
   return (typeof x === "string" || x instanceof String);
@@ -49,7 +54,7 @@ class LogtailStream extends stream.Writable {
       .then(() => callback())
       .catch(callback);
   }
-}
+};
 
 const formatWithArgs = winston.format.combine(
   winston.format.timestamp(),
@@ -76,8 +81,6 @@ const formatWithArgs = winston.format.combine(
   })
 );
 
-
-
 try {
   transports.push(
     new winston.transports.File({ // File transport
@@ -87,13 +90,8 @@ try {
       handleExceptions: true,
       maxsize: config.logs.file.maxsize,
     }),
-    new winston.transports.Stream({ // BetterStack transport stream
-      stream: new LogtailStream(logtail),
-      format: formatWithArgs,
-      level: config.logs.levelMap.development,
-      handleExceptions: true,
-      colorize,
-    }),
+  );
+  transports.push(
     new winston.transports.Console({
       format: formatWithArgs,
       level: // order matters: if production, staging can be true or false
@@ -106,16 +104,25 @@ try {
       colorize,
     })
   );
+  if (!config.mode.test) {
+    transports.push(
+      new winston.transports.Stream({ // BetterStack transport stream
+        stream: new LogtailStream(logtail),
+        format: formatWithArgs,
+        level: config.logs.levelMap.development,
+        handleExceptions: true,
+        colorize,
+      })
+    );
+  }
 } catch (err) {
   console.error("Winston transports creation error:", err); // eslint-disable-line no-console
   throw err;
 }
 
 try {
-  exceptionHandlers.push(
-    new winston.transports.File({ filename: config.logs.file.name }),
-    new LogtailTransport(logtail)
-  );
+  exceptionHandlers.push(new winston.transports.File({ filename: config.logs.file.name }));
+  exceptionHandlers.push(new LogtailTransport(logtail));
 } catch (err) {
   console.error("Winston exceptions handlers creation error:", err); // eslint-disable-line no-console
   throw err;
