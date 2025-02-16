@@ -6,31 +6,31 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18
-        cache: yarn
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
 
-    - name: Enable Corepack
-      run: |
-        corepack enable
-        corepack prepare yarn@4.6.0 --activate
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.6.0 --activate
 
-    - name: Debug Corepack & Yarn
-      run: |
-        node -v
-        npm -v
-        corepack --version
-        corepack list
-        which yarn
-        yarn --version
+      - name: Debug Corepack & Yarn
+        run: |
+          node -v
+          npm -v
+          corepack --version
+          corepack list
+          which yarn
+          yarn --version
 
-    - name: Install dependencies
-      run: yarn install --immutable
+      - name: Install dependencies
+        run: yarn install --immutable
 
-    - name: Run Tests
-      run: yarn test
+      - name: Run Tests
+        run: yarn test
