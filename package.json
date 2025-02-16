@@ -16,7 +16,7 @@
     "start-dev-trace-warnings": "NODE_ENV=development node --trace-warnings server.js",
     "start": "node server.js",
     "inject": "node scripts/inject.js",
-    "test": "NODE_ENV=test && nyc mocha --exit --timeout 5000 --slow 150 --bail test/",
+    "test": "NODE_ENV=test && mocha --exit --timeout 5000 --slow 150 --bail test/",
     "test-silent": "NODE_ENV=test && mocha --exit --timeout 5000 --slow 150 --bail --reporter min test/",
     "test:coverage": "echo TODO...",
     "test-ORIG": "nyc --reporter=html mocha --exit --timeout 10000 --slow 150 --recursive test | tee test/log/last.log; scripts/test2badge",
