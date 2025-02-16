@@ -5,27 +5,33 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: yarn
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: yarn
 
-      - name: Enable Corepack
-        run: corepack enable
+    - name: Enable Corepack
+      run: |
+        corepack enable
+        corepack prepare yarn@4.6.0 --activate
+
+    - name: Debug Corepack & Yarn
+      run: |
+        node -v
+        npm -v
+        corepack --version
+        corepack list
+        which yarn
+        yarn --version
+
+    - name: Install dependencies
+      run: yarn install --immutable
+
+    - name: Run Tests
+      run: yarn test
       
-      - name: Use the correct Yarn version
-        run: corepack prepare yarn@4.6.0 --activate
-
-      - name: Verify Yarn version
-        run: yarn --version
-    
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Run Tests
-        run: yarn test
