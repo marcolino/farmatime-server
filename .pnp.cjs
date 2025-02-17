@@ -134,7 +134,7 @@ const RAW_RUNTIME_STATE =
           ["debug", "virtual:730d3622ac439cd2d8653d8f641757f44c198604f31b80b0ecfaa2a56138c584d901249a7d4b5c1adc99c60ab734f4f3ce89c6872aebdd2cdabd8770db6a0a71#npm:4.4.0"],\
           ["gensync", "npm:1.0.0-beta.2"],\
           ["json5", "npm:2.2.3"],\
-          ["semver", "npm:6.3.1"]\
+          ["semver", "npm:7.7.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -162,7 +162,7 @@ const RAW_RUNTIME_STATE =
           ["@babel/helper-validator-option", "npm:7.25.9"],\
           ["browserslist", "npm:4.24.4"],\
           ["lru-cache", "npm:5.1.1"],\
-          ["semver", "npm:6.3.1"]\
+          ["semver", "npm:7.7.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3718,7 +3718,7 @@ const RAW_RUNTIME_STATE =
           ["object.fromentries", "npm:2.0.8"],\
           ["object.groupby", "npm:1.0.3"],\
           ["object.values", "npm:1.2.1"],\
-          ["semver", "npm:6.3.1"],\
+          ["semver", "npm:7.7.1"],\
           ["string.prototype.trimend", "npm:1.0.9"],\
           ["tsconfig-paths", "npm:3.15.0"]\
         ],\
@@ -3750,7 +3750,7 @@ const RAW_RUNTIME_STATE =
           ["ignore", "npm:5.3.2"],\
           ["minimatch", "npm:3.1.2"],\
           ["resolve", "patch:resolve@npm%3A1.22.10#optional!builtin<compat/resolve>::version=1.22.10&hash=c3c19d"],\
-          ["semver", "npm:6.3.1"]\
+          ["semver", "npm:7.7.1"]\
         ],\
         "packagePeers": [\
           "@types/eslint",\
@@ -6094,7 +6094,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/make-dir-npm-3.1.0-d1d7505142-10c0.zip/node_modules/make-dir/",\
         "packageDependencies": [\
           ["make-dir", "npm:3.1.0"],\
-          ["semver", "npm:6.3.1"]\
+          ["semver", "npm:7.7.1"]\
         ],\
         "linkType": "HARD"\
       }],\
@@ -6692,7 +6692,7 @@ const RAW_RUNTIME_STATE =
           ["ignore-by-default", "npm:1.0.1"],\
           ["minimatch", "npm:3.1.2"],\
           ["pstree.remy", "npm:1.1.8"],\
-          ["semver", "npm:5.7.2"],\
+          ["semver", "npm:7.7.1"],\
           ["simple-update-notifier", "npm:1.1.0"],\
           ["supports-color", "npm:5.5.0"],\
           ["touch", "npm:3.1.1"],\
@@ -7840,27 +7840,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["semver", [\
-      ["npm:5.7.2", {\
-        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/semver-npm-5.7.2-938ee91eaa-10c0.zip/node_modules/semver/",\
-        "packageDependencies": [\
-          ["semver", "npm:5.7.2"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:6.3.1", {\
-        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/semver-npm-6.3.1-bcba31fdbe-10c0.zip/node_modules/semver/",\
-        "packageDependencies": [\
-          ["semver", "npm:6.3.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
-      ["npm:7.0.0", {\
-        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/semver-npm-7.0.0-218e8c00ca-10c0.zip/node_modules/semver/",\
-        "packageDependencies": [\
-          ["semver", "npm:7.0.0"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:7.7.1", {\
         "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/semver-npm-7.7.1-4572475307-10c0.zip/node_modules/semver/",\
         "packageDependencies": [\
@@ -8135,7 +8114,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/simple-update-notifier-npm-1.1.0-92878518a3-10c0.zip/node_modules/simple-update-notifier/",\
         "packageDependencies": [\
           ["simple-update-notifier", "npm:1.1.0"],\
-          ["semver", "npm:7.0.0"]\
+          ["semver", "npm:7.7.1"]\
         ],\
         "linkType": "HARD"\
       }]\
