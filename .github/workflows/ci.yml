@@ -26,10 +26,16 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Export all secrets dynamically before testing
+        run: |
+          for secret in $(env | grep '^SECRET_' | cut -d= -f1); do
+            echo "$secret=${{ secrets[secret] }}" >> $GITHUB_ENV
+          done
+
       - name: Run Tests
-        env:
-          FACEBOOK_OAUTH_CLIENT_ID: ${{ secrets.FACEBOOK_OAUTH_CLIENT_ID }}
-          FACEBOOK_OAUTH_SECRET_KEY: ${{ secrets.FACEBOOK_OAUTH_SECRET_KEY }}
-          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+        #env:
+          # FACEBOOK_OAUTH_CLIENT_ID: ${{ secrets.FACEBOOK_OAUTH_CLIENT_ID }}
+          # FACEBOOK_OAUTH_SECRET_KEY: ${{ secrets.FACEBOOK_OAUTH_SECRET_KEY }}
+          # GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          # GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
         run: yarn test
