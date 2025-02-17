@@ -122,6 +122,7 @@
   },
   "resolutions": {
     "semver": "^7.7.1",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "tough-cookie": "^5.5.1"
   }
 }
