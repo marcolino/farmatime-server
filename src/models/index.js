@@ -115,7 +115,7 @@ const connect = async () => {
     config.mode.development ? // development db uri
       `${process.env.MONGO_DEV_SCHEME}://${process.env.MONGO_DEV_URL}/${process.env.MONGO_DEV_DB}` :
       config.mode.testgithubactions ? // test in github actions db uri
-        `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}` :
+        `${process.env.MONGO_TEST_GITHUB_ACTIONS_SCHEME}://${process.env.MONGO_TEST_GITHUB_ACTIONS_USER}:${process.env.MONGO_TEST_GITHUB_ACTIONS_PASS}@${process.env.MONGO_TEST_GITHUB_ACTIONS_URL}/${process.env.MONGO_TEST_GITHUB_ACTIONS_DB}` :
         config.mode.test ? // test db uri
           `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}` :
           null
