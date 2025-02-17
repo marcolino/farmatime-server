@@ -26,6 +26,9 @@
 [acme-server](https://github.com/marcolino/acme-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site , with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
 It is strictly coupled with [acme-client](https://github.com/marcolino/acme-client/), the client project.
 
+# Features (TODO: make an achor here...)
+  - ...
+
 # Technology
   ### on the server:
   - node.js
@@ -53,6 +56,10 @@ It is strictly coupled with [acme-client](https://github.com/marcolino/acme-clie
 ...
 
 # Configuration
+
+ - Copy .env.template to .env, and insert all keys values; if you prefer to use different services, felle free to change corresponding keys, and relevant code too.
+ - Use `scripts/githubUploadSecrets.js` to upload .env secrets to github, so that github actions can complete.
+
 
 # Tests Coverage
 [Mocha unit+e2e tests coverage](https://marcolino.github.io/acme-server/coverage/index.html) 
@@ -161,9 +168,9 @@ The server exposes a REST API for all actions. The server is built with the foll
 acme-server Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
 The client is based on React, React Material Web Components, Formik, and more.
 
-# Version 1
+# Version 0.0.1
 
-acme-server is currently in version 1. This is the first major release of acme-server with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
+acme-server is currently in version 0.0.1. This is the first major release of acme-server with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
 
 ## Support
 

@@ -56,11 +56,13 @@ const RAW_RUNTIME_STATE =
           ["ip3country", "npm:5.0.0"],\
           ["jshint", "npm:2.13.6"],\
           ["jsonwebtoken", "npm:9.0.2"],\
+          ["libsodium-wrappers", "npm:0.7.15"],\
           ["memorystore", "npm:1.6.7"],\
           ["mocha", "npm:11.1.0"],\
           ["mongoose", "npm:8.10.0"],\
           ["morgan", "npm:1.10.0"],\
           ["multer", "npm:1.4.5-lts.1"],\
+          ["node-fetch", "virtual:611613454578e2dd4bcee686f4d881fe5e138f6c540465d10e9f5a4dd350869bcb413fdfda81b5fcedf3990538dcbd302e372e25db17ec42816b0ce234944e88#npm:2.7.0"],\
           ["nodemon", "npm:2.0.22"],\
           ["nyc", "npm:17.1.0"],\
           ["openai", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:4.83.0"],\
@@ -1475,11 +1477,13 @@ const RAW_RUNTIME_STATE =
           ["ip3country", "npm:5.0.0"],\
           ["jshint", "npm:2.13.6"],\
           ["jsonwebtoken", "npm:9.0.2"],\
+          ["libsodium-wrappers", "npm:0.7.15"],\
           ["memorystore", "npm:1.6.7"],\
           ["mocha", "npm:11.1.0"],\
           ["mongoose", "npm:8.10.0"],\
           ["morgan", "npm:1.10.0"],\
           ["multer", "npm:1.4.5-lts.1"],\
+          ["node-fetch", "virtual:611613454578e2dd4bcee686f4d881fe5e138f6c540465d10e9f5a4dd350869bcb413fdfda81b5fcedf3990538dcbd302e372e25db17ec42816b0ce234944e88#npm:2.7.0"],\
           ["nodemon", "npm:2.0.22"],\
           ["nyc", "npm:17.1.0"],\
           ["openai", "virtual:2b3ce8d9400d167e5371fc26836b82bfb81e6fe763e813d7fc1bc3e16d60642f71917d418605ddf5de45f45e27e91b673ea127a37b127f7496f4f6146e48c57b#npm:4.83.0"],\
@@ -5874,6 +5878,25 @@ const RAW_RUNTIME_STATE =
           ["levn", "npm:0.4.1"],\
           ["prelude-ls", "npm:1.2.1"],\
           ["type-check", "npm:0.4.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["libsodium", [\
+      ["npm:0.7.15", {\
+        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/libsodium-npm-0.7.15-f8c3e23fa5-10c0.zip/node_modules/libsodium/",\
+        "packageDependencies": [\
+          ["libsodium", "npm:0.7.15"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["libsodium-wrappers", [\
+      ["npm:0.7.15", {\
+        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/libsodium-wrappers-npm-0.7.15-955f8418e2-10c0.zip/node_modules/libsodium-wrappers/",\
+        "packageDependencies": [\
+          ["libsodium-wrappers", "npm:0.7.15"],\
+          ["libsodium", "npm:0.7.15"]\
         ],\
         "linkType": "HARD"\
       }]\
