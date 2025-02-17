@@ -7,6 +7,11 @@ ip3country.init();
 
 
 const audit = async ({ req, mode, subject, htmlContent }) => {
+  if (config.mode.test) { // in test mode, just a console.info
+    console.info(`AUDIT mode ${mode}, subject: ${subject}, contents: {$htmlContent}`);
+    return;
+  }
+
   // set "mode" symbol (dev/prod)
   const modeSymbol =
     config.mode.development ? "🚧" :
