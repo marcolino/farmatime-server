@@ -127,8 +127,6 @@ const connect = async () => {
   }
 
   try {
-console.log("[DEBUG] Connecting to MongoDB with URI:", connUri);
-
     await mongoose.connect(connUri, {});
     logger.info("Database connected");
 
@@ -142,14 +140,7 @@ console.log("[DEBUG] Connecting to MongoDB with URI:", connUri);
     //   logger.info(`MongoDB v${info.version}`);
     // });
 
-    // try {
-    //   await populate(); // populate database with initial contents if first time
-    // } catch (err) {
-    //   logger.error("Database populate error:", err);
-    //   throw err;
-    // }
   } catch (err) {
-console.error("[DEBUG] Database connection error:", err);
     logger.error("Database connection error:", err);
     throw err;
   }
