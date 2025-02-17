@@ -27,4 +27,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run Tests
+        env:
+          FACEBOOK_OAUTH_CLIENT_ID: ${{ secrets.FACEBOOK_OAUTH_CLIENT_ID }}
+          FACEBOOK_OAUTH_SECRET_KEY: ${{ secrets.FACEBOOK_OAUTH_SECRET_KEY }}
         run: yarn test
