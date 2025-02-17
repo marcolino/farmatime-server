@@ -161,18 +161,18 @@ const populate = async () => {
 
     if (config.mode.test) { // drop and populate database in test mode
 
-      //await mongoose.connection.db.dropDatabase();
+      await mongoose.connection.db.dropDatabase();
 
-      // get all collections
-      const collections = await mongoose.connection.db.listCollections().toArray();
+      // // get all collections
+      // const collections = await mongoose.connection.db.listCollections().toArray();
 
-      // create an array of collection names and drop each collection
-      collections
-        .map((collection) => collection.name)
-        .forEach(async (collectionName) => {
-          db.dropCollection(collectionName);
-        });
-      }
+      // // create an array of collection names and drop each collection
+      // collections
+      //   .map((collection) => collection.name)
+      //   .forEach(async (collectionName) => {
+      //     db.dropCollection(collectionName);
+      //   });
+    }
 
     // check if env collection is empty
     try {

@@ -4,7 +4,8 @@ const stream = require("stream");
 // const { LogtailTransport } = require("@logtail/winston");
 const { decode } = require("html-entities");
 const config = require("../config");
-require("winston-syslog");
+//require("winston-syslog");
+
 let logtail;
 const { Logtail } = require("@logtail/node");
 const { LogtailTransport } = require("@logtail/winston");
