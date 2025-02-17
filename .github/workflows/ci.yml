@@ -40,6 +40,8 @@ jobs:
           curl --silent --user "$USER_CREDENTIALS" --digest --header 'Accept: application/json' \
                --header 'Content-Type: application/json' --include \
                --request POST "$URL" --data "$JSON_DATA"
+          #echo "MONGO_URI: ${{ secrets.MONGO_URI }}: $MONGO_URI"
+          #mongosh "$MONGO_URI" --eval "db.runCommand({ ping: 1 })"
 
       - name: Run Tests
         run: yarn test
