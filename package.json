@@ -85,7 +85,6 @@
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
-    "request": "^2.88.2",
     "sharp": "^0.33.5",
     "sib-api-v3-sdk": "^8.5.0",
     "stripe": "^8.214.0",
@@ -123,7 +122,6 @@
   "resolutions": {
     "semver": "^7.7.1",
     "esbuild": "^0.25.0",
-    "tough-cookie": "^5.1.1",
-    "@cypress/request": ">=3.0.0"
+    "tough-cookie": "^5.1.1"
   }
 }
