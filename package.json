@@ -119,5 +119,8 @@
   "packageManager": "yarn@4.6.0",
   "dependenciesMetadata": {
     "unplugged": []
+  },
+  "resolutions": {
+    "semver": "^7.7.1"
   }
 }
