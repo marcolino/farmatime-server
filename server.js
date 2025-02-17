@@ -151,6 +151,7 @@ app.use((req, res, next) => {
 assertEnvironment();
 
 // setup the email service
+console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
 emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 
 // the client root: the folder with the frontend site
