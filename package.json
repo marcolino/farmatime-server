@@ -121,6 +121,7 @@
     "unplugged": []
   },
   "resolutions": {
-    "semver": "^7.7.1"
+    "semver": "^7.7.1",
+    "esbuild": "^0.25.0"
   }
 }
