@@ -16,6 +16,14 @@ let accessTokenCookieUser, refreshTokenCookieUser;
 before(async () => {
   await db.dbReady; // wait for the database to be ready
   await setupLoginCredentials(); // wait to setup login credentials
+  try {
+      console.log("TEST Initializing email service...");
+      await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
+      console.log("TEST Email service initialized successfully");
+    } catch (err) {
+      console.error("TEST Failed to initialize email service:", err);
+      process.exit(1);
+    }
 });
 
 // conntect to db, populate it, and setup login credentials
