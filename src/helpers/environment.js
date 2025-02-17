@@ -17,6 +17,7 @@ const assertEnvironment = () => {
   if (missing.length) {
     let err = `Missing in env: ${JSON.stringify(missing)}`;
     logger.error(err);
+
     assertionsCheckFailure(err);
     return false;
   }

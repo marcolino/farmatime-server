@@ -2,7 +2,8 @@ const request = require("supertest");
 //const mongoose = require("mongoose");
 const app = require("../../server");
 const db = require("../../src/models");
-const User = require("../../src/models/user.model");
+//const User = require("../../src/models/user.model");
+const emailService = require("../../src/services/email.service");
 //const config = require("../config.test");
 const configGlobal = require("../../src/config");
 

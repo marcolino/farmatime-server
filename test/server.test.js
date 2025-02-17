@@ -32,10 +32,10 @@ module.exports = {
 
 // require all tests here, to choose the sequence
 
-// require("./basic/basic.test");
-// require("./helpers/environment.test");
-// require("./controllers/auth.test");
-// require("./controllers/auth-social.test");
-// require("./controllers/user.test");
-// require("./controllers/payment.test");
-// require("./controllers/product.test");
+require("./basic/basic.test");
+require("./helpers/environment.test");
+require("./controllers/auth.test");
+require("./controllers/auth-social.test");
+require("./controllers/user.test");
+require("./controllers/payment.test");
+require("./controllers/product.test");
