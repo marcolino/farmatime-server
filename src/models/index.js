@@ -128,17 +128,18 @@ const connect = async () => {
 
   try {
     await mongoose.connect(connUri, {});
-    logger.info("Database connected");
+    logger.info("Database connected ");
 
     mongoose.set("debug", config.db.debug);
 
     // show MongoDB version
     const admin = new mongoose.mongo.Admin(mongoose.connection.db);
-    admin.buildInfo((err, info) => {
-      console.log("admin.buildInfo error:", err);
-      console.log("admin.buildInfo:", info);
+    try {
+      const info = await admin.buildInfo();
       logger.info(`MongoDB v${info.version}`);
-    });
+    } catch (err) {
+      logger.error("MongoDB build info error:", err);
+    }
 
   } catch (err) {
     logger.error("Database connection error:", err);

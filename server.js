@@ -228,14 +228,11 @@ async function start() {
   // setup the email service
   //console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
   try {
-    console.log("Initializing email service...");
     await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
-    console.log("Email service initialized successfully");
   } catch (err) {
-    console.error("Failed to initialize email service:", err);
+    logger.error("Failed to initialize email service:", err);
     process.exit(1);
   }
-  console.log("After emailService.setup");
   
   if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
     // inject client app config to configFileNameInjected
