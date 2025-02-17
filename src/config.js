@@ -2,10 +2,13 @@ const path = require("path");
 const fs = require("fs");
 
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
+const testgithubactions = (test && (process.env.GITHUB_ACTIONS)); // test mode, inside github actions (use public test db)
 const production = (!test && (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
 const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
 const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
 const stripelive = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
+
+console.log("+++++++++++++++++++++ process.env.GITHUB_ACTIONS, githubactions:", process.env.GITHUB_ACTIONS, testgithubactions);
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
@@ -64,6 +67,7 @@ const configBase = {
     staging,
     test,
     stripelive,
+    testgithubactions,
   },
   baseUrl,
   baseUrlPublic: urlPublic, // for image urls in emails, they must always be public urls

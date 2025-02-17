@@ -114,9 +114,11 @@ const connect = async () => {
     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
     config.mode.development ? // development db uri
       `${process.env.MONGO_DEV_SCHEME}://${process.env.MONGO_DEV_URL}/${process.env.MONGO_DEV_DB}` :
-      config.mode.test ? // test db uri
+      config.mode.testgithubactions ? // test in github actions db uri
         `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}` :
-        null
+        config.mode.test ? // test db uri
+          `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}` :
+          null
   ;
   if (!connUri) {
     const err = `Unforeseen mode ${JSON.stringify(config.mode)}, cannot connect database`;
