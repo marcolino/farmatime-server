@@ -154,6 +154,10 @@ assertEnvironment();
 console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
 emailService.setup(process.env.BREVO_EMAIL_API_KEY);
 
+setTimeout(() => { // TODO: DEBUG ONLY (GITHUB ACTION TESTS)
+  console.log("Email service instance:", emailService.apiInstance);
+}, 5000);
+
 // the client root: the folder with the frontend site
 const rootClient = path.join(__dirname, "client", "build");
 // the client src root, used to inject client src
@@ -248,6 +252,11 @@ async function start() {
     throw err;
   }
 }
+
+// handle exit signal
+process.on("exit", () => {
+  console.warn("Server process is exiting");
+});
 
 // handle all uncaught exceptions
 process.on("uncaughtException", (err) => {

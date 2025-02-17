@@ -35,7 +35,7 @@ class EmailService {
 
       // create transactional emails api instance 
       this.apiInstance = new Brevo.TransactionalEmailsApi();
-console.log("Success during setup of email service:", this.apiInstance);
+console.log("Success during setup of email service");
     } catch (err) {
 console.log("Error during setup of email service:", err);
       logger.error("Error during setup of email service:", err);
@@ -302,5 +302,6 @@ console.log("Error during setup of email service:", err);
   }
 }
 
-
-module.exports = new EmailService();
+const emailServiceInstance = new EmailService();
+module.exports = emailServiceInstance;
+//module.exports = new EmailService();
