@@ -8,8 +8,6 @@ const development = (!test && (process.env.NODE_ENV === "development")); // deve
 const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
 const stripelive = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
 
-console.log("+++++++++++++++++++++ process.env.GITHUB_ACTIONS, githubactions:", process.env.GITHUB_ACTIONS, testgithubactions);
-
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
 const apiName = "ACME";

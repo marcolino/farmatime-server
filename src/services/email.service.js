@@ -36,7 +36,6 @@ class EmailService {
 
         // create transactional emails api instance 
         this.apiInstance = new Brevo.TransactionalEmailsApi();
-        console.log("Success during setup of email service");
         resolve(); // resolve the promise when setup is successful
       } catch (err) {
         logger.error("Error during setup of email service:", err);

@@ -18,17 +18,11 @@ let accessTokenCookieUser, refreshTokenCookieUser;
 before(async function() {
   this.timeout(10000); // increase timeout to 10s (TODO: DEBUG ONLY)
 
-console.log(`[DEBUG] Waiting for db.dbReady - ${new Date().toISOString()}`);
   await db.dbReady; // wait for the database to be ready
-console.log(`[DEBUG] Login credentials ready - ${new Date().toISOString()}`);
   
-console.log(`[DEBUG] Setting up login credentials - ${new Date().toISOString()}`);
   await setupLoginCredentials(); // wait to setup login credentials
-  console.log("login credentials ok.");
   
-console.log(`[DEBUG] Setting up email service - ${new Date().toISOString()}`);
   await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
-console.log(`[DEBUG] Email service ready - ${new Date().toISOString()}`);
 });
 
 // conntect to db, populate it, and setup login credentials

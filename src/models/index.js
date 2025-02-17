@@ -133,12 +133,12 @@ const connect = async () => {
     mongoose.set("debug", config.db.debug);
 
     // show MongoDB version
-    // const admin = new mongoose.mongo.Admin(mongoose.connection.db);
-    // admin.buildInfo((err, info) => {
-    //   console.log("admin.buildInfo error:", err);
-    //   console.log("admin.buildInfo:", info);
-    //   logger.info(`MongoDB v${info.version}`);
-    // });
+    const admin = new mongoose.mongo.Admin(mongoose.connection.db);
+    admin.buildInfo((err, info) => {
+      console.log("admin.buildInfo error:", err);
+      console.log("admin.buildInfo:", info);
+      logger.info(`MongoDB v${info.version}`);
+    });
 
   } catch (err) {
     logger.error("Database connection error:", err);
