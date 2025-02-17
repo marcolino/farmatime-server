@@ -7393,16 +7393,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["psl", [\
-      ["npm:1.15.0", {\
-        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/psl-npm-1.15.0-410584ca6b-10c0.zip/node_modules/psl/",\
-        "packageDependencies": [\
-          ["psl", "npm:1.15.0"],\
-          ["punycode", "npm:2.3.1"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["pstree.remy", [\
       ["npm:1.1.8", {\
         "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/pstree.remy-npm-1.1.8-2dd5d55de2-10c0.zip/node_modules/pstree.remy/",\
@@ -7655,7 +7645,7 @@ const RAW_RUNTIME_STATE =
           ["performance-now", "npm:2.1.0"],\
           ["qs", "npm:6.5.3"],\
           ["safe-buffer", "npm:5.2.1"],\
-          ["tough-cookie", "npm:2.5.0"],\
+          ["tough-cookie", "npm:5.1.1"],\
           ["tunnel-agent", "npm:0.6.0"],\
           ["uuid", "npm:3.4.0"]\
         ],\
@@ -8619,6 +8609,25 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["tldts", [\
+      ["npm:6.1.77", {\
+        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/tldts-npm-6.1.77-3d4cc4e7a6-10c0.zip/node_modules/tldts/",\
+        "packageDependencies": [\
+          ["tldts", "npm:6.1.77"],\
+          ["tldts-core", "npm:6.1.77"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["tldts-core", [\
+      ["npm:6.1.77", {\
+        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/tldts-core-npm-6.1.77-c37d60b232-10c0.zip/node_modules/tldts-core/",\
+        "packageDependencies": [\
+          ["tldts-core", "npm:6.1.77"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["to-regex-range", [\
       ["npm:5.0.1", {\
         "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/to-regex-range-npm-5.0.1-f1e8263b00-10c0.zip/node_modules/to-regex-range/",\
@@ -8658,12 +8667,11 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["tough-cookie", [\
-      ["npm:2.5.0", {\
-        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/tough-cookie-npm-2.5.0-79a2fe43fe-10c0.zip/node_modules/tough-cookie/",\
+      ["npm:5.1.1", {\
+        "packageLocation": "../../../snap/code/181/.local/share/yarn/berry/cache/tough-cookie-npm-5.1.1-dcddc41cc2-10c0.zip/node_modules/tough-cookie/",\
         "packageDependencies": [\
-          ["tough-cookie", "npm:2.5.0"],\
-          ["psl", "npm:1.15.0"],\
-          ["punycode", "npm:2.3.1"]\
+          ["tough-cookie", "npm:5.1.1"],\
+          ["tldts", "npm:6.1.77"]\
         ],\
         "linkType": "HARD"\
       }]\

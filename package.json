@@ -123,6 +123,7 @@
   "resolutions": {
     "semver": "^7.7.1",
     "esbuild": "^0.25.0",
-    "tough-cookie": "^5.5.1"
+    "tough-cookie": "^5.1.1",
+    "request": "^2.88.2"
   }
 }
