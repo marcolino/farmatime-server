@@ -5,7 +5,7 @@ node_modules/
 !.yarn/releases
 !.yarn/plugins
 tmp/
-client/
+#client/
 coverage/
 uploads/
 logs/
