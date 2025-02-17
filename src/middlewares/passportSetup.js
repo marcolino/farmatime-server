@@ -9,6 +9,8 @@ const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const config = require("../config");
 
+console.log("Facebook Client ID:", process.env.FACEBOOK_OAUTH_CLIENT_ID.slice(-10));
+console.log("Facebook Secret Key:", process.env.FACEBOOK_OAUTH_SECRET_KEY.slice(-10));
 
 module.exports = (app) => {
   // Facebook OAuth Strategy
