@@ -5,6 +5,9 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      SECRETS_JSON: ${{ toJson(secrets) }} # convert all secrets to JSON string
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,9 +31,7 @@ jobs:
 
       - name: Export all secrets dynamically before testing
         run: |
-          for secret in $(env | grep '^SECRET_' | cut -d= -f1); do
-            echo "$secret=${{ secrets[secret] }}" >> $GITHUB_ENV
-          done
+          echo "$SECRETS_JSON" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
       - name: Run Tests
         #env:
