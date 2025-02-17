@@ -35,11 +35,13 @@ class EmailService {
 
       // create transactional emails api instance 
       this.apiInstance = new Brevo.TransactionalEmailsApi();
+console.log("Success during setup of email service:", this.apiInstance);
     } catch (err) {
+console.log("Error during setup of email service:", err);
       logger.error("Error during setup of email service:", err);
       throw err;
     }
-    return true;
+    //return true;
   }
 
   /**

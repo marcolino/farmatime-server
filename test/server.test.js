@@ -13,7 +13,6 @@ chai.should();
 const requestWithLanguage = supertestWithLanguage(config.language)(server); // use supertest adding an Accept-HEader language in config.language
 
 console.log("Server unit tests");
-console.log("FB:", process.env.FACEBOOK_OAUTH_CLIENT_ID.length);
 
 process.on("unhandledRejection", (reason, promise) => { // this should not happen!
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
