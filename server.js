@@ -150,18 +150,6 @@ app.use((req, res, next) => {
 // assert environment to be fully compliant with expectations
 assertEnvironment();
 
-// setup the email service
-//console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
-try {
-  console.log("Initializing email service...");
-  await emailService.setup(process.env.BREVO_EMAIL_API_KEY);
-  console.log("Email service initialized successfully");
-} catch (err) {
-  console.error("Failed to initialize email service:", err);
-  process.exit(1);
-}
-console.log("After emailService.setup");
-
 // the client root: the folder with the frontend site
 const rootClient = path.join(__dirname, "client", "build");
 // the client src root, used to inject client src
@@ -237,6 +225,18 @@ async function start() {
 
   await db.dbReady; // await the database to be ready
 
+  // setup the email service
+  //console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
+  try {
+    console.log("Initializing email service...");
+    await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
+    console.log("Email service initialized successfully");
+  } catch (err) {
+    console.error("Failed to initialize email service:", err);
+    process.exit(1);
+  }
+  console.log("After emailService.setup");
+  
   if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
     // inject client app config to configFileNameInjected
     inject(rootClient, rootClientSrc, configFileNameInjected, config.app);

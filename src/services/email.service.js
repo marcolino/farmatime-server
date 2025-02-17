@@ -29,20 +29,21 @@ class EmailService {
 
   // setup method to configure the Brevo API client
   setup(apiKey) {
-    try {
-      // configure API key authorization api-key
-      Brevo.ApiClient.instance.authentications["api-key"].apiKey = apiKey;
+    return new Promise((resolve, reject) => {
+      try {
+        // configure API key authorization api-key
+        Brevo.ApiClient.instance.authentications["api-key"].apiKey = apiKey;
 
-      // create transactional emails api instance 
-      this.apiInstance = new Brevo.TransactionalEmailsApi();
-console.log("Success during setup of email service");
-    } catch (err) {
-console.log("Error during setup of email service:", err);
-      logger.error("Error during setup of email service:", err);
-      throw err;
+        // create transactional emails api instance 
+        this.apiInstance = new Brevo.TransactionalEmailsApi();
+        //console.log("Success during setup of email service");
+        resolve(); // resolve the promise when setup is successful
+      } catch (err) {
+        logger.error("Error during setup of email service:", err);
+        throw err;
+      }
+      //return true;
     }
-    //return true;
-  }
 
   /**
    * method to send an email with HTML content
