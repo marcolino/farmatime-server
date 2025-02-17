@@ -151,12 +151,16 @@ app.use((req, res, next) => {
 assertEnvironment();
 
 // setup the email service
-console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
-emailService.setup(process.env.BREVO_EMAIL_API_KEY);
-
-setTimeout(() => { // TODO: DEBUG ONLY (GITHUB ACTION TESTS)
-  console.log("Email service instance:", emailService.apiInstance);
-}, 5000);
+//console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
+try {
+  console.log("Initializing email service...");
+  await emailService.setup(process.env.BREVO_EMAIL_API_KEY);
+  console.log("Email service initialized successfully");
+} catch (err) {
+  console.error("Failed to initialize email service:", err);
+  process.exit(1);
+}
+console.log("After emailService.setup");
 
 // the client root: the folder with the frontend site
 const rootClient = path.join(__dirname, "client", "build");

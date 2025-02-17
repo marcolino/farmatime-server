@@ -237,13 +237,14 @@ console.log("Error during setup of email service:", err);
     }
   }
 
+/*
   /**
    * substitutes `class` tags in template contents,
    * because many email clients do not respect classes, but only (come) inline styles
    * 
    * @param {string} name - the template name
    * @returns {string} the template contents
-   */
+   * /
   async inlineClasses(html) {
     // add system style
     //const css = this.readTemplateStyle(styleName);
@@ -268,7 +269,8 @@ console.log("Error during setup of email service:", err);
     //   throw err;
     // });
   }
-
+*/
+  
   /**
    * reads a template from file system
    * 
