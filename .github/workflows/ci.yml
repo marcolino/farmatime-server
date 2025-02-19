@@ -26,6 +26,7 @@ jobs:
       - name: Export all secrets dynamically
         run: |
           echo "$SECRETS_JSON" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+          echo "NODE_ENV=test" >> $GITHUB_ENV
 
       - name: Get Runner IP
         id: ip
