@@ -4,6 +4,11 @@ import xml2js from "xml2js";
 const testResultsFile = "./test/test-results.xml";
 const readmeFile = "./README.md";
 
+if (!fs.existsSync(testResultsFile)) {
+  console.error(`Test results file ${testResultsFile} not found!`);
+  process.exit(1);
+}
+
 const parser = new xml2js.Parser();
 const xml = fs.readFileSync(testResultsFile);
 
