@@ -1,6 +1,5 @@
 # WORK IN PROGRESS
 ### Please come back soon
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/acme-server?style=flat)](version)
 [![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/acme-server?style=flat)](license)
@@ -22,6 +21,8 @@
 ![React](https://img.shields.io/badge/react-18.2.0-blue?logo=react)
 ![Express](https://img.shields.io/badge/express-4.17.1-lightgrey?logo=express)
 ![MongoDB](https://img.shields.io/badge/mongoDB-4.4-green?logo=mongodb)
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 # Summary
 [acme-server](https://github.com/marcolino/acme-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site , with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
