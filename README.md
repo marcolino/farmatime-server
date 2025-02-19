@@ -1,5 +1,6 @@
-<div center style="font-size: 5em; font-weight: bold; text-align: center;">WORK IN PROGRESS</div>
-<div center style="font-size: 3em; font-weight: bold; text-align: center; margin-bottom: 500px">Please come back soon</div>
+# WORK IN PROGRESS
+### Please come back soon
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/acme-server?style=flat)](version)
 [![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/acme-server?style=flat)](license)
