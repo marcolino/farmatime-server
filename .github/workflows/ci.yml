@@ -25,9 +25,6 @@ jobs:
         env:
           NODE_ENV: development
 
-      # - name: Debug node_modules
-      #   run: ls node_modules # | grep xml2js
-
       - name: Export all secrets dynamically
         run: |
           echo "$SECRETS_JSON" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
@@ -50,5 +47,5 @@ jobs:
       - name: Run Tests
         run: yarn test
 
-      - name: Update test badge
-        run: yarn node scripts/parseTestResults.mjs
+      # - name: Update test badge
+      #   run: yarn node scripts/parseTestResults.mjs
