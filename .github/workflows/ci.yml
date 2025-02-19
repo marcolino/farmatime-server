@@ -22,6 +22,11 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
+        env:
+          NODE_ENV: development
+
+      - name: Debug node_modules
+        run: ls node_modules | grep xml2js
 
       - name: Export all secrets dynamically
         run: |
