@@ -25,8 +25,8 @@ jobs:
         env:
           NODE_ENV: development
 
-      - name: Debug node_modules
-        run: ls node_modules # | grep xml2js
+      # - name: Debug node_modules
+      #   run: ls node_modules # | grep xml2js
 
       - name: Export all secrets dynamically
         run: |
@@ -51,4 +51,4 @@ jobs:
         run: yarn test
 
       - name: Update test badge
-        run: node scripts/parseTestResults.mjs
+        run: yarn node scripts/parseTestResults.mjs

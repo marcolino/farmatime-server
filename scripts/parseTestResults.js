@@ -1,5 +1,7 @@
 import fs from "fs";
 import xml2js from "xml2js";
+// const fs = require("fs");
+// const xml2js = require("xml2js");
 
 const testResultsFile = "./test/test-results.xml";
 const readmeFile = "./README.md";
