@@ -16,7 +16,7 @@ let accessTokenCookieUser, refreshTokenCookieUser;
 // before hook to log in the user and get the auth cookie
 //before(async () => {})
 before(async function() {
-  //this.timeout(10000); // increase timeout to 10s (TODO: DEBUG ONLY)
+  this.timeout(10000); // increase timeout to 10s (TODO: DEBUG ONLY)
   await db.dbReady; // wait for the database to be ready
   await setupLoginCredentials(); // wait to setup login credentials
   await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready

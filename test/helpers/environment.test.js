@@ -8,11 +8,11 @@ const { assertEnvironment } = require("../../src/helpers/environment");
 
 describe("Helpers - Environment", async () => {
   it("should not assert environment with no environment", async () => {
-      const envBackup = process.env;
-      process.env = []; // simulate no environment
-      const res = assertEnvironment();
-      server.expect(res).to.equal(false);
-      process.env = envBackup; // restore the original environment
+    const envBackup = process.env;
+    process.env = []; // simulate no environment
+    const res = assertEnvironment();
+    server.expect(res).to.equal(false);
+    process.env = envBackup; // restore the original environment
   });
 
   it("should not assert environment with missing required variable", async () => {
