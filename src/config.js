@@ -276,7 +276,7 @@ const configBase = {
       prefix: apiName,
     },
     administration: {
-      from: "marcosolari@gmail.com",
+      from: "sistemisolarirossi@gmail.com",
       fromName: "Sistemi Solari Rossi backend server",
       to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
       toName: "ACME admin",
@@ -400,7 +400,7 @@ const configBase = {
       refreshTokenExpirationDontRememberMeSeconds: 3600, //60 * 60, // 1 hour TTL: time after refresh token expires, and user must sign in again (in case user did check DontRememberMe)
       notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL: time after notification token expires (in notifiction emails for example)
       codeDeliveryMedium: "email", // "email" / "sms" / ...: the signup confirmation code delivery medium
-      clientSessionExpirationSeconds: 0, // time after which session "pre-expires": user is asked to logout if session is no longer in use - 0 means no expiration
+      clientSessionExpirationSeconds: 0, // time after which session "pre-expires": user is asked to signout if session is no longer in use - 0 means no expiration
       clientSessionExpirationResponseMaximumSeconds: 900, // time after which - after a session "pre-expiration" prompt has been presented to user and no response is obtained, the session will be terminated, and user logged out
       //"clientLastActivityCheckTimeoutSeconds": 3600, // unused...
     },

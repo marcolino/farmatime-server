@@ -29,3 +29,4 @@ primary_region = 'cdg'
 [mounts]
   source = 'products'
   destination = '/app/public/assets/products'
+  

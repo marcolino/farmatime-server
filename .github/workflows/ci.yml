@@ -27,19 +27,23 @@ jobs:
         run: |
           echo "$SECRETS_JSON" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
-      - name: Get Runner IP
-        id: ip
-        run: echo "RUNNER_IP=$(curl -s https://ifconfig.me)" >> $GITHUB_ENV
+      # TODO: try to skip this step and the following one
+      # - name: Get Runner IP
+      #   id: ip
+      #   run: echo "RUNNER_IP=$(curl -s https://ifconfig.me)" >> $GITHUB_ENV
 
-      - name: Whitelist Runner IP in MongoDB Atlas
-        run: |
-          JSON_DATA='[{"ipAddress": "'"$RUNNER_IP"'", "comment": "GitHub Actions Runner"}]'
-          URL="https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.MONGO_PROJECT_ID }}/accessList"
-          USER_CREDENTIALS="${{ secrets.MONGO_PUBLIC_API_KEY }}:${{ secrets.MONGO_PRIVATE_API_KEY }}"
-          echo "Whitelisting IP: $RUNNER_IP"
-          curl --silent --user "$USER_CREDENTIALS" --digest --header 'Accept: application/json' \
-               --header 'Content-Type: application/json' --include \
-               --request POST "$URL" --data "$JSON_DATA"
+      # - name: Whitelist Runner IP in MongoDB Atlas
+      #   run: |
+      #     JSON_DATA='[{"ipAddress": "'"$RUNNER_IP"'", "comment": "GitHub Actions Runner"}]'
+      #     URL="https://cloud.mongodb.com/api/atlas/v1.0/groups/${{ secrets.MONGO_PROJECT_ID }}/accessList"
+      #     USER_CREDENTIALS="${{ secrets.MONGO_PUBLIC_API_KEY }}:${{ secrets.MONGO_PRIVATE_API_KEY }}"
+      #     echo "Whitelisting IP: $RUNNER_IP"
+      #     curl --silent --user "$USER_CREDENTIALS" --digest --header 'Accept: application/json' \
+      #          --header 'Content-Type: application/json' --include \
+      #          --request POST "$URL" --data "$JSON_DATA"
 
       - name: Run Tests
         run: yarn test
+
+      - name: Update test badge
+        run: node scripts/parseTestResults.mjs

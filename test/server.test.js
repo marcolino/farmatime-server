@@ -12,7 +12,7 @@ chai.use(spies);
 chai.should();
 const requestWithLanguage = supertestWithLanguage(config.language)(server); // use supertest adding an Accept-HEader language in config.language
 
-console.log("Server unit tests");
+// console.log("Server unit tests");
 
 process.on("unhandledRejection", (reason, promise) => { // this should not happen!
   console.error("Unhandled Rejection at:", promise, "reason:", reason);

@@ -68,7 +68,7 @@ const facebookCallback = (req, res, next) => {
   })(req, res, next);
 };
 
-const socialLogin = async (req, res, next) => {
+const socialLogin = async (req, res) => {
   if (!req?.userSocial) { // can userSocial be undefined?
     logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
@@ -249,7 +249,7 @@ const redirectToClient = (req, res, success, payload) => {
 };
 
 // social OAuth revoke
-const socialRevoke = async (req, res, next) => {
+const socialRevoke = async (req, res) => {
   logger.log("socialRevoke");
 
   // TODO: check the providers give these data
@@ -456,7 +456,7 @@ const signupVerification = async (req, res, next) => {
 const signin = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
   try {
-    User.findOne(
+    const user = await User.findOne(
       { email },
       null,
       {
@@ -464,91 +464,90 @@ const signin = async (req, res, next) => {
         allowUnverified: true,
       }
     )
-    .populate("roles", "-__v")
-    .populate("plan", "-__v")
-    .exec()
-    .then(async user => {
-      // check if user is found
-      if (!user) {
-        return res.status(401).json({ message: req.t("User not found") });
-      }
+      .populate("roles", "-__v")
+      .populate("plan", "-__v")
+      .exec()
+    ;
+    // check if user is found
+    if (!user) {
+      return res.status(401).json({ message: req.t("User not found") });
+    }
 
-      // check if user is deleted
-      if (user.isDeleted) {
+    // check if user is deleted
+    if (user.isDeleted) {
+      return res.status(401).json({
+        message: req.t("The account of this user has been deleted"),
+        code: "ACCOUNT_DELETED",
+      });
+    } // NEWFEATURE: perhaps we should not be so explicit?
+
+    // check if email is verified
+    if (!user.isVerified) {
+      return res.status(401).json({
+        message: req.t(
+          "This account is waiting for a verification; if you did register it, check your emails"
+        ),
+        code: "ACCOUNT_WAITING_FOR_VERIFICATION",
+        codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
+      });
+    }
+
+    // check for social auth user
+    if (!user.password && user.socialId) {
+      let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
+      provider = provider.charAt(0).toUpperCase() + provider.slice(1);
+      return res.status(401).json({
+        message: req.t(
+          "This email is associated to your {{provider}} social account; please use it to sign in, or register a new account",
+          { provider }
+        ),
+      });
+    } else {
+      // validate password
+      if (
+        !user.comparePassword(req.parameters.password, user.password) &&
+        !user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)
+      ) {
         return res.status(401).json({
-          message: req.t("The account of this user has been deleted"),
-          code: "ACCOUNT_DELETED",
-        });
-      } // NEWFEATURE: perhaps we should not be so explicit?
-
-      // check if email is verified
-      if (!user.isVerified) {
-        return res.status(401).json({
-          message: req.t(
-            "This account is waiting for a verification; if you did register it, check your emails"
-          ),
-          code: "ACCOUNT_WAITING_FOR_VERIFICATION",
-          codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
+          message: req.t("Wrong password"),
         });
       }
+    }
 
-      // check for social auth user
-      if (!user.password && user.socialId) {
-        let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
-        provider = provider.charAt(0).toUpperCase() + provider.slice(1);
-        return res.status(401).json({
-          message: req.t(
-            "This email is associated to your {{provider}} social account; please use it to sign in, or register a new account",
-            { provider }
-          ),
-        });
-      } else {
-        // validate password
-        if (
-          !user.comparePassword(req.parameters.password, user.password) &&
-          !user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)
-        ) {
-          return res.status(401).json({
-            message: req.t("Wrong password"),
-          });
-        }
+    try {
+      // create access and refresh tokens
+      const accessToken = await AccessToken.createToken(user);
+      const refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
+
+      res.cookie("accessToken", accessToken, cookieOptions());
+      res.cookie("refreshToken", refreshToken, cookieOptions());
+
+      logger.info(`User signed in: ${user.email}`);
+      if (config.mode.development) {
+        logger.info(`                      now is ${localeDateTime(new Date())}`);
+        const { exp: expA } = jwt.decode(accessToken);
+        logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
+        const { exp: expR } = jwt.decode(refreshToken);
+        logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
       }
 
-      try {
-        // create access and refresh tokens
-        const accessToken = await AccessToken.createToken(user);
-        const refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
+      // audit logins
+      audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
 
-        res.cookie("accessToken", accessToken, cookieOptions());
-        res.cookie("refreshToken", refreshToken, cookieOptions());
-
-        logger.info(`User signed in: ${user.email}`);
-        if (config.mode.development) {
-          logger.info(`                      now is ${localeDateTime(new Date())}`);
-          const { exp: expA } = jwt.decode(accessToken);
-          logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
-          const { exp: expR } = jwt.decode(refreshToken);
-          logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
-        }
-
-        // audit logins
-        audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
-
-        res.status(200).json({
-          id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          roles: user.roles,
-          plan: user.plan,
-          justRegistered: user.justRegistered,
-          preferences: user.preferences.toObject(),
-        });
-      } catch (err) {
-        //logger.error(req.t("Error creating tokens: {{err}}", { err: err.message }));
-        return next(Object.assign(new Error(req.t("Error creating tokens: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
-      }
-    });
+      res.status(200).json({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roles: user.roles,
+        plan: user.plan,
+        justRegistered: user.justRegistered,
+        preferences: user.preferences.toObject(),
+      });
+    } catch (err) {
+      //logger.error(req.t("Error creating tokens: {{err}}", { err: err.message }));
+      return next(Object.assign(new Error(req.t("Error creating tokens: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    }
   } catch (err) {
     if (err) {
       //logger.error(req.t("Error finding user in signin request: {{err}}", { err: err.message }));
@@ -561,38 +560,36 @@ const signout = async (req, res, next) => {
   const email = normalizeEmail(req.parameters.email);
 
   try {
-    User.findOne({ email })
-    .then(async user => {
+    const user = await User.findOne({ email });
 
-      // check user is found
-      if (!user) {
-        return res.status(401).json({ message: req.t("User not found") });
-      }
+    // check user is found
+    if (!user) {
+      return res.status(401).json({ message: req.t("User not found") });
+    }
 
-      // audit logouts
-      //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
-    
-      // invalidate access and refresh tokens
-      try {
-        await User.findOneAndUpdate({
-          _id: user.id
-        }, {
-          $set: {
-            accessToken: null,
-            refreshToken: null
-          }
-        });
-        logger.info(`User signed out: ${user.email}`);
-      } catch (err) {
-        return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
-      }
+    // audit signouts
+    //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
+  
+    // invalidate access and refresh tokens
+    try {
+      await User.findOneAndUpdate({
+        _id: user.id
+      }, {
+        $set: {
+          accessToken: null,
+          refreshToken: null
+        }
+      });
+      logger.info(`User signed out: ${user.email}`);
+    } catch (err) {
+      return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    }
 
-      // clear HTTP-only auth cookies
-      res.clearCookie("accessToken", cookieOptions(false));
-      res.clearCookie("refreshToken", cookieOptions(false));
+    // clear HTTP-only auth cookies
+    res.clearCookie("accessToken", cookieOptions(false));
+    res.clearCookie("refreshToken", cookieOptions(false));
 
-      return res.status(200).json({ message: req.t("Sign out successful") });
-    });
+    return res.status(200).json({ message: req.t("Sign out successful") });
   } catch (err) {
     //logger.error(req.t("Error in signout request: {{err}}", { err: err.message }));
     return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));

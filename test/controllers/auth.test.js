@@ -5,7 +5,7 @@
 const server = require("../server.test");
 const { getAuthCookiesAdmin } = require("../setup/setup.test");
 const config = require("../config.test");
-
+const configGlobal = require("../../src/config");
 
 describe("Auth routes", () => {
   let expect;

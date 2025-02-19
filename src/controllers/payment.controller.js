@@ -22,6 +22,7 @@ const createCheckoutSession = async (req, res, next) => {
   if (!cart || !cart.items || cart.items.length === 0) {
     return res.status(400).json({ message: req.t("Empty cart") });
   }
+  //logger.info("**************** CART:", cart);
 
   // create line items
   const line_items = cart.items.map(item => {
@@ -89,8 +90,9 @@ const createCheckoutSession = async (req, res, next) => {
       ...(stripeCustomerId && { customer: stripeCustomerId }),
       success_url: `${config.payment.stripe.paymentSuccessUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${config.payment.stripe.paymentCancelUrl}?session_id={CHECKOUT_SESSION_ID}`,
-      metadata: {
-        isGift: cart.isGift, // pass custom metadata here
+      metadata: { // pass custom metadata here
+        deliveryCode: cart.deliveryCode,
+        isGift: cart.isGift,
         userId: user?.id, // user id
       },
     });
@@ -172,10 +174,15 @@ const paymentSuccess = async (req, res, next) => {
           <li>postal code: ${shippingInfo.address?.postal_code}</li>
           <li>state: ${shippingInfo.address?.state}</li>
         </ul>
+        <p>Delivery code: ${session.metadata.deliveryCode}</p>
+        <p>Is a gift: ${session.metadata.isGift ? "true" : "false"}</p>
       ` :
         "(no shipping info)"
       )
     });
+    //console.log("session.metadata.deliveryCode", session.metadata.deliveryCode);
+    //console.log("session.metadata.isGift", session.metadata.isGift);
+
     res.redirect(config.payment.stripe.paymentSuccessUrlClient);
   } catch (err) { // should not happen...
     return next(Object.assign(new Error(req.t("Error retrieving payment info on payment success callback: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));

@@ -10,7 +10,7 @@ const { isObject, isArray, isDealerAtLeast, diacriticMatchRegex, diacriticsRemov
 const config = require("../config");
 
 
-const getProducts = async (req, res, next) => {
+const getProducts = async (req, res) => {
   try {
     const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
@@ -115,7 +115,6 @@ const getProduct = async (req, res, next) => {
     };
     return res.status(200).json({ product: productData });
   } catch (err) {
-    console.error(".............")
     return next(Object.assign(new Error(req.t("Error finding product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
   }
 };
@@ -184,8 +183,8 @@ const insertProduct = async (req, res, next) => {
     return res.status(200).json({ id: product._id, message: req.t("Product has been inserted") });
   } catch (err) {
     //logger.error("Error inserting product:", err);
-    return next(Object.assign(new Error(req.t("Error inserting product: {{err}}", {err: err.message}), { status: 500, stack: secureStack(err) })));
-  };
+    return next(Object.assign(new Error(req.t("Error inserting product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+  }
 };
 
 /**
@@ -297,8 +296,8 @@ const uploadProductImage = async (req, res, next) => {
   try {
     const product = await Product.findOne({
       _id: productId
-    })
-      
+    });
+
     if (!product) {
       return res.status(400).json({ message: req.t("Product not found") });
     }
@@ -346,8 +345,8 @@ const removeProduct = async (req, res, next) => {
   const payload = { isDeleted: true };
   try {
     const data = await Product.updateMany(filter, payload, { new: true, lean: true });
-    if (data.modifiedCount > 0) {
-      return res.status(200).json({ message: req.t("{{count}} products(s) have been removed", { count: data.modifiedCount }), count: data.modifiedCount });
+    if (data./*nModified*/modifiedCount > 0) {
+      return res.status(200).json({ message: req.t("{{count}} products(s) have been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
     } else {
       return res.status(400).json({ message: req.t("No product have been removed") });
     }

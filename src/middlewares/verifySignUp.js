@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const { secureStack } = require("../helpers/misc");
 const config = require("../config");
 
 const checkDuplicateEmail = async (req, res, next) => {

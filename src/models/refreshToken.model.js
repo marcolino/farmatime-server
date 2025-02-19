@@ -44,8 +44,8 @@ RefreshTokenSchema.statics.createToken = async function (user, rememberMe) {
   try {
     await object.save();
   } catch (err) {
-    if (err.code === 11000) { // ignore "Error: E11000 duplicate key error collection", it means a double login...
-      logger.warn("Duplicate refresh token, double login; this is not critical, but should not happen...");
+    if (err.code === 11000) { // ignore "Error: E11000 duplicate key error collection", it means a double signin...
+      logger.warn("Duplicate refresh token, double signin; this is not critical, but should not happen...");
       return;
     }
     throw new Error(err.message);

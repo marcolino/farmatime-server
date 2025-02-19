@@ -55,7 +55,7 @@ class LogtailStream extends stream.Writable {
       .then(() => callback())
       .catch(callback);
   }
-};
+}
 
 const formatWithArgs = winston.format.combine(
   winston.format.timestamp(),

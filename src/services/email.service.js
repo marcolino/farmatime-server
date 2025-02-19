@@ -237,7 +237,7 @@ class EmailService {
     }
   }
 
-/*
+  /*
   /**
    * substitutes `class` tags in template contents,
    * because many email clients do not respect classes, but only (come) inline styles
@@ -269,7 +269,7 @@ class EmailService {
     //   throw err;
     // });
   }
-*/
+  */
   
   /**
    * reads a template from file system

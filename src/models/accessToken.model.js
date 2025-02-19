@@ -51,8 +51,8 @@ AccessTokenSchema.statics.createToken = async function (user) {
   try {
     await object.save();
   } catch (err) {
-    if (err.code === 11000) { // ignore "Error: E11000 duplicate key error collection", it means a double login...
-      logger.warn("Duplicate access token, double login; this is not critical, but should not happen...");
+    if (err.code === 11000) { // ignore "Error: E11000 duplicate key error collection", it means a double signin...
+      logger.warn("Duplicate access token, double signin; this is not critical, but should not happen...");
       return;
     }
     throw new Error(err.message);

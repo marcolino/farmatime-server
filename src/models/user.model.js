@@ -24,7 +24,7 @@ const UserSchema = mongoose.Schema({
     required: "Email is required",
     unique: true // `email` must be unique
   },
-  password: String, // email/password login
+  password: String, // email/password signin
   socialId: String, // social login
   firstName: {
     type: String,

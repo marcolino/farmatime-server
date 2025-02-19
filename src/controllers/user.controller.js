@@ -10,24 +10,6 @@ const { isObject, isArray, normalizeEmail, isAdministrator, secureStack } = requ
 const emailService = require("../services/email.service");
 
 const getAllUsersWithTokens = async (req, res, next) => {
-  // get all users and refresh tokens
-  /* old version:
-    Promise.all([
-    User.find()
-      .select(["-password", "-__v"])
-      .populate("roles", "-__v")
-      .populate("plan", "-__v")
-      .lean(),
-    RefreshToken.find({ // refresh tokens auto-expire, no need to check for expiration... just filter for user._id ...
-      expiresAt: {
-        $gte: new Date(), 
-      }
-    })
-      .select("token user expiresAt -_id")
-      .lean()
-      .exec()
-  ]).then(([users, refreshTokens]) => {
-  */
   try {
     const [users, refreshTokens] = await Promise.all([
       User.find()
@@ -148,23 +130,6 @@ const getUser = async (req, res, next) => {
  */
 const updateUser = async (req, res, next) => {
   let userId = req.parameters.userId ?? req.userId;
-//     let userId = req.userId;
-// console.log("req.userId:", req.userId);
-//     console.log("req.parameters.userId:", req.parameters.userId);
-//     console.log("req.parameters.userId !== undefined:", req.parameters.userId !== undefined);
-//     console.log("req.parameters.userId !== userId:", req.parameters.userId !== userId);
-//     if (req.parameters.userId !== undefined && req.parameters.userId !== userId) {
-//       console.log("aaaa");
-//       // this test should be done in routing middleware, but doing it here allows for a more specific error message
-//       if (!(await isAdministrator(userId))) {
-//         console.log("!admin");
-//         return res.status(403).json({ message: req.t("You must have admin role to update another user") });
-//       }
-//       console.log("admin");
-//       userId = req.parameters.userId;
-//     }
-//     console.log("xxxx - userId:", userId);
-
   try {
     // collect update data
     const updateData = {};
@@ -332,7 +297,7 @@ const _updatePlan = async (req, userId) => {
 */
 
 // promotes a user to "dealer" role
-const promoteToDealer = async (req, res) => {
+const promoteToDealer = async (req, res, next) => {
   const roleName = "dealer";
   const userId = req.parameters.userId;
 
@@ -408,9 +373,10 @@ const removeUser = async (req, res, next) => {
   
   const payload = { isDeleted: true };
   try {
+
     const data = await User.updateMany(filter, payload, { new: true, lean: true });
-    if (data.modifiedCount > 0) {
-      return res.status(200).json({ message: req.t("{{count}} user has been removed", { count: data.modifiedCount }), count: data.modifiedCount });
+    if (data./*nModified*/modifiedCount > 0) {
+      return res.status(200).json({ message: req.t("{{count}} user has been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
     } else {
       return res.status(400).json({ message: req.t("No user has been removed") });
     }
@@ -498,7 +464,6 @@ const propertyEmailValidate = async (req, email, userId) => { // validate and no
   }
 
   const normalizedEmail = normalizeEmail(email);
-  //console.log("normalizedEmail:", normalizedEmail);
 
   // check if email exists but belongs to the same user
   const existingUser = await User.findOne({ email: normalizedEmail });

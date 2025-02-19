@@ -127,7 +127,13 @@ const connect = async () => {
   }
 
   try {
-    await mongoose.connect(connUri, {});
+    logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":************"));
+    await mongoose.connect(connUri, {
+      // useFindAndModify: false,
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
+      // useCreateIndex: true,
+    });
     logger.info("Database connected ");
 
     mongoose.set("debug", config.db.debug);

@@ -256,7 +256,7 @@ async function start() {
 
 // handle exit signal
 process.on("exit", () => {
-  console.warn("Server process is exiting");
+  logger.warn("Server process is exiting");
 });
 
 // handle all uncaught exceptions

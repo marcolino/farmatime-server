@@ -98,7 +98,7 @@ const verifyAccessTokenAllowGuest = (req, res, next) => {
   return verifyAccessToken(req, res, next);
 };
 
-verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser = async (req, res, next) => {
+const verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser = async (req, res, next) => {
   verifyAccessToken(req, res, async () => { // only proceed with valid tokens
     if (req.parameters.userId) { // a userId was requested: check if she is admin
       if (req.parameters.userId === req.userId) {

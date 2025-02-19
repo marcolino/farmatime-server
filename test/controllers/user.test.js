@@ -219,12 +219,13 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile with already taken email", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
-        email: config.user.email,
+        userId,
+        email: configGlobal.defaultUsers.user.email, //config.user.email,
       })
     ;
     expect = 400;
@@ -233,16 +234,17 @@ describe("User routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal(`The email ${config.user.email} is already in use`);
+    server.expect(res.body.message).to.equal(`The email ${configGlobal.defaultUsers.user.email} is already in use`);
   });
 
   it("should update user's profile with new email", async () => {
+    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
-        email: config.admin.email + ".new",
+        userId,
+        email: configGlobal.defaultUsers.admin.email + ".new",
       })
     ;
     expect = 200;

@@ -90,16 +90,17 @@
 - audit mode: [ACTION], non è bello... - OK
 - in "Payment successful" audit message body, include customer's delivery options and address... - OK
 - setup and test a working staging environment: same as prod, but with a different database and different baseUrl - OK
+- change "log" con "sign" (out/in/up/...) - OK
 
 - finish handling isGift (use it in audit of payment completed)
 - update index.language, index.dir, index.charset when user changes locale
-- winston colorize does not aseem to work in any transport
+- winston colorize does not seem to work in any transport
 - make tests (use AI for this...)
 - reinstall from scratch (possibly on a fresh system), and compile README file
-
-- change "log" con "sign" (out/in/up/...)
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users)
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using and objectId from parameters
+
+
 NEWFEATURE:
 - configurare un account su Cloudflare...
 - gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)
