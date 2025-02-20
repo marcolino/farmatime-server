@@ -52,7 +52,9 @@ const googleCallback = (req, res, next) => {
 
 // Facebook OAuth login
 const facebookLogin = (req, res, next) => {
-  passport.authenticate("facebook", { scope: config.app.oauth.scope.facebook })(req, res, next);
+  passport.authenticate("facebook", {
+    scope: config.app.oauth.scope.facebook
+  })(req, res, next);
 };
 
 // Facebook OAuth callback

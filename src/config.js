@@ -492,7 +492,10 @@ const configBase = {
       backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
-      scope: [ "email", "openid" ],
+      scope: {
+        google: ["profile", "email"],
+        facebook: ["email"],
+      },
       responseType: "code",
       redirectSignIn: baseUrl,
       redirectSignOut: baseUrl,

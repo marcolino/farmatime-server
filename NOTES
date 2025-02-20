@@ -53,7 +53,7 @@ db.createUser( { user: "$MONGO_USER", pwd: "$MONGO_PASS", roles: [ { role: "read
 show users
 EOT > mongosh
  - Google OAuth setup page: https://console.cloud.google.com/apis/credentials/oauthclient/280996881587-p9547ddvv64r79cb0em57ubannrik21s.apps.googleusercontent.com?project=acme-431519
- - Facebook OAuth setup page: 
+ - Facebook OAuth setup page: https://developers.facebook.com/
 
 MongoDB client install:
  - wget https://downloads.mongodb.com/compass/mongodb-compass_1.43.4_amd64.deb

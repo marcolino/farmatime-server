@@ -91,7 +91,7 @@ app.use(cors({
     if (!origin || config.clientDomains.includes(origin)) {
       callback(null, origin);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
+      callback(new Error(`Origin ${origin} not allowed by CORS; allowed origins are:`, config.clientDomains));
     }
   },
   methods: ["GET", "POST", "OPTIONS"], // allowed methods
