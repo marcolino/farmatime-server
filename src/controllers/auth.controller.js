@@ -242,8 +242,8 @@ const redirectToClientWithError = (req, res, payload) => {
 const redirectToClient = (req, res, success, payload) => {
   const url = new URL(
     success ?
-      `${config.baseUrl}/social-signin-success` :
-      `${config.baseUrl}/social-signin-error`
+      `${config.baseUrlClient}/social-signin-success` :
+      `${config.baseUrlClient}/social-signin-error`
   );
   const stringifiedPayload = JSON.stringify(payload);
   url.searchParams.set("data", stringifiedPayload);
