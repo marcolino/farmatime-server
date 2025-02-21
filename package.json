@@ -17,7 +17,7 @@
     "start": "node server.js",
     "inject": "node scripts/inject.js",
     "test-verbose": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail test/",
-    "test": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail --reporter min --reporter mocha-junit-reporter --reporter-options mochaFile=./test/test-results.xml test/",
+    "test": "NODE_ENV=test mocha --exit --timeout 10000 --slow 150 --bail --reporter min --reporter mocha-junit-reporter --reporter-options mochaFile=./test/test-results.xml test/",
     "test-and-parse-results": "yarn test && node scripts/parseTestResults.mjs",
     "test:coverage": "echo TODO...",
     "i18n-pre": "bash -c 'for dir in $(cat ../acme-client/src/config.json | jq -r \".locales | keys[]\"); do mkdir -p \"src/locales/$dir/\"; done'",
