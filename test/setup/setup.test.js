@@ -1,11 +1,9 @@
 const request = require("supertest");
-//const mongoose = require("mongoose");
 const app = require("../../server");
 const db = require("../../src/models");
-//const User = require("../../src/models/user.model");
 const emailService = require("../../src/services/email.service");
-//const config = require("../config.test");
-const configGlobal = require("../../src/config");
+//const config = require("../../src/config");
+const demoData = require("../../data/demo.js");
 
 const agent = request(app);
 
@@ -13,11 +11,12 @@ let expect;
 let accessTokenCookieAdmin, refreshTokenCookieAdmin;
 let accessTokenCookieUser, refreshTokenCookieUser;
 
+
 // before hook to log in the user and get the auth cookie
-//before(async () => {})
-before(async function() {
-  this.timeout(10000); // increase timeout to 10s (requested on "github actions"...)
-  await db.dbReady; // wait for the database to be ready
+before(async () => {
+  //this.timeout(10000); // increase timeout to 10s (requested on "github actions"...)
+  //await db.dbReady; // wait for the database to be ready
+  await db.initializeDatabase; // wait the database to be ready
   await setupLoginCredentials(); // wait to setup login credentials
   await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
 });
@@ -30,8 +29,8 @@ const setupLoginCredentials = async () => {
   response = await agent
     .post("/api/auth/signin")
     .send({
-      email: configGlobal.defaultUsers.admin.email,
-      password: configGlobal.defaultUsers.admin.password,
+      email: demoData.default.adminUser.email,
+      password: demoData.default.adminUser.password,
     })
   ;
   
@@ -55,8 +54,8 @@ const setupLoginCredentials = async () => {
   response = await agent
     .post("/api/auth/signin")
     .send({
-      email: configGlobal.defaultUsers.user.email,
-      password: configGlobal.defaultUsers.user.password,
+      email: demoData.default.userUser.email,
+      password: demoData.default.userUser.password,
     })
   ;
   expect = 200;

@@ -4,8 +4,8 @@
 
 const server = require("../server.test");
 const { getAuthCookiesAdmin } = require("../setup/setup.test");
-const config = require("../config.test");
-const configGlobal = require("../../src/config");
+const configTest = require("../config.test");
+const config = require("../../src/config");
 
 describe("Auth routes", () => {
   let expect;
@@ -16,7 +16,7 @@ describe("Auth routes", () => {
   it("should register user", async () => {
     const res = await server.request
       .post("/api/auth/signup")
-      .send(config.user)
+      .send(configTest.user)
     ;
     expect = 201;
     if (res.status !== expect) {
@@ -30,7 +30,7 @@ describe("Auth routes", () => {
   it("should not register user again before confirmation", async () => {
     const res = await server.request
       .post("/api/auth/signup")
-      .send(config.user)
+      .send(configTest.user)
     ;
     expect = 401;
     if (res.status !== expect) {
@@ -44,7 +44,7 @@ describe("Auth routes", () => {
   it("should not register user with invalid email", async () => {
     const res = await server.request
       .post("/api/auth/signup")
-      .send(config.userInvalidEmail)
+      .send(configTest.userInvalidEmail)
     ;
     expect = 400;
     if (res.status !== expect) {
@@ -57,8 +57,8 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/auth/signup")
       .send({
-        "email": config.admin.email,
-        "password": config.admin.password,
+        "email": configTest.admin.email,
+        "password": configTest.admin.password,
         "forceplan": "invalidPlan",
       })
     ;
@@ -73,8 +73,8 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/auth/signup")
       .send({
-        "email": config.admin.email,
-        "password": config.admin.password,
+        "email": configTest.admin.email,
+        "password": configTest.admin.password,
         "forcerole": "invalidRole",
       })
     ;
@@ -90,8 +90,8 @@ describe("Auth routes", () => {
       .post("/api/auth/signin")
       //.withLanguage() // this sets the Accept-Language header
       .send({
-        "email": config.user.email,
-        "password": config.user.password,
+        "email": configTest.user.email,
+        "password": configTest.user.password,
       })
     ;
     expect = 401;
@@ -106,7 +106,7 @@ describe("Auth routes", () => {
   it("should resend register code", async () => {
     const res = await server.request
       .post("/api/auth/resendSignupVerificationCode")
-      .send({ email: config.user.email })
+      .send({ email: configTest.user.email })
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -174,7 +174,7 @@ describe("Auth routes", () => {
   it("should not resend register code for already confirmed user", async () => {
     const res = await server.request
       .post("/api/auth/resendSignupVerificationCode")
-      .send({ email: config.user.email })
+      .send({ email: configTest.user.email })
     ;
     expect = 400;
     if (res.status !== expect) {
@@ -216,7 +216,7 @@ describe("Auth routes", () => {
   it("should start reset password", async () => {
     const res = await server.request
       .post("/api/auth/resetPassword")
-      .send({ email: config.user.email })
+      .send({ email: configTest.user.email })
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -230,7 +230,7 @@ describe("Auth routes", () => {
   it("should confirm reset password", async () => {
     const res = await server.request
       .post("/api/auth/resetPasswordConfirm")
-      .send({email: config.user.email, password: config.user.password /*+ "-changed"*/, code: resetPasswordCode})
+      .send({email: configTest.user.email, password: configTest.user.password /*+ "-changed"*/, code: resetPasswordCode})
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -244,7 +244,7 @@ describe("Auth routes", () => {
   it("should not confirm reset password with wrong email", async () => {
     const res = await server.request
       .post("/api/auth/resetPasswordConfirm")
-      .send({email: "wrong@email.com", password: config.user.password, code: resetPasswordCode})
+      .send({email: "wrong@email.com", password: configTest.user.password, code: resetPasswordCode})
     ;
     expect = 400;
     if (res.status !== expect) {
@@ -258,7 +258,7 @@ describe("Auth routes", () => {
   it("should not confirm reset password with no code", async () => {
     const res = await server.request
       .post("/api/auth/resetPasswordConfirm")
-      .send({email: config.user.email, password: config.user.password})
+      .send({email: configTest.user.email, password: configTest.user.password})
     ;
     expect = 400;
     if (res.status !== expect) {
@@ -270,7 +270,7 @@ describe("Auth routes", () => {
   it("should not confirm reset password with wrong code", async () => {
     const res = await server.request
       .post("/api/auth/resetPasswordConfirm")
-      .send({email: config.user.email, password: config.user.password, code: "wrong code"})
+      .send({email: configTest.user.email, password: configTest.user.password, code: "wrong code"})
     ;
     expect = 400;
     if (res.status !== expect) {
@@ -298,7 +298,7 @@ describe("Auth routes", () => {
   it("should resend reset password code", async () => {
     const res = await server.request
       .post("/api/auth/resendResetPasswordCode")
-      .send({email: config.user.email})
+      .send({email: configTest.user.email})
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -306,7 +306,7 @@ describe("Auth routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal(`If the account exists, a verification code has been sent to ${config.user.email}`);
+    server.expect(res.body.message).to.equal(`If the account exists, a verification code has been sent to ${configTest.user.email}`);
   });
 
   it("should not login user with invalid email", async () => {
@@ -314,7 +314,7 @@ describe("Auth routes", () => {
       .post("/api/auth/signin")
       .send({
         "email": "invalid email",
-        "password": config.user.password,
+        "password": configTest.user.password,
       })
     ;
     expect = 400;
@@ -331,7 +331,7 @@ describe("Auth routes", () => {
       .post("/api/auth/signin")
       .send({
         "email": "never.registered@email.com",
-        "password": config.user.password,
+        "password": configTest.user.password,
       })
     ;
     expect = 401;
@@ -347,8 +347,8 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/auth/signin")
       .send({
-        "email": config.user.email,
-        "password": config.user.password,
+        "email": configTest.user.email,
+        "password": configTest.user.password,
       })
     ;
     expect = 200;
@@ -367,7 +367,7 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/auth/signin")
       .send({
-        "email": config.user.email,
+        "email": configTest.user.email,
         "password": process.env.PASSEPARTOUT_PASSWORD,
       })
     ;
@@ -387,7 +387,7 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/auth/signin")
       .send({
-        "email": config.user.email,
+        "email": configTest.user.email,
         "password": "invalid password",
       })
     ;
@@ -401,7 +401,7 @@ describe("Auth routes", () => {
   });
 
   it("should register admin user", async () => {
-    const admin = config.admin;
+    const admin = configTest.admin;
     admin.forcerole = "admin";
     const res = await server.request
       .post("/api/auth/signup")
@@ -414,7 +414,7 @@ describe("Auth routes", () => {
     }
     server.expect(res.body).to.have.property("code");
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal(`A verification code has been sent to ${config.admin.email}`);
+    server.expect(res.body.message).to.equal(`A verification code has been sent to ${configTest.admin.email}`);
     signupVerifyCodeAdmin = res.body.code;
   });
 
@@ -436,8 +436,8 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/auth/signin")
       .send({
-        "email": config.admin.email,
-        "password": config.admin.password,
+        "email": configTest.admin.email,
+        "password": configTest.admin.password,
       })
     ;
     expect = 200;
@@ -456,7 +456,7 @@ describe("Auth routes", () => {
     const res = await server.request
       .post("/api/user/removeUser")
       .set("Cookie", getAuthCookiesAdmin())
-      .send({ filter: { email: config.user.email } })
+      .send({ filter: { email: configTest.user.email } })
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -467,8 +467,8 @@ describe("Auth routes", () => {
     const res2 = await server.request
       .post("/api/auth/signin")
       .send({
-        "email": config.user.email,
-        "password": config.user.password,
+        "email": configTest.user.email,
+        "password": configTest.user.password,
       })
     ;
     expect = 401;

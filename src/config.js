@@ -6,7 +6,7 @@ const testgithubactions = (test && (process.env.GITHUB_ACTIONS)); // test mode, 
 const production = (!test && (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
 const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
 const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
-const stripelive = (!test && (process.env.STRIPE_MODE === "live")); // stripe mode is "live"  
+const stripelive = (!test && (process.env.LIVE_MODE === "true")); // stripe mode is "live"  
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
@@ -25,7 +25,6 @@ const currencies = { // allowed currencies
   "GBP": "£",
 };
 const company = "Sistemi Solari Rossi";
-//const urlPublic = "https://acme-server-lingering-brook-4120.fly.dev";
 const urlPublic = staging ? "https://acme-staging.fly.dev" : "https://acme-prod.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
@@ -35,8 +34,6 @@ const baseUrlClient = production ? urlPublicClient : urlLocalClient;
 const baseUrlClientPreview = production ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
-//const serverCountry = "IT"; // server country
-//const defaultLocaleLanguage = "it_IT"; // default initial locale and language
 const customization = "mda"; // custom configuration to be merged with configBase
 
 /**
@@ -288,20 +285,6 @@ const configBase = {
     templatesPath: "../templates",
     templatesExtension: ".ejs",
   },
-  defaultUsers: {
-    admin: {
-      email: "marcosolari@gmail.com",
-      password: process.env.ADMIN_USER_DEFAULT_PASSWORD,
-      firstName: "Marco",
-      lastName: "Solari",
-    },
-    user: {
-      email: "antonio.rossi@arsistemi.it",
-      password: "password",
-      firstName: "Antonio",
-      lastName: "Rossi",
-    },
-  },
   defaultNotifications: { // defaults
     email: {
       newsUpdates: true,
@@ -322,9 +305,11 @@ const configBase = {
     },
   },
   envRequiredVariables: [
+    "LIVE_MODE",
     "JWT_ACCESS_TOKEN_SECRET",
     "JWT_REFRESH_TOKEN_SECRET",
     "JWT_NOTIFICATION_TOKEN_SECRET",
+    "ADMIN_USER_DEFAULT_EMAIL",
     "ADMIN_USER_DEFAULT_PASSWORD",
     "MONGO_SCHEME",
     "MONGO_URL",

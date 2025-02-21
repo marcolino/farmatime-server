@@ -7,8 +7,9 @@ const { setupLoginCredentials, getAuthCookiesAdmin, getAuthCookiesUser } = requi
 const { resetDatabase } = require("../../src/models");
 const User = require("../../src/models/user.model");
 const Role = require("../../src/models/role.model");
-const config = require("../config.test");
-const configGlobal = require("../../src/config");
+const configTest = require("../config.test");
+const demoData = require("../../data/demo.js");
+//const config = require("../../src/config");
 
 let expect;
 let allRoles = [];
@@ -151,7 +152,7 @@ describe("User routes", () => {
   });
 
   it("should not get another user's profile without admin access", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const userId = await User.findOne({ email: demoData.default.adminUser.email });
     const res = await server.request
       .get("/api/user/getUser")
       .set("Cookie", getAuthCookiesUser())
@@ -165,7 +166,7 @@ describe("User routes", () => {
   });
 
   it("should get another user's profile with admin access", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const userId = await User.findOne({ email: demoData.default.userUser.email });
     const res = await server.request
       .get("/api/user/getUser")
       .set("Cookie", getAuthCookiesAdmin())
@@ -183,7 +184,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesUser())
       .send({
-        email: configGlobal.defaultUsers.user.email,
+        email: demoData.default.userUser.email,
         firstName: "updated first name",
         lastName: "updated last name",
         fiscalCode: validFiscalCode,
@@ -205,7 +206,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
+        userId: configTest.admin.id,
         email: "invalid email",
       })
     ;
@@ -219,13 +220,13 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile with already taken email", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const userId = await User.findOne({ email: demoData.default.adminUser.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId,
-        email: configGlobal.defaultUsers.user.email, //config.user.email,
+        email: demoData.default.userUser.email, //configTest.user.email,
       })
     ;
     expect = 400;
@@ -234,17 +235,17 @@ describe("User routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal(`The email ${configGlobal.defaultUsers.user.email} is already in use`);
+    server.expect(res.body.message).to.equal(`The email ${demoData.default.userUser.email} is already in use`);
   });
 
   it("should update user's profile with new email", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const userId = await User.findOne({ email: demoData.default.adminUser.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId,
-        email: configGlobal.defaultUsers.admin.email + ".new",
+        email: demoData.default.adminUser.email + ".new",
       })
     ;
     expect = 200;
@@ -256,13 +257,13 @@ describe("User routes", () => {
   });
 
   it("should reset user's profile with email", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const userId = await User.findOne({ email: demoData.default.adminUser.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId,
-        email: configGlobal.defaultUsers.admin.email,
+        email: demoData.default.adminUser.email,
       })
     ;
     expect = 200;
@@ -274,7 +275,7 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile with empty firstName", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.admin.email });
+    const userId = await User.findOne({ email: demoData.default.adminUser.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
@@ -297,7 +298,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
+        userId: configTest.admin.id,
         lastName: "",
       })
     ;
@@ -315,7 +316,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.admin.id,
+        userId: configTest.admin.id,
         fiscalCode: "invalid fiscal code",
       })
     ;
@@ -329,12 +330,12 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile without autentication", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const userId = await User.findOne({ email: demoData.default.userUser.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .send({
         userId,
-        email: configGlobal.defaultUsers.user.email,
+        email: demoData.default.userUser.email,
       })
     ;
     expect = 401;
@@ -350,7 +351,7 @@ describe("User routes", () => {
       .set("Cookie", getAuthCookiesUser())
       .send({
         userId: "123456789012345678901234",
-        firstName: config.user.name + "-bis",
+        firstName: configTest.user.name + "-bis",
       })
     ;
     expect = 403;
@@ -363,13 +364,13 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile for a different existent user - without admin access", async () => {
-    const userId = await User.findOne({ email: config.admin.email });
+    const userId = await User.findOne({ email: configTest.admin.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesUser())
       .send({
         userId,
-        firstName: config.admin.name + "-bis",
+        firstName: configTest.admin.name + "-bis",
       })
     ;
     expect = 403;
@@ -382,13 +383,13 @@ describe("User routes", () => {
   });
 
   it("should update user's profile for a different existent user - as admin user", async () => {
-    const userId = await User.findOne({ email: config.user.email });
+    const userId = await User.findOne({ email: configTest.user.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
         userId,
-        firstName: config.user.name + "-bis",
+        firstName: configTest.user.name + "-bis",
       })
     ;
     expect = 200;
@@ -400,7 +401,7 @@ describe("User routes", () => {
   });
 
   it("should not update another user's own property without admin access", async () => {
-    const userId = await User.findOne({ email: config.admin.email });
+    const userId = await User.findOne({ email: configTest.admin.email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesUser())
@@ -423,7 +424,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        userId: config.user.id,
+        userId: configTest.user.id,
         firstName: "updated first name",
       })
     ;
@@ -472,7 +473,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesUser())
       .send({
-        email: configGlobal.defaultUsers.user.email,
+        email: demoData.default.userUser.email,
       })
     ;
     expect = 200;
@@ -504,7 +505,7 @@ describe("User routes", () => {
       .post("/api/user/updateUser")
       .set("Cookie", getAuthCookiesUser())
       .send({
-        fiscalCode: config.user.fiscalCode,
+        fiscalCode: configTest.user.fiscalCode,
       })
     ;
     expect = 200;
@@ -642,7 +643,7 @@ describe("User routes", () => {
   //     .post("/api/user/updateRoles")
   //     .set("Cookie", getAuthCookiesUser())
   //     .send({
-  //       userId: config.admin.id,
+  //       userId: configTest.admin.id,
   //     })
   //   ;
   //   expect = 400;
@@ -659,7 +660,7 @@ describe("User routes", () => {
   //     .post("/api/user/updateRoles")
   //     .set("Cookie", getAuthCookiesAdmin())
   //     .send({
-  //       userId: config.admin.id,
+  //       userId: configTest.admin.id,
   //       roles: allRoles.filter(role => role.name === "admin")
   //     })
   //     .then(res => {
@@ -696,7 +697,7 @@ describe("User routes", () => {
   //     .post("/api/user/updatePlan")
   //     .set("Cookie", getAuthCookiesAdmin())
   //     .send({
-  //       userId: config.user.id,
+  //       userId: configTest.user.id,
   //       plan: "wrong plan type",
   //     })
   //     .then(res => {
@@ -750,7 +751,7 @@ describe("User routes", () => {
   //     .post("/api/user/updatePlan")
   //     .set("Cookie", getAuthCookiesAdmin())
   //     .send({
-  //       userId: config.user.id,
+  //       userId: configTest.user.id,
   //       plan: "wrong plan type",
   //     })
   //     .then(res => {
@@ -804,7 +805,7 @@ describe("User routes", () => {
   //     .post("/api/user/updatePlan")
   //     .set("Cookie", getAuthCookiesUser())
   //     .send({
-  //       userId: config.admin.id,
+  //       userId: configTest.admin.id,
   //     })
   //     .then(res => {
   //       res.should.have.status(403);
@@ -823,7 +824,7 @@ describe("User routes", () => {
   //     .post("/api/user/updatePlan")
   //     .set("Cookie", getAuthCookiesAdmin())
   //     .send({
-  //       userId: config.admin.id,
+  //       userId: configTest.admin.id,
   //       plan: allPlans.find(plan => plan.name === "unlimited")
   //     })
   //     .then(res => {
@@ -927,7 +928,7 @@ describe("User routes", () => {
   });
 
   it("should delete user with admin privileges using id", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const userId = await User.findOne({ email: demoData.default.userUser.email });
     const res = await server.request
       .post("/api/user/deleteUser")
       .set("Cookie", getAuthCookiesAdmin())
@@ -946,7 +947,7 @@ describe("User routes", () => {
     const res = await server.request
       .post("/api/user/deleteUser")
       .set("Cookie", getAuthCookiesAdmin())
-      .send({ filter: { email: config.admin.email } })
+      .send({ filter: { email: configTest.admin.email } })
       .send({})
     ;
     expect = 200;
@@ -1008,7 +1009,7 @@ describe("User routes", () => {
   });
 
   it("should remove user with admin privileges using id", async () => {
-    const userId = await User.findOne({ email: configGlobal.defaultUsers.user.email });
+    const userId = await User.findOne({ email: demoData.default.userUser.email });
     const res = await server.request
       .post("/api/user/removeUser")
       .set("Cookie", getAuthCookiesAdmin())
@@ -1027,7 +1028,7 @@ describe("User routes", () => {
     const res = await server.request
       .post("/api/user/removeUser")
       .set("Cookie", getAuthCookiesAdmin())
-      .send({ filter: { email: configGlobal.defaultUsers.user.email } })
+      .send({ filter: { email: demoData.default.userUser.email } })
     ;
     expect = 200;
     if (res.status !== expect) {

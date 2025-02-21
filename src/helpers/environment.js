@@ -4,23 +4,32 @@ const { audit } = require("../helpers/messaging");
 
 
 const assertEnvironment = () => {
-  if (!process.env) {
-    let err = "Missing env!";
-    logger.error(err);
-    assertionsCheckFailure(err);
-    return false;
-  }
-  // find missing variables in current environment
-  const missing = config.envRequiredVariables.filter(v => {
-    return !(v in process.env); // this variable doesn't exist in process.env
-  });
-  if (missing.length) {
-    let err = `Missing in env: ${JSON.stringify(missing)}`;
-    logger.error(err);
+  try {
+    if (!process.env) {
+      throw ("Missing env!");
+    }
+    
+    // find missing variables in current environment
+    const missing = config.envRequiredVariables.filter(v => {
+      return !(v in process.env); // this variable doesn't exist in process.env
+    });
+    if (missing.length) {
+      throw(`Missing in env: ${JSON.stringify(missing)}`);
+    }
 
+    // some logical assertions
+    if (process.env.LIVE_MODE === "true" && !config.mode.production) {
+      throw("Assertion conflict: live mode is on and prodution mode is false!")
+    }
+
+    // TODO: more logical assertions...
+
+  } catch (err) {
+    logger.error(`Assertion failure: ${err}`);
     assertionsCheckFailure(err);
     return false;
   }
+
   return true;
 };
 

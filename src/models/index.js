@@ -5,107 +5,9 @@ const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
 const Product = require("../models/product.model");
 const { logger } = require("../controllers/logger.controller");
+const demoData = require("../../data/demo.js");
 const config = require("../config");
 
-
-// TODO: demoData to separate js file
-const demoData = {
-  envs: [
-    { key: "MAINTENANCE", value: false },
-  ],
-  users: [
-    {
-      email: config.defaultUsers.admin.email,
-      password: config.defaultUsers.admin.password,
-      firstName: config.defaultUsers.admin.firstName,
-      lastName: config.defaultUsers.admin.lastName,
-      isVerified: true,
-      justRegistered: false,
-      isDeleted: false,
-    },
-    {
-      email: config.defaultUsers.user.email,
-      password: config.defaultUsers.user.password,
-      firstName: config.defaultUsers.user.firstName,
-      lastName: config.defaultUsers.user.lastName,
-      isVerified: true,
-      justRegistered: false,
-      isDeleted: false,
-    },
-  ],
-  roles: config.roles,
-  plans: config.plans,
-  products: [
-    {
-      mdaCode: "0332",
-      oemCode: "oem-booh-1",
-      make: "FIAT",
-      models: [ "TEMPRA 1.6ie (88-)", "TIPO 1.4ie-digit (87-95)", "TIPO 1.6 dgt-selecta (87-95)" ],
-      application: "application-booh-1",
-      kw: 1.7,
-      volt: 12,
-      ampere: 300,
-      teeth: 10,
-      rotation: "destra",
-      regulator: "incorporato",
-      notes: "E' un bel motorino",
-      type: "motorino",
-      price: 99.99,
-      imageNameOriginal: "332.jpg",
-    },
-    {
-      mdaCode: "0334",
-      oemCode: "oem-booh-2",
-      make: "FIAT",
-      models: [ "REGATA 1.7 D (83-)", "RITMO 1.7 D (79-)", "TIPO 1.7 D (87-)" ],
-      application: "application-booh-2",
-      kw: 1.60,
-      volt: 12,
-      ampere: "",
-      teeth: 910,
-      rotation: "sinistra",
-      regulator: "esterno",
-      notes: "",
-      type: "motorino",
-      price: 88.88,
-      imageNameOriginal: "334_0.jpg",
-    },
-    {
-      mdaCode: "2702",
-      oemCode: "oem-booh-3",
-      make: "FIAT",
-      models: [ "BRAVA 1.2i 16V (98-)", "PUNTO 85 16V-cabrio (97-)" ],
-      application: "application-booh-3",
-      kw: 1.60,
-      volt: 12,
-      ampere: 65,
-      teeth: 30,
-      rotation: "destra",
-      regulator: "incorporato",
-      notes: "PULEGGIA MULTIRIGHE - AUTOVENTILATO",
-      type: "alternatore",
-      price: 77.77,
-      imageNameOriginal: "2702.jpg",
-    },
-    {
-      mdaCode: "979",
-      oemCode: "oem-booh-",
-      make: "FIAT",
-      models: [ "500 X 2.0 multijet 4X4 (5526308…) 11.14-", "DOBLÓ 2.0 multijet (263A1.000) 02.10-", "DUCATO 2.0 multijet [115] (250A1.000) 06.11-06.16" ],
-      application: "application-booh-4",
-      kw: "",
-      volt: 12,
-      ampere: "",
-      teeth: "",
-      rotation: "sinistra",
-      regulator: "",
-      notes: "",
-      type: "motorino",
-      price: 66.66,
-      imageNameOriginal: "334_0.jpg",
-    },
-  ]
-};
 
 const connect = async () => {
   // set up database connection uri
@@ -127,27 +29,38 @@ const connect = async () => {
   }
 
   try {
-    logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":************"));
+    logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":***"));
     await mongoose.connect(connUri, {
       // useFindAndModify: false,
       // useNewUrlParser: true,
       // useUnifiedTopology: true,
       // useCreateIndex: true,
     });
-    logger.info("Database connected ");
+    logger.info("Database connected");
 
-    mongoose.set("debug", config.db.debug);
+    //mongoose.set("debug", config.db.debug);
 
     // show MongoDB version
-    const admin = new mongoose.mongo.Admin(mongoose.connection.db);
-    try {
-      const info = await admin.buildInfo();
-      logger.info(`MongoDB v${info.version}`);
-    } catch (err) {
-      logger.error("MongoDB build info error:", err);
-    }
+    // try {
+    //   // mongoose v5:
+    //   // logger.error("g4");
+    //   // const admin = new mongoose.mongo.Admin(mongoose.connection.db);
+    //   // const info = await admin.buildInfo();
+    //   // logger.info(`MongoDB v${info.version}`);
+    //   // logger.error("g5");
+
+    //   // mongoose v7:
+    //   // const db = mongoose.connection.db;
+    //   // const admin = new mongoose.mongo.Admin(db);
+    //   // const info = await admin.buildInfo();
+    //   // console.info(`MongoDB v${info.version}`);
+    // } catch (err) {
+    //   logger.error("MongoDB build info error:", err);
+    // }
+
 
   } catch (err) {
+
     logger.error("Database connection error:", err);
     throw err;
   }
@@ -158,20 +71,8 @@ const connect = async () => {
  */
 const populate = async () => {
   try {
-
     if (config.mode.test) { // drop and populate database in test mode
-
       await mongoose.connection.db.dropDatabase();
-
-      // // get all collections
-      // const collections = await mongoose.connection.db.listCollections().toArray();
-
-      // // create an array of collection names and drop each collection
-      // collections
-      //   .map((collection) => collection.name)
-      //   .forEach(async (collectionName) => {
-      //     db.dropCollection(collectionName);
-      //   });
     }
 
     // check if env collection is empty
@@ -212,7 +113,7 @@ const populate = async () => {
         for (const data of demoData.roles) {
           await Role.create(data);
         }
-        await addRoleToUser("admin", config.defaultUsers.admin.email);
+        await addRoleToUser("admin", demoData.default.adminUser.email);
       }
     } catch (err) {
       logger.error("Error populating roles collection:", err.message);
@@ -226,7 +127,7 @@ const populate = async () => {
         for (const data of demoData.plans) {
           await Plan.create(data);
         }
-        await addPlanToUser("unlimited", config.defaultUsers.admin.email);
+        await addPlanToUser("unlimited", demoData.default.adminUser.email);
       }
     } catch (err) {
       logger.error("Error populating plans collection:", err.message);
@@ -308,13 +209,37 @@ const addPlanToUser = async (planName, userEmail) => {
   }
 };
 
+const NEWinitializeDatabase = async () => {
+  try {
+    // attach the "open" event listener before calling mongoose.connect()
+    const connectionPromise = new Promise((resolve, reject) => {
+      mongoose.connection.once("open", resolve);
+      mongoose.connection.on("error", reject);
+    });
+
+    // connect to the database
+    await connect();
+
+    // wait for the "open" event to ensure the connection is fully ready
+    await connectionPromise;
+
+    logger.info("Database connection is fully ready");
+
+    // populate the database (if needed)
+    await populate();
+  } catch (err) {
+    logger.error("Error during database initialization:", err);
+    throw err;
+  }
+};
+
 const initializeDatabase = () => {
   return (async () => {
     try {
       await connect();
       await populate();
     } catch (err) {
-      logger.error("Error during database connection or population:", err);
+      logger.error("Error during database connection:", err);
       throw err;
     }
   })(); // run this async function now, but register it's returned promise end export it, so users can wait for it to resolve (and db be really ready)
@@ -328,8 +253,6 @@ const resetDatabase = () => {
 };
 
 module.exports = {
-  connect,
-  populate,
-  dbReady: dbReadyPromise,
+  initializeDatabase: dbReadyPromise,
   resetDatabase,
 };

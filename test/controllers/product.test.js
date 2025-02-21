@@ -5,30 +5,11 @@
 const server = require("../server.test");
 const { setupLoginCredentials, getAuthCookiesAdmin, getAuthCookiesUser } = require("../setup/setup.test");
 const { resetDatabase } = require("../../src/models");
-//const Product = require("../../src/models/product.model");
-const config = require("../config.test");
-const configGlobal = require("../../src/config");
-// const path = require("path");
-// const fs = require("fs-extra");
+const configTest = require("../config.test");
 
 let expect;
 let testProductId;
 
-const testProduct = { // TODO: put in config
-  mdaCode: "TEST123",
-  oemCode: "OEM456",
-  make: "Test Make",
-  models: ["Model A", "Model B"],
-  application: "Test Application",
-  kw: "1.5",
-  volt: "12",
-  teeth: "9",
-  rotation: "destra",
-  ampere: "100",
-  regulator: "incorporato",
-  notes: "Test notes",
-  type: "motorino"
-};
 
 describe("Product routes", () => {
   before(async () => {
@@ -40,7 +21,7 @@ describe("Product routes", () => {
       .post("/api/product/insertProduct")
       .set("Cookie", getAuthCookiesAdmin())
       .send({
-        product: testProduct
+        product: configTest.testProduct
       });
     
     expect = 200;
@@ -103,7 +84,7 @@ describe("Product routes", () => {
     }
     server.expect(res.body).to.have.property("product");
     server.expect(res.body.product.id).to.equal(testProductId);
-    server.expect(res.body.product.mdaCode).to.equal(testProduct.mdaCode);
+    server.expect(res.body.product.mdaCode).to.equal(configTest.testProduct.mdaCode);
   });
 
   it("should fail to get a product with a wrong id", async () => {
@@ -201,7 +182,7 @@ describe("Product routes", () => {
 
   it("should update an existing product", async () => {
     const updatedProduct = {
-      mdaCode: testProduct.mdaCode,
+      mdaCode: configTest.testProduct.mdaCode,
       make: "Updated Make",
       notes: "Updated notes"
     };
@@ -222,7 +203,7 @@ describe("Product routes", () => {
     server.expect(res.body).to.have.property("product");
     server.expect(res.body.product.make).to.equal("Updated Make");
     server.expect(res.body.product.notes).to.equal("Updated notes");
-    server.expect(res.body.product.mdaCode).to.equal(testProduct.mdaCode);
+    server.expect(res.body.product.mdaCode).to.equal(configTest.testProduct.mdaCode);
   });
 
   it("should fail to update a non-existent product", async () => {

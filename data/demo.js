@@ -1,0 +1,125 @@
+const config = require("../src/config");
+
+const demoData = {
+  "envs": [
+    { "key": "MAINTENANCE", "value": false },
+  ],
+  "users": [
+    { // role: admin
+      "email": process.env.ADMIN_USER_DEFAULT_EMAIL,
+      "password": process.env.ADMIN_USER_DEFAULT_PASSWORD,
+      "firstName": "Marco",
+      "lastName": "Solari",
+      "isVerified": true,
+      "justRegistered": false,
+      "isDeleted": false,
+    },
+    { // role: operator
+      "email": "alice@mail.com",
+      "password": "Alice!",
+      "firstName": "Alice",
+      "lastName": "Pesciolini",
+      "isVerified": true,
+      "justRegistered": false,
+      "isDeleted": false,
+    },
+    { // role: dealer
+      "email": "bob@mail.com",
+      "password": "Bob!",
+      "firstName": "Bob",
+      "lastName": "Telespalla",
+      "isVerified": true,
+      "justRegistered": false,
+      "isDeleted": false,
+    },
+    { // role: user
+      "email": "charlie@mail.com",
+      "password": "Charlie!",
+      "firstName": "Charlie",
+      "lastName": "Saltalafossa",
+      "isVerified": true,
+      "justRegistered": false,
+      "isDeleted": false,
+    },
+  ],
+  "roles": config.roles,
+  "plans": config.plans,
+  "products": [
+    {
+      "mdaCode": "0332",
+      "oemCode": "OEM-ABC-1",
+      "make": "FIAT",
+      "models": ["TEMPRA 1.6ie (88-)", "TIPO 1.4ie-digit (87-95)", "TIPO 1.6 dgt-selecta (87-95)"],
+      "application": "app.1",
+      "kw": 1.7,
+      "volt": 12,
+      "ampere": 300,
+      "teeth": 10,
+      "rotation": "destra",
+      "regulator": "incorporato",
+      "notes": "E' motorino che funzione benissimo",
+      "type": "motorino",
+      "price": 99.99,
+      "imageNameOriginal": "pexels-001.jpg",
+    },
+    {
+      "mdaCode": "0334",
+      "oemCode": "OEM-ABC-2",
+      "make": "FIAT",
+      "models": ["REGATA 1.7 D (83-)", "RITMO 1.7 D (79-)", "TIPO 1.7 D (87-)"],
+      "application": "app.2",
+      "kw": 1.60,
+      "volt": 12,
+      "ampere": "",
+      "teeth": 910,
+      "rotation": "sinistra",
+      "regulator": "esterno",
+      "notes": "",
+      "type": "motorino",
+      "price": 88.88,
+      "imageNameOriginal": "pexels-002.jpg",
+    },
+    {
+      "mdaCode": "2702",
+      "oemCode": "OEM-ABC-3",
+      "make": "FIAT",
+      "models": ["BRAVA 1.2i 16V (98-)", "PUNTO 85 16V-cabrio (97-)"],
+      "application": "app.3",
+      "kw": 1.60,
+      "volt": 12,
+      "ampere": 65,
+      "teeth": 30,
+      "rotation": "destra",
+      "regulator": "incorporato",
+      "notes": "PULEGGIA MULTIRIGHE - AUTOVENTILATO",
+      "type": "alternatore",
+      "price": 77.77,
+      "imageNameOriginal": "pexels-003.jpg",
+    },
+    {
+      "mdaCode": "979",
+      "oemCode": "OEM-ABC-4",
+      "make": "FIAT",
+      "models": ["500 X 2.0 multijet 4X4 (5526308…) 11.14-", "DOBLÓ 2.0 multijet (263A1.000) 02.10-", "DUCATO 2.0 multijet [115] (250A1.000) 06.11-06.16"],
+      "application": "app.4",
+      "kw": "",
+      "volt": 12,
+      "ampere": "",
+      "teeth": "",
+      "rotation": "sinistra",
+      "regulator": "",
+      "notes": "",
+      "type": "motorino",
+      "price": 66.66,
+      "imageNameOriginal": "pexels-004.jpg",
+    },
+  ]
+};
+
+demoData.default = {};
+demoData.default.adminUser = demoData.users[0];
+demoData.default.operatorUser = demoData.users[1];
+demoData.default.dealerUser = demoData.users[2];
+demoData.default.userUser = demoData.users[3];
+
+module.exports = demoData;

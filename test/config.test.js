@@ -19,21 +19,6 @@ const config = {
       country: "Italy",
     },
   },
-  // adminstandardplan: {
-  //   name: "Alice",
-  //   surname: "Azure",
-  //   email: "admin-standard@mail.com",
-  //   password: "admin!",
-  //   fiscalCode: "CGNNMO80A01A001T",
-  //   address: {
-  //     street: "Solari street",
-  //     streetNo: "0",
-  //     city: "Rivoli",
-  //     province: "TO",
-  //     zip: "10100",
-  //     country: "Italy",
-  //   },
-  // },
   user: {
     name: "Bob",
     surname: "Blue",
@@ -63,7 +48,22 @@ const config = {
       zip: "10100",
       country: "Italy",
     },
-  }
+  },
+  testProduct: {
+    mdaCode: "TEST123",
+    oemCode: "OEM456",
+    make: "Test Make",
+    models: ["Model A", "Model B"],
+    application: "Test Application",
+    kw: "1.5",
+    volt: "12",
+    teeth: "9",
+    rotation: "destra",
+    ampere: "100",
+    regulator: "incorporato",
+    notes: "Test notes",
+    type: "motorino"
+  },
 };
 
 module.exports = config;

@@ -35,9 +35,19 @@ if (config.payment.stripe.enabled) {
   logger.info(`Stripe is enabled, and Stripe mode is ${config.mode.stripelive}`);
 }
 
+// the client root: the folder with the frontend site
+const rootClient = path.join(__dirname, "client", "build");
+// the client src root, used to inject client src
+const rootClientSrc = path.join(__dirname, config.clientSrc);
+// the coverage root (used while developing only)
+const rootCoverage = path.join(__dirname, "coverage");
+
+// custom Morgan log format based (without user agent)
+morgan.format("api-logs", ":method :url HTTP/:http-version :status ':referrer' - :response-time ms");
+
+// instantiate express app
 const app = express();
 
-//logger.log("HELMET CSS:", helmet.contentSecurityPolicy.getDefaultDirectives());
 app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
@@ -70,9 +80,6 @@ app.use(cookieParser());
 
 // use compression
 app.use(compression());
-
-// custom Morgan log format based (without user agent)
-morgan.format("api-logs", ":method :url HTTP/:http-version :status ':referrer' - :response-time ms");
 
 // log API requests with Morgan
 app.use(morgan("api-logs", {
@@ -147,16 +154,6 @@ app.use((req, res, next) => {
   }
 });
 
-// assert environment to be fully compliant with expectations
-assertEnvironment();
-
-// the client root: the folder with the frontend site
-const rootClient = path.join(__dirname, "client", "build");
-// the client src root, used to inject client src
-const rootClientSrc = path.join(__dirname, config.clientSrc);
-// the coverage root (used while developing only)
-const rootCoverage = path.join(__dirname, "coverage");
-
 // before standard routes handle not found API routes BEFORE registering specific routes
 app.all(/^\/api(\/.*)?$/, (req, res, next) => {
   // use next() instead of returning 404 immediately
@@ -215,7 +212,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   }
   return res.status(status).json({
     message,
-    ...((config.mode.development || config.mode.test) && (status === 500) && { stack }),
+    ...(!config.mode.production && (status === 500) && { stack }),
   });
 });
 
@@ -223,15 +220,23 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
 // let express server start listening for requests
 async function start() {
 
-  await db.dbReady; // await the database to be ready
+  // assert environment to be fully compliant with expectations
+  if (!assertEnvironment()) {
+    process.exit(1);
+  }
+
+  //await db.dbReady; // wait the database to be ready
+  await db.initializeDatabase; // wait the database to be ready
 
   // setup the email service
   //console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
-  try {
-    await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
-  } catch (err) {
-    logger.error("Failed to initialize email service:", err);
-    process.exit(1);
+  if (!config.mode.test) {
+    try {
+      await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
+    } catch (err) {
+      logger.error("Failed to initialize email service:", err);
+      process.exit(1);
+    }
   }
   
   if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
@@ -239,20 +244,37 @@ async function start() {
     inject(rootClient, rootClientSrc, configFileNameInjected, config.app);
   }
   
-  try { // listen for requests
-    const port = config.api.port;
-    const host = "0.0.0.0";
-    app.listen(port, host, () => {
-      logger.info(`Server is running on ${host}:${port}`);
-      if (config.mode.production) { // audit server start up
-        audit({ req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
-      }
-    });
-  } catch (err) {
-    logger.error("Server listen error:", err);
-    throw err;
+  if (!config.mode.test) {
+    try { // listen for requests
+      const port = config.api.port;
+      const host = "0.0.0.0";
+      app.listen(port, host, () => {
+        logger.info(`Server is running on ${host}:${port}`);
+        if (config.mode.production) { // audit server start up
+          audit({ req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
+        }
+      });
+    } catch (err) {
+      logger.error("Server listen error:", err);
+      throw err;
+    }
   }
 }
+
+// async function startTest() {
+//   try {
+//     // assert environment to be fully compliant with expectations
+//     if (!assertEnvironment()) {
+//       process.exit(1);  
+//     }
+
+//     await db.dbReady; // await the database to be ready
+
+//   } catch (err) {
+//     logger.error("start test error:", err);
+//     throw err;
+//   }
+// }
 
 // handle exit signal
 process.on("exit", () => {
@@ -273,10 +295,14 @@ process.on("unhandledRejection", (reason, promise) => {
   }
 });
 
-// if not in test mode, start the server
-if (!config.mode.test) {
-  start();
-}
+// // if not in test mode, start the server
+// if (config.mode.test) {
+//   startTest();
+// } else {
+//   start();
+// }
+
+start();
 
 // export the app
 module.exports = app;

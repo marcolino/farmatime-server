@@ -3,11 +3,11 @@
  */
 
 const server = require("../server.test");
-const { getAuthCookiesAdmin } = require("../setup/setup.test");
-const db = require("../../src/models");
-const User = require("../../src/models/user.model");
-const Role = require("../../src/models/role.model");
-const config = require("../config.test");
+// const { getAuthCookiesAdmin } = require("../setup/setup.test");
+// const db = require("../../src/models");
+// const User = require("../../src/models/user.model");
+// const Role = require("../../src/models/role.model");
+// const config = require("../config.test");
 const passport = require("passport");
 
 
