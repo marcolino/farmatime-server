@@ -198,7 +198,7 @@ const configBase = {
     //   port: 18466,
     // },
     levelMap: { // log levels for all currently foreseen modes
-      test: "crit",
+      test: "debug",
       production: "debug", // when production will be fully stable, we can high this up to "info"...
       staging: "debug",
       development: "debug",

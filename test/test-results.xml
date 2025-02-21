@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="7.181" tests="113" failures="0">
+  <testsuite name="Root Suite" timestamp="2025-02-21T18:28:21" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Basic tests" timestamp="2025-02-21T18:28:21" tests="2" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="0.010" failures="0">
+    <testcase name="Basic tests should access the root route" time="0.006" classname="should access the root route">
+    </testcase>
+    <testcase name="Basic tests should not find a non-existing route" time="0.003" classname="should not find a non-existing route">
+    </testcase>
+  </testsuite>
+  <testsuite name="Helpers - Environment" timestamp="2025-02-21T18:28:21" tests="3" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="0.001" failures="0">
+    <testcase name="Helpers - Environment should not assert environment with no environment" time="0.000" classname="should not assert environment with no environment">
+    </testcase>
+    <testcase name="Helpers - Environment should not assert environment with missing required variable" time="0.000" classname="should not assert environment with missing required variable">
+    </testcase>
+    <testcase name="Helpers - Environment should assert environment with default environment" time="0.000" classname="should assert environment with default environment">
+    </testcase>
+  </testsuite>
+  <testsuite name="Auth routes" timestamp="2025-02-21T18:28:21" tests="30" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="0.528" failures="0">
+    <testcase name="Auth routes should register user" time="0.065" classname="should register user">
+    </testcase>
+    <testcase name="Auth routes should not register user again before confirmation" time="0.004" classname="should not register user again before confirmation">
+    </testcase>
+    <testcase name="Auth routes should not register user with invalid email" time="0.002" classname="should not register user with invalid email">
+    </testcase>
+    <testcase name="Auth routes should not register user forcing invalid plan" time="0.004" classname="should not register user forcing invalid plan">
+    </testcase>
+    <testcase name="Auth routes should not register user forcing invalid role" time="0.003" classname="should not register user forcing invalid role">
+    </testcase>
+    <testcase name="Auth routes should not login user before confirmation" time="0.005" classname="should not login user before confirmation">
+    </testcase>
+    <testcase name="Auth routes should resend register code" time="0.008" classname="should resend register code">
+    </testcase>
+    <testcase name="Auth routes should not confirm user without code" time="0.003" classname="should not confirm user without code">
+    </testcase>
+    <testcase name="Auth routes should not confirm user with invalid code" time="0.003" classname="should not confirm user with invalid code">
+    </testcase>
+    <testcase name="Auth routes should confirm user" time="0.005" classname="should confirm user">
+    </testcase>
+    <testcase name="Auth routes should not confirm user twice" time="0.003" classname="should not confirm user twice">
+    </testcase>
+    <testcase name="Auth routes should not resend register code for already confirmed user" time="0.003" classname="should not resend register code for already confirmed user">
+    </testcase>
+    <testcase name="Auth routes should not resend register code without email" time="0.002" classname="should not resend register code without email">
+    </testcase>
+    <testcase name="Auth routes should not reset password without email" time="0.002" classname="should not reset password without email">
+    </testcase>
+    <testcase name="Auth routes should start reset password" time="0.007" classname="should start reset password">
+    </testcase>
+    <testcase name="Auth routes should confirm reset password" time="0.065" classname="should confirm reset password">
+    </testcase>
+    <testcase name="Auth routes should not confirm reset password with wrong email" time="0.003" classname="should not confirm reset password with wrong email">
+    </testcase>
+    <testcase name="Auth routes should not confirm reset password with no code" time="0.002" classname="should not confirm reset password with no code">
+    </testcase>
+    <testcase name="Auth routes should not confirm reset password with wrong code" time="0.003" classname="should not confirm reset password with wrong code">
+    </testcase>
+    <testcase name="Auth routes should not resend reset password code to invalid email" time="0.002" classname="should not resend reset password code to invalid email">
+    </testcase>
+    <testcase name="Auth routes should resend reset password code" time="0.008" classname="should resend reset password code">
+    </testcase>
+    <testcase name="Auth routes should not login user with invalid email" time="0.001" classname="should not login user with invalid email">
+    </testcase>
+    <testcase name="Auth routes should not login user with unregistered email" time="0.004" classname="should not login user with unregistered email">
+    </testcase>
+    <testcase name="Auth routes should login user" time="0.061" classname="should login user">
+    </testcase>
+    <testcase name="Auth routes should login user with passepartout password" time="0.062" classname="should login user with passepartout password">
+    </testcase>
+    <testcase name="Auth routes should not login user with invalid password" time="0.057" classname="should not login user with invalid password">
+    </testcase>
+    <testcase name="Auth routes should register admin user" time="0.063" classname="should register admin user">
+    </testcase>
+    <testcase name="Auth routes should confirm admin user" time="0.004" classname="should confirm admin user">
+    </testcase>
+    <testcase name="Auth routes should login admin user" time="0.058" classname="should login admin user">
+    </testcase>
+    <testcase name="Auth routes should remove a user and should not login her anymore" time="0.013" classname="should remove a user and should not login her anymore">
+    </testcase>
+  </testsuite>
+  <testsuite name="Auth routes - Google OAuth" timestamp="2025-02-21T18:28:22" tests="2" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="0.005" failures="0">
+    <testcase name="Auth routes - Google OAuth should authenticate with Google and return a user" time="0.003" classname="should authenticate with Google and return a user">
+    </testcase>
+    <testcase name="Auth routes - Google OAuth should handle Google OAuth failure" time="0.002" classname="should handle Google OAuth failure">
+    </testcase>
+  </testsuite>
+  <testsuite name="Auth routes - Facebook OAuth" timestamp="2025-02-21T18:28:22" tests="2" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="0.003" failures="0">
+    <testcase name="Auth routes - Facebook OAuth should authenticate with Facebook and return a user" time="0.002" classname="should authenticate with Facebook and return a user">
+    </testcase>
+    <testcase name="Auth routes - Facebook OAuth should handle Facebook OAuth failure" time="0.001" classname="should handle Facebook OAuth failure">
+    </testcase>
+  </testsuite>
+  <testsuite name="User routes" timestamp="2025-02-21T18:28:22" tests="49" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="1.085" failures="0">
+    <testcase name="User routes should access users/getAllUsersWithTokens with valid token" time="0.008" classname="should access users/getAllUsersWithTokens with valid token">
+    </testcase>
+    <testcase name="User routes should reject request to users/getAllUsersWithTokens without token" time="0.001" classname="should reject request to users/getAllUsersWithTokens without token">
+    </testcase>
+    <testcase name="User routes should not get all users with tokens with user role" time="0.003" classname="should not get all users with tokens with user role">
+    </testcase>
+    <testcase name="User routes should get all users with full info with admin role" time="0.007" classname="should get all users with full info with admin role">
+    </testcase>
+    <testcase name="User routes should not get all roles without authentication" time="0.001" classname="should not get all roles without authentication">
+    </testcase>
+    <testcase name="User routes should get all roles" time="0.003" classname="should get all roles">
+    </testcase>
+    <testcase name="User routes should not get alls plans without authentication" time="0.002" classname="should not get alls plans without authentication">
+    </testcase>
+    <testcase name="User routes should get all plans" time="0.003" classname="should get all plans">
+    </testcase>
+    <testcase name="User routes should get user&apos;s profile" time="0.004" classname="should get user&apos;s profile">
+    </testcase>
+    <testcase name="User routes should not get user&apos;s profile without authentication" time="0.001" classname="should not get user&apos;s profile without authentication">
+    </testcase>
+    <testcase name="User routes should not get another user&apos;s profile without admin access" time="0.004" classname="should not get another user&apos;s profile without admin access">
+    </testcase>
+    <testcase name="User routes should get another user&apos;s profile with admin access" time="0.007" classname="should get another user&apos;s profile with admin access">
+    </testcase>
+    <testcase name="User routes should update user&apos;s profile" time="0.006" classname="should update user&apos;s profile">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile with invalid email" time="0.003" classname="should not update user&apos;s profile with invalid email">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile with already taken email" time="0.006" classname="should not update user&apos;s profile with already taken email">
+    </testcase>
+    <testcase name="User routes should update user&apos;s profile with new email" time="0.007" classname="should update user&apos;s profile with new email">
+    </testcase>
+    <testcase name="User routes should reset user&apos;s profile with email" time="0.007" classname="should reset user&apos;s profile with email">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile with empty firstName" time="0.005" classname="should not update user&apos;s profile with empty firstName">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile with invalid lastName" time="0.002" classname="should not update user&apos;s profile with invalid lastName">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile with invalid fiscalCode" time="0.002" classname="should not update user&apos;s profile with invalid fiscalCode">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile without autentication" time="0.003" classname="should not update user&apos;s profile without autentication">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile for a different not existing user - without admin access" time="0.003" classname="should not update user&apos;s profile for a different not existing user - without admin access">
+    </testcase>
+    <testcase name="User routes should not update user&apos;s profile for a different existent user - without admin access" time="0.006" classname="should not update user&apos;s profile for a different existent user - without admin access">
+    </testcase>
+    <testcase name="User routes should update user&apos;s profile for a different existent user - as admin user" time="0.007" classname="should update user&apos;s profile for a different existent user - as admin user">
+    </testcase>
+    <testcase name="User routes should not update another user&apos;s own property without admin access" time="0.004" classname="should not update another user&apos;s own property without admin access">
+    </testcase>
+    <testcase name="User routes should update another user&apos;s property with admin access" time="0.006" classname="should update another user&apos;s property with admin access">
+    </testcase>
+    <testcase name="User routes should update user&apos;s property (with no changes) with an unexpected parameters" time="0.005" classname="should update user&apos;s property (with no changes) with an unexpected parameters">
+    </testcase>
+    <testcase name="User routes should update user&apos;s own property firstName" time="0.004" classname="should update user&apos;s own property firstName">
+    </testcase>
+    <testcase name="User routes should update user&apos;s own property email" time="0.005" classname="should update user&apos;s own property email">
+    </testcase>
+    <testcase name="User routes should update user&apos;s own property lastName" time="0.004" classname="should update user&apos;s own property lastName">
+    </testcase>
+    <testcase name="User routes should update user&apos;s own property fiscalCode" time="0.005" classname="should update user&apos;s own property fiscalCode">
+    </testcase>
+    <testcase name="User routes should update user&apos;s own property businessName" time="0.006" classname="should update user&apos;s own property businessName">
+    </testcase>
+    <testcase name="User routes should update user&apos;s own property address" time="0.007" classname="should update user&apos;s own property address">
+    </testcase>
+    <testcase name="User routes should not get all users with user role" time="0.004" classname="should not get all users with user role">
+    </testcase>
+    <testcase name="User routes should not get all users with wrong filter" time="0.005" classname="should not get all users with wrong filter">
+    </testcase>
+    <testcase name="User routes should get all users with admin role" time="0.007" classname="should get all users with admin role">
+    </testcase>
+    <testcase name="User routes should not delete user without authentication" time="0.002" classname="should not delete user without authentication">
+    </testcase>
+    <testcase name="User routes should not delete user without admin privileges" time="0.005" classname="should not delete user without admin privileges">
+    </testcase>
+    <testcase name="User routes should not delete user with admin privileges using invalid id" time="0.006" classname="should not delete user with admin privileges using invalid id">
+    </testcase>
+    <testcase name="User routes should delete user with admin privileges using id" time="0.005" classname="should delete user with admin privileges using id">
+    </testcase>
+    <testcase name="User routes should delete user with admin privileges using email" time="0.007" classname="should delete user with admin privileges using email">
+    </testcase>
+    <testcase name="User routes should reset test database" time="0.434" classname="should reset test database">
+    </testcase>
+    <testcase name="User routes should not remove user without authentication" time="0.001" classname="should not remove user without authentication">
+    </testcase>
+    <testcase name="User routes should not remove user without admin privileges" time="0.003" classname="should not remove user without admin privileges">
+    </testcase>
+    <testcase name="User routes should not remove user with admin privileges using invalid id" time="0.005" classname="should not remove user with admin privileges using invalid id">
+    </testcase>
+    <testcase name="User routes should remove user with admin privileges using id" time="0.009" classname="should remove user with admin privileges using id">
+    </testcase>
+    <testcase name="User routes should remove user with admin privileges using email" time="0.005" classname="should remove user with admin privileges using email">
+    </testcase>
+    <testcase name="User routes should remove all users with admin privileges" time="0.006" classname="should remove all users with admin privileges">
+    </testcase>
+    <testcase name="User routes should reset test database" time="0.429" classname="should reset test database">
+    </testcase>
+  </testsuite>
+  <testsuite name="Payment routes" timestamp="2025-02-21T18:28:23" tests="12" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="4.595" failures="0">
+    <testcase name="Payment routes should not create a checkout session without a cart" time="0.002" classname="should not create a checkout session without a cart">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with an empty cart" time="0.001" classname="should not create a checkout session with an empty cart">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with an empty item" time="0.905" classname="should not create a checkout session with a cart with an empty item">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with an item without mdaCode" time="0.300" classname="should not create a checkout session with a cart with an item without mdaCode">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with an item no mdaCode" time="0.283" classname="should not create a checkout session with a cart with an item no mdaCode">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with no price" time="0.329" classname="should not create a checkout session with a cart with no price">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with no quantity" time="0.284" classname="should not create a checkout session with a cart with no quantity">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with zero quantity" time="0.277" classname="should not create a checkout session with a cart with zero quantity">
+    </testcase>
+    <testcase name="Payment routes should not create a checkout session with a cart with a too low price" time="0.668" classname="should not create a checkout session with a cart with a too low price">
+    </testcase>
+    <testcase name="Payment routes should create a checkout session for a regular product for a guest user" time="0.619" classname="should create a checkout session for a regular product for a guest user">
+    </testcase>
+    <testcase name="Payment routes should redirect on a payment success call" time="0.617" classname="should redirect on a payment success call">
+    </testcase>
+    <testcase name="Payment routes should redirect on a payment canceled call" time="0.308" classname="should redirect on a payment canceled call">
+    </testcase>
+  </testsuite>
+  <testsuite name="Product routes" timestamp="2025-02-21T18:28:28" tests="13" file="/home/marco/apps/sistemisolari/acme-server/test/server.test.js" time="0.509" failures="0">
+    <testcase name="Product routes should get all products" time="0.008" classname="should get all products">
+    </testcase>
+    <testcase name="Product routes should get products with filter" time="0.006" classname="should get products with filter">
+    </testcase>
+    <testcase name="Product routes should get a single product by id" time="0.003" classname="should get a single product by id">
+    </testcase>
+    <testcase name="Product routes should fail to get a product with a wrong id" time="0.002" classname="should fail to get a product with a wrong id">
+    </testcase>
+    <testcase name="Product routes should fail to get a product with non-existent id" time="0.003" classname="should fail to get a product with non-existent id">
+    </testcase>
+    <testcase name="Product routes should get all product types" time="0.002" classname="should get all product types">
+    </testcase>
+    <testcase name="Product routes should insert a new product" time="0.006" classname="should insert a new product">
+    </testcase>
+    <testcase name="Product routes should update an existing product" time="0.004" classname="should update an existing product">
+    </testcase>
+    <testcase name="Product routes should fail to update a non-existent product" time="0.003" classname="should fail to update a non-existent product">
+    </testcase>
+    <testcase name="Product routes should handle missing file when uploading product image" time="0.005" classname="should handle missing file when uploading product image">
+    </testcase>
+    <testcase name="Product routes should delete products by ID array" time="0.011" classname="should delete products by ID array">
+    </testcase>
+    <testcase name="Product routes should mark products as removed (logical delete)" time="0.007" classname="should mark products as removed (logical delete)">
+    </testcase>
+    <testcase name="Product routes should fail with invalid filter when deleting products" time="0.002" classname="should fail with invalid filter when deleting products">
+    </testcase>
+  </testsuite>
+</testsuites>
