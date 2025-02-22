@@ -1,13 +1,17 @@
 #!/usr/bin/env node
+/**
+ * Upload new local secrets to github, in parallel
+ */
 
 const fs = require("fs");
 const dotenv = require("dotenv");
 const fetch = require("node-fetch");
 const sodium = require("libsodium-wrappers");
-
+const crypto = require("crypto");
 
 // configuration
 const LOCAL_ENV_FILE = ".env";
+const CACHE_FILE = ".secrets-cache.json";
 
 // check if .env file exists
 if (!fs.existsSync(LOCAL_ENV_FILE)) {
@@ -18,9 +22,26 @@ if (!fs.existsSync(LOCAL_ENV_FILE)) {
 // load environment variables
 dotenv.config({ path: LOCAL_ENV_FILE });
 
+// load or initialize the cache
+function loadCache() {
+  if (fs.existsSync(CACHE_FILE)) {
+    return JSON.parse(fs.readFileSync(CACHE_FILE, "utf-8"));
+  }
+  return {};
+}
+
+// save the cache to disk
+function saveCache(cache) {
+  fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
+}
+
+// generate a hash of the secret value
+function hashSecretValue(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
 // fetch GitHub public key
 async function fetchPublicKey() {
-  //console.log("Fetching GitHub public key...");
   const response = await fetch(
     `https://api.github.com/repos/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}/actions/secrets/public-key`,
     {
@@ -51,8 +72,6 @@ async function encryptSecret(publicKey, secretValue) {
 
 // upload encrypted secret to GitHub
 async function uploadSecret(secretName, encryptedValue, keyId) {
-  //console.log(`Uploading secret: ${secretName}...`);
-
   const response = await fetch(
     `https://api.github.com/repos/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}/actions/secrets/${secretName}`,
     {
@@ -69,46 +88,70 @@ async function uploadSecret(secretName, encryptedValue, keyId) {
   );
 
   if (!response.ok) {
-    console.error(`Failed to upload secret '${secretName}'`);
+    console.error(`Failed to upload secret "${secretName}"`);
     console.error(await response.text());
-    return;
+    return false;
   }
 
-  //console.log(`Secret '${secretName}' uploaded successfully`);
+  //console.info(`Secret "${secretName}" uploaded successfully`);
+  return true;
 }
 
 // main function to process secrets
 async function processSecrets() {
   const { key, keyId } = await fetchPublicKey();
-
   const secretEntries = dotenv.parse(fs.readFileSync(".env"));
+  const cache = loadCache();
 
-  for (const secretName of Object.keys(secretEntries)) {
-    const secretValue = secretEntries[secretName];
-    if (!secretName || !secretValue) {
-      console.log(`Skipping invalid secret: ${secretName} = ${secretValue}`);
-      continue;
-    }
+  const secretsToUpload = Object.entries(secretEntries)
+    .filter(([secretName, secretValue]) => {
+      if (!secretName || !secretValue) {
+        console.warn(`Skipping invalid secret: ${secretName} = ${secretValue}`);
+        return false;
+      }
+      if (secretName.startsWith("#") || secretName.startsWith("GITHUB_")) {
+        //console.info(`Skipping comment or GitHub key: ${secretName}`);
+        return false;
+      }
+      return true;
+    })
+    .map(async ([secretName, secretValue]) => {
+      const secretHash = hashSecretValue(secretValue);
 
-    if (secretName.startsWith("#")) {
-      //console.log(`Skipping comment: ${secretName}`);
-      continue;
-    }
+      // skip if the secret is already uploaded and hasn't changed
+      if (cache[secretName] === secretHash) {
+        //console.info(`Skipping unchanged secret: ${secretName}`);
+        return true;
+      }
 
-    if (secretName.startsWith("GITHUB_")) {
-      //console.log(`Skipping github key: ${secretName}`);
-      continue;
-    }
+      const encryptedValue = await encryptSecret(key, secretValue);
+      const uploadSuccess = await uploadSecret(secretName, encryptedValue, keyId);
 
-    const encryptedValue = await encryptSecret(key, secretValue);
-    await uploadSecret(secretName, encryptedValue, keyId);
+      // update the cache if the upload was successful
+      if (uploadSuccess) {
+        cache[secretName] = secretHash;
+      }
+
+      return uploadSuccess;
+    });
+
+  // upload secrets in parallel
+  const results = await Promise.all(secretsToUpload);
+
+  // Save the updated cache
+  saveCache(cache);
+
+  // check for failures
+  if (results.some((result) => result === false)) {
+    console.error("Some secrets failed to upload");
+    process.exit(1);
   }
 
-  console.log("All secrets uploaded successfully");
+  //console.info("All secrets processed successfully");
 }
 
 // run the script
 processSecrets().catch((err) => {
-  console.error("Error:", err);
+  console.error("Error processing secrets to upload to GitHub:", err);
   process.exit(1);
 });

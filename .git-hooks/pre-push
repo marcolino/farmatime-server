@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# navigate to the repository root
+cd "$(git rev-parse --show-toplevel)"
+
+# run GitHup Upload Secrets script
+node scripts/githubUploadSecrets.js
+
+# check the exit status of the script
+if [ $? -ne 0 ]; then
+  echo "GitHub secrets upload failed, push aborted."
+  exit 1
+fi
+
+echo "Secrets uploaded successfully to GitHub, proceeding with push"
+exit 0
