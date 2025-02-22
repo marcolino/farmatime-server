@@ -4,7 +4,7 @@
 cd "$(git rev-parse --show-toplevel)"
 
 # run GitHup Upload Secrets script
-node scripts/githubUploadSecrets.js
+yarn node scripts/githubUploadSecrets.js
 
 # check the exit status of the script
 if [ $? -ne 0 ]; then
