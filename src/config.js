@@ -81,7 +81,7 @@ const configBase = {
     ],
   },
   db: {
-    debug: false,
+    debug: false, // debug database queries
     products: {
       search: {
         mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")

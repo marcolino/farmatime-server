@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
-const Env = require("../models/env.model");
-const User = require("../models/user.model");
-const Role = require("../models/role.model");
-const Plan = require("../models/plan.model");
-const Product = require("../models/product.model");
-const { logger } = require("../controllers/logger.controller");
+const Env = require("./env.model.js");
+const User = require("./user.model.js");
+const Role = require("./role.model.js");
+const Plan = require("./plan.model.js");
+const Product = require("./product.model.js");
+const { logger } = require("../controllers/logger.controller.js");
 const demoData = require("../../data/demo.js");
-const config = require("../config");
+const config = require("../config.js");
 
 
 const connect = async () => {
@@ -14,13 +14,13 @@ const connect = async () => {
   const connUri = (
     config.mode.production || config.mode.staging) ? // production/staging db uri
     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
-    config.mode.development ? // development db uri
-      `${process.env.MONGO_DEV_SCHEME}://${process.env.MONGO_DEV_URL}/${process.env.MONGO_DEV_DB}` :
-      config.mode.testgithubactions ? // test in github actions db uri
-        `${process.env.MONGO_TEST_GITHUB_ACTIONS_SCHEME}://${process.env.MONGO_TEST_GITHUB_ACTIONS_USER}:${process.env.MONGO_TEST_GITHUB_ACTIONS_PASS}@${process.env.MONGO_TEST_GITHUB_ACTIONS_URL}/${process.env.MONGO_TEST_GITHUB_ACTIONS_DB}` :
-        config.mode.test ? // test db uri
-          `${process.env.MONGO_TEST_SCHEME}://${process.env.MONGO_TEST_URL}/${process.env.MONGO_TEST_DB}` :
-          null
+      config.mode.development ? // development db uri
+        `${process.env.MONGO_DEV_LOCAL_SCHEME}://${process.env.MONGO_DEV_LOCAL_URL}/${process.env.MONGO_DEV_LOCAL_DB}` :
+        config.mode.testgithubactions ? // test in github actions db uri
+          `${process.env.MONGO_TEST_REMOTE_SCHEME}://${process.env.MONGO_TEST_REMOTE_USER}:${process.env.MONGO_TEST_REMOTE_PASS}@${process.env.MONGO_TEST_REMOTE_URL}/${process.env.MONGO_TEST_REMOTE_DB}` :
+          config.mode.test ? // test db uri
+            `${process.env.MONGO_TEST_LOCAL_SCHEME}://${process.env.MONGO_TEST_LOCAL_URL}/${process.env.MONGO_TEST_LOCAL_DB}` :
+            null
   ;
   if (!connUri) {
     const err = `Unforeseen mode ${JSON.stringify(config.mode)}, cannot connect database`;
@@ -30,37 +30,20 @@ const connect = async () => {
 
   try {
     logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":***"));
-    await mongoose.connect(connUri, {
-      // useFindAndModify: false,
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-      // useCreateIndex: true,
-    });
+    await mongoose.connect(connUri);
     logger.info("Database connected");
 
-    //mongoose.set("debug", config.db.debug);
+    mongoose.set("debug", config.db.debug);
 
     // show MongoDB version
-    // try {
-    //   // mongoose v5:
-    //   // logger.error("g4");
-    //   // const admin = new mongoose.mongo.Admin(mongoose.connection.db);
-    //   // const info = await admin.buildInfo();
-    //   // logger.info(`MongoDB v${info.version}`);
-    //   // logger.error("g5");
-
-    //   // mongoose v7:
-    //   // const db = mongoose.connection.db;
-    //   // const admin = new mongoose.mongo.Admin(db);
-    //   // const info = await admin.buildInfo();
-    //   // console.info(`MongoDB v${info.version}`);
-    // } catch (err) {
-    //   logger.error("MongoDB build info error:", err);
-    // }
-
-
+    try {
+      const admin = new mongoose.mongo.Admin(mongoose.connection.db);
+      const info = await admin.buildInfo();
+      logger.info(`MongoDB v${info.version}`);
+    } catch (err) {
+      logger.error("MongoDB build info error:", err);
+    }
   } catch (err) {
-
     logger.error("Database connection error:", err);
     throw err;
   }
@@ -209,34 +192,10 @@ const addPlanToUser = async (planName, userEmail) => {
   }
 };
 
-const NEWinitializeDatabase = async () => {
-  try {
-    // attach the "open" event listener before calling mongoose.connect()
-    const connectionPromise = new Promise((resolve, reject) => {
-      mongoose.connection.once("open", resolve);
-      mongoose.connection.on("error", reject);
-    });
-
-    // connect to the database
-    await connect();
-
-    // wait for the "open" event to ensure the connection is fully ready
-    await connectionPromise;
-
-    logger.info("Database connection is fully ready");
-
-    // populate the database (if needed)
-    await populate();
-  } catch (err) {
-    logger.error("Error during database initialization:", err);
-    throw err;
-  }
-};
-
 const initializeDatabase = () => {
   return (async () => {
     try {
-      await connect();
+      if (!mongoose.connection.db) await connect();
       await populate();
     } catch (err) {
       logger.error("Error during database connection:", err);
@@ -245,14 +204,14 @@ const initializeDatabase = () => {
   })(); // run this async function now, but register it's returned promise end export it, so users can wait for it to resolve (and db be really ready)
 };
 
-let dbReadyPromise = initializeDatabase();
+let initializeDatabasePromise = initializeDatabase();
 
 const resetDatabase = () => {
-  dbReadyPromise = initializeDatabase();
-  return dbReadyPromise;
+  initializeDatabasePromise = initializeDatabase();
+  return initializeDatabasePromise;
 };
 
 module.exports = {
-  initializeDatabase: dbReadyPromise,
+  initializeDatabase: initializeDatabasePromise,
   resetDatabase,
 };

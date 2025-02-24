@@ -3,30 +3,10 @@
  */
 
 const server = require("../server.test");
-const { getAuthCookiesAdmin } = require("../setup/setup.test");
-// const db = require("../../src/models");
-const User = require("../../src/models/user.model");
-// const Role = require("../../src/models/role.model");
-const config = require("../config.test");
 
 describe("Payment routes", () => {
 
   let stripeSessionId;
-
-  // it("should get payment mode, and it should be in a set of values", async () => {
-  //   const res = await server.request
-  //     .get("/api/payment/mode")
-  //     .set("Cookie", getAuthCookiesAdmin())
-  //     .send({})
-  //   ;
-  //   expect = 200;
-  //   if (res.status !== expect) {
-  //     console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-  //     throw new Error();
-  //   }
-  //   server.expect(res.body).to.have.property("mode");
-  //   server.expect(res.body.mode).to.be.oneOf(["test", "live"]);
-  // });
 
   it("should not create a checkout session without a cart", async () => {
     const res = await server.request
@@ -59,7 +39,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with an empty item", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         cart: {
           items: [{ }],
@@ -84,7 +64,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with an item without mdaCode", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         cart: {
           items: [{ /*mdaCode: 123,*/ imageUrl: "https://example.com/image.jpg", price: 1, quantity: 1 }],
@@ -103,7 +83,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with an item no mdaCode", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         cart: {
           items: [{ /*mdaCode: 123,*/ price: 100, quantity: 1 }],
@@ -122,7 +102,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with no price", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({ cart: { items: [{ mdaCode: 123, /*price: 100,*/ quantity: 1 }] } })
     ;
     expect = 500;
@@ -137,7 +117,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with no quantity", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({ cart: { items: [{ mdaCode: 123, price: 100/*, quantity: 1*/ }] } })
     ;
     expect = 500;
@@ -152,7 +132,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with zero quantity", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 0 }] } })
     ;
     expect = 500;
@@ -167,7 +147,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with a too low price", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({ cart: { items: [{ mdaCode: 123, price: 49, quantity: 1 }] } })
     ;
     expect = 500;

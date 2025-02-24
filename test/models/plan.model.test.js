@@ -7,9 +7,6 @@ const Plan = require("../../src/models/plan.model");
 
 describe("Plan model", async function() {
 
-  before(async () => { // before these tests we empty the database
-  });
-
   it("plan model should accept any value different by -1 (\"unlimited\")", async () => {
     try {
       const plan = await Plan.findOne();

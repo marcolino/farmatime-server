@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../../server");
-const db = require("../../src/models");
-const emailService = require("../../src/services/email.service");
+const db = require("../../src/models/db");
+//const emailService = require("../../src/services/email.service");
 //const config = require("../../src/config");
 const demoData = require("../../data/demo.js");
 
@@ -15,10 +15,9 @@ let accessTokenCookieUser, refreshTokenCookieUser;
 // before hook to log in the user and get the auth cookie
 before(async () => {
   //this.timeout(10000); // increase timeout to 10s (requested on "github actions"...)
-  //await db.dbReady; // wait for the database to be ready
   await db.initializeDatabase; // wait the database to be ready
   await setupLoginCredentials(); // wait to setup login credentials
-  await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
+  //await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
 });
 
 // conntect to db, populate it, and setup login credentials
@@ -33,7 +32,6 @@ const setupLoginCredentials = async () => {
       password: demoData.default.adminUser.password,
     })
   ;
-  
   expect = 200;
   if (response.status !== expect) {
     throw new Error(`Login failed with status ${response.status} (${response._body?.message})`);
@@ -75,28 +73,10 @@ const setupLoginCredentials = async () => {
   }
 };
 
-/*
-beforeEach(async () => {
-  // drop all dynamic collections
-  const collections = await mongoose.connection.db.listCollections().toArray();
-  collections
-    .map((collection) => collection.name)
-    .forEach(async (collectionName) => {
-      //console.log("collectionName:", collectionName);
-      if ( // skip "static" collections
-        (collectionName !== "envs") &&
-        (collectionName !== "roles") &&
-        (collectionName !== "plans")
-      ) {
-        mongoose.connection.db.dropCollection(collectionName);
-      }
-    })
-  ;
-});
-*/
-
 module.exports = {
   setupLoginCredentials,
   getAuthCookiesAdmin: () => ([ accessTokenCookieAdmin, refreshTokenCookieAdmin ]),
+  // getAuthCookiesOperator: () => ([ accessTokenCookieOperator, refreshTokenCookieOperator ]),
+  // getAuthCookiesDealer: () => ([ accessTokenCookieDealer, refreshTokenCookieDealer ]),
   getAuthCookiesUser: () => ([ accessTokenCookieUser, refreshTokenCookieUser ]),
 };

@@ -23,14 +23,11 @@ const assertEnvironment = () => {
     }
 
     // TODO: more logical assertions...
-
   } catch (err) {
-    logger.error(`Assertion failure: ${err}`);
-    assertionsCheckFailure(err);
-    return false;
+    const error = `Assertion failure: ${err}`;
+    assertionsCheckFailure(error);
+    throw error;
   }
-
-  return true;
 };
 
 const assertionsCheckFailure = async (htmlContent) => {

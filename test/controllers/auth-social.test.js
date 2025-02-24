@@ -3,11 +3,6 @@
  */
 
 const server = require("../server.test");
-// const { getAuthCookiesAdmin } = require("../setup/setup.test");
-// const db = require("../../src/models");
-// const User = require("../../src/models/user.model");
-// const Role = require("../../src/models/role.model");
-// const config = require("../config.test");
 const passport = require("passport");
 
 
@@ -68,7 +63,6 @@ describe("Auth routes - Facebook OAuth", () => {
     const res = await server.request.get("/api/auth/facebook/callback");
     server.expect(res).to.have.property("status").equal(200);
     server.expect(res.body.user.email).to.equal("test@fb.com");
-    //expect(res.body.user.email).to.equal("test@fb.com");
   });
 
   it("should handle Facebook OAuth failure", async () => {
@@ -76,7 +70,6 @@ describe("Auth routes - Facebook OAuth", () => {
       res.status(401).json({ error: "Facebook auth failed" });
     });
 
-    //const res = await chai.request(app).get("/api/auth/facebook/callback");
     const res = await server.request.get("/api/auth/facebook/callback");
     server.expect(res).to.have.property("status").equal(401);
     server.expect(res.body.error).to.equal("Facebook auth failed");

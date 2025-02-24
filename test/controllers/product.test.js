@@ -3,8 +3,6 @@
  */
 
 const server = require("../server.test");
-const { setupLoginCredentials, getAuthCookiesAdmin, getAuthCookiesUser } = require("../setup/setup.test");
-const { resetDatabase } = require("../../src/models");
 const configTest = require("../config.test");
 
 let expect;
@@ -13,13 +11,13 @@ let testProductId;
 
 describe("Product routes", () => {
   before(async () => {
-    await resetDatabase();
-    await setupLoginCredentials();
+    await server.db.resetDatabase();
+    await server.setupLoginCredentials();
     
     // create a test product for reuse in tests
     const res = await server.request
       .post("/api/product/insertProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         product: configTest.testProduct
       });
@@ -36,7 +34,7 @@ describe("Product routes", () => {
   it("should get all products", async () => {
     const res = await server.request
       .get("/api/product/getProducts")
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({});
       
     expect = 200;
@@ -52,7 +50,7 @@ describe("Product routes", () => {
   it("should get products with filter", async () => {
     const res = await server.request
       .get("/api/product/getProducts")
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({
         filter: {
           make: "Test Make"
@@ -72,7 +70,7 @@ describe("Product routes", () => {
   it("should get a single product by id", async () => {
     const res = await server.request
       .get(`/api/product/getProduct`)
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({
         productId: testProductId
       });
@@ -90,7 +88,7 @@ describe("Product routes", () => {
   it("should fail to get a product with a wrong id", async () => {
     const res = await server.request
       .get(`/api/product/getProduct`)
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({
         productId: "wrong id", // wrong id
       });
@@ -106,7 +104,7 @@ describe("Product routes", () => {
   it("should fail to get a product with non-existent id", async () => {
     const res = await server.request
       .get(`/api/product/getProduct`)
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({
         productId: "60f1a7b87c213e001c123456" // non-existent ID
       });
@@ -122,7 +120,7 @@ describe("Product routes", () => {
   it("should get all product types", async () => {
     const res = await server.request
       .get("/api/product/getProductAllTypes")
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({});
       
     expect = 200;
@@ -155,7 +153,7 @@ describe("Product routes", () => {
     
     const res = await server.request
       .post("/api/product/insertProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         product: newProduct
       });
@@ -171,7 +169,7 @@ describe("Product routes", () => {
     // verify the product was actually created
     const verifyRes = await server.request
       .get(`/api/product/getProduct`)
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({
         productId: res.body.id
       });
@@ -189,7 +187,7 @@ describe("Product routes", () => {
     
     const res = await server.request
       .post("/api/product/updateProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         productId: testProductId,
         product: updatedProduct
@@ -209,7 +207,7 @@ describe("Product routes", () => {
   it("should fail to update a non-existent product", async () => {
     const res = await server.request
       .post("/api/product/updateProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         productId: "60f1a7b87c213e001c123456", // Non-existent ID
         product: {
@@ -230,7 +228,7 @@ describe("Product routes", () => {
   it("should handle missing file when uploading product image", async () => {
     const res = await server.request
       .post("/api/product/uploadProductImage")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .field("productId", testProductId);
       
     expect = 400;
@@ -245,7 +243,7 @@ describe("Product routes", () => {
     // first create a product to delete
     const response = await server.request
       .post("/api/product/insertProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         product: {
           mdaCode: "DELETE123",
@@ -257,7 +255,7 @@ describe("Product routes", () => {
     
     const res = await server.request
       .post("/api/product/deleteProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         filter: [productToDeleteId]
       });
@@ -274,7 +272,7 @@ describe("Product routes", () => {
     // Verify the product was actually deleted
     const verifyRes = await server.request
       .get(`/api/product/getProduct`)
-      .set("Cookie", getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookiesUser())
       .send({
         productId: productToDeleteId
       });
@@ -286,7 +284,7 @@ describe("Product routes", () => {
     // first create a product to remove
     const response = await server.request
       .post("/api/product/insertProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         product: {
           mdaCode: "REMOVE123",
@@ -298,7 +296,7 @@ describe("Product routes", () => {
     
     const res = await server.request
       .post("/api/product/removeProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         filter: [productToRemoveId]
       });
@@ -316,7 +314,7 @@ describe("Product routes", () => {
     // // product should still exist but be marked as deleted
     // const verifyRes = await server.request
     //   .get(`/api/product/getProduct`)
-    //   .set("Cookie", getAuthCookiesUser())
+    //   .set("Cookie", server.getAuthCookiesUser())
     //   .send({
     //     productId: productToRemoveId
     //   });
@@ -328,7 +326,7 @@ describe("Product routes", () => {
   it("should fail with invalid filter when deleting products", async () => {
     const res = await server.request
       .post("/api/product/deleteProduct")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({
         filter: "invalid-filter" // Neither * nor object nor array
       });

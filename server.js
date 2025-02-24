@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
-const db = require("./src/models");
+const db = require("./src/models/db");
 const Env = require("./src/models/env.model");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
@@ -19,7 +19,7 @@ const checkReferer = require("./src/middlewares/checkReferer");
 const passportSetup = require("./src/middlewares/passportSetup");
 const config = require("./src/config");
 
-const configFileNameInjected = "config.json"; // injected config file name
+const configFileNameInjected = "config.json"; // client injected config file name
 
 // environment configuration
 if (config.mode.production) { // load environment variables from the provider "secrets" setup (see `yarn fly-import-secrets`)
@@ -47,6 +47,8 @@ morgan.format("api-logs", ":method :url HTTP/:http-version :status ':referrer' -
 
 // instantiate express app
 const app = express();
+// initialize Passport and session management using the middleware
+passportSetup(app);
 
 app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
@@ -114,11 +116,11 @@ app.use(express.json({
   limit: config.api.payloadLimit, // limit payload to avoid too much data to be uploaded
 }));
 
-// apply rate limiting middleware globally
-app.use(rateLimit);
-
 // use i18n
 app.use(i18nextMiddleware.handle(i18n));
+
+// apply rate limiting middleware globally
+app.use(rateLimit);
 
 // apply check referer middleware globally
 app.use(checkReferer);
@@ -138,9 +140,8 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// handle version, if needed
+// handle version, if needed (req.version is used to determine the API default version)
 app.use((req, res, next) => {
-  // req.version is used to determine the API default version
   req.version = req.headers["accept-version"];
   next();
 });
@@ -216,36 +217,49 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   });
 });
 
-
-// let express server start listening for requests
-async function start() {
-
-  // assert environment to be fully compliant with expectations
-  if (!assertEnvironment()) {
-    process.exit(1);
+// handle exit signal
+process.on("exit", () => {
+  if (!config.mode.test) {
+    logger.warn("Server process is exiting");
   }
+});
 
-  //await db.dbReady; // wait the database to be ready
-  await db.initializeDatabase; // wait the database to be ready
+// handle all uncaught exceptions
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught Exception:", err);
+  process.exit(1);
+});
+
+// handle all unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  if (reason instanceof Error) {
+    logger.error(
+      `Unhandled rejection at promise: ${promise}, reason: ${reason.message},
+      stack: ${!config.mode.production ? reason.stack : null}`
+    );
+  } else {
+    logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
+  }
+  process.exit(2);
+});
+
+// define and run an async function to start all subprocesses
+(async () => {
+  assertEnvironment();
+
+  await db.initializeDatabase; // wait the database to be initialized
 
   // setup the email service
-  //console.log("BREVO EMAIL API key:", process.env.BREVO_EMAIL_API_KEY.slice(-10));
-  if (!config.mode.test) {
-    try {
-      await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
-    } catch (err) {
-      logger.error("Failed to initialize email service:", err);
-      process.exit(1);
-    }
-  }
+  await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
   
-  if (config.mode.development) { // inject only while developing (for production there is a script to bve called from the client before the builds)
-    // inject client app config to configFileNameInjected
+  // inject client app config to configFileNameInjected (only while developing:
+  //  for production there is a script to bve called from the client before the builds)
+  if (config.mode.development) {
     inject(rootClient, rootClientSrc, configFileNameInjected, config.app);
   }
   
-  if (!config.mode.test) {
-    try { // listen for requests
+  if (!config.mode.test) { // listen for requests (if not test mode)
+    try {
       const port = config.api.port;
       const host = "0.0.0.0";
       app.listen(port, host, () => {
@@ -259,50 +273,7 @@ async function start() {
       throw err;
     }
   }
-}
-
-// async function startTest() {
-//   try {
-//     // assert environment to be fully compliant with expectations
-//     if (!assertEnvironment()) {
-//       process.exit(1);  
-//     }
-
-//     await db.dbReady; // await the database to be ready
-
-//   } catch (err) {
-//     logger.error("start test error:", err);
-//     throw err;
-//   }
-// }
-
-// handle exit signal
-process.on("exit", () => {
-  logger.warn("Server process is exiting");
-});
-
-// handle all uncaught exceptions
-process.on("uncaughtException", (err) => {
-  logger.error("Uncaught Exception:", err);
-});
-
-// handle all unhandled promise rejections
-process.on("unhandledRejection", (reason, promise) => {
-  if (reason instanceof Error) {
-    logger.error(`Unhandled rejection at promise: ${promise}, reason: ${reason.message}, stack: ${reason.stack}`);
-  } else {
-    logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
-  }
-});
-
-// // if not in test mode, start the server
-// if (config.mode.test) {
-//   startTest();
-// } else {
-//   start();
-// }
-
-start();
+})();
 
 // export the app
 module.exports = app;

@@ -3,9 +3,7 @@
  */
 
 const server = require("../server.test");
-const { getAuthCookiesAdmin } = require("../setup/setup.test");
 const configTest = require("../config.test");
-const config = require("../../src/config");
 
 describe("Auth routes", () => {
   let expect;
@@ -455,7 +453,7 @@ describe("Auth routes", () => {
   it("should remove a user and should not login her anymore", async () => {
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookiesAdmin())
       .send({ filter: { email: configTest.user.email } })
     ;
     expect = 200;
