@@ -174,3 +174,7 @@ EOT > .pre-commit-config.yaml
 
 betterstack:
  May I use the free plan to test betterstack logs integration with my node.js express app, without inserting a CC? I ask because I get UNAUTHORIZED error from @logtail-node both using the global API token and a lokgs API token...
+
+IMPORTANT:
+ - mongoose 8.10.1 does not connect from fly.io.
+ - mongoose 7.8.6 does connect from fly.io.

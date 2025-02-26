@@ -85,12 +85,15 @@ const getProducts = async (req, res) => {
 const getProduct = async (req, res, next) => {
   try {
     const productId = req.parameters.productId;
+    const deletedToo = req.parameters.deletedToo ?? false;
     if (!mongoose.isValidObjectId(productId)) {
       return next(Object.assign(new Error(req.t("Invalid ObjectId {{productId}}", { productId })), { status: 400 }));
     }
-    const product = await Product.findOne({
-      _id: productId,
-    });
+    const product = await Product.findOne(
+      { _id: productId },
+      null,
+      { allowDeleted: deletedToo }
+    );
     if (!product) {
       return next(Object.assign(new Error(req.t("Could not find any product by id {{id}}", { id: productId })), { status: 400 }));
     }

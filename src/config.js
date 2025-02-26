@@ -4,7 +4,7 @@ const fs = require("fs");
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
 const testgithubactions = (test && (process.env.GITHUB_ACTIONS)); // test mode, inside github actions (use public test db)
 const production = (!test && (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
-const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour , local db on local host)
+const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour, local db on local host)
 const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
 const stripelive = (!test && (process.env.LIVE_MODE === "true")); // stripe mode is "live"  
 
@@ -81,7 +81,7 @@ const configBase = {
     ],
   },
   db: {
-    debug: false, // debug database queries
+    debug: development, // debug database queries
     products: {
       search: {
         mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")

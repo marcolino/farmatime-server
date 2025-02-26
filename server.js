@@ -7,7 +7,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
 const { logger } = require("./src/controllers/logger.controller");
-const db = require("./src/models/db");
+//const db = require("./src/models/db");
+const { initializeDatabase } = require("./src/models/db");
 const Env = require("./src/models/env.model");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
@@ -247,7 +248,12 @@ process.on("unhandledRejection", (reason, promise) => {
 (async () => {
   assertEnvironment();
 
-  await db.initializeDatabase; // wait the database to be initialized
+  //await db.initializeDatabase; // wait the database to be initialized
+  if (!config.mode.test) {
+    await initializeDatabase();
+    // await db.connectDatabase;
+    // await db.populateDatabase;
+  }
 
   // setup the email service
   await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready

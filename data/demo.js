@@ -4,8 +4,8 @@ const demoData = {
   "envs": [
     { "key": "MAINTENANCE", "value": false },
   ],
-  "users": [
-    { // role: admin
+  "users": {
+    "admin": { // role: admin
       "email": process.env.ADMIN_USER_DEFAULT_EMAIL,
       "password": process.env.ADMIN_USER_DEFAULT_PASSWORD,
       "firstName": "Marco",
@@ -14,7 +14,7 @@ const demoData = {
       "justRegistered": false,
       "isDeleted": false,
     },
-    { // role: operator
+    "operator": { // role: operator
       "email": "alice@mail.com",
       "password": "Alice!",
       "firstName": "Alice",
@@ -23,7 +23,7 @@ const demoData = {
       "justRegistered": false,
       "isDeleted": false,
     },
-    { // role: dealer
+    "dealer": { // role: dealer
       "email": "bob@mail.com",
       "password": "Bob!",
       "firstName": "Bob",
@@ -32,7 +32,7 @@ const demoData = {
       "justRegistered": false,
       "isDeleted": false,
     },
-    { // role: user
+    "user": { // role: user
       "email": "charlie@mail.com",
       "password": "Charlie!",
       "firstName": "Charlie",
@@ -41,7 +41,7 @@ const demoData = {
       "justRegistered": false,
       "isDeleted": false,
     },
-  ],
+  },
   "roles": config.roles,
   "plans": config.plans,
   "products": [
@@ -116,10 +116,10 @@ const demoData = {
   ]
 };
 
-demoData.default = {};
-demoData.default.adminUser = demoData.users[0];
-demoData.default.operatorUser = demoData.users[1];
-demoData.default.dealerUser = demoData.users[2];
-demoData.default.userUser = demoData.users[3];
+// demoData.default = {};
+// demoData.default.adminUser = demoData.users[0];
+// demoData.default.operatorUser = demoData.users[1];
+// demoData.default.dealerUser = demoData.users[2];
+// demoData.default.userUser = demoData.users[3];
 
 module.exports = demoData;

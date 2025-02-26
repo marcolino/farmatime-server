@@ -11,17 +11,25 @@ const config = require("../config.js");
 
 const connect = async () => {
   // set up database connection uri
-  const connUri = (
-    config.mode.production || config.mode.staging) ? // production/staging db uri
+  const connUri = ((config.mode.production || config.mode.staging) ? // production/staging db uri
     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
-      config.mode.development ? // development db uri
-        `${process.env.MONGO_DEV_LOCAL_SCHEME}://${process.env.MONGO_DEV_LOCAL_URL}/${process.env.MONGO_DEV_LOCAL_DB}` :
-        config.mode.testgithubactions ? // test in github actions db uri
-          `${process.env.MONGO_TEST_REMOTE_SCHEME}://${process.env.MONGO_TEST_REMOTE_USER}:${process.env.MONGO_TEST_REMOTE_PASS}@${process.env.MONGO_TEST_REMOTE_URL}/${process.env.MONGO_TEST_REMOTE_DB}` :
-          config.mode.test ? // test db uri
-            `${process.env.MONGO_TEST_LOCAL_SCHEME}://${process.env.MONGO_TEST_LOCAL_URL}/${process.env.MONGO_TEST_LOCAL_DB}` :
-            null
-  ;
+    config.mode.development ? // development db uri
+      `${process.env.MONGO_DEV_LOCAL_SCHEME}://${process.env.MONGO_DEV_LOCAL_URL}/${process.env.MONGO_DEV_LOCAL_DB}` :
+      config.mode.testgithubactions ? // test in github actions db uri
+        `${process.env.MONGO_TEST_REMOTE_SCHEME}://${process.env.MONGO_TEST_REMOTE_USER}:${process.env.MONGO_TEST_REMOTE_PASS}@${process.env.MONGO_TEST_REMOTE_URL}/${process.env.MONGO_TEST_REMOTE_DB}` :
+        config.mode.test ? // test db uri
+          `${process.env.MONGO_TEST_LOCAL_SCHEME}://${process.env.MONGO_TEST_LOCAL_URL}/${process.env.MONGO_TEST_LOCAL_DB}` :
+          null
+  ) + "?retryWrites=true&w=majority"; // standard flags:
+  /**
+   * Retryable writes allows MongoDB drivers to automatically retry certain write operations a single time
+   * if they encounter network errors, or if they cannot find a healthy primary in the replica sets or sharded cluster.
+   * Write concern describes the level of acknowledgment requested from MongoDB for write operations to a standalone
+   * mongod or to replica sets or to sharded clusters. In sharded clusters, mongos instances will pass the write
+   * concern on to the shards (if the replica set has 3 members that mean that majority=2, meaning that write operation
+   * will receive acknowledgment after it receive success confirmation from at least 2 members).
+   */
+
   if (!connUri) {
     const err = `Unforeseen mode ${JSON.stringify(config.mode)}, cannot connect database`;
     logger.error(err);
@@ -29,8 +37,14 @@ const connect = async () => {
   }
 
   try {
-    logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":***"));
+    logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":*****"));
     await mongoose.connect(connUri);
+
+    // wait until connection is fully established
+    await mongoose.connection.asPromise();
+    if (!mongoose.connection.db) {
+      throw new Error("Database connection is established but db is not yet available even after promise await");
+    }
     logger.info("Database connected");
 
     mongoose.set("debug", config.db.debug);
@@ -54,6 +68,16 @@ const connect = async () => {
  */
 const populate = async () => {
   try {
+    // if (mongoose.connection.readyState !== 1 || !mongoose.connection.db) {
+    //   throw new Error("Database is not connected yet.");
+    // }
+    // if (mongoose.connection.readyState !== 1) {
+    //   throw new Error("Database is not ready yet");
+    // }
+    // if (!mongoose.connection.db) {
+    //   throw new Error("Database is not connected yet");
+    // }
+
     if (config.mode.test) { // drop and populate database in test mode
       await mongoose.connection.db.dropDatabase();
     }
@@ -80,8 +104,8 @@ const populate = async () => {
     try {
       const userCount = await User.estimatedDocumentCount();
       if (userCount === 0) {
-        for (const data of demoData.users) {
-          await User.create(data);
+        for (const role of Object.keys(demoData.users)) {
+          await User.create(demoData.users[role]);
         }
       }
     } catch (err) {
@@ -96,7 +120,10 @@ const populate = async () => {
         for (const data of demoData.roles) {
           await Role.create(data);
         }
-        await addRoleToUser("admin", demoData.default.adminUser.email);
+        await addRoleToUser("admin", demoData.users.admin.email);
+        await addRoleToUser("operator", demoData.users.operator.email);
+        await addRoleToUser("dealer", demoData.users.dealer.email);
+        await addRoleToUser("user", demoData.users.user.email);
       }
     } catch (err) {
       logger.error("Error populating roles collection:", err.message);
@@ -110,7 +137,7 @@ const populate = async () => {
         for (const data of demoData.plans) {
           await Plan.create(data);
         }
-        await addPlanToUser("unlimited", demoData.default.adminUser.email);
+        await addPlanToUser("unlimited", demoData.users.admin.email);
       }
     } catch (err) {
       logger.error("Error populating plans collection:", err.message);
@@ -131,7 +158,7 @@ const populate = async () => {
       throw err;
     }
   } catch (err) {
-    logger.log("Error in populate:", err.message);
+    logger.error("Error in populate:", err.message);
     throw err;
   }
 };
@@ -192,26 +219,18 @@ const addPlanToUser = async (planName, userEmail) => {
   }
 };
 
-const initializeDatabase = () => {
-  return (async () => {
-    try {
-      if (!mongoose.connection.db) await connect();
-      await populate();
-    } catch (err) {
-      logger.error("Error during database connection:", err);
-      throw err;
-    }
-  })(); // run this async function now, but register it's returned promise end export it, so users can wait for it to resolve (and db be really ready)
-};
-
-let initializeDatabasePromise = initializeDatabase();
-
-const resetDatabase = () => {
-  initializeDatabasePromise = initializeDatabase();
-  return initializeDatabasePromise;
+const initializeDatabase = async () => {
+  try {
+    await connect();
+    await populate();
+  } catch (err) {
+    logger.error("Error during database initialization:", err);
+    throw err;
+  }
 };
 
 module.exports = {
-  initializeDatabase: initializeDatabasePromise,
-  resetDatabase,
+  connect,
+  populate,
+  initializeDatabase,
 };

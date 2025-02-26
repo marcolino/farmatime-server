@@ -1,0 +1,1 @@
+import{R as t,u as e,j as a}from"./index-RKOwH3L5.js";import{F as s}from"./FlexyImageAndText-CPcuqanD.js";const n="/assets/PageNotFound-DkXm7MIC.png",m=()=>{const{t:o}=e();return a.jsx(s,{image:n,imageAlt:o("Page not found image"),title:o("Oooops!"),content:o("I've lost the page you did request! Sorry…")})},u=t.memo(m);export{u as default};

@@ -1,6 +1,5 @@
-const { logger } = require("../controllers/logger.controller");
-const config = require("../config");
 const { audit } = require("../helpers/messaging");
+const config = require("../config");
 
 
 const assertEnvironment = () => {
@@ -19,7 +18,7 @@ const assertEnvironment = () => {
 
     // some logical assertions
     if (process.env.LIVE_MODE === "true" && !config.mode.production) {
-      throw("Assertion conflict: live mode is on and prodution mode is false!")
+      throw ("Assertion conflict: live mode is on and prodution mode is false!");
     }
 
     // TODO: more logical assertions...

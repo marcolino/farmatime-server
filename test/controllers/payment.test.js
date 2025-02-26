@@ -8,6 +8,10 @@ describe("Payment routes", () => {
 
   let stripeSessionId;
 
+  before(async () => {
+    await server.resetDatabase();
+  });
+
   it("should not create a checkout session without a cart", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
@@ -39,7 +43,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with an empty item", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         cart: {
           items: [{ }],
@@ -64,7 +68,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with an item without mdaCode", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         cart: {
           items: [{ /*mdaCode: 123,*/ imageUrl: "https://example.com/image.jpg", price: 1, quantity: 1 }],
@@ -83,7 +87,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with an item no mdaCode", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         cart: {
           items: [{ /*mdaCode: 123,*/ price: 100, quantity: 1 }],
@@ -102,7 +106,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with no price", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ cart: { items: [{ mdaCode: 123, /*price: 100,*/ quantity: 1 }] } })
     ;
     expect = 500;
@@ -117,7 +121,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with no quantity", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ cart: { items: [{ mdaCode: 123, price: 100/*, quantity: 1*/ }] } })
     ;
     expect = 500;
@@ -132,7 +136,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with zero quantity", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 0 }] } })
     ;
     expect = 500;
@@ -147,7 +151,7 @@ describe("Payment routes", () => {
   it("should not create a checkout session with a cart with a too low price", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ cart: { items: [{ mdaCode: 123, price: 49, quantity: 1 }] } })
     ;
     expect = 500;
@@ -181,7 +185,6 @@ describe("Payment routes", () => {
   it("should create a checkout session for a regular product for a guest user", async () => {
     const res = await server.request
       .post("/api/payment/createCheckoutSession")
-      //.set("authorization", accessTokenUser)
       .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 1 }] } })
     ;
     expect = 200;

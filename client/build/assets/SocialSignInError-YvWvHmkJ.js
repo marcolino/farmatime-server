@@ -1,2 +1,0 @@
-import{R as l,a as u,o as g,r as s,A as m,n as p}from"./index-CWbKX64J.js";function f(){const o=u(),r=g(),{signIn:e}=s.useContext(m),{showDialog:i}=p();return s.useEffect(()=>{const n=new URLSearchParams(r.search),a=n.get("error"),c=n.get("error_description");a&&(i({title:t("Social login did not work, sorry"),message:c+`.
-`+a+".",confirmText:t("Ok"),onConfirm:()=>{o(`/signup/true/${codeDeliveryMedium}`,{replace:!0})}}),e(null),o("/",{replace:!0}))},[r,showSnackbar,e,o]),null}const d=l.memo(f);export{d as default};

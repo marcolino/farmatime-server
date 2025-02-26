@@ -453,7 +453,7 @@ describe("Auth routes", () => {
   it("should remove a user and should not login her anymore", async () => {
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: { email: configTest.user.email } })
     ;
     expect = 200;

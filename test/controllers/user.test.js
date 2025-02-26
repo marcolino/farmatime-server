@@ -7,7 +7,6 @@ const User = require("../../src/models/user.model");
 const Role = require("../../src/models/role.model");
 const configTest = require("../config.test");
 const demoData = require("../../data/demo.js");
-//const config = require("../../src/config");
 
 let expect;
 let allRoles = [];
@@ -19,7 +18,7 @@ describe("User routes", () => {
   it("should access users/getAllUsersWithTokens with valid token", async () => {
     const res = await server.request
       .get("/api/user/getAllUsersWithTokens")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -46,7 +45,7 @@ describe("User routes", () => {
   it("should not get all users with tokens with user role", async () => {
     const res = await server.request
       .get("/api/user/getAllUsersWithTokens")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 403;
@@ -59,7 +58,7 @@ describe("User routes", () => {
   it("should get all users with full info with admin role", async () => {
     const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({})
     ;
     expect = 200;
@@ -84,7 +83,7 @@ describe("User routes", () => {
   it("should get all roles", async () => {
     const res = await server.request
       .get("/api/user/getAllRoles")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 200;
@@ -111,7 +110,7 @@ describe("User routes", () => {
   it("should get all plans", async () => {
     const res = await server.request
       .get("/api/user/getAllPlans")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 200;
@@ -126,7 +125,7 @@ describe("User routes", () => {
   it("should get user's profile", async () => {
     const res = await server.request
       .get("/api/user/getUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 200;
@@ -150,10 +149,10 @@ describe("User routes", () => {
   });
 
   it("should not get another user's profile without admin access", async () => {
-    const userId = await User.findOne({ email: demoData.default.adminUser.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .get("/api/user/getUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({ userId })
     ;
     expect = 403;
@@ -164,10 +163,10 @@ describe("User routes", () => {
   });
 
   it("should get another user's profile with admin access", async () => {
-    const userId = await User.findOne({ email: demoData.default.userUser.email });
+    const userId = await User.findOne({ email: demoData.users["user"].email });
     const res = await server.request
       .get("/api/user/getUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ userId })
     ;
     expect = 200;
@@ -180,9 +179,9 @@ describe("User routes", () => {
   it("should update user's profile", async () => { // TODO: ok not existing user email can be updated?
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
-        email: demoData.default.userUser.email,
+        email: demoData.users["user"].email,
         firstName: "updated first name",
         lastName: "updated last name",
         fiscalCode: validFiscalCode,
@@ -202,7 +201,7 @@ describe("User routes", () => {
   it("should not update user's profile with invalid email", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId: configTest.admin.id,
         email: "invalid email",
@@ -218,13 +217,13 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile with already taken email", async () => {
-    const userId = await User.findOne({ email: demoData.default.adminUser.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId,
-        email: demoData.default.userUser.email, //configTest.user.email,
+        email: demoData.users["user"].email,
       })
     ;
     expect = 400;
@@ -233,17 +232,17 @@ describe("User routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal(`The email ${demoData.default.userUser.email} is already in use`);
+    server.expect(res.body.message).to.equal(`The email ${demoData.users["user"].email} is already in use`);
   });
 
   it("should update user's profile with new email", async () => {
-    const userId = await User.findOne({ email: demoData.default.adminUser.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId,
-        email: demoData.default.adminUser.email + ".new",
+        email: demoData.users["admin"].email + ".new",
       })
     ;
     expect = 200;
@@ -255,13 +254,13 @@ describe("User routes", () => {
   });
 
   it("should reset user's profile with email", async () => {
-    const userId = await User.findOne({ email: demoData.default.adminUser.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId,
-        email: demoData.default.adminUser.email,
+        email: demoData.users["admin"].email,
       })
     ;
     expect = 200;
@@ -273,10 +272,10 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile with empty firstName", async () => {
-    const userId = await User.findOne({ email: demoData.default.adminUser.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId,
         firstName: "",
@@ -294,7 +293,7 @@ describe("User routes", () => {
   it("should not update user's profile with invalid lastName", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId: configTest.admin.id,
         lastName: "",
@@ -312,7 +311,7 @@ describe("User routes", () => {
   it("should not update user's profile with invalid fiscalCode", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId: configTest.admin.id,
         fiscalCode: "invalid fiscal code",
@@ -328,12 +327,12 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile without autentication", async () => {
-    const userId = await User.findOne({ email: demoData.default.userUser.email });
+    const userId = await User.findOne({ email: demoData.users["user"].email });
     const res = await server.request
       .post("/api/user/updateUser")
       .send({
         userId,
-        email: demoData.default.userUser.email,
+        email: demoData.users["user"].email,
       })
     ;
     expect = 401;
@@ -346,7 +345,7 @@ describe("User routes", () => {
   it("should not update user's profile for a different not existing user - without admin access", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         userId: "123456789012345678901234",
         firstName: configTest.user.name + "-bis",
@@ -365,7 +364,7 @@ describe("User routes", () => {
     const userId = await User.findOne({ email: configTest.admin.email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         userId,
         firstName: configTest.admin.name + "-bis",
@@ -384,7 +383,7 @@ describe("User routes", () => {
     const userId = await User.findOne({ email: configTest.user.email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId,
         firstName: configTest.user.name + "-bis",
@@ -402,7 +401,7 @@ describe("User routes", () => {
     const userId = await User.findOne({ email: configTest.admin.email });
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         userId,
         firstName: "updated first name",
@@ -420,7 +419,7 @@ describe("User routes", () => {
   it("should update another user's property with admin access", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         userId: configTest.user.id,
         firstName: "updated first name",
@@ -437,7 +436,7 @@ describe("User routes", () => {
   it("should update user's property (with no changes) with an unexpected parameters", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({
         unexpected: "abc",
       })
@@ -453,7 +452,7 @@ describe("User routes", () => {
   it("should update user's own property firstName", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         firstName: "updated first name",
       })
@@ -469,9 +468,9 @@ describe("User routes", () => {
   it("should update user's own property email", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
-        email: demoData.default.userUser.email,
+        email: demoData.users["user"].email,
       })
     ;
     expect = 200;
@@ -485,7 +484,7 @@ describe("User routes", () => {
   it("should update user's own property lastName", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         lastName: "updated last name",
       })
@@ -501,7 +500,7 @@ describe("User routes", () => {
   it("should update user's own property fiscalCode", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         fiscalCode: configTest.user.fiscalCode,
       })
@@ -517,7 +516,7 @@ describe("User routes", () => {
   it("should update user's own property businessName", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         businessName: "test business name",
       })
@@ -533,7 +532,7 @@ describe("User routes", () => {
   it("should update user's own property address", async () => {
     const res = await server.request
       .post("/api/user/updateUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({
         address: "test address",
       })
@@ -840,7 +839,7 @@ describe("User routes", () => {
   it("should not get all users with user role", async () => {
     const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 403;
@@ -855,7 +854,7 @@ describe("User routes", () => {
   it("should not get all users with wrong filter", async () => {
     const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: "wrong filter" })
     ;
     expect = 400;
@@ -870,7 +869,7 @@ describe("User routes", () => {
   it("should get all users with admin role", async () => {
     const res = await server.request
       .get("/api/user/getAllUsers")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({})
     ;
     expect = 200;
@@ -898,7 +897,7 @@ describe("User routes", () => {
   it("should not delete user without admin privileges", async () => {
     const res = await server.request
       .post("/api/user/deleteUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 403;
@@ -913,7 +912,7 @@ describe("User routes", () => {
   it("should not delete user with admin privileges using invalid id", async () => {
     const res = await server.request
       .post("/api/user/deleteUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: { id: "invalid user id" } })
     ;
     expect = 400;
@@ -926,10 +925,10 @@ describe("User routes", () => {
   });
 
   it("should delete user with admin privileges using id", async () => {
-    const userId = await User.findOne({ email: demoData.default.userUser.email });
+    const userId = await User.findOne({ email: demoData.users["user"].email });
     const res = await server.request
       .post("/api/user/deleteUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: { _id: userId } })
     ;
     expect = 200;
@@ -944,7 +943,7 @@ describe("User routes", () => {
   it("should delete user with admin privileges using email", async () => {
     const res = await server.request
       .post("/api/user/deleteUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: { email: configTest.admin.email } })
       .send({})
     ;
@@ -958,8 +957,7 @@ describe("User routes", () => {
   });
 
   it("should reset test database", async () => {
-    await server.db.resetDatabase();
-    await server.setupLoginCredentials();
+    await server.resetDatabase();
   });
 
   it("should not remove user without authentication", async () => {
@@ -979,7 +977,7 @@ describe("User routes", () => {
   it("should not remove user without admin privileges", async () => {
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", server.getAuthCookiesUser())
+      .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
     expect = 403;
@@ -994,7 +992,7 @@ describe("User routes", () => {
   it("should not remove user with admin privileges using invalid id", async () => {
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: {id: "invalid user id"} })
     ;
     expect = 400;
@@ -1007,10 +1005,10 @@ describe("User routes", () => {
   });
 
   it("should remove user with admin privileges using id", async () => {
-    const userId = await User.findOne({ email: demoData.default.userUser.email });
+    const userId = await User.findOne({ email: demoData.users["user"].email });
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: { _id: userId } })
     ;
     expect = 200;
@@ -1025,8 +1023,8 @@ describe("User routes", () => {
   it("should remove user with admin privileges using email", async () => {
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
-      .send({ filter: { email: demoData.default.userUser.email } })
+      .set("Cookie", server.getAuthCookies("admin"))
+      .send({ filter: { email: demoData.users["user"].email } })
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -1040,7 +1038,7 @@ describe("User routes", () => {
   it("should remove all users with admin privileges", async () => {
     const res = await server.request
       .post("/api/user/removeUser")
-      .set("Cookie", server.getAuthCookiesAdmin())
+      .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: {} })
     ;
     expect = 200;
@@ -1052,8 +1050,4 @@ describe("User routes", () => {
     server.expect(res.body.count).to.be.at.least(1);
   });
 
-  it("should reset test database", async () => {
-    await server.db.resetDatabase();
-    await server.setupLoginCredentials();
-  });
 });

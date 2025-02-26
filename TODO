@@ -94,7 +94,6 @@
 - finish handling isGift (use it in audit of payment completed) - OK
 - make tests - OK
 
-- update index.language, index.dir, index.charset when user changes locale
 - winston colorize does not seem to work in any transport
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users)
@@ -102,7 +101,7 @@
 - review NOTES, clean it up...
 
 NEWFEATURE:
-- make more tests (use AI for this...)
+- make more tests (use also AI for this...)
 - configurare un account su Cloudflare...
 - gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)
 - gestire email preferences (clientEmailPreferencesUrl = `${clientBaseUrl}/email-preferences`)
