@@ -2,8 +2,12 @@ const url = require("url");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
+const AccessToken = require("../models/accessToken.model");
+const RefreshToken = require("../models/refreshToken.model");
+//const { cookieOptions } = require("../middlewares/authJwt");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
@@ -74,8 +78,6 @@ const arraysContainSameObjects = (a1, a2, property) => {
   return true;
 };
 
-//const { readdir, stat } = require("fs/promises");
-//const { join } = require("path");
 const dirSize = async (dir) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
@@ -325,7 +327,7 @@ const formatMoney = (number, locale = config.app.serverLocale, currency = config
 };
 
 /**
- * Returns stack only if not in production
+ * Returns stack only if not in production - TODO: deprecate this function?
  * 
  * err: {object} error object
  * 
@@ -339,6 +341,86 @@ const secureStack = (err) => {
   } else {
     return err.stack;
   }
+};
+
+/**
+ * Calls next function passed with an error object
+ * 
+ * next: {function} next function to be called
+ * message: {string} error message, already translated
+ * status: {integer} error status
+ * stack: {string} error stack
+ * 
+ * return: nothing, next() function is called with an error object
+ */
+
+const nextError = (next, message, status, stack) => {
+  const error = new Error(message);
+  error.status = status;
+  error.stack = !config.mode.production ? stack : "stack omitted in production";
+  return next(error);
+};
+
+const redirectToClientWithSuccess = (req, res, payload) => {
+  return redirectToClient(req, res, true, payload);
+};
+
+const redirectToClientWithError = (req, res, payload) => {
+  return redirectToClient(req, res, false, payload);
+};
+
+const redirectToClient = (req, res, success, payload) => {
+  const url = new URL(
+    success ?
+      `${config.baseUrlClient}/social-signin-success` :
+      `${config.baseUrlClient}/social-signin-error`
+  );
+  const stringifiedPayload = JSON.stringify(payload);
+  url.searchParams.set("data", stringifiedPayload);
+  //console.log(`redirecting to client url ${url.href }`);
+  res.redirect(url);
+};
+
+const createTokensAndCookies = async (req, res, next, user) => {
+  let accessToken, refreshToken;
+  
+  try {
+    // create access and refresh tokens
+    accessToken = await AccessToken.createToken(user);
+    refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
+  } catch (err) {
+    return nextError(next, req.t("Error creating tokens: {{err}}", { err: err.message }), 500, err.stack);
+  }
+  
+  try {
+    res.cookie("accessToken", accessToken, cookieOptions());
+    res.cookie("refreshToken", refreshToken, cookieOptions());
+    
+    /* istanbul ignore next*/
+    if (config.mode.development) {
+      logger.info(`                      now is ${localeDateTime(new Date())}`);
+      const { exp: expA } = jwt.decode(accessToken);
+      logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
+      const { exp: expR } = jwt.decode(refreshToken);
+      logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
+    }
+    return { accessToken, refreshToken };
+  } catch (err) {
+    return nextError(next, req.t("Error adding tokens to cookies: {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
+
+// options for HTTP-only cookies (secure, not accessible by javascript on the client)
+const cookieOptions = (setAge = true) => {
+  const options = {
+    httpOnly: true,
+    secure: config.mode.production,
+    samesite: config.mode.production ? "Strict" : "Lax",
+  };
+  return setAge ? {
+    ...options,
+    maxAge: config.app.auth.cookiesExpirationSeconds * 1000,
+  } : options;
 };
 
 module.exports = {
@@ -362,4 +444,9 @@ module.exports = {
   countryCodeToFlag,
   formatMoney,
   secureStack,
+  nextError,
+  redirectToClientWithSuccess,
+  redirectToClientWithError,
+  createTokensAndCookies,
+  cookieOptions,
 };

@@ -10,6 +10,10 @@ const demoData = {
       "password": process.env.ADMIN_USER_DEFAULT_PASSWORD,
       "firstName": "Marco",
       "lastName": "Solari",
+      "phone": "3331234567",
+      "address": "Via Roma 1, 00100 Roma",
+      "fiscalCode": "SLRMRC80A01H501A",
+      "businessName": "Fiat S.p.A.",
       "isVerified": true,
       "justRegistered": false,
       "isDeleted": false,
@@ -19,6 +23,10 @@ const demoData = {
       "password": "Alice!",
       "firstName": "Alice",
       "lastName": "Pesciolini",
+      "phone": "3332345678",
+      "address": "Corso Italia 2, 20212 Milano",
+      "fiscalCode": "PSCLC80A01H501A",
+      "businessName": "Wonka Industries",
       "isVerified": true,
       "justRegistered": false,
       "isDeleted": false,
@@ -28,6 +36,10 @@ const demoData = {
       "password": "Bob!",
       "firstName": "Bob",
       "lastName": "Telespalla",
+      "phone": "3333456789",
+      "address": "Viale Europa 3, 30323 Torino",
+      "fiscalCode": "BBBCCC80A01H501A",
+      "businessName": "Oceanic Airlines S.p.A.",
       "isVerified": true,
       "justRegistered": false,
       "isDeleted": false,
@@ -37,8 +49,25 @@ const demoData = {
       "password": "Charlie!",
       "firstName": "Charlie",
       "lastName": "Saltalafossa",
+      "phone": "3334567890",
+      "address": "Piazza Garibaldi 4, 40434 Napoli",
+      "fiscalCode": "CHRLSL80A01H501A",
+      "businessName": "Stark Industries",
       "isVerified": true,
       "justRegistered": false,
+      "isDeleted": false,
+    },
+    "userSocial": { // role: user (with social id)
+      "email": "donnie@mail.com",
+      "socialId": "PincoPallo:12345678",
+      "firstName": "Donnie",
+      "lastName": "Brasco",
+      // "phone": "3335678901",
+      // "address": "",
+      // "fiscalCode": "DNNBRC80A01H501A",
+      // "businessName": "Wayne Enterprises",
+      // "justRegistered": false,
+      "isVerified": true,
       "isDeleted": false,
     },
   },
@@ -77,7 +106,6 @@ const demoData = {
       "notes": "",
       "type": "motorino",
       "price": 88.88,
-      "imageNameOriginal": "pexels-002.jpg",
     },
     {
       "mdaCode": "2702",
@@ -94,10 +122,9 @@ const demoData = {
       "notes": "PULEGGIA MULTIRIGHE - AUTOVENTILATO",
       "type": "alternatore",
       "price": 77.77,
-      "imageNameOriginal": "pexels-003.jpg",
     },
     {
-      "mdaCode": "979",
+      "mdaCode": "0979",
       "oemCode": "OEM-ABC-4",
       "make": "FIAT",
       "models": ["500 X 2.0 multijet 4X4 (5526308…) 11.14-", "DOBLÓ 2.0 multijet (263A1.000) 02.10-", "DUCATO 2.0 multijet [115] (250A1.000) 06.11-06.16"],
@@ -111,15 +138,14 @@ const demoData = {
       "notes": "",
       "type": "motorino",
       "price": 66.66,
-      "imageNameOriginal": "pexels-004.jpg",
     },
-  ]
+  ],
+  "productsImages": {
+    "0332": "data/assets/products/images/pexels-001.jpg",
+    "0334": "data/assets/products/images/pexels-002.jpg",
+    "2702": "data/assets/products/images/pexels-003.jpg",
+    "0979": "data/assets/products/images/pexels-004.jpg",
+  },
 };
-
-// demoData.default = {};
-// demoData.default.adminUser = demoData.users[0];
-// demoData.default.operatorUser = demoData.users[1];
-// demoData.default.dealerUser = demoData.users[2];
-// demoData.default.userUser = demoData.users[3];
 
 module.exports = demoData;

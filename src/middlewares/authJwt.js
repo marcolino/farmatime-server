@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { isAdministrator, localeDateTime } = require("../helpers/misc");
+const { isAdministrator, localeDateTime, cookieOptions } = require("../helpers/misc");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
@@ -99,7 +99,7 @@ const verifyAccessTokenAllowGuest = (req, res, next) => {
 };
 
 const verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser = async (req, res, next) => {
-  verifyAccessToken(req, res, async () => { // only proceed with valid tokens
+  verifyAccessToken(req, res, async () => { // only proceed with valid tokens;
     if (req.parameters.userId) { // a userId was requested: check if she is admin
       if (req.parameters.userId === req.userId) {
         return next(); // the requested user id is the same as the requesting user's id: accept request
@@ -183,6 +183,7 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+/*
 // options for HTTP-only cookies (secure, not accessible by javascript on the client)
 const cookieOptions = (setAge = true) => {
   const options = {
@@ -195,6 +196,7 @@ const cookieOptions = (setAge = true) => {
     maxAge: config.app.auth.cookiesExpirationSeconds * 1000,
   } : options;
 };
+*/
 
 /*
 // tokens cleanup functions
@@ -219,6 +221,6 @@ module.exports = {
   verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser,
   verifyNotificationToken,
   isAdmin,
-  cookieOptions,
+  //cookieOptions,
   //cleanupExpiredTokens,
 };

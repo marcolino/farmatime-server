@@ -4,8 +4,8 @@
 
 const server = require("../server.test");
 const User = require("../../src/models/user.model");
-const Role = require("../../src/models/role.model");
-const configTest = require("../config.test");
+//const Role = require("../../src/models/role.model");
+const configTest = require("../setup.test.js");
 const demoData = require("../../data/demo.js");
 
 let expect;
@@ -361,7 +361,7 @@ describe("User routes", () => {
   });
 
   it("should not update user's profile for a different existent user - without admin access", async () => {
-    const userId = await User.findOne({ email: configTest.admin.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", server.getAuthCookies("user"))
@@ -398,7 +398,7 @@ describe("User routes", () => {
   });
 
   it("should not update another user's own property without admin access", async () => {
-    const userId = await User.findOne({ email: configTest.admin.email });
+    const userId = await User.findOne({ email: demoData.users["admin"].email });
     const res = await server.request
       .post("/api/user/updateUser")
       .set("Cookie", server.getAuthCookies("user"))
@@ -944,7 +944,7 @@ describe("User routes", () => {
     const res = await server.request
       .post("/api/user/deleteUser")
       .set("Cookie", server.getAuthCookies("admin"))
-      .send({ filter: { email: configTest.admin.email } })
+      .send({ filter: { email: demoData.users["admin"].email } })
       .send({})
     ;
     expect = 200;

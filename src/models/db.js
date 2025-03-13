@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
 const Env = require("./env.model.js");
 const User = require("./user.model.js");
 const Role = require("./role.model.js");
 const Plan = require("./plan.model.js");
 const Product = require("./product.model.js");
+const { uploadProductImage } = require("../controllers/products.controller.js");
 const { logger } = require("../controllers/logger.controller.js");
 const demoData = require("../../data/demo.js");
+const i18n = require("../middlewares/i18n.js");
 const config = require("../config.js");
 
 
@@ -15,7 +19,7 @@ const connect = async () => {
     `${process.env.MONGO_SCHEME}://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}/${process.env.MONGO_DB}` :
     config.mode.development ? // development db uri
       `${process.env.MONGO_DEV_LOCAL_SCHEME}://${process.env.MONGO_DEV_LOCAL_URL}/${process.env.MONGO_DEV_LOCAL_DB}` :
-      config.mode.testgithubactions ? // test in github actions db uri
+      config.mode.testInCI ? // test in github actions db uri
         `${process.env.MONGO_TEST_REMOTE_SCHEME}://${process.env.MONGO_TEST_REMOTE_USER}:${process.env.MONGO_TEST_REMOTE_PASS}@${process.env.MONGO_TEST_REMOTE_URL}/${process.env.MONGO_TEST_REMOTE_DB}` :
         config.mode.test ? // test db uri
           `${process.env.MONGO_TEST_LOCAL_SCHEME}://${process.env.MONGO_TEST_LOCAL_URL}/${process.env.MONGO_TEST_LOCAL_DB}` :
@@ -68,16 +72,6 @@ const connect = async () => {
  */
 const populate = async () => {
   try {
-    // if (mongoose.connection.readyState !== 1 || !mongoose.connection.db) {
-    //   throw new Error("Database is not connected yet.");
-    // }
-    // if (mongoose.connection.readyState !== 1) {
-    //   throw new Error("Database is not ready yet");
-    // }
-    // if (!mongoose.connection.db) {
-    //   throw new Error("Database is not connected yet");
-    // }
-
     if (config.mode.test) { // drop and populate database in test mode
       await mongoose.connection.db.dropDatabase();
     }
@@ -99,7 +93,6 @@ const populate = async () => {
       logger.error("Error populating envs collection:", err.message);
       throw err;
     }
-
     // check if users collection is empty
     try {
       const userCount = await User.estimatedDocumentCount();
@@ -120,11 +113,11 @@ const populate = async () => {
         for (const data of demoData.roles) {
           await Role.create(data);
         }
-        await addRoleToUser("admin", demoData.users.admin.email);
-        await addRoleToUser("operator", demoData.users.operator.email);
-        await addRoleToUser("dealer", demoData.users.dealer.email);
-        await addRoleToUser("user", demoData.users.user.email);
       }
+      await addRoleToUser("admin", demoData.users.admin.email);
+      await addRoleToUser("operator", demoData.users.operator.email);
+      await addRoleToUser("dealer", demoData.users.dealer.email);
+      await addRoleToUser("user", demoData.users.user.email);
     } catch (err) {
       logger.error("Error populating roles collection:", err.message);
       throw err;
@@ -137,8 +130,8 @@ const populate = async () => {
         for (const data of demoData.plans) {
           await Plan.create(data);
         }
-        await addPlanToUser("unlimited", demoData.users.admin.email);
       }
+      await addPlanToUser("unlimited", demoData.users.admin.email);
     } catch (err) {
       logger.error("Error populating plans collection:", err.message);
       throw err;
@@ -148,10 +141,14 @@ const populate = async () => {
     try {
       const productCount = await Product.estimatedDocumentCount();
       if (productCount === 0) {
+        // add products
         for (const data of demoData.products) {
           await Product.create(data);
         }
-        // TODO: add product images...
+        // add product images
+        for (const data of demoData.products) {
+          await addImageToProduct(demoData.productsImages[data.mdaCode], data.mdaCode)
+        }
       }
     } catch (err) {
       logger.error("Error populating products collection:", err.message);
@@ -179,12 +176,14 @@ const addRoleToUser = async (roleName, userEmail) => {
     }
 
     // add the role to the user's roles array
-    user.roles.push(role._id);
+    if (!user.roles.find(r => r.toString() === role._id.toString())) {
+      user.roles.push(role._id);
 
-    // save the updated user
-    await user.save();
-
-    logger.info(`added "${roleName}" role to "${userEmail}" user`);
+      // save the updated user
+      await user.save();
+ 
+      logger.info(`added "${roleName}" role to "${userEmail}" user`);
+    }
   } catch (err) {
     logger.error(`error adding "${roleName}" role to "${userEmail}" user:`, err);
     throw err;
@@ -207,14 +206,72 @@ const addPlanToUser = async (planName, userEmail) => {
     }
 
     // assign the plan to the user
-    user.plan = plan;
+    if (!user.plan?._id.toString() === plan._id.toString()) {
+      user.plan = plan;
 
-    // save the updated user
-    await user.save();
+      // save the updated user
+      await user.save();
 
-    logger.info(`added "${planName}" plan to "${userEmail}" user`);
+      logger.info(`added "${planName}" plan to "${userEmail}" user`);
+    }
   } catch (err) {
     logger.error(`error adding "${planName}" plan to "${userEmail}" user:`, err);
+    throw err;
+  }
+};
+
+// add admin role to admin user
+const addImageToProduct = async (imagePath, productMdaCode) => {
+  try {
+    // find the product by its mdaCode
+    const product = await Product.findOne({
+      mdaCode: productMdaCode
+    });
+    if (!product) {
+      throw new Error(`product with mdaCode "${productMdaCode}" not found`);
+    }
+
+    const absoluteImagePath = path.resolve(imagePath);
+
+    // check if the image exists
+    if (!fs.existsSync(absoluteImagePath)) {
+      throw new Error(`Imnage not found: ${absoluteImagePath}`);
+    }
+
+    // read the image file into a buffer
+    const imageBuffer = fs.readFileSync(absoluteImagePath);
+
+    // create a mock req object
+    const req = {
+      file: {
+        path: imagePath,
+        originalname: path.basename(imagePath),
+        buffer: imageBuffer,
+      },
+      body: {
+        productId: product._id
+      },
+      t: i18n.t,
+      // t: (...x) => console.log(...x),
+      // i18n: {
+      //   t: (...x) => console.log(...x)
+      // },
+    };
+
+    // upload the product image
+    await uploadProductImage(req, {
+      status: () => ({
+        json: () => {}
+      })
+    }, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+
+    logger.info(`added image to product with mdaCode "${productMdaCode}"`);
+  } catch (err) {
+    logger.error(`error adding image to product with mdaCode "${productMdaCode}":`, err);
     throw err;
   }
 };

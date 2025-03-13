@@ -1,4 +1,4 @@
 User-agent: *
  Disallow: /
 
-Sitemap: https://acme-prod.fly.dev/sitemap.xml
+Sitemap: http://localhost:5000/sitemap.xml

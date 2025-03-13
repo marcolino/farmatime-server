@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const Product = require("../models/product.model");
 const { logger } = require("./logger.controller");
 const { saveImageFile } = require("../helpers/images");
-const { isObject, isArray, isDealerAtLeast, diacriticMatchRegex, diacriticsRemove, secureStack } = require("../helpers/misc");
+const { isObject, isArray, isDealerAtLeast, diacriticMatchRegex, diacriticsRemove, secureStack, nextError } = require("../helpers/misc");
 const config = require("../config");
 
 
@@ -87,7 +87,7 @@ const getProduct = async (req, res, next) => {
     const productId = req.parameters.productId;
     const deletedToo = req.parameters.deletedToo ?? false;
     if (!mongoose.isValidObjectId(productId)) {
-      return next(Object.assign(new Error(req.t("Invalid ObjectId {{productId}}", { productId })), { status: 400 }));
+      return nextError(next, req.t("Invalid ObjectId {{productId}}", { productId }), 400);
     }
     const product = await Product.findOne(
       { _id: productId },
@@ -95,7 +95,7 @@ const getProduct = async (req, res, next) => {
       { allowDeleted: deletedToo }
     );
     if (!product) {
-      return next(Object.assign(new Error(req.t("Could not find any product by id {{id}}", { id: productId })), { status: 400 }));
+      return nextError(next, req.t("Could not find any product by id {{id}}", { id: productId }), 400);
     }
     const productData = {
       id: product._id,
@@ -118,7 +118,7 @@ const getProduct = async (req, res, next) => {
     };
     return res.status(200).json({ product: productData });
   } catch (err) {
-    return next(Object.assign(new Error(req.t("Error finding product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -166,8 +166,7 @@ const deleteProduct = async (req, res, next) => {
       return res.status(400).json({ message: req.t("No product have been deleted") });
     }
   } catch (err) {
-    //logger.error("Could not delete product(s) with filter ${JSON.stringify(filter)}:", err);
-    return next(Object.assign(new Error(req.t("Could not delete product(s) with filter {{filter}}", {filter: JSON.stringify(filter)}), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Could not delete product(s) with filter {{filter}}: {{ err}}", { filter: JSON.stringify(filter), err: err.message }), 500, err.stack);
   }
 };
 
@@ -185,8 +184,7 @@ const insertProduct = async (req, res, next) => {
     await product.save();
     return res.status(200).json({ id: product._id, message: req.t("Product has been inserted") });
   } catch (err) {
-    //logger.error("Error inserting product:", err);
-    return next(Object.assign(new Error(req.t("Error inserting product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error inserting product: {{ err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -279,12 +277,10 @@ const updateProduct = async (req, res, next) => {
       await product.save();
       return res.status(200).json({ product });
     } catch (err) {
-      //logger.error("Error updating product:", err);
-      return next(Object.assign(new Error(req.t("Error updating product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+      return nextError(next, req.t("Error updating product: {{err}}", { err: err.message }), 500, err.stack);
     }
   } catch (err) {
-    //logger.error("Error finding product:", err);
-    return next(Object.assign(new Error(req.t("Error finding product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -310,20 +306,18 @@ const uploadProductImage = async (req, res, next) => {
       product.imageNameOriginal = result.imageNameOriginal;
       product.imageName = result.imageName;
     } catch (err) {
-      //return res.status(400).json({ message: err.message });
-      return next(Object.assign(new Error(req.t("Error saving product image: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+      return nextError(next, req.t("Error saving product image: {{err}}", { err: err.message }), 500, err.stack);
     }
 
     try {
       await product.save();
     } catch (err) {
-      return next(Object.assign(new Error(req.t("Error updating product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+      return nextError(next, req.t("Error updating product: {{err}}", { err: err.message }), 500, err.stack);      
     }
 
-    return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{file}}", { fileName: product.imageName, file: req.file }) });
+    return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{filePath}}", { fileName: product.imageName, filePath: req.file.path }) });
   } catch (err) {
-    //logger.error("Error finding product:", err);
-    return next(Object.assign(new Error(req.t("Error finding product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -354,8 +348,7 @@ const removeProduct = async (req, res, next) => {
       return res.status(400).json({ message: req.t("No product have been removed") });
     }
   } catch (err) {
-    //logger.error("Error finding product:", err);
-    return next(Object.assign(new Error(req.t("Error finding product: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
   

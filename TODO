@@ -93,14 +93,16 @@
 - change "log" con "sign" (out/in/up/...) - OK
 - finish handling isGift (use it in audit of payment completed) - OK
 - make tests - OK
+- winston colorize does not seem to work in any transport - OK
 
-- winston colorize does not seem to work in any transport
+- server.sinon => sinon, server.expect => expect ...
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users)
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
 - review NOTES, clean it up...
 
 NEWFEATURE:
+- after social login, assign a default role to user ("user") ...
 - make more tests (use also AI for this...)
 - configurare un account su Cloudflare...
 - gestire email unsubscribe (clientEmailUnsubscribeUrl = `${clientBaseUrl}/email-unsubscribe`)

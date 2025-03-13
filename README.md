@@ -8,7 +8,7 @@
 
 <!--[![Mocha tests ok](https://github.com/marcolino/acme-server/blob/main/public/badges/mocha.svg)](tests)-->
 <!--![Test Status](https://github.com/marcolino/acme-server/actions/workflows/test.yml/badge.svg)-->
-![Tests Passed](https://img.shields.io/badge/tests%20passed-116-brightgreen)
+![Tests Passed](https://img.shields.io/badge/tests%20passed-229-brightgreen)
 ![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/acme-server)
 ![GitHub forks](https://img.shields.io/github/forks/marcolino/acme-server?style=social)
 ![GitHub contributors](https://img.shields.io/github/contributors/marcolino/acme-server)
@@ -181,7 +181,7 @@ If you see an error message or run into an issue, please [create bug report](htt
 If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/acme-server/acme-server/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
 If a similar feature request already exists, don't forget to leave a "+1".
-If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly :)
+If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly.
 
 
 # Contributing

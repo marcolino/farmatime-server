@@ -1,17 +1,23 @@
-const jwt = require("jsonwebtoken");
+//const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const validateEmail = require("email-validator");
-const { cookieOptions } = require("../middlewares/authJwt");
+//const { cookieOptions } = require("../middlewares/authJwt");
 const emailService = require("../services/email.service");
 const { audit } = require("../helpers/messaging");
-const { normalizeEmail, localeDateTime } = require("../helpers/misc");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const Plan = require("../models/plan.model");
-const AccessToken = require("../models/accessToken.model");
-const RefreshToken = require("../models/refreshToken.model");
+// const AccessToken = require("../models/accessToken.model");
+// const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
-const { isAdministrator, secureStack } = require("../helpers/misc");
+const {
+  isAdministrator, secureStack,
+  normalizeEmail, /*localeDateTime, */nextError,
+  redirectToClientWithError, redirectToClientWithSuccess,
+  createTokensAndCookies, cookieOptions,
+} = require("../helpers/misc");
+
 const passport = require("passport");
 const config = require("../config");
 
@@ -29,66 +35,83 @@ const googleLogin = (req, res, next) => {
 
 // Google OAuth callback
 const googleCallback = (req, res, next) => {
-  // console.log('googleCallback Debug:', {
-  //   query: req.query,
-  //   headers: req.headers,
-  //   baseUrl: config.baseUrl,
-  //   environment: process.env.NODE_ENV,
-  // });
-
   const state = req.query.state ? JSON.parse(req.query.state) : {};
+  //console.log("GOOGLE STATE:", state);
   req.parameters.rememberMe = state.rememberMe || false; // put rememberMe flag in req parameters
 
-  passport.authenticate("google", { failureRedirect: "/" }, (err, userSocial/*, info*/) => {
+  passport.authenticate("google", { failureRedirect: "/" }, (err, profile) => {
     if (err) {
       logger.error("Google authentication error:", err);
-      return next(err);  // handle error
+      return next(err); // handle error
     }
-    //console.log("User logged in with Google social OAuth:", user);
-    req.userSocial = userSocial; // put userSocial in req
+    //logger.info("User logged in with Google social OAuth:", profile);
+    const userSocial = {};
+    userSocial.socialId = `${profile?.provider}:${profile?.id}`;
+    userSocial.provider = profile?.provider;
+    userSocial.email = profile?.emails?.find(email => email.verified)?.value; // get first verified email
+    userSocial.firstName = profile?.name?.givenName;
+    userSocial.lastName = profile?.name?.familyName;
+    if (profile.photos) {
+      userSocial.photo = profile.photos[0]?.value; // use only the first photo, if any
+    }
+    req.userSocial = userSocial;
     return socialLogin(req, res, next);
   })(req, res, next);
 };
 
 // Facebook OAuth login
 const facebookLogin = (req, res, next) => {
+  //console.log("facebookLogin");
+  const rememberMe = req.parameters.rememberMe || false;
+  const state = JSON.stringify({ rememberMe }); // encode it as a string
   passport.authenticate("facebook", {
-    scope: config.app.oauth.scope.facebook
+    scope: config.app.oauth.scope.facebook,
+    state, // pass the state
   })(req, res, next);
 };
 
 // Facebook OAuth callback
 const facebookCallback = (req, res, next) => {
-  passport.authenticate("facebook", { failureRedirect: "/" }, (err, userSocial/*, info*/) => {
+  const state = req.query.state ? JSON.parse(req.query.state) : {};
+  //console.log("FACEBOOK STATE:", state);
+  req.parameters.rememberMe = state.rememberMe || false; // put rememberMe flag in req parameters
+  
+  passport.authenticate("facebook", { failureRedirect: "/" }, (err, profile) => {
     if (err) {
       logger.error(`Facebook authentication error: ${err}`);
-      return next(err);  // handle error
+      return next(err); // handle error
     }
-    //console.log("User logged in with Fcebook social OAuth:", user);
-    req.userSocial = userSocial; // put userSocial in request
+    //logger.info("User logged in with Facebook social OAuth:", profile);
+    const userSocial = {};
+    userSocial.socialId = `${profile?.provider}:${profile?.id}`;
+    userSocial.provider = profile?.provider;
+    userSocial.email = profile?.emails?.find(email => email.verified)?.value; // get first verified email
+    userSocial.firstName = profile?.name?.givenName;
+    userSocial.lastName = profile?.name?.familyName;
+    if (profile.photos) {
+      userSocial.photo = profile.photos[0]?.value; // use only the first photo, if any
+    }
+    req.userSocial = userSocial;
+    //console.log("User social (facebook):", userSocial);
     return socialLogin(req, res, next);
   })(req, res, next);
 };
 
-const socialLogin = async (req, res) => {
-  if (!req?.userSocial) { // can userSocial be undefined?
-    logger.error("Social authentication incomplete");
+const socialLogin = async (req, res, next) => {
+  if (!req?.userSocial) {
+    await logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
   }
 
+  // default roles and plan to assign to a new socially registered user
   const roleName = "user";
   const planName = "free";
-  const socialId = req.userSocial.id;
-  const provider = req.userSocial.provider;
-  const firstName = req.userSocial.given_name;
-  const lastName = req.userSocial.given_name;
-  const email = normalizeEmail(req.userSocial.emails[0].value); // we do only only the first one...
 
   // check if a user with the given email exists already
-  let user;
+  let user, plan, role;
   try {
     user = await User.findOne(
-      { email },
+      { email: req.userSocial.email },
       null,
       {
         allowDeleted: true,
@@ -99,42 +122,43 @@ const socialLogin = async (req, res) => {
       .exec()
     ;
   } catch (err) {
-    logger.error(`Error finding user in social ${provider} signin request: ${err.message}`);
     return redirectToClientWithError(req, res, {
-      message: req.t("Error finding user in social {{provider}} signin request: {{err}}", { provider, err: err.message })
+      message: req.t("Error finding user in social {{provider}} signin request ({{err}})", { provider: req.userSocial.provider, err: err.message })
     }); 
   }
   
-  if (user) { // check if a user with given email exists already
+  if (user) { // a user with given email exists already
     // check user is deleted
     if (user.isDeleted) { // we just force user's rebirth
-      user.deleded = false;
-      // return redirectToClientWithError(req, res, {
-      //   message: req.t("The account of this user has been deleted")
-      // }); 
+      user.deleted = false;
     }
 
     // check email is verified
-    if (!user.isVerified) {
+    if (!user.isVerified) { // we do not accept unverified users
       return redirectToClientWithError(req, res, {
-        message: req.t("This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email") + ".",
+        message: req.t("This account is waiting for a verification; if you did register it, check your emails, or ask for a new verificaation email logging in with email") + ".",
         code: "ACCOUNT_WAITING_FOR_VERIFICATION",
         codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
       }); 
     }
+
+    try { // update user
+      await user.save();
+    } catch (err) {
+      return redirectToClientWithError(req, res, {
+        message: req.t("User social login update error: {{error}}", { error: err.message })
+      }); 
+    } 
   } else { // user with given email does not exist, create a new one
-    let role, plan;
     // get the role
     try {
       role = await Role.findOne({ name: roleName });
     } catch (err) {
-      logger.error(`Error finding role ${roleName}: ${err}`);
       return redirectToClientWithError(req, res, {
         message: req.t("Error finding role {{roleName}}: {{error}}", { roleName, error: err.message })
       }); 
     }
     if (!role) {
-      //return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName }) });
       return redirectToClientWithError(req, res, {
         message: req.t("Invalid role name {{roleName}}", { roleName })
       }); 
@@ -144,9 +168,8 @@ const socialLogin = async (req, res) => {
     try {
       plan = await Plan.findOne({ name: planName });
     } catch (err) {
-      logger.error(`Error finding plan ${planName}: ${err.message}`);
       return redirectToClientWithError(req, res, {
-        message: req.t("Error finding plan {{planName}}: {{err}}", { planName, err: err.message })
+        message: req.t("Error finding plan {{planName}} ({{err}})", { planName, err: err.message })
       }); 
     }
     if (!plan) {
@@ -156,33 +179,34 @@ const socialLogin = async (req, res) => {
     }
 
     // create new user
-    user = new User({
-      email,
-      password: "", // set an empty password, to have a safe record 
-      socialId: `${provider}:${socialId}`,
-      firstName: firstName,
-      lastName: lastName,
-      roles: [role._id],
-      plan: plan._id,
-      language: req.language,
-      isVerified: true, // social authorized user is verified automatically
-      isDeleted: false, // if the user was deleted, force it's rebirth
-    });
+    try {
+      user = await User.create({
+        email: req.userSocial.email,
+        password: "", // set an empty password, to have a safe record 
+        socialId: req.userSocial.socialId,
+        firstName: req.userSocial.firstName,
+        lastName: req.userSocial.lastName,
+        roles: [role._id],
+        plan: plan._id,
+        language: req.language,
+        isVerified: true, // socially registered user is verified automatically
+        isDeleted: false, // socially registered user can't be deleted
+      });
+      if (!user) {
+        return redirectToClientWithError(req, res, {
+          message: req.t("No user created")
+        });
+      }
+    } catch (err) {
+      return redirectToClientWithError(req, res, {
+        message: req.t("User social login creation error: {{error}}", { error: err.message })
+      }); 
+    }
   }
-
-  logger.info(`User social signin email: ${user.email}`);
 
   // audit social logins
-  audit({ req, mode: "action", subject: `User social sign in`, htmlContent: `Social sign in with (${provider}) provider of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
-
-  try {
-    await user.save();
-  } catch (err) {
-    //logger.error(`User oauth login creation/update error: ${err}`);
-    return redirectToClientWithError(req, res, {
-      message: req.t("User social login creation/update error: {{error}}", { error: err.message })
-    }); 
-  }
+  logger.info(`User social login email: ${user?.email}`);
+  audit({ req, mode: "action", subject: `User social sign in`, htmlContent: `Social sign in with (${req.userSocial.provider}) provider of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
 
   const payload = {
     id: user._id,
@@ -191,63 +215,17 @@ const socialLogin = async (req, res) => {
     lastName: user.lastName,
     roles: user.roles,
     plan: user.plan,
+    deleted: user.deleted,
     justRegistered: user.justRegistered,
-    //accessToken: user.accessToken,
-    //refreshToken: user.refreshToken,
   };
 
+  // create tokens ad add them to request cookie
   try {
-    const accessToken = await AccessToken.createToken(user);
-    const refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
-  
-    // const maxAgeAccessToken = config.app.auth.accessTokenExpirationSeconds * 1000; // set access token max age (milliseconds) 
-    // const maxAgeRefreshToken = (req.parameters.isRememberMe ? // set refresh token max age (milliseconds) based on remember me
-    //   config.app.auth.refreshTokenExpirationDontRememberMeSeconds :
-    //   config.app.auth.refreshTokenExpirationSeconds
-    // ) * 1000;
-
-    // set HTTP-only cookies
-    res.cookie("accessToken", accessToken, cookieOptions());
-    // res.cookie("accessToken", accessToken, {
-    //   httpOnly: true,
-    //   secure: config.mode.production, // use secure cookies only in production
-    //   sameSite: config.mode.production ? "Strict" : "Lax",
-    //   //maxAge: maxAgeAccessToken,
-    //   maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-    // });
-  
-    res.cookie("refreshToken", refreshToken, cookieOptions());
-    // res.cookie("refreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   secure: config.mode.production, // use secure cookies only in production
-    //   sameSite: config.mode.production ? "Strict" : "Lax",
-    //   //maxAge: maxAgeRefreshToken
-    //   maxAge: 60 * 60 * 24 * 30 * 1000, // TO AVOID COOKIES EXPIRE AT HE SAME TIME OF TOKENS
-    // });
+    await createTokensAndCookies(req, res, next, user);
   } catch (err) {
     return redirectToClientWithError(req, res, { message: `Error creating tokens: ${err}` });
   }
-
   redirectToClientWithSuccess(req, res, payload); // redirect to the client after successful login
-};
-
-const redirectToClientWithSuccess = (req, res, payload) => {
-  return redirectToClient(req, res, true, payload);
-};
-
-const redirectToClientWithError = (req, res, payload) => {
-  return redirectToClient(req, res, false, payload);
-};
-
-const redirectToClient = (req, res, success, payload) => {
-  const url = new URL(
-    success ?
-      `${config.baseUrlClient}/social-signin-success` :
-      `${config.baseUrlClient}/social-signin-error`
-  );
-  const stringifiedPayload = JSON.stringify(payload);
-  url.searchParams.set("data", stringifiedPayload);
-  res.redirect(url);
 };
 
 // social OAuth revoke
@@ -282,6 +260,7 @@ const signup = async (req, res, next) => {
   }
   const email = normalizeEmail(req.parameters.email);
 
+  /* istanbul ignore next */
   if (config.mode.test) { // in test mode we allow role and plan to be forced by client
     if (req.parameters.forcerole) {
       roleName = req.parameters.forcerole;
@@ -296,10 +275,7 @@ const signup = async (req, res, next) => {
     role = await Role.findOne({ name: roleName });
   } catch (err) {
     logger.error(`Error finding role ${roleName}: ${err}`);
-
-    // TODO: change all (?) next(Object.assign with res.status( ...
-    //return next(Object.assign(new Error(err.message), { status: 500 }));
-    return res.status(500).json({ message: req.t("Error finding role {{ roleName }}: {{ err }}", { roleName, err: err.message }), stack: secureStack(err) });
+    return nextError(next, req.t("Error finding role {{roleName}}: {{err}}", { roleName, err: err.message }), 500, err.stack);
   }
   if (!role) {
     return res.status(400).json({ message: req.t("Invalid role name {{roleName}}", { roleName })});
@@ -310,8 +286,7 @@ const signup = async (req, res, next) => {
   try {
     plan = await Plan.findOne({name: planName});
   } catch (err) {
-    logger.error(`Error finding plan ${planName}: ${err}`);
-    return next(Object.assign(new Error(err.message), { status: 500 }));
+    return nextError(next, req.t("Error finding plan {{planName}}: {{err}}", { planName, err: err.message }), 500, err.stack);
   }
   if (!plan) {
     return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName })});
@@ -327,12 +302,11 @@ const signup = async (req, res, next) => {
   });
 
   try {
-    user.save();
+    await user.save();
   } catch (err) {
     // we don't check duplicated user email (err.code === 11000)
     // as it is done already as a route middleware
-    logger.error(`New user creation error: ${err}`);
-    return next(Object.assign(new Error(err.message), { status: 500, stack: secureStack(err) }));
+    return nextError(next, req.t("New user creation error: {{err}}", { err: err.message }), 500, err.stack);
   }
     
   // send verification code
@@ -352,6 +326,7 @@ const signup = async (req, res, next) => {
         signupVerificationCode: signupVerification.code,
       },
     });
+
     return res.status(201).json({
       message: req.t("A verification code has been sent to {{email}}", { email: user.email }),
       codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
@@ -359,13 +334,13 @@ const signup = async (req, res, next) => {
       ...(!config.mode.production) && { code: signupVerification.code } // to enble test mode to verify signup
     });
   } catch (err) {
-    //logger.error(`Error sending verification code via ${config.app.auth.codeDeliveryMedium}: ${err}`);
-    return next(Object.assign(new Error(req.t("Error sending verification code via {{medium}}: {{ err }}", { medium: config.app.auth.codeDeliveryMedium, err: err.message }), { status: 400, stack: secureStack(err) })));
+    return nextError(next, req.t("Error sending verification code via {{medium}}: {{err}}", { medium: config.app.auth.codeDeliveryMedium, err: err.message }), 400, err.stack);
   }
 };
 
 const resendSignupVerificationCode = async (req, res, next) => {
   try {
+    let signupVerification;
     if (!req.parameters?.email) {
       return res.status(400).json({ message: req.t("Please specify an email") });
     }
@@ -380,7 +355,7 @@ const resendSignupVerificationCode = async (req, res, next) => {
         return res.status(400).json({ message: req.t("This account has already been verified, you can log in") });
       }
 
-      const signupVerification = await user.generateVerificationCode(user._id);
+      signupVerification = await user.generateVerificationCode(user._id);
       await signupVerification.save(); // save the verification code
 
       await emailService.send(req, {
@@ -393,17 +368,19 @@ const resendSignupVerificationCode = async (req, res, next) => {
           signupVerificationCode: signupVerification.code,
         },
       });
+    } else { // email not found... but we do not error out, to reduce attack surface...
+      //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
     }
     
     res.status(200).json({
-      message: req.t("If the account exists, a verification code has been resent to {{to}} via {{codeDeliveryMedium}}", { to: user.email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium }),
+      message: req.t("If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
+        { to: user?.email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium }),
       codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
-      ...(!config.mode.production) && { code: signupVerification.code } // to enble non production modes to confirm signup
+      ...(!config.mode.production) && { code: signupVerification?.code } // to enable non production modes to confirm signup
     });
 
   } catch (err) {
-    //logger.error(`Error resending signup code: ${err}`);
-    return next(Object.assign(new Error(req.t("Error resending signup code: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error resending signup code: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -442,16 +419,13 @@ const signupVerification = async (req, res, next) => {
         audit({ req, mode: "action", subject: `User sign up`, htmlContent: `Sign up of user ${userNew.firstName} ${userNew.lastName} (email: ${userNew.email})` });
         return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
       } catch (err) {
-        //logger.error("Error saving user in signup verification:", err);
-        return next(Object.assign(new Error(req.t("Error saving user in signup verification: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+        return nextError(next, req.t("Error saving user in signup verification: {{err}}", { err: err.message }), 500, err.stack);
       }
     } catch (err) {
-      //logger.error("Error finding user in signup verification:", err);
-      return next(Object.assign(new Error(req.t("Error finding user in signup verification: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+      return nextError(next, req.t("Error finding user in signup verification: {{err}}", { err: err.message }), 500, err.stack);
     }
   } catch (err) {
-    //logger.error("Error verifying signup:", err);
-    return next(Object.assign(new Error(req.t("Error verifying signup: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error verifying signup: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -494,8 +468,12 @@ const signin = async (req, res, next) => {
       });
     }
 
+    if (!req.parameters.password) {
+      return res.status(400).json({ message: req.t("A password is mandatory") });
+    }
+
     // check for social auth user
-    if (!user.password && user.socialId) {
+    if (!user.password && user.socialId) { // no password and social id
       let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
       provider = provider.charAt(0).toUpperCase() + provider.slice(1);
       return res.status(401).json({
@@ -504,88 +482,60 @@ const signin = async (req, res, next) => {
           { provider }
         ),
       });
-    } else {
-      // validate password
-      if (
-        !user.comparePassword(req.parameters.password, user.password) &&
-        !user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)
-      ) {
-        return res.status(401).json({
-          message: req.t("Wrong password"),
-        });
-      }
     }
 
-    try {
-      // create access and refresh tokens
-      const accessToken = await AccessToken.createToken(user);
-      const refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
-
-      res.cookie("accessToken", accessToken, cookieOptions());
-      res.cookie("refreshToken", refreshToken, cookieOptions());
-
-      logger.info(`User signed in: ${user.email}`);
-      if (config.mode.development) {
-        logger.info(`                      now is ${localeDateTime(new Date())}`);
-        const { exp: expA } = jwt.decode(accessToken);
-        logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
-        const { exp: expR } = jwt.decode(refreshToken);
-        logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
-      }
-
-      // audit logins
-      audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
-
-      res.status(200).json({
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        roles: user.roles,
-        plan: user.plan,
-        justRegistered: user.justRegistered,
-        preferences: user.preferences.toObject(),
+    // validate password
+    if (
+      !user.comparePassword(req.parameters.password, user.password) &&
+      !user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)
+    ) {
+      return res.status(401).json({
+        message: req.t("Wrong password"),
       });
-    } catch (err) {
-      //logger.error(req.t("Error creating tokens: {{err}}", { err: err.message }));
-      return next(Object.assign(new Error(req.t("Error creating tokens: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
     }
+
+    // create tokens ad add them to request cookie
+    await createTokensAndCookies(req, res, next, user);
+   
+    logger.info(`User signed in: ${user.email}`);
+
+    // audit logins
+    audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
+
+    res.status(200).json({
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      roles: user.roles,
+      plan: user.plan,
+      justRegistered: user.justRegistered,
+      preferences: user.preferences.toObject(),
+    });
   } catch (err) {
-    if (err) {
-      //logger.error(req.t("Error finding user in signin request: {{err}}", { err: err.message }));
-      return next(Object.assign(new Error(req.t("Error finding user in signin request: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
-    }
+    return nextError(next, req.t("Error finding user in signin request: {{err}}", { err: err.message }), 500, err.stack);
   } 
 };
 
 const signout = async (req, res, next) => {
-  const email = normalizeEmail(req.parameters.email);
+  const email = normalizeEmail(req.parameters.email); // TODO: always normalize email
 
+  // invalidate access and refresh tokens
   try {
-    const user = await User.findOne({ email });
-
-    // check user is found
+    const user = await User.findOneAndUpdate({ email }, {
+      $set: {
+        accessToken: null,
+        refreshToken: null
+      }
+    });
     if (!user) {
       return res.status(401).json({ message: req.t("User not found") });
     }
 
     // audit signouts
     //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
-  
-    // invalidate access and refresh tokens
-    try {
-      await User.findOneAndUpdate({
-        _id: user.id
-      }, {
-        $set: {
-          accessToken: null,
-          refreshToken: null
-        }
-      });
-      logger.info(`User signed out: ${user.email}`);
-    } catch (err) {
-      return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
-    }
+
+    logger.info(`User signed out: ${user.email}`);
 
     // clear HTTP-only auth cookies
     res.clearCookie("accessToken", cookieOptions(false));
@@ -593,8 +543,7 @@ const signout = async (req, res, next) => {
 
     return res.status(200).json({ message: req.t("Sign out successful") });
   } catch (err) {
-    //logger.error(req.t("Error in signout request: {{err}}", { err: err.message }));
-    return next(Object.assign(new Error(req.t("Error signing out user: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error signing out user: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -608,18 +557,10 @@ const resetPassword = async (req, res, next) => {
       const resetPassword = user.generatePasswordResetCode();
       user.resetPasswordCode = resetPassword.code;
       user.resetPasswordExpires = resetPassword.expires;
-
+ 
       await user.save(); // save the updated user
 
       // send email
-      const subject = req.t("Password change request");
-      const to = user.email;
-      const from = config.email.administration.from;
-      logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
-      if (config.mode.production) {
-        logger.info(`Reset password code: ${user.resetPasswordCode}`);
-      }
-
       await emailService.send(req, {
         to: user.email,
         subject: req.t("Reset password code"),
@@ -630,6 +571,10 @@ const resetPassword = async (req, res, next) => {
           resetPasswordCode: user.resetPasswordCode,
         },
       });
+      /* istanbul ignore next */
+      if (config.mode.production) {
+        logger.info(`Reset password code: ${user.resetPasswordCode}`);
+      }
     } else {
       // email not found... but we do not error out, to reduce attack surface...
       //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
@@ -642,8 +587,7 @@ const resetPassword = async (req, res, next) => {
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
   } catch (err) {
-    //logger.error("Error resetting password:", err);
-    return next(Object.assign(new Error(req.t("Error resetting password: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error resetting password: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -653,11 +597,17 @@ const resetPasswordConfirm = async (req, res, next) => {
     const { password } = req.parameters;
     const { code } = req.parameters;
 
+    if (!email) {
+      return res.status(400).json({message: req.t("To confirm reset password an email is mandatory"), code: "EMAIL_NOT_FOUND"});
+    }
+    if (!password) {
+      return res.status(400).json({message: req.t("To confirm reset password the password is mandatory"), code: "PASSWORD_NOT_FOUND"});
+    }
     if (!code) {
       return res.status(400).json({message: req.t("Password reset code not found"), code: "CODE_NOT_FOUND"});
     }
-    // if we want to distinguish among invalid / expired we have to split the following query
-    const user = await User.findOne({
+    
+    const user = await User.findOne({ // if we want to distinguish among invalid / expired we have to split this query
       email,
       resetPasswordCode: code,
       resetPasswordExpires: {
@@ -678,8 +628,7 @@ const resetPasswordConfirm = async (req, res, next) => {
     return res.status(200).json({message: req.t("Your password has been updated")});
 
   } catch (err) {
-    //logger.error("Error in reset password confirm:", err);
-    return next(Object.assign(new Error(req.t("Error in reset password confirm: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error in reset password confirm: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -697,7 +646,7 @@ const resendResetPasswordCode = async (req, res, next) => {
 
     const user = await User.findOne({ email });
     if (user) {
-      //if (user.isVerified) return res.status(400).json({ message: req.t("This account has already been verified") + ". " + req.t("You can log in")});
+      // if (user.isVerified) return res.status(400).json({ message: req.t("This account has already been verified") + ". " + req.t("You can log in")});
 
       const resetPassword = user.generatePasswordResetCode();
       user.resetPasswordCode = resetPassword.code;
@@ -708,11 +657,11 @@ const resendResetPasswordCode = async (req, res, next) => {
 
       const subject = req.t("Reset Password Verification Code");
       const to = user.email;
-      const from = process.env.FROM_EMAIL; // TODO: use config...
+      const from = config.email.administration.from;
       logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
-      if (config.mode.production) {
+      //if (config.mode.production) { // TODO: why to log reset password code only in production mode?
         logger.info(`Reset password code: ${user.resetPasswordCode}`);
-      }
+      //}
 
       await emailService.send(req, {
         to: user.email,
@@ -730,15 +679,14 @@ const resendResetPasswordCode = async (req, res, next) => {
     }
 
     return res.status(200).json({
-      message: `If the account exists, a verification code has been sent to ${email}`,
+      message: req.t("If the account exists, a verification code has been sent to {{email}}", { email }),
       codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
       codeDeliveryEmail: email,
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
     });
 
   } catch (err) {
-    //logger.error("Error resending reset password code:", err);
-    return next(Object.assign(new Error(req.t("Error resending reset password code: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error resending reset password code: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -756,8 +704,7 @@ const notificationVerification = async (req, res, next) => {
     ;
     return res.status(200).json({user});
   } catch (err) {
-    //logger.error(`Error finding user in notification verification request: ${err.message}`);
-    return next(Object.assign(new Error(req.t("Error finding user in notification verification request: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding user in notification verification request: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -771,22 +718,15 @@ const notificationPreferencesSave = async (req, res, next) => {
       userId = req.parameters.userId; // if admin, accept a specific user id in request
     }
   }
-  // if (!await isAdministrator(userId)) {
-  //   const error = new Error(req.t("Sorry, you must have admin role to save notification preferences"));
-  //   error.code = 403;
-  //   throw error;
-  // } else {
-  //   userId = req.parameters.userId;
-  // }
 
   if (!req.parameters.notificationPreferences) {
-    throw new Error(req.t("Notification preferences is mandatory"));
+    return next(new Error(req.t("Notification preferences is mandatory"), { status: 400 }));
   }
 
   try {
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({ _id: mongoose.Types.ObjectId.createFromHexString(userId) });
     if (!user) {
-      throw new Error(req.t("User not found"));
+      return nextError(next, req.t("User not found"), 500);
     }
 
     user.preferences.notifications = req.parameters.notificationPreferences;
@@ -794,8 +734,8 @@ const notificationPreferencesSave = async (req, res, next) => {
 
     return res.status(200).json({ message: req.t("Notification preferences updated"), user });
   } catch (err) {
-    //logger.error("Error updating notification preferences:", err);
-    return next(Object.assign(new Error(req.t("Error updating notification preferences: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    // note: for some reason, using : {{err}} in the message here does not work
+    return nextError(next, req.t("Error updating notification preferences ({{err}})", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -817,4 +757,6 @@ module.exports = {
   facebookRevoke,
   notificationVerification,
   notificationPreferencesSave,
+  socialLogin,
+  socialRevoke,
 };

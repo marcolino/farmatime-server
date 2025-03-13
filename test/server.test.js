@@ -5,12 +5,12 @@ const server = require("../server");
 const { initializeDatabase } = require("../src/models/db");
 const { supertestWithLanguage } = require("./plugins/language");
 const demoData = require("../data/demo.js");
-const config = require("./config.test");
+const setup = require("./setup.test.js");
 
 chai.use(spies); // with spies we test behavior, not implementation: Spies helps ensure that functions are called as expected without worrying about their implementation
 chai.should();
-const requestWithLanguage = supertestWithLanguage(config.language)(server); // use supertest adding an Accept-Header language in config.language
-const agent = supertestWithLanguage(config.language)(server);
+const requestWithLanguage = supertestWithLanguage(setup.language)(server); // use supertest adding an Accept-Header language in setup.language
+const agent = supertestWithLanguage(setup.language)(server);
 const accessTokenCookies = [], refreshTokenCookies = [];
 
 process.on("unhandledRejection", (reason, promise) => { // this should not happen!
@@ -73,12 +73,41 @@ module.exports = {
   getAuthCookies,
 };
 
-// require all tests here, to choose the sequence
 
+// require all tests here, to define the sequence
 require("./basic/basic.test");
+
+require("./config/config.test");
+
 require("./helpers/environment.test");
+
+require("./controllers/product.test");
+
+require("./models/plan.model.test");
+require("./models/role.model.test");
+require("./models/accessToken.model.test");
+require("./models/refreshToken.model.test");
+//require("./models/env.model.test"); // TODO...
+//require("./models/notificationToken.model.test"); // TODO...
+//require("./models/product.model.test"); // TODO...
+//require("./models/user.model.test"); // TODO...
+//require("./models/verificationCode.model.test"); // TODO...
+
 require("./controllers/auth.test");
 require("./controllers/auth-social.test");
+require("./controllers/auth-signupVerification.test");
+require("./controllers/auth-resendSignupVerificationCode.test");
+require("./controllers/auth-signup.test");
+require("./controllers/auth-googleLogin.test");
+require("./controllers/auth-facebookLogin.test");
+require("./controllers/auth-googleCallback.test");
+require("./controllers/auth-facebookCallback.test");
+require("./controllers/auth-socialLogin.test");
+require("./controllers/auth-socialRevoke.test");
+require("./controllers/auth-resetPassword.test");
+require("./controllers/auth-resendResetPasswordCode.test");
+require("./controllers/auth-redirect.test");
+
 require("./controllers/user.test");
+
 require("./controllers/payment.test");
-require("./controllers/product.test");

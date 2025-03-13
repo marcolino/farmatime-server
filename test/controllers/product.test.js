@@ -3,7 +3,7 @@
  */
 
 const server = require("../server.test");
-const configTest = require("../config.test");
+const configTest = require("../setup.test");
 const config = require("../../src/config");
 
 let expect;
@@ -297,8 +297,8 @@ describe("Product routes", () => {
     const res = await server.request
       .post("/api/product/uploadProductImage")
       .set("Cookie", server.getAuthCookies("admin"))
-      .field("productId", testProductId);
-      
+      .field("productId", testProductId)
+    ;  
     expect = 400;
     if (res.status !== expect) {
       console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");

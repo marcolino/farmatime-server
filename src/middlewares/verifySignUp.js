@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const { secureStack } = require("../helpers/misc");
+const { secureStack, nextError } = require("../helpers/misc");
 const config = require("../config");
 
 const checkDuplicateEmail = async (req, res, next) => {
@@ -33,7 +33,7 @@ const checkDuplicateEmail = async (req, res, next) => {
     }
     return next();
   } catch (err) {
-    return next(Object.assign(new Error(req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), 500, err.stack);      
   }
 };
 

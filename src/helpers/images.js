@@ -29,7 +29,7 @@ const saveImageFile = async (req) => {
 
   // check persistent storage size, to avoid overcoming plan size limits
   const size = await dirSize(imageDir);
-  logger.debug(`images directory {{imageDir}} size is`, size);
+  //logger.debug(`images directory {{imageDir}} size is`, size);
   const sizeAfterSave = size + (imageBuffer.length * 3); // we save 2 images, without watermark and with watermark; we multiply by 3 to be on the safe side...
   if (sizeAfterSave >= config.persistentStorage.size.overflow) {
     const subject = i18n.t("Image file save size overflow limit reached");
@@ -51,14 +51,14 @@ const saveImageFile = async (req) => {
   try {
     imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
   } catch (err) {
-    const message = i18n.t("Error converting image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message });
+    const message = i18n.t("Error converting image {{imageName}} ({{err}})", { imageName: imageNameOriginal, err: err.message });
     //logger.error(message);
-    throw new Error(message);
+    throw new Error("ZZZ" + message);
   }
   try { // save image to disk
     fs.writeFileSync(imagePath, imageBufferConvertedAndResized);
   } catch (err) {
-    const message = i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath, err: err.message });
+    const message = i18n.t("Error writing image to {{imagePath}} ({{err}})", { imagePath, err: err.message });
     //logger.error(message);
     throw new Error(message);
   }
@@ -67,14 +67,14 @@ const saveImageFile = async (req) => {
   try { // add watermark
     imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
   } catch (err) {
-    const message = i18n.t("Error adding watermark to image {{imageName}}: {{err}}", { imageName: imageNameOriginal, err: err.message });
+    const message = i18n.t("Error adding watermark to image {{imageName}} ({{err}})", { imageName: imageNameOriginal, err: err.message });
     logger.error(message);
     throw new Error(message);
   }
   try { // save image to disk
     fs.writeFileSync(imagePathWaterMark, imageBufferWithWaterMark);
   } catch (err) {
-    const message = i18n.t("Error writing image to {{imagePath}}: {{err}}", { imagePath: imagePathWaterMark, err: err.message });
+    const message = i18n.t("Error writing image to {{imagePath}} ({{err}})", { imagePath: imagePathWaterMark, err: err.message });
     logger.error(message);
     throw new Error(message);
   }

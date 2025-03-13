@@ -2,118 +2,118 @@
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
     <url>
       <lastmod>Fri Feb 21 2025 18:15:43 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/</loc>
+      <loc>http://localhost:5000/</loc>
     </url>
     <url>
       <lastmod>Sun Jan 19 2025 18:29:10 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/signup/:waitingForCode?/:codeDeliveryMedium?</loc>
+      <loc>http://localhost:5000/signup/:waitingForCode?/:codeDeliveryMedium?</loc>
     </url>
     <url>
       <lastmod>Tue Feb 04 2025 16:41:51 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/signin</loc>
+      <loc>http://localhost:5000/signin</loc>
     </url>
     <url>
       <lastmod>Thu Feb 20 2025 18:36:55 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/social-signin-success</loc>
+      <loc>http://localhost:5000/social-signin-success</loc>
     </url>
     <url>
       <lastmod>Wed Jan 01 2025 18:50:34 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/social-signin-error</loc>
+      <loc>http://localhost:5000/social-signin-error</loc>
     </url>
     <url>
       <lastmod>Sat Dec 28 2024 21:05:06 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/forgot-password</loc>
+      <loc>http://localhost:5000/forgot-password</loc>
     </url>
     <url>
       <lastmod>Wed Jan 22 2025 11:25:26 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/products/:productId?</loc>
+      <loc>http://localhost:5000/products/:productId?</loc>
     </url>
     <url>
       <lastmod>Sun Nov 10 2024 15:50:17 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/notifications</loc>
+      <loc>http://localhost:5000/notifications</loc>
     </url>
     <url>
       <lastmod>Sat Feb 15 2025 18:40:40 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/edit-user/:userId/:origin</loc>
+      <loc>http://localhost:5000/edit-user/:userId/:origin</loc>
     </url>
     <url>
       <lastmod>Wed Feb 19 2025 15:37:09 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/edit-product/:productId</loc>
+      <loc>http://localhost:5000/edit-product/:productId</loc>
     </url>
     <url>
       <lastmod>Thu Feb 06 2025 12:52:26 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/terms-of-use</loc>
+      <loc>http://localhost:5000/terms-of-use</loc>
     </url>
     <url>
       <lastmod>Thu Feb 06 2025 12:52:26 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/privacy-policy</loc>
+      <loc>http://localhost:5000/privacy-policy</loc>
     </url>
     <url>
       <lastmod>Mon Jan 27 2025 11:39:40 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/cookie-preferences</loc>
+      <loc>http://localhost:5000/cookie-preferences</loc>
     </url>
     <url>
       <lastmod>Sat Dec 14 2024 17:40:31 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/contacts</loc>
+      <loc>http://localhost:5000/contacts</loc>
     </url>
     <url>
       <lastmod>Wed Feb 05 2025 21:05:46 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/handle-users</loc>
+      <loc>http://localhost:5000/handle-users</loc>
     </url>
     <url>
       <lastmod>Tue Feb 04 2025 16:37:08 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/handle-products</loc>
+      <loc>http://localhost:5000/handle-products</loc>
     </url>
     <url>
       <lastmod>Mon Feb 17 2025 21:17:06 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/cart/</loc>
+      <loc>http://localhost:5000/cart/</loc>
     </url>
     <url>
       <lastmod>Mon Feb 17 2025 21:17:06 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/payment-success</loc>
+      <loc>http://localhost:5000/payment-success</loc>
     </url>
     <url>
       <lastmod>Mon Feb 17 2025 21:17:06 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/payment-cancel</loc>
+      <loc>http://localhost:5000/payment-cancel</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/notification-preferences/:token?/:language?</loc>
+      <loc>http://localhost:5000/notification-preferences/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/email-preferences/:token?/:language?</loc>
+      <loc>http://localhost:5000/email-preferences/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/email-unsubscribe/:token?/:language?</loc>
+      <loc>http://localhost:5000/email-unsubscribe/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/push-preferences/:token?/:language?</loc>
+      <loc>http://localhost:5000/push-preferences/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/push-unsubscribe/:token?/:language?</loc>
+      <loc>http://localhost:5000/push-unsubscribe/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/sms-preferences/:token?/:language?</loc>
+      <loc>http://localhost:5000/sms-preferences/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/sms-unsubscribe/:token?/:language?</loc>
+      <loc>http://localhost:5000/sms-unsubscribe/:token?/:language?</loc>
     </url>
     <url>
       <lastmod>Wed Jan 29 2025 16:23:35 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/page-not-found</loc>
+      <loc>http://localhost:5000/page-not-found</loc>
     </url>
     <url>
       <lastmod>Wed Jan 29 2025 16:23:45 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/work-in-progress</loc>
+      <loc>http://localhost:5000/work-in-progress</loc>
     </url>
     <url>
       <lastmod>Sat Jan 18 2025 15:57:02 GMT+0100 (Central European Standard Time)</lastmod>
-      <loc>https://acme-prod.fly.dev/email-preferences</loc>
+      <loc>http://localhost:5000/email-preferences</loc>
     </url>
   </urlset>

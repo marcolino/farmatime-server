@@ -1,12 +1,11 @@
 const emailValidate = require("email-validator");
 const codiceFiscaleValidate = require("codice-fiscale-js");
-//const mongoose = require("mongoose");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
 const Role = require("../models/role.model");
 const RefreshToken = require("../models/refreshToken.model");
-const { isObject, isArray, normalizeEmail, isAdministrator, secureStack } = require("../helpers/misc");
+const { isObject, isArray, normalizeEmail, isAdministrator, nextError } = require("../helpers/misc");
 const emailService = require("../services/email.service");
 
 const getAllUsersWithTokens = async (req, res, next) => {
@@ -42,8 +41,7 @@ const getAllUsersWithTokens = async (req, res, next) => {
 
     return res.status(200).json({users});
   } catch (err) {
-    //logger.error("Error getting all users with full info:", err);
-    return next(Object.assign(new Error(req.t("Error getting all users with full info: {{err}}", { err: err.message }), { status: 500, stack: secureStack })));
+    return nextError(next, req.t("Error getting all users with full info: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -62,8 +60,7 @@ const getAllUsers = async (req, res, next) => {
     ;
     return res.status(200).json({users});
   } catch (err) {
-    //logger.error("Error getting all users:", err);
-    return next(Object.assign(new Error(req.t("Error getting all users: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error getting all users: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -77,8 +74,7 @@ const getAllPlans = async (req, res, next) => {
     ;
     return res.status(200).json({ plans: docs });
   } catch (err) {
-    //logger.error("Error getting all plans:", err);
-    return next(Object.assign(new Error(req.t("Error getting all plans: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error getting all plans: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -91,8 +87,7 @@ const getAllRoles = async (req, res, next) => {
     ;
     return res.status(200).json({ roles: docs });
   } catch (err) {
-    //logger.error("Error getting roles:", err);
-    return next(Object.assign(new Error(req.t("Error getting roles: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error getting all roles: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -120,8 +115,7 @@ const getUser = async (req, res, next) => {
     }
     res.status(200).json({ user });
   } catch (err) {
-    //logger.error("Error finding user:", err);
-    return next(Object.assign(new Error(req.t("Error finding user: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding user: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -213,11 +207,11 @@ const updateUser = async (req, res, next) => {
   } catch (err) {
     logger.error("Error updating user:", err);
     if (err.codeName === "DuplicateKey") {
-      if (err.keyValue.email) { // TODO: TEST THIS USE CASE, ALSO TO TEST return next(Object.assign( ... 400 ...) ...
-        return next(Object.assign(new Error(req.t("The email {{email}} is already in use", { email: err.keyValue.email })), { status: 400 }));
+      if (err.keyValue.email) {
+        return nextError(next, req.t("The email {{email}} is already in use", { email: err.keyValue.email }), 400);      
       }
     }
-    return next(Object.assign(new Error(req.t("Error updating user: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error updating user: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -320,7 +314,7 @@ const promoteToDealer = async (req, res, next) => {
       return res.status(200).json({ message: req.t("User already had role {{roleName}}", { roleName }), count: 0 });
     }
   } catch (err) {
-    return next(Object.assign(new Error(req.t("Error promoting user to {{role}}: {{err}}", { role: roleName, err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error promoting user to {{role}}: {{err}}", { role: roleName, err: err.message }), 500, err.stack);      
   }
 };
 
@@ -349,8 +343,7 @@ const deleteUser = async (req, res, next) => {
       return res.status(400).json({ message: req.t("No user have been deleted") });
     }
   } catch (err) {
-    //logger.error("Could not delete user(s) with filter ${JSON.stringify(filter)}:", err);
-    return next(Object.assign(new Error(req.t("Could not delete user(s) with filter {{filter}}: {{err}}", { filter: JSON.stringify(filter), err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Could not delete user(s) with filter {{filter}}: {{err}}", { filter: JSON.stringify(filter), err: err.message }), 500, err.stack);      
   }
 };
 
@@ -381,8 +374,7 @@ const removeUser = async (req, res, next) => {
       return res.status(400).json({ message: req.t("No user has been removed") });
     }
   } catch (err) {
-    //logger.error("Error finding user:", err);
-    return next(Object.assign(new Error(req.t("Error finding user: {{err}}", {err: err.message}), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding user: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -427,16 +419,12 @@ const sendEmailToUsers = async (req, res, next) => {
           style,
         });
       } catch (err) {
-        //logger.error(`Error sending email to users: ${err}`);
-        return next(Object.assign(new Error(req.t("Error sending email to users: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+        return nextError(next, req.t("Error sending email to users: {{err}}", { err: err.message }), 500, err.stack);      
       }
     }
     return res.status(200).json({ "message": req.t("All emails sent") });
   } catch (err) {
-    //logger.error("Error finding users:", err);
-    //const ret = { message: req.t("Error finding users: {{err}", {err: err.message });
-    //return res ? res.status(err.code).json(ret) : ret;
-    return next(Object.assign(new Error(req.t("Error finding users: {{err}}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Error finding users: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 

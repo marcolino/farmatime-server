@@ -21,7 +21,6 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   
   const baseUrl = config.baseUrl;
 
-
   // get remote IP address
   const address = remoteAddress(req);
 

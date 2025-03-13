@@ -13,12 +13,17 @@ i18next
       loadPath: __dirname + "/../locales/{{lng}}/{{ns}}.json"
     },
     fallbackLng: config.app.serverLocale, // fallback language
+    // saveMissing: true, // log missing translations
+    // missingKeyHandler: (lng, ns, key) => {
+    //   console.log(`Missing translation: ${key}`);
+    // },
     preload: Object.keys(config.app.locales), // preload all supported languages
     detection: {
       order: [ "header" ], // server side we get language always from header
       lookupHeader: "accept-language", // be sure we look up the right header
       //caches: false, // do not cache
-    }
+    },
+    //interpolation: { escapeValue: false },
   })
 ;
 

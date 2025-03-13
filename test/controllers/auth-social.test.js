@@ -6,7 +6,7 @@ const server = require("../server.test");
 const passport = require("passport");
 
 
-describe("Auth routes - Google OAuth", () => {
+describe("Auth google login routes", () => {
   let passportStub;
 
   afterEach(() => {
@@ -45,7 +45,7 @@ describe("Auth routes - Google OAuth", () => {
   });
 });
 
-describe("Auth routes - Facebook OAuth", () => {
+describe("Auth facebook login routes", () => {
   let passportStub;
 
   afterEach(() => {

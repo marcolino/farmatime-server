@@ -6,7 +6,7 @@ const stripeModule = require("stripe");
 const User = require("../models/user.model");
 const { logger } = require("../controllers/logger.controller");
 const { audit } = require("../helpers/messaging");
-const { formatMoney, secureStack } = require("../helpers/misc");
+const { formatMoney, nextError } = require("../helpers/misc");
 const config = require("../config");
 
 
@@ -118,7 +118,7 @@ const createCheckoutSession = async (req, res, next) => {
     return res.status(200).json({ session, user }); // return the session with the redirect url, and the user, possibly with updated notifications
   } catch (err) {
     audit({req, mode: "error", subject: `Payment checkout session creation error`, htmlContent: `Payment checkout session creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
-    return next(Object.assign(new Error(req.t("Payment checkout session creation error: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    return nextError(next, req.t("Payment checkout session creation error: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -185,7 +185,8 @@ const paymentSuccess = async (req, res, next) => {
 
     res.redirect(config.payment.stripe.paymentSuccessUrlClient);
   } catch (err) { // should not happen...
-    return next(Object.assign(new Error(req.t("Error retrieving payment info on payment success callback: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    audit({req, mode: "error", subject: `Error retrieving payment info on payment success`, htmlContent: `Payment checkout session creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
+    return nextError(next, req.t("Error retrieving payment info on payment success callback: {{err}}"), 500, err.stack);
   }
 };
 
@@ -209,7 +210,8 @@ const paymentCancel = async (req, res, next) => {
     });
     res.redirect(config.payment.stripe.paymentCancelUrlClient);
   } catch (err) { // should not happen...
-    return next(Object.assign(new Error(req.t("Error retrieving payment info on payment cancel callback: {{ err }}", { err: err.message }), { status: 500, stack: secureStack(err) })));
+    audit({req, mode: "error", subject: `Error retrieving payment info on payment cancel`, htmlContent: `Payment checkout session creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
+    return nextError(next, req.t("Error retrieving payment info on payment cancel callback: {{err}}"), 500, err.stack);
   }
 };
 

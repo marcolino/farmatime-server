@@ -1,0 +1,6 @@
+{
+  "reporter": ["text", "html"],
+  "include": ["src/**/*.js", "src/**/*.jsx"],
+  "exclude": [".pnp*", ".yarn", "**/*.spec.js"],
+  "all": true
+}

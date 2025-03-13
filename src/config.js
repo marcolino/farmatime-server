@@ -1,12 +1,15 @@
 const path = require("path");
 const fs = require("fs");
+const merge = require("lodash.merge");
 
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
-const testgithubactions = (test && (process.env.GITHUB_ACTIONS)); // test mode, inside github actions (use public test db)
-const production = (!test && (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
-const development = (!test && (process.env.NODE_ENV === "development")); // development mode (development behaviour, local db on local host)
-const staging = (!test && (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
-const stripelive = (!test && (process.env.LIVE_MODE === "true")); // stripe mode is "live"  
+const testInCI = (test && !!process.env.GITHUB_ACTIONS); // test mode, inside CI (github actions), use public test db
+const production = (/*!test &&*/ (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
+const development = (/*!test &&*/ (process.env.NODE_ENV === "development")); // development mode (development behaviour, local db on local host)
+const staging = (/*!test &&*/ (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
+const stripelive = (/*!test &&*/ (process.env.LIVE_MODE === "true")); // stripe mode is "live"  
+
+const customization = process.env.CUSTOMIZATION || null; // custom configuration to be merged with configBase
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
@@ -15,7 +18,7 @@ const appName = "acme";
 const description = "A powerful web app, easily customizable";
 const dir = "ltr";
 const charset = "UTF-8";
-const themeColor = "#a5dc6f";
+const themeColor = "#4e4f4c";
 const cacheControl = "mag-age=1440";
 const currency = "EUR"; // default currency (ISO 4217:2015)
 const currencies = { // allowed currencies
@@ -34,7 +37,7 @@ const baseUrlClient = production ? urlPublicClient : urlLocalClient;
 const baseUrlClientPreview = production ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
-const customization = "mda"; // custom configuration to be merged with configBase
+//const customization = "mda"; // custom configuration to be merged with configBase
 
 /**
  * Import envronment variables from env file.
@@ -43,13 +46,15 @@ const customization = "mda"; // custom configuration to be merged with configBas
 if (!production) {
   const envFile = ".env";
   if (!fs.existsSync(envFile)) {
-    console.error(`Error: ${envFile} does not exist`); // eslint-disable-line no-console
-    process.exit(1);
+    // console.error(`Error: ${envFile} does not exist`); // eslint-disable-line no-console
+    // process.exit(1);
+    throw new Error(`Error: ${envFile} does not exist`);
   }
   const result = require("dotenv").config({ path: envFile, override: true });
   if (result.error) {
-    console.error(`Failed to load ${envFile} file ${result.error}`); // eslint-disable-line no-console
-    process.exit(1); // exit the process with an error code
+    // console.error(`Failed to load ${envFile} file ${result.error}`); // eslint-disable-line no-console
+    // process.exit(1); // exit the process with an error code
+    throw new Error(`Failed to load ${envFile} file: ${result.error}`);
   } else {
     //console.log(`${envFile} file loaded successfully`); // eslint-disable-line no-console
   }
@@ -62,7 +67,7 @@ const configBase = {
     staging,
     test,
     stripelive,
-    testgithubactions,
+    testInCI,
   },
   baseUrl,
   baseUrlPublic: urlPublic, // for image urls in emails, they must always be public urls
@@ -81,7 +86,7 @@ const configBase = {
     ],
   },
   db: {
-    debug: development, // debug database queries
+    debug: false, // to debug database queries
     products: {
       search: {
         mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
@@ -384,6 +389,7 @@ const configBase = {
       refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL: time after refresh token expires, and user must sign in again (in case user did not check DontRememberMe)
       refreshTokenExpirationDontRememberMeSeconds: 3600, //60 * 60, // 1 hour TTL: time after refresh token expires, and user must sign in again (in case user did check DontRememberMe)
       notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL: time after notification token expires (in notifiction emails for example)
+      verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
       codeDeliveryMedium: "email", // "email" / "sms" / ...: the signup confirmation code delivery medium
       clientSessionExpirationSeconds: 0, // time after which session "pre-expires": user is asked to signout if session is no longer in use - 0 means no expiration
       clientSessionExpirationResponseMaximumSeconds: 900, // time after which - after a session "pre-expiration" prompt has been presented to user and no response is obtained, the session will be terminated, and user logged out
@@ -550,31 +556,11 @@ if (customization) {
   if (fs.existsSync(configCustomizationPath)) {
     configCustom = require(configCustomizationPath);
   } else {
-    let error = `Config file ${configCustomizationPath} not found`;
-    console.error(error); // eslint-disable-line no-console
-    throw new Error(error);
+    throw new Error(`Config file ${configCustomizationPath} not found`);
   }
 }
 
-// deeply merge objects with precedence to the source one
-const deepMergeObjects = (target, source) => {
-  for (let key in source) {
-    // check if the value is an object or an array
-    if (source[key] instanceof Object && !Array.isArray(source[key])) {
-      // if both target and source have the same key and they are objects, merge them recursively
-      if (key in target) {
-        Object.assign(source[key], deepMergeObjects(target[key], source[key]));
-      }
-    } else if (Array.isArray(source[key])) {
-      // if the value is an array, merge arrays by concatenating them
-      target[key] = (target[key] || []).concat(source[key]);
-    }
-  }
-  // combine target and updated source
-  Object.assign(target || {}, source);
-  return Object.assign(target || {}, source);
-};
+const config = merge(configBase, configCustom);
 
-const config = deepMergeObjects(configBase, configCustom);
 
 module.exports = config;

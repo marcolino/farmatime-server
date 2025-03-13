@@ -13,7 +13,7 @@ const Env = require("./src/models/env.model");
 const { assertEnvironment } = require("./src/helpers/environment");
 const { audit } = require("./src/helpers/messaging");
 const emailService = require("./src/services/email.service");
-const { localeDateTime, inject, remoteAddress } = require("./src/helpers/misc");
+const { localeDateTime, inject, remoteAddress, secureStack } = require("./src/helpers/misc");
 const i18n = require("./src/middlewares/i18n");
 const rateLimit = require("./src/middlewares/rateLimit");
 const checkReferer = require("./src/middlewares/checkReferer");
@@ -101,7 +101,7 @@ app.use(cors({
     if (!origin || config.clientDomains.includes(origin)) {
       callback(null, origin);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS; allowed origins are:`, config.clientDomains));
+      callback(new Error(`Origin ${origin} not allowed by CORS; allowed origins are: ${config.clientDomains}`));
     }
   },
   methods: ["GET", "POST", "OPTIONS"], // allowed methods
@@ -156,11 +156,11 @@ app.use((req, res, next) => {
   }
 });
 
-// before standard routes handle not found API routes BEFORE registering specific routes
-app.all(/^\/api(\/.*)?$/, (req, res, next) => {
-  // use next() instead of returning 404 immediately
-  next();
-});
+// // before standard routes handle not found API routes BEFORE registering specific routes
+// app.all(/^\/api(\/.*)?$/, (req, res, next) => {
+//   // use next() instead of returning 404 immediately
+//   next();
+// });
 
 // routes handling
 require("./src/routes/auth.routes")(app);
@@ -179,7 +179,9 @@ app.use("/", express.static(rootClient)); // base client root
 
 // handle route for coverage
 if (!config.mode.production) {
-  app.use("/coverage", express.static(rootCoverage)); // coverage root
+  app.use("/coverage", express.static(rootCoverage, {
+    index: "index.html",
+  })); // coverage root
 }
 
 // handle not found API routes
@@ -196,9 +198,9 @@ app.get("*", (req, res) => {
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next is needed to be considered error handling
   logger.error("Server error:", err);
   let status = err.status || 500;
-  let stack = err.stack; 
+  //let stack = err.stack; 
   // include stack trace in development only
-  let message = `${err.message || req.t("Server error")}`;
+  let message = `${err.message || (req.t ? req.t("Server error") : "Server error")}`;
   if (status === 500) { // audit errors
     audit({
       req, mode: "error", subject: `Error: ${message}`, htmlContent: `
@@ -207,14 +209,14 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   Mode: ${process.env.NODE_ENV}
   IP: ${remoteAddress(req)}
   Date: ${localeDateTime()}
-  Stack: ${stack}
+  Stack: ${secureStack(err)}
 </pre>`,
     });
-    message += ` -  ${req.t("We are aware of this error, and working to solve it")}. ${req.t("Please, retry soon")}`;
+    message += " - " + req.t("We are aware of this error, and working to solve it") + ". " + req.t("Please, retry soon");
   }
   return res.status(status).json({
     message,
-    ...(!config.mode.production && (status === 500) && { stack }),
+    ...((status === 500) && { stack: secureStack(err) }),
   });
 });
 
@@ -248,23 +250,21 @@ process.on("unhandledRejection", (reason, promise) => {
 (async () => {
   assertEnvironment();
 
-  //await db.initializeDatabase; // wait the database to be initialized
+  // wait the database to be initialized if not test mode
   if (!config.mode.test) {
     await initializeDatabase();
-    // await db.connectDatabase;
-    // await db.populateDatabase;
   }
 
   // setup the email service
   await emailService.setup(process.env.BREVO_EMAIL_API_KEY); // await the email service to be ready
   
-  // inject client app config to configFileNameInjected (only while developing:
-  //  for production there is a script to bve called from the client before the builds)
+  // inject client app config to configFileNameInjected
+  // (only while developing: in production mode there is a script to be called from the client before the builds)
   if (config.mode.development) {
     inject(rootClient, rootClientSrc, configFileNameInjected, config.app);
   }
   
-  if (!config.mode.test) { // listen for requests (if not test mode)
+  if (!config.mode.test) { // listen for requests if not test mode
     try {
       const port = config.api.port;
       const host = "0.0.0.0";

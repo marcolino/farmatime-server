@@ -16,8 +16,7 @@ if (!config.mode.test) {
 let logger = null;
 const transports = [];
 const exceptionHandlers = [];
-const colorize = false; // TODO: `true` does not seem to work on any transport...
-//const logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
+const colorize = true;
 
 const isString = (x) => {
   return (typeof x === "string" || x instanceof String);
@@ -58,6 +57,7 @@ class LogtailStream extends stream.Writable {
 }
 
 const formatWithArgs = winston.format.combine(
+  winston.format.colorize(), // enable colorization
   winston.format.timestamp(),
   winston.format.printf((info) => {
     const { timestamp, level, message/*, ...meta*/ } = info;
@@ -67,11 +67,10 @@ const formatWithArgs = winston.format.combine(
     const splatArgs = splatSymbol ? info[splatSymbol] : [];
 
     // combine meta and splatArgs into a clean array or object
-    //const metadata = Object.keys(meta).length ? meta : undefined;
     const extraArgs = splatArgs.length ? splatArgs : undefined;
 
     // build the log output
-    let logOutput = `${level.toUpperCase()}: ${timestamp} ${message}`;
+    let logOutput = `${level}: ${timestamp} ${message}`;
     if (extraArgs) {
       extraArgs.forEach(extraArg => {
         logOutput += ` ${isString(extraArg) ? extraArg : JSON.stringify(extraArg)}`;

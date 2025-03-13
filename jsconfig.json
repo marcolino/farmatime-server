@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "ESNext", // Vite uses ES modules by default
+    "moduleResolution": "Bundler", // Vite is a bundler, so this is correct
+    "target": "ESNext", // use ESNext to support the latest JavaScript features
+    "jsx": "react-jsx", // use "react-jsx" for React 17+ (automatic JSX runtime)
+    "strictNullChecks": true, // helps catch potential null/undefined errors
+    "allowJs": true, // allow plain JavaScript files
+    "checkJs": true, // enable type-checking for JavaScript files
+    "baseUrl": ".", // base directory for module resolution
+    "paths": {
+      "@/*": ["./src/*"] // optional: alias for imports (e.g., "@/components/Button")
+    }
+  },
+  "exclude": [
+    "node_modules", // exclude node_modules for better performance
+    "dist", // Exclude build output
+    "data", // exclude data folder
+    "client", // exclude client folder
+    "coverage", // exclude coverage folder
+    "**/node_modules/*"
+  ]
+}
