@@ -149,14 +149,26 @@ Follow these simple instructions to set up a local development environment.
   yarn db:migrate:deploy
   ```
 
-5. To start developing, run the `serve` target of the desired app:
+5. Setup environment
+
+  After cloning the repo, original environment secrets will be downloaded too, in ./.env file.
+  You can delete it, it is the environment secrets of the owner, who has the key to unencrypt it.
+  Then, if you don't have it, install git-crypt (on Linux (Debian/Ubuntu): `sudo apt-get install git-crypt`),
+  and then initialize it in your repo: `git-crypt init`.
+  Please copy the generated key to some safe folder or device: `git-crypt export-key /SAFE-DEVICE/git-crypt-key`.
+  Now please copy .env.template file to .env (it's the .env file with the keys and the comments, but without the values), and fill it up completely, following the comments; you'll have to set up passwords, or keys for services.
+  The .env file is listed in .gitattributes, so it will be encrypted before being pushed to remote repository.
+  Now, you will have your .env file clear text on your local machine, and encrypted on the remote.
+  If you'll have to clone the repo in the future on a new machine, simply do `git-crypt unlock /SAFE-DEVICE/git-crypt-key`, and the .env file will be unencrypted.
+
+6. To start developing, run the `start-dev` target of the desired app:
 
   ```bash
-  # This will serve the acme-server Server in development mode
+  # This will start the acme-server Server in development mode
   yarn start-dev 
   ```
 
-+ **Please note that in order to be able to run the app's client properly, you need to `yarn start-dev` both the server and client.**
++ **Please note that in order to be able to run the app's client properly, you need to `yarn start-dev` both on the server and on client.**
 
 That's it, you are good to go! Happy hacking! 👾
 

@@ -1,2 +1,0 @@
-import{R as l,d as u,p as g,r as a,A as m,o as p}from"./index-kZazlTzH.js";function f(){const o=u(),r=g(),{signIn:e}=a.useContext(m),{showDialog:i}=p();return a.useEffect(()=>{const n=new URLSearchParams(r.search),s=n.get("error"),c=n.get("error_description");s&&(i({title:t("Social login did not work, sorry"),message:c+`.
-`+s+".",confirmText:t("Ok"),onConfirm:()=>{o(`/signup/true/${codeDeliveryMedium}`,{replace:!0})}}),e(null),o("/",{replace:!0}))},[r,showSnackbar,e,o]),null}const S=l.memo(f);export{S as default};

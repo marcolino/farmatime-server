@@ -79,129 +79,132 @@ define(['./workbox-ecda11e0'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "apple-touch-icon.png",
-    "revision": "dc20ee39de14fa9f1c0241b2659b54e7"
+    "revision": "d370229faa9ac9539ef663136ca5db53"
   }, {
     "url": "assets/Avatar-Ckep07s8.png",
     "revision": null
   }, {
-    "url": "assets/Avatar-DcajoSMt.js",
+    "url": "assets/Avatar-jS9BQBEF.js",
     "revision": null
   }, {
-    "url": "assets/CardContent-InMCYA9e.js",
+    "url": "assets/CardContent-CfIedd2J.js",
     "revision": null
   }, {
-    "url": "assets/CardHeader-B84sGgwe.js",
+    "url": "assets/CardHeader-CbjzQL4W.js",
     "revision": null
   }, {
-    "url": "assets/Cart-BZ6chPtk.js",
+    "url": "assets/Cart-t5xf2mMC.js",
     "revision": null
   }, {
-    "url": "assets/Checkbox-Dr2wjAIy.js",
+    "url": "assets/Checkbox-BCEoa6f3.js",
     "revision": null
   }, {
-    "url": "assets/ConfirmationNumber-C3_S1Cdf.js",
+    "url": "assets/ConfirmationNumber-Y4_zx90H.js",
     "revision": null
   }, {
     "url": "assets/Contacts-CIGW-MKW.css",
     "revision": null
   }, {
-    "url": "assets/Contacts-hdYBzieK.js",
+    "url": "assets/Contacts-hYTPInM6.js",
     "revision": null
   }, {
-    "url": "assets/Divider-BBzFkN13.js",
+    "url": "assets/Divider-Bf6qDKnt.js",
     "revision": null
   }, {
-    "url": "assets/Email-bwE1I_j6.js",
+    "url": "assets/Edit-CQLBvbYg.js",
     "revision": null
   }, {
-    "url": "assets/FlexyImageAndText-CWWH_Z3a.js",
+    "url": "assets/Email-Cd4kN9yE.js",
     "revision": null
   }, {
-    "url": "assets/ForgotPassword-C1pSxSC5.js",
+    "url": "assets/FlexyImageAndText-Do46sMu5.js",
     "revision": null
   }, {
-    "url": "assets/Google-GoK6UuI5.js",
+    "url": "assets/ForgotPassword-BPSYj-jn.js",
     "revision": null
   }, {
-    "url": "assets/Home-CAaxDx1_.js",
+    "url": "assets/Google-C_-V1dRu.js",
     "revision": null
   }, {
-    "url": "assets/Icon-CP_gbfIf.js",
+    "url": "assets/Home-G8TEpFQR.js",
     "revision": null
   }, {
-    "url": "assets/ImageContainer-CwQrxFcR.js",
+    "url": "assets/Icon-ZkkoJhqj.js",
+    "revision": null
+  }, {
+    "url": "assets/ImageContainer-CRdTMV9H.js",
     "revision": null
   }, {
     "url": "assets/ImageNotFound-DqRiDcaH.jpg",
     "revision": null
   }, {
-    "url": "assets/index-kZazlTzH.js",
+    "url": "assets/index-B-g6q7zv.js",
     "revision": null
   }, {
-    "url": "assets/legal-Df9yuJgV.js",
+    "url": "assets/legal-Crz8E7mp.js",
     "revision": null
   }, {
     "url": "assets/LogoMain-CFoVqyTr.png",
     "revision": null
   }, {
-    "url": "assets/NotificationPreferences-CObsoLel.js",
+    "url": "assets/NotificationPreferences-DMbP5qhU.js",
     "revision": null
   }, {
-    "url": "assets/Notifications-C900pbEG.js",
-    "revision": null
-  }, {
-    "url": "assets/PageNotFound-BEo1g81S.js",
+    "url": "assets/Notifications-zQG5VDZg.js",
     "revision": null
   }, {
     "url": "assets/PageNotFound-DkXm7MIC.png",
     "revision": null
   }, {
-    "url": "assets/Person-DZc_YTe7.js",
+    "url": "assets/PageNotFound-lpiqjX0X.js",
     "revision": null
   }, {
-    "url": "assets/ProductEdit-B2-_J549.js",
+    "url": "assets/Person-NzaASBHw.js",
     "revision": null
   }, {
-    "url": "assets/Products-CsdpR4NU.js",
+    "url": "assets/ProductEdit-BEh23VFM.js",
     "revision": null
   }, {
-    "url": "assets/ProductsHandle-CSTjn8WF.js",
+    "url": "assets/Products-BRzXspIr.js",
     "revision": null
   }, {
-    "url": "assets/Select-BP4I_6h9.js",
+    "url": "assets/ProductsHandle-DKBkSozL.js",
     "revision": null
   }, {
-    "url": "assets/Select-Dno9dEV7.js",
+    "url": "assets/Select-Cezt2Z8R.js",
     "revision": null
   }, {
-    "url": "assets/SignIn-CkAZ6S7n.js",
+    "url": "assets/Select-DeDA1KrM.js",
     "revision": null
   }, {
-    "url": "assets/SignUp-B3GQMqdZ.js",
+    "url": "assets/SignIn-gYhczIf5.js",
     "revision": null
   }, {
-    "url": "assets/SocialSignInError-ChZQ3WKR.js",
+    "url": "assets/SignUp-BYfNr8CE.js",
     "revision": null
   }, {
-    "url": "assets/SocialSignInSuccess-Bsojguun.js",
+    "url": "assets/SocialSignInError-C-7X-Vc9.js",
     "revision": null
   }, {
-    "url": "assets/StackedArrows-BYhKkvdi.js",
+    "url": "assets/SocialSignInSuccess-DYmYKc3w.js",
     "revision": null
   }, {
-    "url": "assets/TextField-BpUCQOYc.js",
+    "url": "assets/StackedArrows-D6eruMyO.js",
     "revision": null
   }, {
-    "url": "assets/TextFieldPassword-BqjSt6Lq.js",
+    "url": "assets/TextField-CH4Jx1xX.js",
     "revision": null
   }, {
-    "url": "assets/TextFieldSearch-BI4SmVTP.js",
+    "url": "assets/TextField-DuAedfdf.js",
     "revision": null
   }, {
-    "url": "assets/UserEdit-CkQiJGbn.js",
+    "url": "assets/TextFieldPassword-D1fmtDwK.js",
     "revision": null
   }, {
-    "url": "assets/UsersHandle-GhRa3MZj.js",
+    "url": "assets/UserEdit-dEdw66mt.js",
+    "revision": null
+  }, {
+    "url": "assets/UsersHandle-BfhuPspz.js",
     "revision": null
   }, {
     "url": "assets/workbox-window.prod.es5-B9K5rw8f.js",
@@ -210,17 +213,17 @@ define(['./workbox-ecda11e0'], (function (workbox) { 'use strict';
     "url": "assets/WorkInProgress--_hq_Pod.png",
     "revision": null
   }, {
-    "url": "assets/WorkInProgress-CTh_X1VW.js",
+    "url": "assets/WorkInProgress-D2ZT83IG.js",
     "revision": null
   }, {
     "url": "favicon-16x16.png",
-    "revision": "6b6528d45e35deda222dae389699081d"
+    "revision": "8a48c2a430f0ebacf9980431601d6fb9"
   }, {
     "url": "favicon-32x32.png",
-    "revision": "78d93e04a2919d71de7e287506288a1d"
+    "revision": "a0300909ff1c146670837eca82eae554"
   }, {
     "url": "favicon-64x64.png",
-    "revision": "7c527392389109631e4d8a2b5732d84e"
+    "revision": "c3299944267971ee99200c8a1971173d"
   }, {
     "url": "favicon.ico",
     "revision": "f0b60161e743da5a4f23d38893b4fc06"
@@ -973,7 +976,7 @@ define(['./workbox-ecda11e0'], (function (workbox) { 'use strict';
     "revision": "735479e6f252eaaa84111a1e8280aa21"
   }, {
     "url": "index.html",
-    "revision": "3382ab3d06e0895733e77afe7e9d8aa8"
+    "revision": "873dbd3bab581e9193b830e7a6f6b31d"
   }, {
     "url": "logo-email-header.png",
     "revision": "56cd4c1343a206717266f9a5b4d376da"
@@ -985,7 +988,7 @@ define(['./workbox-ecda11e0'], (function (workbox) { 'use strict';
     "revision": "ba2e9be66ba7dbc6b5067126b49f0fbc"
   }, {
     "url": "ms-tile.png",
-    "revision": "73e1cf31e0fb650edae5a3c40e80a048"
+    "revision": "d979142b85d0c2444729daf4a37d0d38"
   }, {
     "url": "screenshot-narrow.png",
     "revision": "10037b1a4e109d641ca9b3092f2b9da2"
@@ -1021,13 +1024,13 @@ define(['./workbox-ecda11e0'], (function (workbox) { 'use strict';
     "revision": "35f91409d654f4e346603d99a1495025"
   }, {
     "url": "build-info.json",
-    "revision": "f40b0127640564dcadf8971a799cac35"
+    "revision": "5033206b8ca53f1fce75d277d80d65f2"
   }, {
     "url": "manifest.webmanifest",
     "revision": "ba2e9be66ba7dbc6b5067126b49f0fbc"
   }, {
     "url": "ms-tile.png",
-    "revision": "73e1cf31e0fb650edae5a3c40e80a048"
+    "revision": "d979142b85d0c2444729daf4a37d0d38"
   }, {
     "url": "robots.txt",
     "revision": "e93435e08581859792b4ef3f6bd5f8fe"
@@ -1039,7 +1042,7 @@ define(['./workbox-ecda11e0'], (function (workbox) { 'use strict';
     "revision": "6fea726337917906a34712c38e8bc33b"
   }, {
     "url": "sitemap.xml",
-    "revision": "443d3ee9413f79e7de55891f9afd6264"
+    "revision": "dec6002cc0084bcfabf95c3d2acf82e1"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/index.html"), {

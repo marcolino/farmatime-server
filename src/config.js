@@ -480,7 +480,7 @@ const configBase = {
           }
         },
       },
-      backgroundVideo: "wave" // see in "/public/videos/*.mp4" for available videos
+      backgroundVideo: "wind-turbines" // see in "/public/videos/*.mp4" for available videos
     },
     oauth: {
       scope: {
@@ -561,6 +561,6 @@ if (customization) {
 }
 
 const config = merge(configBase, configCustom);
-
+console.log("CONFIG:", config);
 
 module.exports = config;

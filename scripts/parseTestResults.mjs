@@ -1,7 +1,7 @@
 import fs from "fs";
 import xml2js from "xml2js";
 
-const testResultsFile = "./test/test-results.xml";
+const testResultsFile = "./test/tmp/test-results.xml";
 const readmeFile = "./README.md";
 
 if (!fs.existsSync(testResultsFile)) {
