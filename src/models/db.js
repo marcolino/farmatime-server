@@ -6,7 +6,7 @@ const User = require("./user.model.js");
 const Role = require("./role.model.js");
 const Plan = require("./plan.model.js");
 const Product = require("./product.model.js");
-const { uploadProductImage } = require("../controllers/products.controller.js");
+const { uploadProductImage } = require("../controllers/product.controller.js");
 const { logger } = require("../controllers/logger.controller.js");
 const demoData = require("../../data/demo.js");
 const i18n = require("../middlewares/i18n.js");
@@ -147,7 +147,7 @@ const populate = async () => {
         }
         // add product images
         for (const data of demoData.products) {
-          await addImageToProduct(demoData.productsImages[data.mdaCode], data.mdaCode)
+          await addImageToProduct(demoData.productsImages[data.mdaCode], data.mdaCode);
         }
       }
     } catch (err) {
@@ -206,7 +206,7 @@ const addPlanToUser = async (planName, userEmail) => {
     }
 
     // assign the plan to the user
-    if (!user.plan?._id.toString() === plan._id.toString()) {
+    if (user.plan?._id.toString() !== plan._id.toString()) {
       user.plan = plan;
 
       // save the updated user

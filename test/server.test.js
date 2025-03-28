@@ -73,15 +73,18 @@ module.exports = {
   getAuthCookies,
 };
 
-
 // require all tests here, to define the sequence
 require("./basic/basic.test");
 
 require("./config/config.test");
 
-require("./helpers/environment.test");
+require("./routes/auth.test");
+require("./routes/user.test");
+require("./routes/product.test");
+require("./routes/payment.test");
+require("./routes/misc.test");
 
-require("./controllers/product.test");
+require("./helpers/environment.test");
 
 require("./models/plan.model.test");
 require("./models/role.model.test");
@@ -107,7 +110,12 @@ require("./controllers/auth-socialRevoke.test");
 require("./controllers/auth-resetPassword.test");
 require("./controllers/auth-resendResetPasswordCode.test");
 require("./controllers/auth-redirect.test");
+require("./controllers/logger.test");
+require("./controllers/misc.test");
 
-require("./controllers/user.test");
+require("./services/payment.test");
 
-require("./controllers/payment.test");
+require("./gateways/Abstract.payment.gateway.test");
+require("./gateways/stripe.payment.gateway.test");
+
+require("./controllers/product.test");

@@ -11,23 +11,27 @@ const saveImageFile = async (req) => {
   const file = req.file;
   const imageNameOriginal = file.originalname;
   const imageBuffer = file.buffer;
+  //console.log("imageBuffer:", imageBuffer)
   const imageName = hashString(imageNameOriginal) + `.${config.products.images.format}`;
   const imageDir = path.join(__dirname, "../..", config.products.images.path);
   const imageDirWaterMark = path.join(__dirname, "../..", config.products.images.pathWaterMark);
   const imagePath = path.join(imageDir, imageName);
   const imagePathWaterMark = path.join(imageDirWaterMark, imageName);
 
+  //console.log("a")
   // create image folders, if not present
   if (!fs.existsSync(imageDir)) {
     logger.warn(`directory ${imageDir} does not exist, creating it!`);
     fs.mkdirSync(imageDir, { recursive: true });
   }
+  //console.log("b")
   if (!fs.existsSync(imageDirWaterMark)) {
     logger.warn(`directory ${imageDirWaterMark} does not exist, creating it!`);
     fs.mkdirSync(imageDirWaterMark, { recursive: true });
   }
 
   // check persistent storage size, to avoid overcoming plan size limits
+  //console.log("c")
   const size = await dirSize(imageDir);
   //logger.debug(`images directory {{imageDir}} size is`, size);
   const sizeAfterSave = size + (imageBuffer.length * 3); // we save 2 images, without watermark and with watermark; we multiply by 3 to be on the safe side...
@@ -47,37 +51,42 @@ const saveImageFile = async (req) => {
     audit({req, mode, subject, htmlContent: message});
   }
 
+  //console.log("d")
   let imageBufferConvertedAndResized;
   try {
+    //console.log("e", imageBuffer)
     imageBufferConvertedAndResized = await imageConvertFormatAndLimitSize(imageBuffer);
   } catch (err) {
-    const message = i18n.t("Error converting image {{imageName}} ({{err}})", { imageName: imageNameOriginal, err: err.message });
-    //logger.error(message);
-    throw new Error("ZZZ" + message);
+    throw new Error(i18n.t("Error converting image {{imageName}} ({{err}})", { imageName: imageNameOriginal, err: err.message }));
   }
   try { // save image to disk
+    //console.log("g")
     fs.writeFileSync(imagePath, imageBufferConvertedAndResized);
+    //console.log("h")
   } catch (err) {
-    const message = i18n.t("Error writing image to {{imagePath}} ({{err}})", { imagePath, err: err.message });
-    //logger.error(message);
-    throw new Error(message);
+    //console.log("i", err)
+    throw new Error(i18n.t("Error writing image to {{imagePath}} ({{err}})", { imagePath, err: err.message }));
   }
 
   let imageBufferWithWaterMark;
   try { // add watermark
+    //console.log("j")
     imageBufferWithWaterMark = await imageAddWaterMark(imageBuffer);
+    //console.log("k")
   } catch (err) {
-    const message = i18n.t("Error adding watermark to image {{imageName}} ({{err}})", { imageName: imageNameOriginal, err: err.message });
-    logger.error(message);
-    throw new Error(message);
+    //console.log("m", err)
+    throw new Error(i18n.t("Error adding watermark to image {{imageName}} ({{err}})", { imageName: imageNameOriginal, err: err.message }));
   }
   try { // save image to disk
+    //console.log("n")
     fs.writeFileSync(imagePathWaterMark, imageBufferWithWaterMark);
+    //console.log("o")
   } catch (err) {
-    const message = i18n.t("Error writing image to {{imagePath}} ({{err}})", { imagePath: imagePathWaterMark, err: err.message });
-    logger.error(message);
-    throw new Error(message);
+    //console.log("p", err)
+    throw new Error(i18n.t("Error writing image to {{imagePath}} ({{err}})", { imagePath: imagePathWaterMark, err: err.message }));
   }
+
+  //console.log("q", imageNameOriginal, imageName)
   return {
     imageNameOriginal,
     imageName,
@@ -96,8 +105,7 @@ const imageConvertFormatAndLimitSize = async (imageBuffer) => {
     })
     .toBuffer()
     .catch (err => {
-      logger.error("Error processing the image:", err);
-      throw err;
+      throw new Error(i18n.t("Error processing image: {{err}}", { err: err.message }));
     })
   ;
 };
@@ -166,8 +174,7 @@ const imageAddWaterMark = async (imageBuffer) => {
 
     return finalImageBuffer;
   } catch (err) {
-    logger.error("Error adding watermark to the image:", err);
-    throw err;
+    throw new Error(i18n.t("Error adding watermark to the image: {{err}}", { err: err.message }));
   }
 };
 

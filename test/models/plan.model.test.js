@@ -4,7 +4,7 @@
 const server = require("../server.test");
 const Plan = require("../../src/models/plan.model");
 
-describe("Plan model", async function() {
+describe("Plan model", async () => {
 
   // TODO: upgrade to server. ...
   // it("plan model should accept any value different by -1 (\"unlimited\")", async () => {

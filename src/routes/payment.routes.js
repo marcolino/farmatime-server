@@ -2,15 +2,17 @@
  * Stripe payment routes implementation
  */
 const { authJwt } = require("../middlewares");
-const controller = require("../controllers/payment.controller");
-
+const PaymentService = require("../services/payment.service");
+const config = require("../config");
 
 const path = "/api/payment";
 
+// dynamically load the payment gateway based on config
+const paymentService = new PaymentService(config.payment.gateway);
+
 module.exports = app => {
-  //app.get(`${path}/mode`, [authJwt.verifyAccessToken], controller.getMode);
   // allow createCheckoutSession also for guest user!
-  app.post(`${path}/createCheckoutSession`, [authJwt.verifyAccessTokenAllowGuest], controller.createCheckoutSession);
-  app.get(`${path}/paymentSuccess`, controller.paymentSuccess);
-  app.get(`${path}/paymentCancel`, controller.paymentCancel);
+  app.post(`${path}/createCheckoutSession`, [authJwt.verifyAccessTokenAllowGuest], paymentService.createCheckoutSession.bind(paymentService));
+  app.get(`${path}/paymentSuccess`, paymentService.paymentSuccess.bind(paymentService));
+  app.get(`${path}/paymentCancel`, paymentService.paymentCancel.bind(paymentService));
 };

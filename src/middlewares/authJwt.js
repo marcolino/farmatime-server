@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { isAdministrator, localeDateTime, cookieOptions } = require("../helpers/misc");
+const { isAdministrator, localeDateTime, cookieOptions, isDealerAtLeast } = require("../helpers/misc");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
@@ -154,6 +154,19 @@ const verifyNotificationToken = (req, res, next) => {
   });
 };
 
+const verifyRestrictProducts = async (req, res, next) => {
+  if (!req.userId) { // no userId in request: we assume the same limitations as for non-dealers
+    req.restrictProducts = config.products.restrictForNonDealers;
+  } else {
+    if (!await isDealerAtLeast(req.userId)) { // check if request is from a dealer, at least
+      req.restrictProducts = config.products.restrictForNonDealers;
+    } else { // no limitations
+      delete req.restrictProducts;
+    }
+  }
+  return next(); // proceed with the request
+};
+
 const isAdmin = async (req, res, next) => {
   if (!req.userId) {
     return res.status(403).json({
@@ -220,6 +233,7 @@ module.exports = {
   verifyAccessTokenAllowGuest,
   verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser,
   verifyNotificationToken,
+  verifyRestrictProducts,
   isAdmin,
   //cookieOptions,
   //cleanupExpiredTokens,

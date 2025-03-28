@@ -1,15 +1,16 @@
 const emailService = require("../services/email.service");
+const { nextError } = require("../helpers/misc");
 const config = require("../config");
 
 const ping = async (req, res) => {
   res.status(200).json({ message: "👍" });
 };
 
-// const maintenanceStatus = async (req, res, next) => {
-//   res.status(200).json({ message: process.env.MAINTENANCE === "true" ? true : false });
-// };
-
 const sendTestEmail = async (req, res, next) => {
+  if (config.mode.production) {
+    return nextError(next, req.t("Method not available in production"), 404);
+  }
+    
   try {
     await emailService.send(req, {
       to: "marcosolari@gmail.com",
@@ -23,14 +24,11 @@ const sendTestEmail = async (req, res, next) => {
     });
     res.send(true);
   } catch (err) {
-    const error = new Error(err.message);
-    error.status = 500;
-    next(error);
+    return nextError(next, err.message, 500, err.stack);
   }
 };
 
 module.exports = {
   ping,
-  //maintenanceStatus,
   sendTestEmail,
 };

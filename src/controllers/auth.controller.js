@@ -12,11 +12,11 @@ const Plan = require("../models/plan.model");
 // const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
 const {
-  isAdministrator, secureStack,
-  normalizeEmail, /*localeDateTime, */nextError,
+  isAdministrator, normalizeEmail, /*localeDateTime,*/ nextError,
   redirectToClientWithError, redirectToClientWithSuccess,
   createTokensAndCookies, cookieOptions,
 } = require("../helpers/misc");
+
 
 const passport = require("passport");
 const config = require("../config");
@@ -274,7 +274,7 @@ const signup = async (req, res, next) => {
   try {
     role = await Role.findOne({ name: roleName });
   } catch (err) {
-    logger.error(`Error finding role ${roleName}: ${err}`);
+    //logger.error(`Error finding role ${roleName}: ${err}`); // TODO: remove all these logger.error...
     return nextError(next, req.t("Error finding role {{roleName}}: {{err}}", { roleName, err: err.message }), 500, err.stack);
   }
   if (!role) {
@@ -659,9 +659,7 @@ const resendResetPasswordCode = async (req, res, next) => {
       const to = user.email;
       const from = config.email.administration.from;
       logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
-      //if (config.mode.production) { // TODO: why to log reset password code only in production mode?
-        logger.info(`Reset password code: ${user.resetPasswordCode}`);
-      //}
+      logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
       await emailService.send(req, {
         to: user.email,

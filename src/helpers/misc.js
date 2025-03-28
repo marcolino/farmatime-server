@@ -7,8 +7,6 @@ const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const AccessToken = require("../models/accessToken.model");
 const RefreshToken = require("../models/refreshToken.model");
-//const { cookieOptions } = require("../middlewares/authJwt");
-const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 
@@ -146,7 +144,7 @@ const isAdministrator = async (userId) => {
     }
     return false;
   } catch (err) {
-    logger.error(`Cannot find user by id ${userId}:`, err);
+    console.error(`Error finding user by id ${userId}:`, err); // eslint-disable-line no-console
     return false;
   }
 };
@@ -155,12 +153,15 @@ const isDealerAtLeast = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
     const dealerRole = await Role.findOne({ name: "dealer" }).lean();
-    if (user.roles.some(role => role.priority >= config.roles.find(role => role.priority >= dealerRole.priority).priority)) {
+    if (!user) {
+      return false;
+    }
+    if (user.roles?.some(role => role.priority >= config.roles.find(role => role.priority >= dealerRole.priority).priority)) {
       return true;
     }
     return false;
   } catch (err) {
-    logger.error(`Cannot find user by id ${userId}:`, err);
+    console.warn(`Error finding user by id ${userId}:`, err); // eslint-disable-line no-console
     return false;
   }
 };
@@ -181,14 +182,14 @@ const inject = (rootClient, rootClientSrc, outputFile, dataToInject) => {
   const rootClientOutputFilePath = path.resolve(rootClient, outputFile);
   try { // write the injected output file to root client build
     fs.writeFileSync(rootClientOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
-    //logger.info(`Injected config file ${rootClientOutputFilePath} to client root`)
+    //console.info(`Injected config file ${rootClientOutputFilePath} to client root`)
   } catch (err) {
     throw `Error injecting config file ${rootClientOutputFilePath}: ${err}`;
   }
   const rootClientSrcOutputFilePath = path.resolve(rootClientSrc, outputFile); // we could also check if it exists but is older than config.js, but better speed up things here...
   try { // write the injected output file to root client src
     fs.writeFileSync(rootClientSrcOutputFilePath, JSON.stringify(dataToInject, undefined, 2));
-    //logger.info(`Injected config file ${rootClientSrcOutputFilePath} to client src root`)
+    //console.info(`Injected config file ${rootClientSrcOutputFilePath} to client src root`)
   } catch (err) {
     throw `Error injecting config file ${rootClientSrcOutputFilePath}: ${err}`;
   }
@@ -353,7 +354,6 @@ const secureStack = (err) => {
  * 
  * return: nothing, next() function is called with an error object
  */
-
 const nextError = (next, message, status, stack) => {
   const error = new Error(message);
   error.status = status;
@@ -398,11 +398,11 @@ const createTokensAndCookies = async (req, res, next, user) => {
     
     /* istanbul ignore next*/
     if (config.mode.development) {
-      logger.info(`                      now is ${localeDateTime(new Date())}`);
+      console.info(`                      now is ${localeDateTime(new Date())}`); // eslint-disable-line no-console
       const { exp: expA } = jwt.decode(accessToken);
-      logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
+      console.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`); // eslint-disable-line no-console
       const { exp: expR } = jwt.decode(refreshToken);
-      logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
+      console.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`); // eslint-disable-line no-console
     }
     return { accessToken, refreshToken };
   } catch (err) {

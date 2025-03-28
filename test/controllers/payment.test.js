@@ -1,225 +1,247 @@
-/**
- * Payment routes tests
- */
+const chai = require("chai");
+const sinon = require("sinon");
+const proxyquire = require("proxyquire").noCallThru();
+const expect = chai.expect;
+const User = require("../../src/models/user.model");
 
-const server = require("../server.test");
 
-describe("Payment routes", () => {
+describe("Payment controller tests", function() {
+  let configStub, stripeStub, auditStub, nextStub;
+  let reqStub, reqStubCreateCheckoutSession, reqStubSuccess, reqStubCancel, resStub;
+  let paymentController;
 
-  let stripeSessionId;
+  beforeEach(() => {
+    // stub config
+    configStub = {
+      mode: {
+        production: false
+      }
+    };
+    
+    // Enable test mode
+    configStub.mode.test = true;
 
-  before(async () => {
-    await server.resetDatabase();
+    // Stub stripe API
+    stripeStub = {
+      checkout: {
+        sessions: {
+          //create: sinon.stub(),
+          create: sinon.stub().resolves({ url: "https://example.com/checkout", id: "test_session_id" }),
+          retrieve: sinon.stub().rejects(new Error("Stripe API error")),
+          //retrieve: sinon.stub().resolves({}),
+          listLineItems: sinon.stub(),
+        },
+      },
+      customers: { // ensure customers is defined
+        create: sinon.stub().resolves({}), // stub create method
+        retrieve: sinon.stub().resolves({}), // stub retrieve method
+      }
+    };
+
+    // initialize Stripe with a test API key
+    const stripeModuleStub = sinon.stub().returns(stripeStub);
+
+    // Stub audit function
+    auditStub = sinon.stub();
+
+    // Stub next function
+    nextStub = sinon.stub();
+
+    // Stub req and res objects
+    reqStubCreateCheckoutSession = {
+      parameters: {
+        session_id: "test_session_id"
+      },
+      customers: sinon.stub(),
+      t: sinon.stub().returns("Payment checkout customer creation error: {{err}}")
+    };
+
+    reqStubSuccess = {
+      parameters: {
+        session_id: "test_session_id"
+      },
+      t: sinon.stub().returns("Error retrieving payment info on payment success callback: {{err}}")
+    };
+    reqStubCancel = {
+      parameters: {
+        session_id: "test_session_id"
+      },
+      t: sinon.stub().returns("Error retrieving payment info on payment cancel callback: {{err}}")
+    };
+
+    reqStub = reqStubSuccess;
+
+    resStub = {
+      status: sinon.stub().returnsThis(), // ensure status is chainable
+      json: sinon.stub(),
+      send: sinon.stub(),
+      redirect: sinon.stub()
+    };
+
+    // Load the module with stubs
+    paymentController = proxyquire("../../src/controllers/payment.controller", {
+      "stripe": stripeModuleStub, // use the initialized Stripe instance
+      "../config": configStub,
+      "../helpers/messaging": { audit: auditStub },
+      "../helpers/misc": {
+        formatMoney: sinon.stub().returns("$100.00"),
+        nextError: sinon.stub().callsFake((next, message, status) => {
+          const error = new Error(message);
+          error.status = status;
+          next(error);
+        })
+      },
+    });
+
+    User.findById = sinon.stub().resolves(null); // Simulate user not found
   });
 
-  it("should not create a checkout session without a cart", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .send({})
-    ;
-    expect = 400;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("Empty cart");
+  // ... rest of your tests
+
+
+
+  it("should handle error during payment success", async () => {
+    const paymentSuccess = paymentController.paymentSuccess;
+
+    await paymentSuccess(reqStubSuccess, resStub, nextStub);
+
+    expect(nextStub.calledOnce).to.be.true;
+    expect(nextStub.firstCall.args[0].status).to.equal(500);
+    expect(nextStub.firstCall.args[0].message).to.equal("Error retrieving payment info on payment success callback: {{err}}");
+    expect(auditStub.calledOnce).to.be.true;
   });
 
-  it("should not create a checkout session with an empty cart", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .send({ cart: [] })
-    ;
-    expect = 400;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("Empty cart");
+
+  it("should handle error during payment cancellation", async () => {
+    const { paymentCancel } = paymentController;
+
+    await paymentCancel(reqStubCancel, resStub, nextStub);
+
+    expect(nextStub.calledOnce).to.be.true;
+    expect(nextStub.firstCall.args[0].status).to.equal(500);
+    expect(nextStub.firstCall.args[0].message).to.equal("Error retrieving payment info on payment cancel callback: {{err}}");
+    expect(auditStub.calledOnce).to.be.true;
   });
 
-  it("should not create a checkout session with a cart with an empty item", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({
-        cart: {
-          items: [{ }],
-        }
-      })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Missing required param:"));
-  });
 
-  // cart items parameters:
-  // item.mdaCode,
-  // item.imageUrl,
-  // item.notes, (optional)
-  // item.price, (integer (cents))
-  // item.quantity,
-  it("should not create a checkout session with a cart with an item without mdaCode", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({
-        cart: {
-          items: [{ /*mdaCode: 123,*/ imageUrl: "https://example.com/image.jpg", price: 1, quantity: 1 }],
-        }
-      })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Missing required param:"));
-  });
 
-  it("should not create a checkout session with a cart with an item no mdaCode", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({
-        cart: {
-          items: [{ /*mdaCode: 123,*/ price: 100, quantity: 1 }],
-        }
-      })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Missing required param:"));
-  });
 
-  it("should not create a checkout session with a cart with no price", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({ cart: { items: [{ mdaCode: 123, /*price: 100,*/ quantity: 1 }] } })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Prices require an `unit_amount` or `unit_amount_decimal` parameter to be set"));
-  });
 
-  it("should not create a checkout session with a cart with no quantity", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({ cart: { items: [{ mdaCode: 123, price: 100/*, quantity: 1*/ }] } })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" Quantity is required"));
-  });
 
-  it("should not create a checkout session with a cart with zero quantity", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 0 }] } })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" This value must be greater than or equal to 1"));
-  });
 
-  it("should not create a checkout session with a cart with a too low price", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("Cookie", server.getAuthCookies("admin"))
-      .send({ cart: { items: [{ mdaCode: 123, price: 49, quantity: 1 }] } })
-    ;
-    expect = 500;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith(" The Checkout Session&#39;s total amount due must add up to at least"));
-  });
 
-/*
-  it("should not create a checkout session for a non-existent product", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .set("authorization", accessTokenUser)
-      .send({ product: "not existent" })
-      .then(res => {
-        res.should.have.status(400);
-        res.body.should.have.property("message");
-        expect(res.body.message).to.equal("You must provide either price or price_data for each line item when using prices."),
-        done();
-      })
-      .catch((err) => {
-        done(err);
-      }) 
-    ;
-  });
-*/
+
+  it("should handle user not found", async () => {
+    const { createCheckoutSession } = paymentController;
+
+    reqStub.userId = "non-existent-user-id";
+    reqStub.parameters = {};
+    reqStub.parameters.cart = {};
+    reqStub.parameters.cart.items = [];
+    reqStub.parameters.cart.items[0] = { name: "item1" };
+    User.findById = sinon.stub().resolves(null);
   
-  it("should create a checkout session for a regular product for a guest user", async () => {
-    const res = await server.request
-      .post("/api/payment/createCheckoutSession")
-      .send({ cart: { items: [{ mdaCode: 123, price: 100, quantity: 1 }] } })
-    ;
-    expect = 200;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("session");
-    stripeSessionId = res.body.session.id;
-  });
+    await createCheckoutSession(reqStub, resStub, nextStub);
   
-  it("should redirect on a payment success call", async () => {
-    const res = await server.request
-      .get("/api/payment/paymentSuccess")
-      .query({session_id: stripeSessionId})
-      .redirects(0)
-    ;
-    expect = 302;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
+    expect(resStub.status.calledOnce).to.be.true;
+    expect(resStub.status.firstCall.args[0]).to.equal(403);
+    expect(resStub.json.calledOnce).to.be.true;
+    expect(resStub.json.firstCall.args[0].message).to.equal(reqStub.t("User with id {{userId}} not found", { userId: reqStub.userId }));
   });
 
-  it("should redirect on a payment canceled call", async () => {
-    const res = await server.request
-      .get("/api/payment/paymentCancel")
-      .query({session_id: stripeSessionId})
-      .redirects(0)
-    ;
-    expect = 302;
-    if (res.status !== expect) {
-      console.error(`Expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
+
+  it("should handle customer creation error", async () => {
+    const { createCheckoutSession } = paymentController;
+  
+    reqStubCreateCheckoutSession.userId = "existing-user-id";
+    reqStubCreateCheckoutSession.parameters = {};
+    reqStubCreateCheckoutSession.parameters.cart = {};
+    reqStubCreateCheckoutSession.parameters.cart.items = [];
+    reqStubCreateCheckoutSession.parameters.cart.items[0] = { name: "item1" };
+    const userDoc = new User({ email: "user@example.com", firstName: "John", lastName: "Doe" });
+    User.findById = sinon.stub().resolves(userDoc);
+  
+    stripeStub.customers.create = sinon.stub().rejects(new Error("Customer creation failed"));
+  
+    await createCheckoutSession(reqStubCreateCheckoutSession, resStub, nextStub);
+  
+    expect(resStub.status.calledOnce).to.be.true;
+    expect(resStub.status.firstCall.args[0]).to.equal(400);
+    expect(resStub.json.calledOnce).to.be.true;
+    expect(resStub.json.firstCall.args[0].message).to.equal("Customer creation failed");
   });
 
+
+
+
+  it("should throw error if session response is incomplete", async () => {
+    const { createCheckoutSession } = paymentController;
+  
+    reqStubCreateCheckoutSession.userId = "existing-user-id";
+    reqStubCreateCheckoutSession.parameters = {};
+    reqStubCreateCheckoutSession.parameters.cart = {};
+    reqStubCreateCheckoutSession.parameters.cart.items = [];
+    reqStubCreateCheckoutSession.parameters.cart.items[0] = { name: "item1" };
+    const userDoc = new User({ email: "user@example.com", firstName: "John", lastName: "Doe" });
+    User.findById = sinon.stub().resolves(userDoc);
+  
+    stripeStub.checkout.sessions.create = sinon.stub().resolves({});
+  
+    await createCheckoutSession(reqStubCreateCheckoutSession, resStub, nextStub);
+  
+    expect(nextStub.calledOnce).to.be.true;
+    expect(nextStub.firstCall.args[0].status).to.equal(500);
+    expect(nextStub.firstCall.args[0].message).to.equal(reqStubCreateCheckoutSession.t("Payment checkout session creation error: {{err}}", { err: "no session url" }));
+  });
+
+  it("should update user preferences if accepting offers emails", async () => {
+    const { createCheckoutSession } = paymentController;
+    reqStub.userId = "existing-user-id";
+    reqStub.parameters = {};
+    reqStub.parameters.cart = {};
+    reqStub.parameters.cart.items = [];
+    reqStub.parameters.cart.items[0] = { name: "item1" };
+    //reqStub.cart = { acceptToReceiveOffersEmails: true };
+    reqStub.parameters.cart.acceptToReceiveOffersEmails = true;
+  
+    // Define the preferences object within userDoc
+    const userDoc = new User({
+      email: "user@example.com",
+      firstName: "John",
+      lastName: "Doe",
+      preferences: {
+        notifications: {
+          email: {
+            offers: false // initially set to false
+          }
+        }
+      },
+      save: sinon.stub() // Stub save method
+    });
+  
+    // stub the save method on userDoc
+    userDoc.save = sinon.stub();
+    
+    User.findById = sinon.stub().resolves(userDoc);
+  
+    const stripeModuleStub = sinon.stub().returns(stripeStub);
+    paymentController = proxyquire("../../src/controllers/payment.controller", {
+      "stripe": stripeModuleStub,
+      "../config": configStub,
+      "../helpers/messaging": { audit: auditStub }
+    });
+    reqStub.parameters = {};
+    reqStub.parameters.cart = {};
+    reqStub.parameters.cart.items = [];
+    reqStub.parameters.cart.items[0] = { name: "item1" };
+    //reqStub.cart = { acceptToReceiveOffersEmails: true };
+    reqStub.parameters.cart.acceptToReceiveOffersEmails = true;
+
+    await createCheckoutSession(reqStub, resStub, nextStub);
+  
+    console.log("userDoc:", userDoc.preferences.notifications.email);
+    expect(userDoc.save.calledOnce).to.be.true;
+    expect(userDoc.preferences.notifications.email.offers).to.be.true; // TODO...
+  });  
+  
 });

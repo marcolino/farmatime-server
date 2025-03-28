@@ -1,21 +1,23 @@
-
 //const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
 const Product = require("../models/product.model");
-const { logger } = require("./logger.controller");
+//const { logger } = require("./logger.controller");
 const { saveImageFile } = require("../helpers/images");
-const { isObject, isArray, isDealerAtLeast, diacriticMatchRegex, diacriticsRemove, secureStack, nextError } = require("../helpers/misc");
+const { isObject, isArray, diacriticMatchRegex, diacriticsRemove, nextError } = require("../helpers/misc");
 const config = require("../config");
 
 
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
   try {
     const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
+      //console.log(1)
       return res.status(400).json({ message: req.t("A filter must be an object") });
     }
+
+    const restrictProducts = req.restrictProducts ?? 0;
 
     // trim all filter values
     Object.keys(filter).forEach(k => filter[k] = filter[k].trim());
@@ -27,7 +29,7 @@ const getProducts = async (req, res) => {
       let filterKey;
 
       const cleanValue = diacriticsRemove(value); // remove diacritics
-      const $options = config.db.products.search.caseInsensitive ? "i" : "";
+      const $regexOptions = config.db.products.search.caseInsensitive ? "i" : "";
       let escapedValue = cleanValue;
       try { // if value is a valid regex string (new RegExp() will not throw), use it directly
         new RegExp(cleanValue);
@@ -35,11 +37,9 @@ const getProducts = async (req, res) => {
         escapedValue = cleanValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
 
-      //const keyOptions = Product.schema.path(key).options;
-      
       if (Product.schema.path(key).options.searchable) { // this key is "searchable", normalize it across diacritics
         const pattern = diacriticMatchRegex(escapedValue, (config.db.products.search.mode === "EXACT"));
-        filterKey = { $regex: pattern, $options };
+        filterKey = { $regex: pattern, $options: $regexOptions };
       } else {
         filterKey = escapedValue;
       }
@@ -50,34 +50,21 @@ const getProducts = async (req, res) => {
 
     const mongoCollation = { locale: "en", strength: 1 }; // diacritic and case insensitive
 
-    let limit = 0; // a limit value of 0 is equivalent to setting no limit
-    if (!await isDealerAtLeast(req.userId)) { // check if request is from a dealer, at least
-      limit = config.products.limitForNonDealers;
-    }
-
-    // count the filter results (with no limit)
+    // count the filter results (with no restriction)
     const totalCount = await Product.countDocuments(mongoFilter).collation(mongoCollation);
 
-    // fetch the limited set of results
+    // fetch the restricted set of results
     const products = await Product.find(mongoFilter)
       .collation(mongoCollation)
-      .limit(limit)
+      .limit(restrictProducts)
       .select(["-__v"])
       .lean()
       .exec()
     ;
     
-    //product.id = product._id;
-
     return res.status(200).json({products, count: totalCount});
   } catch (err) {
-    // TODO: next ...
-    logger.error("Error getting products:", err, err.stack);
-    return res.status(500).json({
-      message: req.t("Error getting products" + ": " + err.message),
-      stack: err.stack,
-    }); // RETURN here
-    //throw err;
+    return nextError(next, req.t("Error getting products: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -118,7 +105,7 @@ const getProduct = async (req, res, next) => {
     };
     return res.status(200).json({ product: productData });
   } catch (err) {
-    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);
+    return nextError(next, req.t("Error getting product: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -126,12 +113,17 @@ const getProduct = async (req, res, next) => {
 const getProductImageById = (req, res) => {
   const imageId = req.parameters.imageId;
   const imagePath = path.join(__dirname, "images", imageId);
-  
+
+  //console.log("+++ imageId:", imageId)
+  //console.log("+++ imagePath:", imagePath)
+
   // check if the image exists
   if (!fs.existsSync(imagePath)) {
+     //console.log("+++ 404")
     return res.status(404).json({ message: req.t("Image by id {{id}} not found", { id: imageId }) });
   }
   
+  //console.log("+++ imagePath 2:", imagePath)
   return res.sendFile(imagePath);
 };
 
@@ -142,33 +134,6 @@ const getProductAllTypes = (req, res) => {
   });
 };
 
-// deletes a product: delete it from database
-const deleteProduct = async (req, res, next) => {
-  let filter = req.parameters?.filter;
-  if (filter === "*") { // attention here, we are deleting ALL products!
-    filter = {};
-  } else {
-    if (isObject(filter)) {
-      // do nothing
-    } else {
-      if (isArray(filter)) {
-        filter = { _id: { $in: filter } };
-      } else {
-        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
-      }
-    }
-  }
-  try {
-    const data = await Product.deleteMany(filter);
-    if (data.deletedCount > 0) {
-      return res.status(200).json({ message: req.t("{{count}} product(s) have been deleted", { count: data.deletedCount }), count: data.deletedCount });
-    } else {
-      return res.status(400).json({ message: req.t("No product have been deleted") });
-    }
-  } catch (err) {
-    return nextError(next, req.t("Could not delete product(s) with filter {{filter}}: {{ err}}", { filter: JSON.stringify(filter), err: err.message }), 500, err.stack);
-  }
-};
 
 /**
  * Insert new product
@@ -184,7 +149,7 @@ const insertProduct = async (req, res, next) => {
     await product.save();
     return res.status(200).json({ id: product._id, message: req.t("Product has been inserted") });
   } catch (err) {
-    return nextError(next, req.t("Error inserting product: {{ err}}", { err: err.message }), 500, err.stack);
+    return nextError(next, req.t("Error saving product to insert: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -207,9 +172,12 @@ const updateProduct = async (req, res, next) => {
     // validate and normalize fields
     let [message, value] = [null, null];
 
+    //console.log(1);
     if ((productNew.mdaCode !== undefined)) {
+      //console.log(2);
       [message, value] = await propertyMdaCodeValidate(req, productNew.mdaCode, productNew);
       if (message) return res.status(400).json({ message });
+      //console.log(3);
       product.mdaCode = value;
     }
     if ((productNew.oemCode !== undefined)) {
@@ -273,54 +241,96 @@ const updateProduct = async (req, res, next) => {
       product.type = value;
     }
 
+    //console.log(4);
     try {
       await product.save();
       return res.status(200).json({ product });
     } catch (err) {
-      return nextError(next, req.t("Error updating product: {{err}}", { err: err.message }), 500, err.stack);
+      //console.log(5, err);
+      return nextError(next, req.t("Error saving product to update: {{err}}", { err: err.message }), 500, err.stack);
     }
+    //console.log(6);
   } catch (err) {
-    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);
+    //console.log(7, err);
+    return nextError(next, req.t("Error finding product to update: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
 // upload product image
 const uploadProductImage = async (req, res, next) => {
+  //console.log(1);
   // we don't have req.parameters set in this endpoint because it' a multipart/form-data content-type
   if (!req.file) { // no image uploaded
     res.status(400).json({ error: req.t("No image uploaded") });
   }
+  //console.log(2);
 
   const productId = req.body.productId;
   try {
+    //console.log(3);
     const product = await Product.findOne({
       _id: productId
     });
 
     if (!product) {
+      //console.log(4);
       return res.status(400).json({ message: req.t("Product not found") });
     }
 
     try {
+      //console.log(5);
       const result = await saveImageFile(req);
+      //console.log(6);
       product.imageNameOriginal = result.imageNameOriginal;
       product.imageName = result.imageName;
     } catch (err) {
+      //console.log(7, err);
       return nextError(next, req.t("Error saving product image: {{err}}", { err: err.message }), 500, err.stack);
     }
 
     try {
+      //console.log(8);
       await product.save();
+      //console.log(9);
     } catch (err) {
       return nextError(next, req.t("Error updating product: {{err}}", { err: err.message }), 500, err.stack);      
     }
 
+    //console.log(10);
     return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{filePath}}", { fileName: product.imageName, filePath: req.file.path }) });
   } catch (err) {
+    //console.log(11, err.message);
     return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
+// deletes a product: delete it from database
+const deleteProduct = async (req, res, next) => {
+  let filter = req.parameters?.filter;
+  if (filter === "*") { // attention here, we are deleting ALL products!
+    filter = {};
+  } else {
+    if (isObject(filter)) {
+      // do nothing
+    } else {
+      if (isArray(filter)) {
+        filter = { _id: { $in: filter } };
+      } else {
+        return res.status(400).json({ "message": req.t("Filter must be specified and be '*' or a filter object or an array of ids") });
+      }
+    }
+  }
+  try {
+    const data = await Product.deleteMany(filter);
+    if (data.deletedCount > 0) {
+      return res.status(200).json({ message: req.t("{{count}} product(s) have been deleted", { count: data.deletedCount }), count: data.deletedCount });
+    } else {
+      return res.status(200).json({ message: req.t("No product has been deleted") });
+    }
+  } catch (err) {
+    return nextError(next, req.t("Error deleting product(s): {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
 
 // removes a product: mark it as deleted, but do not delete from database
 const removeProduct = async (req, res, next) => {
@@ -342,24 +352,33 @@ const removeProduct = async (req, res, next) => {
   const payload = { isDeleted: true };
   try {
     const data = await Product.updateMany(filter, payload, { new: true, lean: true });
-    if (data./*nModified*/modifiedCount > 0) {
-      return res.status(200).json({ message: req.t("{{count}} products(s) have been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
+    if (data.modifiedCount > 0) {
+      //console.log(1, data.modifiedCount);
+      return res.status(200).json({ message: req.t("{{count}} product(s) have been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
     } else {
-      return res.status(400).json({ message: req.t("No product have been removed") });
+      //console.log(2, data.modifiedCount);
+      return res.status(400).json({ message: "No products have been removed" });
     }
   } catch (err) {
-    return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);      
+    //console.log(1, err);
+    return nextError(next, req.t("Error updating product to remove: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
   
 
 // user properties validation
 const propertyValidate = async (req, value/*, product*/) => { // generic product type validation
+  if (value instanceof Error) { // TODO: implement meaningful checks, according to application specification
+    return "property is not valid";
+  }
   return [null, value];
 };
 
 const propertyMdaCodeValidate = async (req, value/*, product*/) => { // validate and normalize mda code
   // TODO: validate this code according to application specification
+  if (value instanceof Error) { // TODO: implement meaningful checks, according to application specification
+    return "property is not valid";
+  }
   return [null, value];
 };
 

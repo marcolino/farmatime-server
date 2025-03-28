@@ -1,5 +1,5 @@
 const multer = require("multer");
-const controller = require("../controllers/products.controller");
+const controller = require("../controllers/product.controller");
 const { authJwt } = require("../middlewares");
 
 const path = "/api/product";
@@ -10,7 +10,7 @@ const upload = multer({ storage });
 
 module.exports = app => {
   //app.get(`${path}/getAllProducts`, [authJwt.verifyAccessToken], controller.getAllProducts);
-  app.get(`${path}/getProducts`, [authJwt.verifyAccessTokenAllowGuest], controller.getProducts);
+  app.get(`${path}/getProducts`, [authJwt.verifyAccessTokenAllowGuest, authJwt.verifyRestrictProducts], controller.getProducts);
   app.get(`${path}/getProduct`, [authJwt.verifyAccessTokenAllowGuest], controller.getProduct);
   app.get(`${path}/getProductImageById/:imageId`, [authJwt.verifyAccessToken], controller.getProductImageById);
   app.get(`${path}/getProductAllTypes`, [authJwt.verifyAccessToken], controller.getProductAllTypes);

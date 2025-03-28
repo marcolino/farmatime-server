@@ -6,7 +6,7 @@
     "jsx": "react-jsx", // use "react-jsx" for React 17+ (automatic JSX runtime)
     "strictNullChecks": true, // helps catch potential null/undefined errors
     "allowJs": true, // allow plain JavaScript files
-    "checkJs": true, // enable type-checking for JavaScript files
+    //"checkJs": true, // enable type-checking for JavaScript files (red underlines `require("dotenv")` ...)
     "baseUrl": ".", // base directory for module resolution
     "paths": {
       "@/*": ["./src/*"] // optional: alias for imports (e.g., "@/components/Button")

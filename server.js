@@ -32,7 +32,7 @@ if (config.mode.development) {
 if (config.mode.staging) {
   logger.info("Staging mode");
 }
-if (config.payment.stripe.enabled) {
+if (config.payment.gateways.stripe.enabled) {
   logger.info(`Stripe is enabled, and Stripe mode is ${config.mode.stripelive}`);
 }
 
@@ -198,9 +198,8 @@ app.get("*", (req, res) => {
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next is needed to be considered error handling
   logger.error("Server error:", err);
   let status = err.status || 500;
-  //let stack = err.stack; 
-  // include stack trace in development only
-  let message = `${err.message || (req.t ? req.t("Server error") : "Server error")}`;
+  let message = `${err.message.trim() || (req.t ? req.t("Server error") : "Server error")}`;
+
   if (status === 500) { // audit errors
     audit({
       req, mode: "error", subject: `Error: ${message}`, htmlContent: `
@@ -214,6 +213,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
     });
     message += " - " + req.t("We are aware of this error, and working to solve it") + ". " + req.t("Please, retry soon");
   }
+
   return res.status(status).json({
     message,
     ...((status === 500) && { stack: secureStack(err) }),

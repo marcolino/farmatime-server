@@ -44,7 +44,8 @@
     }
   },
   "api": {
-    "version": 1,
+    "name": "acme",
+    "version": "1",
     "headers": {
       "Content-Type": "application/json"
     },

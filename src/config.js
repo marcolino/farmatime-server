@@ -4,10 +4,27 @@ const merge = require("lodash.merge");
 
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
 const testInCI = (test && !!process.env.GITHUB_ACTIONS); // test mode, inside CI (github actions), use public test db
-const production = (/*!test &&*/ (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging")); // production mode (production behaviour, production db on public host)
-const development = (/*!test &&*/ (process.env.NODE_ENV === "development")); // development mode (development behaviour, local db on local host)
-const staging = (/*!test &&*/ (process.env.NODE_ENV === "staging")); // staging mode (production behaviour, production db on local host)
-const stripelive = (/*!test &&*/ (process.env.LIVE_MODE === "true")); // stripe mode is "live"  
+const production = (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"); // production mode (production behaviour, production db on public host)
+const development = (process.env.NODE_ENV === "development"); // development mode (development behaviour, local db on local host)
+const staging = (process.env.NODE_ENV === "staging"); // staging mode (production behaviour, production db on local host)
+const stripelive = (process.env.LIVE_MODE === "true"); // stripe mode is "live"  
+
+/**
+ * Import envronment variables from env file.
+ * IMPORTANT: in production we don"t have an env file, but a "secrets" environment from the hosting provider
+ */
+if (!production) {
+  const envFile = ".env";
+  if (!fs.existsSync(envFile)) {
+    throw new Error(`Error: ${envFile} file does not exist`);
+  }
+  try {
+    require("dotenv").config({ path: envFile, override: true });
+    //console.log(`${envFile} file loaded successfully`); // eslint-disable-line no-console
+  } catch (err) {
+    throw new Error(`Failed to load ${envFile} file: ${err.message}`);
+  }
+}
 
 const customization = process.env.CUSTOMIZATION || null; // custom configuration to be merged with configBase
 
@@ -38,27 +55,6 @@ const baseUrlClientPreview = production ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
 //const customization = "mda"; // custom configuration to be merged with configBase
-
-/**
- * Import envronment variables from env file.
- * IMPORTANT: in production we don"t have an env file, but a "secrets" environment from the provider
- */
-if (!production) {
-  const envFile = ".env";
-  if (!fs.existsSync(envFile)) {
-    // console.error(`Error: ${envFile} does not exist`); // eslint-disable-line no-console
-    // process.exit(1);
-    throw new Error(`Error: ${envFile} does not exist`);
-  }
-  const result = require("dotenv").config({ path: envFile, override: true });
-  if (result.error) {
-    // console.error(`Failed to load ${envFile} file ${result.error}`); // eslint-disable-line no-console
-    // process.exit(1); // exit the process with an error code
-    throw new Error(`Failed to load ${envFile} file: ${result.error}`);
-  } else {
-    //console.log(`${envFile} file loaded successfully`); // eslint-disable-line no-console
-  }
-}
 
 const configBase = {
   mode: {
@@ -187,7 +183,7 @@ const configBase = {
       alphaQualityPercent: 98,
       basepath: "/assets/products/images",
     },
-    limitForNonDealers: 3,
+    restrictForNonDealers: 3,
   },
   logs: {
     file: {
@@ -227,48 +223,51 @@ const configBase = {
   clientSmsUnsubscribeUrl: `${baseUrlClient}/sms-unsubscribe`,
   clientSmsPreferencesUrl: `${baseUrlClient}/sms-preferences`,
   payment: {
-    stripe: {
-      enabled: false,
-      products: stripelive ? { // products for a typical SAAS
-      // stripe mode is live
-        free: {
-          name: "Prodotto Gratuito LIVE",
-          product_id: "prod_LC4k3rwA64D45l",
-          price_id: "price_1KVgafFZEWHriL1u8PFSvxSy",
+    gateway: "stripe",
+    gateways: { // TODO...
+      stripe: {
+        enabled: false,
+        products: stripelive ? { // products for a typical SAAS
+          // stripe mode is live
+          free: {
+            name: "Prodotto Gratuito LIVE",
+            product_id: "prod_LC4k3rwA64D45l",
+            price_id: "price_1KVgafFZEWHriL1u8PFSvxSy",
+          },
+          standard: {
+            name: "Prodotto Standard LIVE",
+            product_id: "prod_LC4lYicsBXPmIA",
+            price_id: "price_1KVgbfFZEWHriL1uR5BnWO9W",
+          },
+          unlimited: {
+            name: "Prodotto Illimitato LIVEKBJ",
+            price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
+          },
+        } : {
+          // stripe mode is test
+          free: {
+            name: "Prodotto Gratuito TEST",
+            product_id: "prod_LC4q54jgFITE0U",
+            price_id: "price_1KVggqFZEWHriL1uD8hlzL3S",
+          },
+          standard: {
+            name: "Prodotto Standard TEST",
+            product_id: "prod_LC4tiakN3cKlSA",
+            price_id: "price_1KVgjRFZEWHriL1ujZm3tF2h",
+          },
+          unlimited: {
+            name: "Prodotto Illimitato TEST",
+            product_id: "prod_LC4og5H6lpSLoK",
+            price_id: "price_1KVgfKFZEWHriL1utJyT904c",
+          },
         },
-        standard: {
-          name: "Prodotto Standard LIVE",
-          product_id: "prod_LC4lYicsBXPmIA",
-          price_id: "price_1KVgbfFZEWHriL1uR5BnWO9W",
+        paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`,
+        paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`,
+        paymentSuccessUrlClient: `${baseUrlClient}/payment-success`,
+        paymentCancelUrlClient: `${baseUrlClient}/payment-cancel`,
+        checkout: {
+          shipping_allowed_countries: ["IT", "CH"], // the countries you ship to 
         },
-        unlimited: {
-          name: "Prodotto Illimitato LIVEKBJ",
-          price_id: "price_1KVgdSFZEWHriL1udJubMAAn",
-        },
-      } : {
-      // stripe mode is test
-        free: {
-          name: "Prodotto Gratuito (test)",
-          product_id: "prod_LC4q54jgFITE0U",
-          price_id: "price_1KVggqFZEWHriL1uD8hlzL3S",
-        },
-        standard: {
-          name: "Prodotto Standard (test)",
-          product_id: "prod_LC4tiakN3cKlSA",
-          price_id: "price_1KVgjRFZEWHriL1ujZm3tF2h",
-        },
-        unlimited: {
-          name: "Prodotto Illimitato (test)",
-          product_id: "prod_LC4og5H6lpSLoK",
-          price_id: "price_1KVgfKFZEWHriL1utJyT904c",
-        },
-      },
-      paymentSuccessUrl: `${baseUrl}/api/payment/paymentSuccess`,
-      paymentCancelUrl: `${baseUrl}/api/payment/paymentCancel`,
-      paymentSuccessUrlClient: `${baseUrlClient}/payment-success`,
-      paymentCancelUrlClient: `${baseUrlClient}/payment-cancel`,
-      checkout: {
-        shipping_allowed_countries: ["IT", "CH"], // the countries you ship to 
       },
     },
   },
@@ -376,7 +375,8 @@ const configBase = {
       },
     },
     api: { // API settings for clients
-      version: 1, // use this as a default for all API calls which do not specify any specific version (in headers["Accept-Version"])
+      name: appName,
+      version: "1", // use this as a default for all API calls which do not specify any specific version (in headers["Accept-Version"])
       headers: {
         "Content-Type": "application/json",
       },
@@ -561,6 +561,5 @@ if (customization) {
 }
 
 const config = merge(configBase, configCustom);
-console.log("CONFIG:", config);
 
 module.exports = config;

@@ -1,26 +1,18 @@
 const winston = require("winston");
 const stream = require("stream");
-// const { Logtail } = require("@logtail/node");
-// const { LogtailTransport } = require("@logtail/winston");
-const { decode } = require("html-entities");
-const config = require("../config");
-//require("winston-syslog");
-
-let logtail;
 const { Logtail } = require("@logtail/node");
 const { LogtailTransport } = require("@logtail/winston");
-if (!config.mode.test) {
-  logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
-}
+const { decode } = require("html-entities");
+const config = require("../config");
 
-let logger = null;
+
+let logger = null, logtail;
 const transports = [];
 const exceptionHandlers = [];
 const colorize = true;
-
-const isString = (x) => {
-  return (typeof x === "string" || x instanceof String);
-};
+if (!config.mode.test) {
+  logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
+}
 
 class LogtailStream extends stream.Writable {
   constructor(logtail) {
@@ -42,17 +34,14 @@ class LogtailStream extends stream.Writable {
         .join(" ")}`;
     }
 
-    // const cleanMetadata = Object.entries(rest)
-    //   .filter(([, value]) => value !== undefined && value !== null)
-    //   .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
-
     // decode any encoded characters
     logMessage = decode(logMessage);
 
     this.logtail
-      .log(logMessage, null) //Object.keys(cleanMetadata).length > 0 ? cleanMetadata : null)
+      .log(logMessage, null)
       .then(() => callback())
-      .catch(callback);
+      .catch(callback)
+    ;
   }
 }
 
@@ -81,6 +70,11 @@ const formatWithArgs = winston.format.combine(
   })
 );
 
+const isString = (x) => {
+  return (typeof x === "string" || x instanceof String);
+};
+
+
 try {
   transports.push(
     new winston.transports.File({ // File transport
@@ -94,12 +88,14 @@ try {
   transports.push(
     new winston.transports.Console({
       format: formatWithArgs,
-      level: // order matters: if production, staging can be true or false
-        config.mode.staging ? config.logs.levelMap.staging :
-        config.mode.production ? config.logs.levelMap.production : // eslint-disable-line indent
-        config.mode.development ? config.logs.levelMap.development : // eslint-disable-line indent
-        config.mode.test ? config.logs.levelMap.test : // eslint-disable-line indent
-        "debug", // eslint-disable-line indent
+      //level: config.logs.levelMap.development,
+      level: config.mode.test ? config.logs.levelMap.test : "debug",
+      // level: // order matters: if production, staging can be true or false
+      //   config.mode.staging ? config.logs.levelMap.staging :
+      //   config.mode.production ? config.logs.levelMap.production : // eslint-disable-line indent
+      //   config.mode.development ? config.logs.levelMap.development : // eslint-disable-line indent
+      //   config.mode.test ? config.logs.levelMap.test : // eslint-disable-line indent
+      //   "debug", // eslint-disable-line indent
       handleExceptions: true,
       colorize,
     })
@@ -116,33 +112,27 @@ try {
     );
   }
 } catch (err) {
-  console.error("Winston transports creation error:", err); // eslint-disable-line no-console
-  throw err;
+  throw new Error(`Winston transports creation error: ${err}`);
 }
 
-try {
-  exceptionHandlers.push(new winston.transports.File({ filename: config.logs.file.name }));
+exceptionHandlers.push(new winston.transports.File({ filename: config.logs.file.name }));
+/* istanbul ignore next */
+if (!config.mode.test) {
   exceptionHandlers.push(new LogtailTransport(logtail));
-} catch (err) {
-  console.error("Winston exceptions handlers creation error:", err); // eslint-disable-line no-console
-  throw err;
 }
 
-try {
-  logger = winston.createLogger({
-    level: "debug", // default log level for transports that don’t override it
-    format: winston.format.combine( // default format for transports that don’t override it
-      winston.format.timestamp(),
-      winston.format.json()
-    ),
-    transports,
-    exceptionHandlers,
-  });
-} catch (err) {
-  console.error("Winston logger creation error:", err); // eslint-disable-line no-console
-  throw err;
-}
+logger = winston.createLogger({
+  level: "debug", // default log level for transports that don’t override it
+  format: winston.format.combine( // default format for transports that don’t override it
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports,
+  exceptionHandlers,
+});
 
-module.exports = {
-  logger,
-};
+module.exports = { logger };
+
+if (config.mode.test) { // export LogtailStream class only while testing, to ease tests
+  module.exports.LogtailStream = LogtailStream;
+}

@@ -7,13 +7,10 @@ class CustomEjsLexer extends EventEmitter {
   }
 
   extract(content) {
-    //console.log("CustomEjsLexer - extract - content:", content);
-    //const regex = /{{\s*t\s*['"]([^'"]+)['"]\s*}}/g; // wrong (?)
     const regex = /\s+t\(\s*['"]([^'"]+)['"]\s*\)/g;
     let match;
     const translations = [];
     while ((match = regex.exec(content)) !== null) {
-      //console.log("CustomEjsLexer - extract - match:", match[1]);
       translations.push({
         key: match[1],
         context: null,

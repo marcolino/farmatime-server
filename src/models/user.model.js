@@ -136,7 +136,7 @@ const UserSchema = mongoose.Schema({
   },
 }, {timestamps: true});
 
-UserSchema.pre(/^find|^count/, function() {
+UserSchema.pre(/^find|^count/, function () {
   //const operation = this.op; // we might need the effective operation matched
   const user = this;
   let condition = {};
@@ -183,7 +183,7 @@ UserSchema.methods.compareClearPassword = (passwordInput, passwordUser) => {
   return passwordInput === passwordUser;
 };
 
-UserSchema.methods.generatePasswordResetCode = () => {
+UserSchema.methods.generatePasswordResetCode = function () {
   const maxDigits = 6;
   const expirySeconds = 60 * 60; // 1 hour
 
