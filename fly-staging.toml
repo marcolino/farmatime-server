@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for acme-server-lingering-brook-4120 on 2024-08-24T17:23:36+02:00
+# fly.toml app configuration file generated for med-server-lingering-brook-4120 on 2024-08-24T17:23:36+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'acme-staging'
+app = 'med-staging'
 primary_region = 'cdg'
 
 [build]

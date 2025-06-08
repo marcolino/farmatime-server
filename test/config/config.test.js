@@ -112,14 +112,14 @@ describe("Config file", () => {
     process.env.NODE_ENV = "production";
     delete require.cache[require.resolve(configFile)];
     const config = require(configFile);
-    expect(config.baseUrlPublic).to.equal("https://acme-prod.fly.dev");
+    expect(config.baseUrlPublic).to.equal("https://med-prod.fly.dev");
   });
 
   it("should use staging URL when staging is true", () => {
     process.env.NODE_ENV = "staging";
     delete require.cache[require.resolve(configFile)];
     const config = require(configFile);
-    expect(config.baseUrlPublic).to.equal("https://acme-staging.fly.dev");
+    expect(config.baseUrlPublic).to.equal("https://med-staging.fly.dev");
   });
 
   it("should use live stripe product LIVE_MODE is true", () => {

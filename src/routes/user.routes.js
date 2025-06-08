@@ -6,7 +6,7 @@ const path = "/api/user";
 
 module.exports = app => {
   app.get(`${path}/getAllUsersWithTokens`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.getAllUsersWithTokens);
-  app.get(`${path}/getAllUsers`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.getAllUsers);
+  app.get(`${path}/getUsers`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.getUsers);
   app.get(`${path}/getUser`, authJwt.verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser, controller.getUser);
   app.post(`${path}/updateUser`, authJwt.verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser, controller.updateUser);
   app.get(`${path}/getAllPlans`, authJwt.verifyAccessToken, controller.getAllPlans);

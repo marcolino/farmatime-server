@@ -45,7 +45,7 @@ const currencies = { // allowed currencies
   "GBP": "£",
 };
 const company = "Sistemi Solari Rossi";
-const urlPublic = staging ? "https://acme-staging.fly.dev" : "https://acme-prod.fly.dev";
+const urlPublic = staging ? "https://med-staging.fly.dev" : "https://med-prod.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = production ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;

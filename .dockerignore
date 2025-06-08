@@ -1,12 +1,12 @@
 #yarn.lock
+#client/
+#logs/
 package-lock.json
 node_modules/
 .yarn/
 tmp/
-#client/
 coverage/
 uploads/
-#logs/
 npm-debug.*
 .nyc_output
 *.jks

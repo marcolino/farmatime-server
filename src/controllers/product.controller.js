@@ -25,27 +25,29 @@ const getProducts = async (req, res, next) => {
     // build mongo filter from input filter object
     const mongoFilter = {};
     for (const [key, value] of Object.entries(filter)) {
-      if (!value) continue; // ignore empty strings
-      let filterKey;
+      const { cleanValue, $regexOptions } = cleanAndPrepareFilterValue(value, config);
+      if (!cleanValue) continue; // ignore empty strings
 
-      const cleanValue = diacriticsRemove(value); // remove diacritics
-      const $regexOptions = config.db.products.search.caseInsensitive ? "i" : "";
-      let escapedValue = cleanValue;
+      // const cleanValue = diacriticsRemove(value); // remove diacritics
+      // const $regexOptions = config.db.products.search.caseInsensitive ? "i" : "";
+      // let filterKey;
+      let escapedValue;
       try { // if value is a valid regex string (new RegExp() will not throw), use it directly
         new RegExp(cleanValue);
+        escapedValue = cleanValue;
       } catch { // if value is a not valid regex string (new RegExp() has thrown), escape special regex characters for literal matching
         escapedValue = cleanValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
 
       if (Product.schema.path(key).options.searchable) { // this key is "searchable", normalize it across diacritics
         const pattern = diacriticMatchRegex(escapedValue, (config.db.products.search.mode === "EXACT"));
-        filterKey = { $regex: pattern, $options: $regexOptions };
+        mongoFilter[key] = { $regex: pattern, $options: $regexOptions };
       } else {
-        filterKey = escapedValue;
+        mongoFilter[key] = escapedValue;
       }
 
       // we do not need special handling for arrays if arrays contents are strings
-      mongoFilter[key] = filterKey;
+      //mongoFilter[key] = filterKey;
     }
 
     const mongoCollation = { locale: "en", strength: 1 }; // diacritic and case insensitive
@@ -366,10 +368,19 @@ const removeProduct = async (req, res, next) => {
 };
   
 
+// local utility functions
+
+const cleanAndPrepareFilterValue = (value, config) => {
+  if (!value) return { cleanValue: null, $regexOptions: null }; // ignore empty strings
+  const cleanValue = diacriticsRemove(value); // remove diacritics
+  const $regexOptions = config.db.products.search.caseInsensitive ? "i" : "";
+  return { cleanValue, $regexOptions };
+};
+
 // user properties validation
 const propertyValidate = async (req, value/*, product*/) => { // generic product type validation
   if (value instanceof Error) { // TODO: implement meaningful checks, according to application specification
-    return "property is not valid";
+    return ["property is not valid"];
   }
   return [null, value];
 };
@@ -377,7 +388,7 @@ const propertyValidate = async (req, value/*, product*/) => { // generic product
 const propertyMdaCodeValidate = async (req, value/*, product*/) => { // validate and normalize mda code
   // TODO: validate this code according to application specification
   if (value instanceof Error) { // TODO: implement meaningful checks, according to application specification
-    return "property is not valid";
+    return ["property is not valid"];
   }
   return [null, value];
 };

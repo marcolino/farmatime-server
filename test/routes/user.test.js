@@ -57,7 +57,7 @@ describe("User routes", () => {
 
   it("should get all users with full info with admin role", async () => {
     const res = await server.request
-      .get("/api/user/getAllUsers")
+      .get("/api/user/getUsers")
       .set("Cookie", server.getAuthCookies("admin"))
       .send({})
     ;
@@ -838,7 +838,7 @@ describe("User routes", () => {
 
   it("should not get all users with user role", async () => {
     const res = await server.request
-      .get("/api/user/getAllUsers")
+      .get("/api/user/getUsers")
       .set("Cookie", server.getAuthCookies("user"))
       .send({})
     ;
@@ -853,7 +853,7 @@ describe("User routes", () => {
 
   it("should not get all users with wrong filter", async () => {
     const res = await server.request
-      .get("/api/user/getAllUsers")
+      .get("/api/user/getUsers")
       .set("Cookie", server.getAuthCookies("admin"))
       .send({ filter: "wrong filter" })
     ;
@@ -868,7 +868,7 @@ describe("User routes", () => {
 
   it("should get all users with admin role", async () => {
     const res = await server.request
-      .get("/api/user/getAllUsers")
+      .get("/api/user/getUsers")
       .set("Cookie", server.getAuthCookies("admin"))
       .send({})
     ;

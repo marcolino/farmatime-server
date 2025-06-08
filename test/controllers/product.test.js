@@ -125,6 +125,38 @@ describe("Product Controller", () => {
       }));
     });
 
+    it("should handle error with null filter", async () => {
+      req.parameters.filter = { key: "" };
+      
+      const mockProducts = [
+        { _id: "1", make: "Toyota", models: "Corolla" },
+        { _id: "2", make: "Toyota", models: "Camry" }
+      ];
+
+      // create a stub that returns a mock with method chaining
+      const findChain = {
+        collation: sinon.stub().returnsThis(),
+        limit: sinon.stub().returnsThis(),
+        select: sinon.stub().returnsThis(),
+        lean: sinon.stub().returnsThis(),
+        exec: sinon.stub().resolves(mockProducts)
+      };
+      findStub.returns(findChain);
+
+      const countChain = {
+        collation: sinon.stub().resolves(2)
+      };
+      countDocumentsStub.returns(countChain);
+
+      await getProducts(req, res, next);
+      console.log("RES:", res);
+
+      sinon.assert.calledWith(res.status, 200);
+      // sinon.assert.calledWith(res.json, sinon.match({
+      //   message: sinon.match("A filter must be an object")
+      // }));
+    });
+
     describe("Products options searchable is true", () => {
       let req, res, next, ProductStub, nextErrorStub, getProducts;
   
@@ -596,6 +628,28 @@ describe("Product Controller", () => {
       expect(mockProduct.mdaCode).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid mdaCode property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { mdaCode: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid oemCode property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -617,6 +671,28 @@ describe("Product Controller", () => {
       sinon.assert.calledWith(res.json, sinon.match({ product: mockProduct }));
       expect(mockProduct.oemCode).to.equal(newPropertyValue);
     });
+
+    it("should handle invalid oemCode property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { oemCode: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
 
     it("should handle valid make property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
@@ -640,6 +716,28 @@ describe("Product Controller", () => {
       expect(mockProduct.make).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid make property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { make: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid models property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -661,6 +759,28 @@ describe("Product Controller", () => {
       sinon.assert.calledWith(res.json, sinon.match({ product: mockProduct }));
       expect(mockProduct.models).to.equal(newPropertyValue);
     });
+
+    it("should handle invalid models property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { models: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
 
     it("should handle valid application property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
@@ -684,6 +804,28 @@ describe("Product Controller", () => {
       expect(mockProduct.application).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid application property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { application: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid kw property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -705,6 +847,28 @@ describe("Product Controller", () => {
       sinon.assert.calledWith(res.json, sinon.match({ product: mockProduct }));
       expect(mockProduct.kw).to.equal(newPropertyValue);
     });
+
+    it("should handle invalid kw property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { kw: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
 
     it("should handle valid volt property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
@@ -728,6 +892,28 @@ describe("Product Controller", () => {
       expect(mockProduct.volt).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid volt property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { volt: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid ampere property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -749,6 +935,28 @@ describe("Product Controller", () => {
       sinon.assert.calledWith(res.json, sinon.match({ product: mockProduct }));
       expect(mockProduct.ampere).to.equal(newPropertyValue);
     });
+
+    it("should handle invalid ampere property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { ampere: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
 
     it("should handle valid teeth property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
@@ -772,6 +980,28 @@ describe("Product Controller", () => {
       expect(mockProduct.teeth).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid teeth property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { teeth: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid rotation property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -793,6 +1023,28 @@ describe("Product Controller", () => {
       sinon.assert.calledWith(res.json, sinon.match({ product: mockProduct }));
       expect(mockProduct.rotation).to.equal(newPropertyValue);
     });
+
+    it("should handle invalid rotation property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { rotation: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
 
     it("should handle valid regulator property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
@@ -816,6 +1068,28 @@ describe("Product Controller", () => {
       expect(mockProduct.regulator).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid regulator property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { regulator: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid type property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -838,6 +1112,28 @@ describe("Product Controller", () => {
       expect(mockProduct.type).to.equal(newPropertyValue);
     });
 
+    it("should handle invalid type property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { type: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
+
     it("should handle valid notes property update", async () => {
       const mockProductId = new mongoose.Types.ObjectId();
       req.parameters.productId = mockProductId;
@@ -859,6 +1155,28 @@ describe("Product Controller", () => {
       sinon.assert.calledWith(res.json, sinon.match({ product: mockProduct }));
       expect(mockProduct.notes).to.equal(newPropertyValue);
     });
+
+    it("should handle invalid notes property update", async () => {
+      const mockProductId = new mongoose.Types.ObjectId();
+      req.parameters.productId = mockProductId;
+      const newPropertyValue = new Error("invalid");
+      req.parameters.product = { notes: newPropertyValue };
+
+      const mockProduct = {
+        _id: mockProductId,
+        mdaCode: "OLD_VALUE",
+        save: sinon.stub().resolves(),
+      };
+      findOneStub.resolves(mockProduct);
+
+      await updateProduct(req, res, next);
+
+      sinon.assert.calledWith(findOneStub, { _id: mockProductId });
+      sinon.assert.calledWith(res.status, 400);
+      sinon.assert.calledWith(res.json, sinon.match({
+        message: sinon.match("property is not valid")
+      }));
+    }); 
 
     it("should handle error finding product to update", async () => {
       const mockError = new Error("Bang!");
@@ -1491,12 +1809,48 @@ describe("Product Controller", () => {
   });
 
   describe("private functions", () => {
+    describe("cleanAndPrepareFilterValue", () => {
+      it("should clean and prepare filter value", async () => {
+        const cleanAndPrepareFilterValue = productController.__get__("cleanAndPrepareFilterValue");
+        const { cleanValue, $regexOptions } = await cleanAndPrepareFilterValue("value", config);
+        expect(cleanValue).to.equal("value");
+      });
+      it("should clean and prepare null filter value", async () => {
+        const cleanAndPrepareFilterValue = productController.__get__("cleanAndPrepareFilterValue");
+        const { cleanValue, $regexOptions } = await cleanAndPrepareFilterValue(null, config);
+        expect(cleanValue).to.equal(null);
+      });
+      it("should clean and prepare filter value with diacritics", async () => {
+        const cleanAndPrepareFilterValue = productController.__get__("cleanAndPrepareFilterValue");
+        const { cleanValue, $regexOptions } = await cleanAndPrepareFilterValue("ohibò", config);
+        expect(cleanValue).to.equal("ohibo");
+      });
+      it("should clean and prepare filter value with config.db.products.search.caseInsensitive = true", async () => {
+        const cleanAndPrepareFilterValue = productController.__get__("cleanAndPrepareFilterValue");
+        config.db.products.search.caseInsensitive = true;
+        const { cleanValue, $regexOptions } = await cleanAndPrepareFilterValue("caseInsensitive", config);
+        expect(cleanValue).to.equal("caseInsensitive");
+      });
+      it("should clean and prepare filter value with config.db.products.search.caseInsensitive = false", async () => {
+        const cleanAndPrepareFilterValue = productController.__get__("cleanAndPrepareFilterValue");
+        config.db.products.search.caseInsensitive = false;
+        const { cleanValue, $regexOptions } = await cleanAndPrepareFilterValue("caseInsensitive", config);
+        expect(cleanValue).to.equal("caseInsensitive");
+      });
+    });
+
     describe("propertyValidate", () => {
-      it("should validate a property", async () => {
+      it("should validate a valid property", async () => {
         const propertyValidate = productController.__get__("propertyValidate");
 
         const result = await propertyValidate(req, "testValue");
         expect(result).to.deep.equal([null, "testValue"]);
+      });
+      it("should not validate an invalid property", async () => {
+        const propertyValidate = productController.__get__("propertyValidate");
+
+        const result = await propertyValidate(req, new Error("invalid"));
+        expect(result).to.deep.equal(["property is not valid"]);
       });
     });
 
@@ -1506,6 +1860,12 @@ describe("Product Controller", () => {
 
         const result = await propertyMdaCodeValidate(req, "testValue");
         expect(result).to.deep.equal([null, "testValue"]);
+      });
+      it("should not validate an invalid property mdaCode", async () => {
+        const propertyMdaCodeValidate = productController.__get__("propertyMdaCodeValidate");
+
+        const result = await propertyMdaCodeValidate(req, new Error("invalid"));
+        expect(result).to.deep.equal(["property is not valid"]);
       });
     });
   });

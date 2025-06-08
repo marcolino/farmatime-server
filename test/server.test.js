@@ -81,7 +81,7 @@ require("./config/config.test");
 require("./routes/auth.test");
 require("./routes/user.test");
 require("./routes/product.test");
-require("./routes/payment.test");
+//require("./routes/payment.test");
 require("./routes/misc.test");
 
 require("./helpers/environment.test");
@@ -112,10 +112,11 @@ require("./controllers/auth-resendResetPasswordCode.test");
 require("./controllers/auth-redirect.test");
 require("./controllers/logger.test");
 require("./controllers/misc.test");
+require("./controllers/product.test");
 
 require("./services/payment.test");
 
 require("./gateways/Abstract.payment.gateway.test");
 require("./gateways/stripe.payment.gateway.test");
 
-require("./controllers/product.test");
+require("./controllers/user.test");

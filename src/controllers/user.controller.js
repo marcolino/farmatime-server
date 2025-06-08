@@ -45,7 +45,7 @@ const getAllUsersWithTokens = async (req, res, next) => {
   }
 };
 
-const getAllUsers = async (req, res, next) => {
+const getUsers = async (req, res, next) => {
   try {
     const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
@@ -70,10 +70,10 @@ const getAllPlans = async (req, res, next) => {
     const docs = await Plan.find({})
       .select(["name", "supportTypes", "priceCurrency", "pricePerYear"])
       .sort({ pricePerYear: 1 })
-      //.exec()
     ;
     return res.status(200).json({ plans: docs });
   } catch (err) {
+    console.log("Error getting all plans:", err.message);
     return nextError(next, req.t("Error getting all plans: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
@@ -498,7 +498,7 @@ const propertyFiscalCodeValidate = (req, value/*, user*/) => { // validate and n
 
 
 module.exports = {
-  getAllUsers,
+  getUsers,
   getAllUsersWithTokens,
   getAllPlans,
   getAllRoles,
