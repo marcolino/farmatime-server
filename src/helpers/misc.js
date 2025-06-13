@@ -381,7 +381,7 @@ const redirectToClient = (req, res, success, payload) => {
   res.redirect(url);
 };
 
-const createTokensAndCookies = async (req, res, next, user) => {
+const createKeysAndTokensAndCookies = async (req, res, next, user) => {
   // generate a persistent base-64 encryption key from the user's DB ID + server secret
   try {
     const encryptionKey = crypto.pbkdf2Sync(
@@ -461,6 +461,6 @@ module.exports = {
   nextError,
   redirectToClientWithSuccess,
   redirectToClientWithError,
-  createTokensAndCookies,
+  createKeysAndTokensAndCookies,
   cookieOptions,
 };

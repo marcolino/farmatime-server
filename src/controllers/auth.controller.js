@@ -15,7 +15,7 @@ const VerificationCode = require("../models/verificationCode.model");
 const {
   isAdministrator, normalizeEmail, /*localeDateTime,*/ nextError,
   redirectToClientWithError, redirectToClientWithSuccess,
-  createTokensAndCookies, cookieOptions,
+  createKeysAndTokensAndCookies, cookieOptions,
 } = require("../helpers/misc");
 
 
@@ -222,7 +222,7 @@ const socialLogin = async (req, res, next) => {
 
   // create tokens ad add them to request cookie
   try {
-    await createTokensAndCookies(req, res, next, user);
+    await createKeysAndTokensAndCookies(req, res, next, user);
   } catch (err) {
     return redirectToClientWithError(req, res, { message: `Error creating tokens: ${err}` });
   }
@@ -496,7 +496,7 @@ const signin = async (req, res, next) => {
     }
 
     // create tokens ad add them to request cookie
-    await createTokensAndCookies(req, res, next, user);
+    await createKeysAndTokensAndCookies(req, res, next, user);
    
     logger.info(`User signed in: ${user.email}`);
 
