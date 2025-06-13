@@ -1,3 +1,133 @@
+RESEND EMAILING SYSTEM (https://chatgpt.com/share/68425e0b-9684-8003-9467-08ee11453e48):
+
+ Resend is modern, developer-friendly, and integrates well with Node.js apps. Since Resend doesn’t support recurring email scheduling natively, you'll need to handle scheduling yourself on your Fly.io virtual server.
+
+Here’s how to set it up.
+
+✅ Goal
+Send emails periodically (e.g. monthly) on behalf of your users, using Resend and your own scheduler.
+
+🧰 You’ll need
+A Node.js app using Resend SDK
+
+A database (e.g., SQLite, PostgreSQL, etc.) to store users & schedule
+
+A scheduler: cron, node-cron, or a queue library like BullMQ
+
+Your app deployed to Fly.io
+
+🧪 Step-by-Step Setup (with node-cron)
+1. Install Resend & node-cron
+bash
+Copia
+Modifica
+yarn add resend node-cron
+2. Setup Resend
+js
+Copia
+Modifica
+// src/email.js
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function sendEmail(to, subject, html) {
+  return resend.emails.send({
+    from: 'Your Name <noreply@yourdomain.com>',
+    to,
+    subject,
+    html,
+  });
+}
+3. Set up a scheduler with node-cron
+js
+Copia
+Modifica
+// src/scheduler.js
+import cron from 'node-cron';
+import { sendEmail } from './email.js';
+import { getScheduledEmails } from './db.js'; // your DB logic
+
+// Run every day at 7:00 AM
+cron.schedule('0 7 * * *', async () => {
+  console.log('Checking emails to send...');
+  const emails = await getScheduledEmails(); // get users who should get email today
+
+  for (const email of emails) {
+    await sendEmail(
+      email.to,
+      'Your Monthly Update',
+      `<p>Hello ${email.name}, here’s your update!</p>`
+    );
+  }
+});
+4. Database: Store Email Schedules
+sql
+Copia
+Modifica
+-- Example schema (PostgreSQL or SQLite)
+CREATE TABLE scheduled_emails (
+  id SERIAL PRIMARY KEY,
+  user_id INT,
+  to_email TEXT,
+  name TEXT,
+  send_day INT, -- e.g. 1 = 1st of month
+  last_sent TIMESTAMP
+);
+And logic like:
+
+js
+Copia
+Modifica
+// src/db.js
+import db from './your-db-client.js';
+
+export async function getScheduledEmails() {
+  const today = new Date();
+  const day = today.getDate();
+
+  return db('scheduled_emails')
+    .where('send_day', day)
+    .andWhere(function () {
+      this.whereNull('last_sent')
+        .orWhere('last_sent', '<', new Date(today.getFullYear(), today.getMonth(), 1));
+    });
+}
+5. Run your scheduler on Fly.io
+Fly.io allows long-running background processes. You can:
+
+Add the scheduler to your Node app
+
+OR create a separate background app process with a [processes] section in fly.toml:
+
+toml
+Copia
+Modifica
+[processes]
+app = "node src/server.js"
+scheduler = "node src/scheduler.js"
+Then launch it:
+
+bash
+Copia
+Modifica
+fly deploy --process-group scheduler
+🧠 Pro Tips
+Use BullMQ or Agenda.js if you want job retries, failure handling, etc.
+
+Use Upstash Redis (free) or Fly.io's own Redis if needed for queues
+
+You can eventually build a UI for users to manage their own email cadence
+
+✅ Summary
+Feature	How it's handled
+Periodic sending	node-cron or job queue
+Email delivery	Resend SDK
+Hosting	Fly.io (supporting background jobs)
+Custom per-user schedules	Store in DB + logic in scheduler
+
+
+
 Note tecniche:
 
 - Per deployare un modulo aggiuntivo (es.: xsd-schema-validator)
@@ -6,6 +136,8 @@ Note tecniche:
     $ heroku buildpacks:add heroku/nodejs # (se non già presente)
 
 Riferimenti:
+ - Schedule emails send with resend and node-cron on fly.io:
+    https://chatgpt.com/share/68425e0b-9684-8003-9467-08ee11453e48
  - Uptime robot:
     https://uptimerobot.com/dashboard.php#mainDashboard
  - Social login with passport tutorial:

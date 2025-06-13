@@ -382,21 +382,34 @@ const redirectToClient = (req, res, success, payload) => {
 };
 
 const createTokensAndCookies = async (req, res, next, user) => {
-  let accessToken, refreshToken;
-  
+  // generate a persistent base-64 encryption key from the user's DB ID + server secret
   try {
-    // create access and refresh tokens
+    const encryptionKey = crypto.pbkdf2Sync(
+      user._id.toString(), // Immutable user ID
+      process.env.ENCRYPTION_KEY_SECRET, // Server-side pepper
+      100000, // Iterations
+      32, // Key length (32 bytes = AES-256)
+      "sha512" // Hash algorithm
+    ).toString("base64");
+    // Set as HTTP-only cookie (secure, SameSite Strict)
+    res.cookie("encryptionKey", encryptionKey, cookieOptions());
+  } catch (err) {
+    return nextError(next, req.t("Error generating a persistent encryption key: {{err}}", { err: err.message }), 500, err.stack);
+  }
+
+  // create access and refresh tokens
+  let accessToken, refreshToken;
+  try {
     accessToken = await AccessToken.createToken(user);
     refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
   } catch (err) {
     return nextError(next, req.t("Error creating tokens: {{err}}", { err: err.message }), 500, err.stack);
   }
-  
+
   try {
     res.cookie("accessToken", accessToken, cookieOptions());
     res.cookie("refreshToken", refreshToken, cookieOptions());
-    
-    /* istanbul ignore next*/
+    /* istanbul ignore next */
     if (config.mode.development) {
       console.info(`                      now is ${localeDateTime(new Date())}`); // eslint-disable-line no-console
       const { exp: expA } = jwt.decode(accessToken);
@@ -408,6 +421,7 @@ const createTokensAndCookies = async (req, res, next, user) => {
   } catch (err) {
     return nextError(next, req.t("Error adding tokens to cookies: {{err}}", { err: err.message }), 500, err.stack);
   }
+
 };
 
 // options for HTTP-only cookies (secure, not accessible by javascript on the client)

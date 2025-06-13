@@ -1,6 +1,7 @@
 //const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const validateEmail = require("email-validator");
+const crypto = require("crypto");
 //const { cookieOptions } = require("../middlewares/authJwt");
 const emailService = require("../services/email.service");
 const { audit } = require("../helpers/messaging");
@@ -540,6 +541,7 @@ const signout = async (req, res, next) => {
     // clear HTTP-only auth cookies
     res.clearCookie("accessToken", cookieOptions(false));
     res.clearCookie("refreshToken", cookieOptions(false));
+    res.clearCookie("encryptionKey", cookieOptions(false));
 
     return res.status(200).json({ message: req.t("Sign out successful") });
   } catch (err) {
@@ -737,6 +739,11 @@ const notificationPreferencesSave = async (req, res, next) => {
   }
 };
 
+const encryptionKey = async (req, res, next) => {
+  const key = req.cookies.encryptionKey;
+  return res.status(200).json({ key });
+};
+
 
 module.exports = {
   signup,
@@ -757,4 +764,5 @@ module.exports = {
   notificationPreferencesSave,
   socialLogin,
   socialRevoke,
+  encryptionKey,
 };

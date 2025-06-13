@@ -24,4 +24,5 @@ module.exports = function(app) {
   app.get(`${path}/facebook`, controller.facebookLogin);
   app.get(`${path}/facebook/callback`, controller.facebookCallback);
   app.post(`${path}/facebook/revoke`, controller.facebookRevoke);
+  app.get(`${path}/encryptionKey`, controller.encryptionKey);
 };
