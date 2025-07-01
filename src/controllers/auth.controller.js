@@ -1,7 +1,7 @@
 //const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const validateEmail = require("email-validator");
-const crypto = require("crypto");
+//const crypto = require("crypto");
 //const { cookieOptions } = require("../middlewares/authJwt");
 const emailService = require("../services/email.service");
 const { audit } = require("../helpers/messaging");
@@ -574,7 +574,7 @@ const resetPassword = async (req, res, next) => {
         },
       });
       /* istanbul ignore next */
-      if (config.mode.production) {
+      if (!config.mode.production) {
         logger.info(`Reset password code: ${user.resetPasswordCode}`);
       }
     } else {
@@ -739,9 +739,13 @@ const notificationPreferencesSave = async (req, res, next) => {
   }
 };
 
-const encryptionKey = async (req, res, next) => {
+const encryptionKey = async (req, res/*, next*/) => {
   const key = req.cookies.encryptionKey;
-  return res.status(200).json({ key });
+  if (key) {
+    return res.status(200).json({ key });
+  } else {
+    return res.status(403).json({ message: req.t("Encryption key not found") });
+  }
 };
 
 

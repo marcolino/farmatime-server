@@ -1,7 +1,11 @@
 {
   "ignoreUnresolved": [],
-  "ignoreUnused": [],
+  "ignoreUnused": [
+    "stripe"
+  ],
   "ignoreUnimported": [
+    "src/gateways/Abstract.payment.gateway.js",
+    "src/gateways/stripe.payment.gateway.js",
     "src/config.mda.js",
     "src/helpers/customEjsLexer.js",
     "src/misc/strings-for-translation.js"

@@ -25,27 +25,27 @@ class PaymentService {
   }
 
   async createCheckoutSession(req, res, next) {
-    try {
-      return await this.gateway.createCheckoutSession(req, res, next);
-    } catch (err) {
-      throw err;
-    }
+    //try {
+    return await this.gateway.createCheckoutSession(req, res, next);
+    // } catch (err) {
+    //   throw err;
+    // }
   }
 
   async paymentSuccess(req, res, next) {
-    try {
-      return await this.gateway.paymentSuccess(req, res, next);
-    } catch (err) {
-      throw err;
-    }
+    // try {
+    return await this.gateway.paymentSuccess(req, res, next);
+    // } catch (err) {
+    //   throw err;
+    // }
   }
 
   async paymentCancel(req, res, next) {
-    try {
-      return await this.gateway.paymentCancel(req, res, next);
-    } catch (err) {
-      throw err;
-    }
+    // try {
+    return await this.gateway.paymentCancel(req, res, next);
+    // } catch (err) {
+    //   throw err;
+    // }
   }
 
 }

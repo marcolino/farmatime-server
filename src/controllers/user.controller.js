@@ -73,7 +73,7 @@ const getAllPlans = async (req, res, next) => {
     ;
     return res.status(200).json({ plans: docs });
   } catch (err) {
-    console.log("Error getting all plans:", err.message);
+    //console.log("Error getting all plans:", err.message);
     return nextError(next, req.t("Error getting all plans: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };

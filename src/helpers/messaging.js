@@ -15,8 +15,10 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   // set "mode" symbol (dev/prod)
   const modeSymbol =
     config.mode.development ? "🚧" :
-    config.mode.production ? (config.mode.staging ? "🚀" : "🌐") : // eslint-disable-line indent
-    "�" // eslint-disable-line indent -- unforeseen mode
+      config.mode.production ? "🚀" :
+        config.mode.staging ? "🌐" :
+          "�"
+    // eslint-disable-line indent -- unforeseen mode
   ;
   
   const baseUrl = config.baseUrl;

@@ -121,7 +121,7 @@ const getProductImageById = (req, res) => {
 
   // check if the image exists
   if (!fs.existsSync(imagePath)) {
-     //console.log("+++ 404")
+    //console.log("+++ 404")
     return res.status(404).json({ message: req.t("Image by id {{id}} not found", { id: imageId }) });
   }
   

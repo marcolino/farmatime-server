@@ -95,12 +95,22 @@ const populate = async () => {
     }
     // check if users collection is empty
     try {
+      /*
       const userCount = await User.estimatedDocumentCount();
       if (userCount === 0) {
         for (const role of Object.keys(demoData.users)) {
           await User.create(demoData.users[role]);
         }
       }
+      */
+      for (const role of Object.keys(demoData.users)) {
+        const userData = demoData.users[role];
+        const existing = await User.findOne({ email: userData.email });
+        if (!existing) {
+          await User.create(userData);
+        }
+      }
+
     } catch (err) {
       logger.error("Error populating users collection:", err.message);
       throw err;
@@ -235,7 +245,7 @@ const addImageToProduct = async (imagePath, productMdaCode) => {
 
     // check if the image exists
     if (!fs.existsSync(absoluteImagePath)) {
-      throw new Error(`Imnage not found: ${absoluteImagePath}`);
+      throw new Error(`Image not found: ${absoluteImagePath}`);
     }
 
     // read the image file into a buffer

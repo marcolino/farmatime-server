@@ -79,7 +79,7 @@ async function processTranslationFile(filePath, targetLanguageName, targetLangua
   fs.renameSync(fullPath, untranslatedBackup);
   fs.writeFileSync(fullPath, JSON.stringify(data, null, 4), "utf-8");
 
-  console.log(`Translation completed (original file renamed to ${untranslatedBackup}).`);
+  //console.log(`Translation completed (original file renamed to ${untranslatedBackup}).`);
 }
 
 // real usage

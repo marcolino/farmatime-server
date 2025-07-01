@@ -55,7 +55,7 @@ describe("Auth resend signup verification code controller", () => {
     server.expect(res.json.calledWith({
       message: "If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
       codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
-      ...(!config.mode.production) && { code: undefined }
+      ...(!config.mode.production && !config.mode.staging) && { code: undefined }
     })).to.be.true;
   });
 
@@ -114,7 +114,7 @@ describe("Auth resend signup verification code controller", () => {
     server.expect(res.json.calledWith({
       message: "If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
       codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
-      ...(!config.mode.production && { code: mockVerificationCode.code }), // include code in non-production modes
+      ...(!config.mode.production && !config.mode.staging && { code: mockVerificationCode.code }), // include code in non-production modes
     })).to.be.true;
   });
 

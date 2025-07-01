@@ -4,7 +4,8 @@ const merge = require("lodash.merge");
 
 const test = (typeof global.it === "function"); // test mode (inside mocha/chai environment)
 const testInCI = (test && !!process.env.GITHUB_ACTIONS); // test mode, inside CI (github actions), use public test db
-const production = (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"); // production mode (production behaviour, production db on public host)
+//const production = (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"); // production mode
+const production = (process.env.NODE_ENV === "production"); // production mode (production behaviour, production db on public host)
 const development = (process.env.NODE_ENV === "development"); // development mode (development behaviour, local db on local host)
 const staging = (process.env.NODE_ENV === "staging"); // staging mode (production behaviour, production db on local host)
 const stripelive = (process.env.LIVE_MODE === "true"); // stripe mode is "live"  
@@ -13,7 +14,7 @@ const stripelive = (process.env.LIVE_MODE === "true"); // stripe mode is "live"
  * Import envronment variables from env file.
  * IMPORTANT: in production we don"t have an env file, but a "secrets" environment from the hosting provider
  */
-if (!production) {
+if (!(production || staging)) {
   const envFile = ".env";
   if (!fs.existsSync(envFile)) {
     throw new Error(`Error: ${envFile} file does not exist`);
@@ -30,8 +31,8 @@ const customization = process.env.CUSTOMIZATION || null; // custom configuration
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
-const apiName = "ACME";
-const appName = "acme";
+const apiName = "MEDICARE";
+const appName = "medicare";
 const description = "A powerful web app, easily customizable";
 const dir = "ltr";
 const charset = "UTF-8";
@@ -45,13 +46,13 @@ const currencies = { // allowed currencies
   "GBP": "£",
 };
 const company = "Sistemi Solari Rossi";
-const urlPublic = staging ? "https://med-staging.fly.dev" : "https://med-prod.fly.dev";
+const urlPublic = staging ? "https://medicare-staging.fly.dev" : "https://medicare-prod.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
-const baseUrl = production ? urlPublic : urlLocal;
+const baseUrl = (production || staging) ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;
 const urlLocalClient = `http://localhost:${apiPortClient}`;
-const baseUrlClient = production ? urlPublicClient : urlLocalClient;
-const baseUrlClientPreview = production ? "" : "http://localhost:4173";
+const baseUrlClient = (production || staging) ? urlPublicClient : urlLocalClient;
+const baseUrlClientPreview = (production || staging) ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
 //const customization = "mda"; // custom configuration to be merged with configBase
@@ -187,7 +188,7 @@ const configBase = {
   },
   logs: {
     file: {
-      name: "logs/acme.log", // logs and exceptions file
+      name: "logs/medicare.log", // logs and exceptions file
       maxsize: 5 * (1024 ** 2), // max logs file size: 5MB
     },
     betterstack: {
@@ -280,11 +281,11 @@ const configBase = {
       from: "sistemisolarirossi@gmail.com",
       fromName: "Sistemi Solari Rossi backend server",
       to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
-      toName: "ACME admin",
+      toName: "MEDICARE admin",
     },
     support: {
       to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
-      toName: "ACME support",
+      toName: "MEDICARE support",
     },
     templatesPath: "../templates",
     templatesExtension: ".ejs",
@@ -470,6 +471,7 @@ const configBase = {
         }
       },
       products: {
+        enabled: false,
         images: {
           minHeight: 300,
           watermark: {
@@ -480,7 +482,30 @@ const configBase = {
           }
         },
       },
-      backgroundVideo: "wind-turbines" // see in "/public/videos/*.mp4" for available videos
+      contacts: {
+        enabled: false,
+      },
+      cart: {
+        enabled: false,
+      },
+      backgroundVideo: "wind-turbines", // see in "/public/videos/*.mp4" for available videos
+      jobs: {
+        storageKey: "jobs",
+        dragAndDrop: {
+          desktop: {
+            enabled: true,
+          },
+          mobile: {
+            enabled: false,
+          }
+        },
+        qrcode: {
+          encryption: false, // ecryption is more secure, but produces far too big qrcodes
+          size: 360,
+          level: "L", // "L" = Low (max capacity), "M" = Medium (default), "Q", "H" = High (max redundancy)
+          expirationMinutes: 3,
+        }
+      }
     },
     oauth: {
       scope: {

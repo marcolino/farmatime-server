@@ -21,9 +21,9 @@ class StripeGateway extends AbstractPaymentGateway {
 
   init() {
     //console.log(1);
-    const apiKey = this.config.mode.stripelive
-      ? process.env.STRIPE_API_KEY_LIVE
-      : process.env.STRIPE_API_KEY_TEST
+    const apiKey = this.config.mode.stripelive ?
+      process.env.STRIPE_API_KEY_LIVE :
+      process.env.STRIPE_API_KEY_TEST
     ;
     //console.log(2);
 
@@ -33,16 +33,16 @@ class StripeGateway extends AbstractPaymentGateway {
     }
 
     //try { // TODO: re-enable try/catch, when understand how to test catch!
-      //console.log(4);
-      this.client = new Stripe(apiKey, {
-        apiVersion: "2023-08-16",
-        maxNetworkRetries: 2,
-        appInfo: {
-          name: config.app.api.name || "DefaultAPI",
-          version: String(config.app.api.version || "1.0.0"), // Ensure string
-        },
-      });
-      //console.log(5);
+    //console.log(4);
+    this.client = new Stripe(apiKey, {
+      apiVersion: "2023-08-16",
+      maxNetworkRetries: 2,
+      appInfo: {
+        name: config.app.api.name || "DefaultAPI",
+        version: String(config.app.api.version || "1.0.0"), // Ensure string
+      },
+    });
+    //console.log(5);
     // } catch (err) {
     //   //console.log(6);
     //   throw new Error(i18n.t("Error initializing Stripe interface") + ": " + err.message);
@@ -51,7 +51,7 @@ class StripeGateway extends AbstractPaymentGateway {
 
   async createCheckoutSession(req, res, next) {
     if (!this.client) {
-      return res.status(400).json({ message: req.t("Please call init") });
+      return res.status(400).json({ message: req.t("Internal error (init not called)") });
     }
     //console.log(8);
     const cart = req.parameters.cart; // cart is an object with items array
@@ -65,8 +65,8 @@ class StripeGateway extends AbstractPaymentGateway {
   
     // create line items
     const line_items = cart.items.map(item => {
-      // warning: we have to use public url, becauss Stripe needs to reach public images
-      const imageUrl = config.mode.production ?
+      // warning: we have to use public url, because Stripe needs to reach public images
+      const imageUrl = config.mode.production || config.mode.staging ?
         `${config.baseUrlPublic}/assets/products/images/${item.imageName}` :
         // while developing we show a public static image placeholder, stripe cannot access local images...
         `${config.baseUrlPublic}/assets/images/ImagePlaceholder.jpg`

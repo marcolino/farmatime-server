@@ -201,6 +201,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   let message = `${err.message.trim() || (req.t ? req.t("Server error") : "Server error")}`;
 
   if (status === 500) { // audit errors
+    const t = req.t || ((msg) => msg); // fallback to identity if req.t is not ready yet
     audit({
       req, mode: "error", subject: `Error: ${message}`, htmlContent: `
 <pre>
@@ -208,15 +209,15 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   Mode: ${process.env.NODE_ENV}
   IP: ${remoteAddress(req)}
   Date: ${localeDateTime()}
-  Stack: ${secureStack(err)}
+  Stack: ${secureStack(err.stack)}
 </pre>`,
     });
-    message += " - " + req.t("We are aware of this error, and working to solve it") + ". " + req.t("Please, retry soon");
+    message += " - " + t("We are aware of this error, and working to solve it") + ". " + t("Please, retry soon");
   }
 
   return res.status(status).json({
     message,
-    ...((status === 500) && { stack: secureStack(err) }),
+    ...((status === 500) && { stack: secureStack(err.stack) }),
   });
 });
 
@@ -238,7 +239,7 @@ process.on("unhandledRejection", (reason, promise) => {
   if (reason instanceof Error) {
     logger.error(
       `Unhandled rejection at promise: ${promise}, reason: ${reason.message},
-      stack: ${!config.mode.production ? reason.stack : null}`
+      stack: ${secureStack(reason.stack)}`
     );
   } else {
     logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
@@ -270,9 +271,11 @@ process.on("unhandledRejection", (reason, promise) => {
       const host = "0.0.0.0";
       app.listen(port, host, () => {
         logger.info(`Server is running on ${host}:${port}`);
+        /* disabling audit server startup
         if (config.mode.production) { // audit server start up
           audit({ req: null, mode: "action", subject: `Server startup`, htmlContent: `Server is running on ${host}:${port} on ${localeDateTime()}` });
         }
+        */
       });
     } catch (err) {
       logger.error("Server listen error:", err);

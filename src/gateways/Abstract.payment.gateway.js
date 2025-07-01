@@ -12,15 +12,15 @@ class AbstractPaymentGateway {
   }
 
   // Abstract methods (must be implemented by subclasses)
-  async createCheckoutSession(req, res, next) {
+  async createCheckoutSession(/*req, res, next*/) {
     throw new Error("createCheckoutSession() not implemented");
   }
 
-  async paymentSuccess(req, res, next) {
+  async paymentSuccess(/*req, res, next*/) {
     throw new Error("paymentSuccess() not implemented");
   }
 
-  async paymentCancel(req, res, next) {
+  async paymentCancel(/*req, res, next*/) {
     throw new Error("paymentCancel() not implemented");
   }
 

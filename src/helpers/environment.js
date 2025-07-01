@@ -17,8 +17,8 @@ const assertEnvironment = () => {
     }
 
     // some logical assertions
-    if (process.env.LIVE_MODE === "true" && !config.mode.production) {
-      throw ("Assertion conflict: live mode is on and prodution mode is false!");
+    if (process.env.LIVE_MODE === "true" && !config.mode.production && !config.mode.staging) {
+      throw ("Assertion failed: live mode is on and prodution mode is false!");
     }
 
     // TODO: more logical assertions...

@@ -184,7 +184,7 @@ show dbs
 db.createUser( { user: "$MONGO_USER", pwd: "$MONGO_PASS", roles: [ { role: "readWrite", db: "acme" }, { role: "clustermonitor", db: "acme" } ] } )
 show users
 EOT > mongosh
- - Google OAuth setup page: https://console.cloud.google.com/apis/credentials/oauthclient/280996881587-p9547ddvv64r79cb0em57ubannrik21s.apps.googleusercontent.com?project=med-431519
+ - Google OAuth setup page: https://console.cloud.google.com/apis/credentials/oauthclient/280996881587-p9547ddvv64r79cb0em57ubannrik21s.apps.googleusercontent.com?project=medicare-431519
  - Facebook OAuth setup page: https://developers.facebook.com/
 
 MongoDB client install:

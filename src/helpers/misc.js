@@ -336,11 +336,11 @@ const formatMoney = (number, locale = config.app.serverLocale, currency = config
  *   {string} a fixed string if in production
  *   {string} error stack if not in production
  */
-const secureStack = (err) => {
+const secureStack = (stack) => {
   if (config.mode.production) {
     return "stack omitted in production";
   } else {
-    return err.stack;
+    return stack;
   }
 };
 
@@ -357,7 +357,7 @@ const secureStack = (err) => {
 const nextError = (next, message, status, stack) => {
   const error = new Error(message);
   error.status = status;
-  error.stack = !config.mode.production ? stack : "stack omitted in production";
+  error.stack = secureStack(stack);
   return next(error);
 };
 
@@ -428,8 +428,8 @@ const createKeysAndTokensAndCookies = async (req, res, next, user) => {
 const cookieOptions = (setAge = true) => {
   const options = {
     httpOnly: true,
-    secure: config.mode.production,
-    samesite: config.mode.production ? "Strict" : "Lax",
+    secure: config.mode.production || config.mode.staging,
+    samesite: config.mode.production || config.mode.staging? "Strict" : "Lax",
   };
   return setAge ? {
     ...options,
