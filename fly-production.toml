@@ -12,6 +12,7 @@ primary_region = 'cdg'
   internal_port = 5000
   force_https = true
   auto_stop_machines = 'stop'
+# auto_stop_machines = false # activate this for cron service; then monitor VM usage to avoid costs explosion...
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
