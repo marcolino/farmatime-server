@@ -31,7 +31,7 @@ const customization = process.env.CUSTOMIZATION || null; // custom configuration
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
-const apiName = "MEDICARE";
+const apiName = "MediCare";
 const appName = "medicare";
 const description = "A powerful web app, easily customizable";
 const dir = "ltr";
