@@ -128,6 +128,7 @@ const updateUser = async (req, res, next) => {
     // collect update data
     const updateData = {};
     const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan, preferences } = req.parameters;
+    const jobs = req.parameters.jobs;
 
     if (email !== undefined) {
       const [message, value] = await propertyEmailValidate(req, email, userId);
@@ -186,9 +187,17 @@ const updateUser = async (req, res, next) => {
       updateData.plan = newPlan._id; // put plan id in updateData
     }
 
+    if (jobs !== undefined) { // jobs is encrypted object, no validation here
+      updateData.jobs = jobs;
+      // Object.keys(job).forEach(key => {
+      //   updateData.job[key] = job[key];
+      // });
+    };
+    
     if (preferences !== undefined) {
       updateData.preferences = preferences;
     }
+
 
     // update the user in a single transaction
     const updatedUser = await User.findByIdAndUpdate(

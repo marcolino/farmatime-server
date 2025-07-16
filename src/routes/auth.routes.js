@@ -1,5 +1,4 @@
-const { verifySignUp, verifySignIn } = require("../middlewares");
-const { authJwt } = require("../middlewares");
+const { authJwt, verifySignUp, verifySignIn } = require("../middlewares");
 const controller = require("../controllers/auth.controller");
 
 
@@ -12,7 +11,8 @@ module.exports = function(app) {
   app.post(`${path}/notificationPreferencesSaveInternal`, [authJwt.verifyAccessToken], controller.notificationPreferencesSave);
   app.post(`${path}/notificationPreferencesSaveExternal`, [authJwt.verifyNotificationToken], controller.notificationPreferencesSave);
   app.post(`${path}/signin`, [verifySignIn.checkValidEmail], controller.signin);
-  app.post(`${path}/signout`, [/*authJwt.verifyAccessToken*/], controller.signout);
+  app.post(`${path}/signout`, [authJwt.verifyAccessTokenAllowGuest], controller.signout);
+  app.post(`${path}/revoke`, [authJwt.verifyAccessTokenAllowGuest], controller.revoke);
   app.post(`${path}/resendSignupVerificationCode`, controller.resendSignupVerificationCode);
   app.post(`${path}/resetPassword`, controller.resetPassword);
   app.post(`${path}/resetPasswordConfirm`, controller.resetPasswordConfirm);

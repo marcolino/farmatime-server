@@ -514,7 +514,7 @@ const configBase = {
       },
       responseType: "code",
       redirectSignIn: baseUrl,
-      redirectSignOut: baseUrl,
+      //redirectSignOut: baseUrl,
       federatedSigninProviders: [
         "Google",
         "Facebook",

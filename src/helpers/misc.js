@@ -139,7 +139,7 @@ const remoteAddress = (req) => {
 const isAdministrator = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
-    if (user.roles.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)) {
+    if (user && user.roles.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)) {
       return true;
     }
     return false;

@@ -14,6 +14,12 @@ const config = require("../config");
 //   country: String,
 // });
 
+const EncryptedSchema = new mongoose.Schema({
+  iv: [Number],
+  data: [Number]
+});
+
+
 const UserSchema = mongoose.Schema({
   // username:
   //   type: String,
@@ -67,6 +73,9 @@ const UserSchema = mongoose.Schema({
   stripeCustomerId: {
     type: String,
     max: 24
+  },
+  jobs: {
+    type: EncryptedSchema,
   },
   isDeleted: {
     type: Boolean,

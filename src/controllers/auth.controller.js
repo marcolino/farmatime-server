@@ -518,36 +518,104 @@ const signin = async (req, res, next) => {
   } 
 };
 
-const signout = async (req, res, next) => {
-  const email = normalizeEmail(req.parameters.email); // TODO: always normalize email
+// const signout = async (req, res, next) => { // TODO: signout on email or id?
+//   const email = normalizeEmail(req.parameters.email); // TODO: always normalize email
 
-  // invalidate access and refresh tokens
+//   // invalidate access and refresh tokens
+//   try {
+//     const user = await User.findOneAndUpdate({ email }, {
+//       $set: {
+//         accessToken: null,
+//         refreshToken: null
+//       }
+//     });
+//     if (!user) {
+//       return res.status(401).json({ message: req.t("User not found") });
+//     }
+
+//     // audit signouts
+//     //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
+
+//     logger.info(`User signed out: ${user.email}`);
+
+//     // clear HTTP-only auth cookies
+//     res.clearCookie("accessToken", cookieOptions(false));
+//     res.clearCookie("refreshToken", cookieOptions(false));
+//     res.clearCookie("encryptionKey", cookieOptions(false));
+
+//     return res.status(200).json({ message: req.t("Sign out successful") });
+//   } catch (err) {
+//     return nextError(next, req.t("Error signing out user: {{err}}", { err: err.message }), 500, err.stack);
+//   }
+// };
+
+const signout = async (req, res, next) => {
+  // revoke user account
   try {
-    const user = await User.findOneAndUpdate({ email }, {
-      $set: {
-        accessToken: null,
-        refreshToken: null
+    let userId = req.userId;
+    if (req.parameters.userId && req.parameters.userId !== userId) { // request to signout another user's profile
+      // this test should be done in routing middleware, but doing it here allows for a more specific error message
+      if (!await isAdministrator(userId)) { // check if request is from admin
+        return res.status(403).json({ message: req.t("You must have admin role to signout another user's account") });
+      } else {
+        userId = req.parameters.userId; // if admin, accept a specific user id in request
       }
-    });
-    if (!user) {
-      return res.status(401).json({ message: req.t("User not found") });
     }
 
-    // audit signouts
-    //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
+    const user = await User.findById(userId);
+    if (!user) {
+      return nextError(next, req.t("User not found"), 404);
+    }
 
-    logger.info(`User signed out: ${user.email}`);
-
-    // clear HTTP-only auth cookies
-    res.clearCookie("accessToken", cookieOptions(false));
-    res.clearCookie("refreshToken", cookieOptions(false));
-    res.clearCookie("encryptionKey", cookieOptions(false));
+    // const email = req.parameters.email;
+    // if (!email) {
+    //   return res.status(400).json({ message: req.t("Email is required to sign out") });
+    // }
+    await signoutOperations(user.email, res);
 
     return res.status(200).json({ message: req.t("Sign out successful") });
   } catch (err) {
+    // User not found or other error
+    if (err.message === "User not found") {
+      return res.status(401).json({ message: req.t("User not found") });
+    }
     return nextError(next, req.t("Error signing out user: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
+
+// Helper function to perform signout operations for a given user email
+const signoutOperations = async (email, res) => {
+  // Always normalize email
+  const normalizedEmail = normalizeEmail(email);
+
+  // Find user and invalidate tokens
+  const user = await User.findOneAndUpdate(
+    { email: normalizedEmail },
+    {
+      $set: {
+        accessToken: null,
+        refreshToken: null,
+      },
+    }
+  );
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Log signout event
+  logger.info(`User signed out: ${user.email}`);
+
+  // Clear HTTP-only auth cookies on the response object
+  if (res) {
+    res.clearCookie("accessToken", cookieOptions(false));
+    res.clearCookie("refreshToken", cookieOptions(false));
+    res.clearCookie("encryptionKey", cookieOptions(false));
+  }
+
+  // Return the user or success indicator if needed
+  return user;
+};
+
 
 const resetPassword = async (req, res, next) => {
   try {
@@ -690,6 +758,44 @@ const resendResetPasswordCode = async (req, res, next) => {
   }
 };
 
+const revoke = async (req, res, next) => {
+  // revoke user account
+  try {
+    let userId = req.userId;
+    if (req.parameters.userId && req.parameters.userId !== userId) { // request to revoke another user's profile
+      // this test should be done in routing middleware, but doing it here allows for a more specific error message
+      if (!await isAdministrator(userId)) { // check if request is from admin
+        return res.status(403).json({ message: req.t("You must have admin role to revoke another user's account") });
+      } else {
+        userId = req.parameters.userId; // if admin, accept a specific user id in request
+      }
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return nextError(next, req.t("User not found"), 404);
+    }
+
+    await signoutOperations(user.email, res);
+
+    // TODO: decide if marking user as deleted, or really fully remove it
+    // TODO: do check if user has a some pending status that impedes she to be deleted...
+
+    // // mark user as deleted
+    // user.isDeleted = true;
+    // await user.save();
+    
+    // fully remove user
+    const resultDelete = await User.deleteOne({ _id: userId });
+    logger.info("User.deleteOne result:", resultDelete);
+    
+    return res.status(200).json({ message: req.t("User account has been completely revoked") });
+  } catch (err) {
+    // note: for some reason, using : {{err}} in the message here does not work
+    return nextError(next, req.t("Error revoking user account: {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
+
 const notificationVerification = async (req, res, next) => {
   // verification is done in middleware
   let user;
@@ -748,7 +854,6 @@ const encryptionKey = async (req, res/*, next*/) => {
   }
 };
 
-
 module.exports = {
   signup,
   resendSignupVerificationCode,
@@ -758,6 +863,7 @@ module.exports = {
   resetPassword,
   resetPasswordConfirm,
   resendResetPasswordCode,
+  revoke,
   googleLogin,
   googleCallback,
   googleRevoke,
