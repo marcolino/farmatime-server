@@ -95,6 +95,7 @@
 - make tests - OK
 - winston colorize does not seem to work in any transport - OK
 
+- rename helpers to libs
 - server.sinon => sinon, server.expect => expect ...
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users)

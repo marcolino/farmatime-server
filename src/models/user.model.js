@@ -74,7 +74,7 @@ const UserSchema = mongoose.Schema({
     type: String,
     max: 24
   },
-  jobs: {
+  jobsData: {
     type: EncryptedSchema,
   },
   isDeleted: {
@@ -142,6 +142,9 @@ const UserSchema = mongoose.Schema({
         },
       },
     }
+  },
+  encryptionKey: {
+    type: String,
   },
 }, {timestamps: true});
 

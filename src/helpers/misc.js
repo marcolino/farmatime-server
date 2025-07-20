@@ -381,21 +381,21 @@ const redirectToClient = (req, res, success, payload) => {
   res.redirect(url);
 };
 
-const createKeysAndTokensAndCookies = async (req, res, next, user) => {
-  // generate a persistent base-64 encryption key from the user's DB ID + server secret
-  try {
-    const encryptionKey = crypto.pbkdf2Sync(
-      user._id.toString(), // Immutable user ID
-      process.env.ENCRYPTION_KEY_SECRET, // Server-side pepper
-      100000, // Iterations
-      32, // Key length (32 bytes = AES-256)
-      "sha512" // Hash algorithm
-    ).toString("base64");
-    // Set as HTTP-only cookie (secure, SameSite Strict)
-    res.cookie("encryptionKey", encryptionKey, cookieOptions());
-  } catch (err) {
-    return nextError(next, req.t("Error generating a persistent encryption key: {{err}}", { err: err.message }), 500, err.stack);
-  }
+const createTokensAndCookies = async (req, res, next, user) => {
+  // // generate a persistent base-64 encryption key from the user's DB ID + server secret
+  // try {
+  //   const encryptionKey = crypto.pbkdf2Sync(
+  //     user._id.toString(), // Immutable user ID
+  //     process.env.ENCRYPTION_KEY_SECRET, // Server-side pepper
+  //     100000, // Iterations
+  //     32, // Key length (32 bytes = AES-256)
+  //     "sha512" // Hash algorithm
+  //   ).toString("base64");
+  //   // Set as HTTP-only cookie (secure, SameSite Strict)
+  //   res.cookie("encryptionKey", encryptionKey, cookieOptions());
+  // } catch (err) {
+  //   return nextError(next, req.t("Error generating a persistent encryption key: {{err}}", { err: err.message }), 500, err.stack);
+  // }
 
   // create access and refresh tokens
   let accessToken, refreshToken;
@@ -461,6 +461,6 @@ module.exports = {
   nextError,
   redirectToClientWithSuccess,
   redirectToClientWithError,
-  createKeysAndTokensAndCookies,
+  createTokensAndCookies,
   cookieOptions,
 };

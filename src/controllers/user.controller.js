@@ -7,6 +7,7 @@ const Role = require("../models/role.model");
 const RefreshToken = require("../models/refreshToken.model");
 const { isObject, isArray, normalizeEmail, isAdministrator, nextError } = require("../helpers/misc");
 const emailService = require("../services/email.service");
+const { encryptData } = require("../helpers/encryption");
 
 const getAllUsersWithTokens = async (req, res, next) => {
   try {
@@ -128,7 +129,7 @@ const updateUser = async (req, res, next) => {
     // collect update data
     const updateData = {};
     const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan, preferences } = req.parameters;
-    const jobs = req.parameters.jobs;
+    const jobs = req.parameters.jobs; // TODO: move this to the previous line, jobs is a prop like another...
 
     if (email !== undefined) {
       const [message, value] = await propertyEmailValidate(req, email, userId);
@@ -221,6 +222,45 @@ const updateUser = async (req, res, next) => {
       }
     }
     return nextError(next, req.t("Error updating user: {{err}}", { err: err.message }), 500, err.stack);      
+  }
+};
+
+/**
+ * Update current user's jobs data
+ */
+const updateUserJobsData = async (req, res, next) => {
+  const userId = req.userId;
+  const jobsData = req.body.jobsData;
+
+  if (!jobsData) {
+    return res.status(400).json({ error: true, message: 'Jobs data required' });
+  }
+
+  try {
+    const user = await User.findById(userId);
+
+    // Generate key or retrieve from DB - TODO: move to login ...
+    // let encryptionKey = user.encryptionKey;
+    // if (!encryptionKey) {
+    //   encryptionKey = generateNewEncryptionKey();
+    //   user.encryptionKey = encryptionKey;
+    // }
+
+    if (!user.encryptionKey) {
+      return res.status(403).json({ error: true, message: req.t('User encryption key not found') });
+    }
+
+    // Encrypt job with encryptionKey
+    const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);
+
+    user.jobsData = encryptedJobsData;
+    await user.save();
+
+    res.json({ success: true });
+  } catch (err) {
+    //console.error('Failed to save job', err);
+    //res.status(500).json({ error: true, message: 'Failed to save job' });
+    return nextError(next, req.t("Error updating user job: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -513,6 +553,7 @@ module.exports = {
   getAllRoles,
   getUser,
   updateUser, 
+  updateUserJobsData,
   //_updateRoles,
   //_updatePlan,
   promoteToDealer,

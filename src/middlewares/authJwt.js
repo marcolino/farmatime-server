@@ -98,7 +98,7 @@ const verifyAccessTokenAllowGuest = (req, res, next) => {
   return verifyAccessToken(req, res, next);
 };
 
-const verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser = async (req, res, next) => {
+const verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser = async (req, res, next) => {
   verifyAccessToken(req, res, async () => { // only proceed with valid tokens;
     if (req.parameters.userId) { // a userId was requested: check if she is admin
       if (req.parameters.userId === req.userId) {
@@ -231,7 +231,7 @@ const cleanupExpiredTokens = async (req,) => { // we should not need this functi
 module.exports = {
   verifyAccessToken,
   verifyAccessTokenAllowGuest,
-  verifyAccessTokenForOtherUserOnlyIfAdminOtherwiseIfUser,
+  verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser,
   verifyNotificationToken,
   verifyRestrictProducts,
   isAdmin,

@@ -8,7 +8,7 @@
 
 <!--[![Mocha tests ok](https://github.com/marcolino/medicare-server/blob/main/public/badges/mocha.svg)](tests)-->
 <!--![Test Status](https://github.com/marcolino/medicare-server/actions/workflows/test.yml/badge.svg)-->
-![Tests Passed](https://img.shields.io/badge/tests%20passed-162-brightgreen)
+![Tests Passed](https://img.shields.io/badge/tests%20passed-71-brightgreen)
 ![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/medicare-server)
 ![GitHub forks](https://img.shields.io/github/forks/marcolino/medicare-server?style=social)
 ![GitHub contributors](https://img.shields.io/github/contributors/marcolino/medicare-server)
@@ -105,8 +105,7 @@ Launch medicare-server from [medicare-preod.fly.dev](https://medicare-preod.fly.
 
 
 ### System Requirements
-
-:bulb: Before you begin, make sure you have the following installed:
+💡 Before you begin, make sure you have the following installed:
 
 - [Node.js v16 or above](https://nodejs.org/en/download/)
 - [Docker](https://docs.docker.com/desktop/)

@@ -7,6 +7,7 @@ const Role = require("./role.model.js");
 const Plan = require("./plan.model.js");
 const Product = require("./product.model.js");
 const { uploadProductImage } = require("../controllers/product.controller.js");
+const { createEncryptionKey } = require("../helpers/encryption");
 const { logger } = require("../controllers/logger.controller.js");
 const demoData = require("../../data/demo.js");
 const i18n = require("../middlewares/i18n.js");
@@ -105,9 +106,13 @@ const populate = async () => {
       */
       for (const role of Object.keys(demoData.users)) {
         const userData = demoData.users[role];
-        const existing = await User.findOne({ email: userData.email });
-        if (!existing) {
-          await User.create(userData);
+        let existingUser = await User.findOne({ email: userData.email });
+        if (!existingUser) {
+          existingUser = await User.create(userData);
+          // create user's encryption key and save it
+          const encryptionKey = await createEncryptionKey(existingUser);
+          existingUser.encryptionKey = encryptionKey;
+          await existingUser.save();
         }
       }
 

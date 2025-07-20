@@ -15,9 +15,9 @@ const VerificationCode = require("../models/verificationCode.model");
 const {
   isAdministrator, normalizeEmail, /*localeDateTime,*/ nextError,
   redirectToClientWithError, redirectToClientWithSuccess,
-  createKeysAndTokensAndCookies, cookieOptions,
+  createTokensAndCookies, cookieOptions,
 } = require("../helpers/misc");
-
+const { createEncryptionKey, decryptData } = require("../helpers/encryption");
 
 const passport = require("passport");
 const config = require("../config");
@@ -222,10 +222,32 @@ const socialLogin = async (req, res, next) => {
 
   // create tokens ad add them to request cookie
   try {
-    await createKeysAndTokensAndCookies(req, res, next, user);
+    await createTokensAndCookies(req, res, next, user);
   } catch (err) {
-    return redirectToClientWithError(req, res, { message: `Error creating tokens: ${err}` });
+    return redirectToClientWithError(req, res, { message: err.message });
   }
+
+  // // create user's encryption key
+  // try {
+  //   await createEncryptionKey(req, res, next, user);
+  // } catch (err) {
+  //   return redirectToClientWithError(req, res, { message: `Error creating encryption key: ${err}` });
+  // }
+  // create user's encryption key and save it
+  try {
+    const encryptionKey = await createEncryptionKey(user);
+    try {
+      user.encryptionKey = encryptionKey;
+      await user.save();
+    } catch (err) {
+      return redirectToClientWithError(req, res, { message: req.t("Error saving encryption key: {{error}}", { error: err.message }) });
+    }
+  } catch (err) {
+    return redirectToClientWithError(req, res, { message: req.t("Error creating encryption key: {{error}}", { error: err.message }) });
+  }
+
+  
+
   redirectToClientWithSuccess(req, res, payload); // redirect to the client after successful login
 };
 
@@ -301,6 +323,14 @@ const signup = async (req, res, next) => {
     roles: [role._id],
     plan: plan._id,
   });
+
+  // create user's encryption key and save it - TODO: move this to signup...
+  try {
+    const encryptionKey = await createEncryptionKey(user);
+    user.encryptionKey = encryptionKey;
+  } catch (err) {
+    return nextError(next, req.t("Error creating encryption key: {{error}}", { error: err.message }), 500, err.stack);
+  }
 
   try {
     await user.save();
@@ -495,9 +525,19 @@ const signin = async (req, res, next) => {
       });
     }
 
-    // create tokens ad add them to request cookie
-    await createKeysAndTokensAndCookies(req, res, next, user);
-   
+    // create tokens and add them to request cookie
+    try {
+      await createTokensAndCookies(req, res, next, user);
+    } catch (err) {
+      return redirectToClientWithError(req, res, { message: err.message });
+    }
+  
+    // decrypt jobs data, if present
+    let jobsData;
+    if (user.jobsData) {
+      jobsData = await decryptData(user.jobsData.iv, user.jobsData.data, user.encryptionKey);
+    }
+
     logger.info(`User signed in: ${user.email}`);
 
     // audit logins
@@ -512,6 +552,7 @@ const signin = async (req, res, next) => {
       plan: user.plan,
       justRegistered: user.justRegistered,
       preferences: user.preferences.toObject(),
+      jobsData,
     });
   } catch (err) {
     return nextError(next, req.t("Error finding user in signin request: {{err}}", { err: err.message }), 500, err.stack);
