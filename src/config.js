@@ -278,14 +278,24 @@ const configBase = {
       prefix: apiName,
     },
     administration: {
-      from: "sistemisolarirossi@gmail.com",
-      fromName: "Sistemi Solari Rossi backend server",
-      to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+      from: "sistemisolarirossi@gmail.com", // "medicare@gmail.com" // when we read this account
+      fromName: "Sistemi Solari backend server",
+      to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
       toName: "MEDICARE admin",
     },
     support: {
-      to: "marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+      to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
       toName: "MEDICARE support",
+    },
+    notification: {
+      to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
+      toName: "MEDICARE notification",
+    },
+    doctor: {
+      from: "medicareinfo6@gmail.com", // "medicare@gmail.com" // when we read this account
+      fromName: "MediCare",
+      replyTo: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
+      replyToName: "MEDICARE admin",
     },
     templatesPath: "../templates",
     templatesExtension: ".ejs",
@@ -348,10 +358,10 @@ const configBase = {
       title: `${company}`,
       phone: "+39 333 6480983",
       address: "Via Felisio, 19 - 10098 Rivoli (TO)",
-      mailto: "mailto:marcosolari@gmail.com", // "sistemisolarirossi@gmail.com" // when we read this account
+      mailto: "mailto:marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
-        name: "sistemisolarirossi.it", // TODO: use real home site name
+        name: "medicare.it", // TODO: use real home site name
         url: baseUrl,
       },
       owner: {
@@ -454,7 +464,11 @@ const configBase = {
       footerPadding: 10,
       extraSmallWatershed: 600,
       mobileDesktopWatershed: 900,
-      usePlans: true, // if we do use plans in the app
+      usePlans: false, // if we do use plans in the app
+      useAddress: true, // if we do use address in the app
+      useFiscalCode: false, // if we do use fiscal code in the app
+      useBusinessName: false, // if we do use business name in the app
+      useProfileImage: false, // if we do use profile image in the app
       snacks: {
         maxInStack: 3,
         autoHideDurationSeconds: 5,
@@ -584,6 +598,17 @@ if (customization) {
     throw new Error(`Config file ${configCustomizationPath} not found`);
   }
 }
+
+// Prototypes
+Date.prototype.yyyymmdd = function() {
+  return this.toISOString().split('T')[0];
+};
+
+Date.prototype.addDays = function(days) {
+  const result = new Date(this);
+  result.setDate(result.getDate() + days);
+  return result;
+};
 
 const config = merge(configBase, configCustom);
 

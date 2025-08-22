@@ -42,23 +42,27 @@ function hashSecretValue(value) {
 
 // fetch GitHub public key
 async function fetchPublicKey() {
-  const response = await fetch(
-    `https://api.github.com/repos/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}/actions/secrets/public-key`,
-    {
+  try {
+    const url = `https://api.github.com/repos/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}/actions/secrets/public-key`;
+    //console.log(url);
+    const response = await fetch(url, {
       headers: {
         Authorization: `token ${process.env.GITHUB_TOKEN}`,
         Accept: "application/vnd.github.v3+json",
       },
+    });
+    if (!response.ok) {
+      //console.error("Failed to fetch GitHub public key", response);
+      const errText = await response.text();
+      console.error("Failed to fetch GitHub public key", response.status, response.statusText, errText);
+      throw new Error(`Failed to fetch GitHub public key: ${response.status} ${response.statusText} - ${errText}`);
     }
-  );
 
-  if (!response.ok) {
-    console.error("Failed to fetch GitHub public key");
-    process.exit(1);
+    const data = await response.json();
+    return { key: data.key, keyId: data.key_id };
+  } catch (err) {
+    console.error("Exception fetching GitHub public key", err);
   }
-
-  const data = await response.json();
-  return { key: data.key, keyId: data.key_id };
 }
 
 // encrypt a secret using the GitHub public key
@@ -130,6 +134,9 @@ async function processSecrets() {
       // update the cache if the upload was successful
       if (uploadSuccess) {
         cache[secretName] = secretHash;
+        console.log("Uploaded", key, secretName);
+      } else {
+        console.log("Error uploading", key, secretName);
       }
 
       return uploadSuccess;

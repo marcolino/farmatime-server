@@ -112,3 +112,4 @@ NEWFEATURE:
 - rimuovere gli account "non confermati", periodicamente (quando sarà necessario)
 - rimuovere gli account "rimossi", periodicamente (quando sarà necessario)
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
+- usare node builtin tests (see https://kashw1n.com/blog/nodejs-2025/)

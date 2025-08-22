@@ -33,7 +33,7 @@ const checkDuplicateEmail = async (req, res, next) => {
     }
     return next();
   } catch (err) {
-    return nextError(next, req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), 500, err.stack);      
+    return nextError(next, req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), 500, err.stack);
   }
 };
 

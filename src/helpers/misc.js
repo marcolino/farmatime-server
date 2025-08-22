@@ -409,15 +409,20 @@ const createTokensAndCookies = async (req, res, next, user) => {
   try {
     res.cookie("accessToken", accessToken, cookieOptions());
     res.cookie("refreshToken", refreshToken, cookieOptions());
-    /* istanbul ignore next */
+    const { exp: expA } = jwt.decode(accessToken);
     if (config.mode.development) {
-      console.info(`                      now is ${localeDateTime(new Date())}`); // eslint-disable-line no-console
-      const { exp: expA } = jwt.decode(accessToken);
       console.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`); // eslint-disable-line no-console
-      const { exp: expR } = jwt.decode(refreshToken);
+    }
+    const { exp: expR } = jwt.decode(refreshToken);
+    if (config.mode.development) {
       console.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`); // eslint-disable-line no-console
     }
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt: expA * 1000,
+      refreshTokenExpiresAt: expR * 1000,
+    };
   } catch (err) {
     return nextError(next, req.t("Error adding tokens to cookies: {{err}}", { err: err.message }), 500, err.stack);
   }

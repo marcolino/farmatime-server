@@ -8,6 +8,7 @@ const RefreshToken = require("../models/refreshToken.model");
 const { isObject, isArray, normalizeEmail, isAdministrator, nextError } = require("../helpers/misc");
 const emailService = require("../services/email.service");
 const { encryptData } = require("../helpers/encryption");
+const config = require("../config");
 
 const getAllUsersWithTokens = async (req, res, next) => {
   try {
@@ -151,13 +152,19 @@ const updateUser = async (req, res, next) => {
       if (message) return res.status(400).json({ message });
       updateData.phone = value;
     }
-    if (fiscalCode !== undefined) {
-      const [message, value] = propertyFiscalCodeValidate(req, fiscalCode);
-      if (message) return res.status(400).json({ message });
-      updateData.fiscalCode = value;
+    if (config.app.ui.useFiscalCode) {
+      if (fiscalCode !== undefined) {
+        const [message, value] = propertyFiscalCodeValidate(req, fiscalCode);
+        if (message) return res.status(400).json({ message });
+        updateData.fiscalCode = value;
+      }
     }
-    if (businessName !== undefined) updateData.businessName = businessName;
-    if (address) updateData.address = address;
+    if (config.app.ui.useBusinessName) {
+      if (businessName !== undefined) updateData.businessName = businessName;
+    }
+    if (config.app.ui.useAddress) {
+      if (address) updateData.address = address;
+    }
 
     // handle role updates with priority checks
     if (roles !== undefined && Array.isArray(roles) && roles.length > 0) {
@@ -193,7 +200,7 @@ const updateUser = async (req, res, next) => {
       // Object.keys(job).forEach(key => {
       //   updateData.job[key] = job[key];
       // });
-    };
+    }
     
     if (preferences !== undefined) {
       updateData.preferences = preferences;
@@ -229,39 +236,72 @@ const updateUser = async (req, res, next) => {
  * Update current user's jobs data
  */
 const updateUserJobsData = async (req, res, next) => {
-  const userId = req.userId;
-  const jobsData = req.body.jobsData;
-
-  if (!jobsData) {
-    return res.status(400).json({ error: true, message: 'Jobs data required' });
-  }
-
   try {
-    const user = await User.findById(userId);
+    const userId = req.userId;
+    const jobsData = req.parameters.jobsData;
 
-    // Generate key or retrieve from DB - TODO: move to login ...
-    // let encryptionKey = user.encryptionKey;
-    // if (!encryptionKey) {
-    //   encryptionKey = generateNewEncryptionKey();
-    //   user.encryptionKey = encryptionKey;
-    // }
+    const result = await updateUserJobsDataInternal(userId, jobsData);
 
-    if (!user.encryptionKey) {
-      return res.status(403).json({ error: true, message: req.t('User encryption key not found') });
+    if (result.error) {
+      return res.status(result.status).json({
+        error: true,
+        message: req.t(result.message),
+      });
+    } else {
+      return res.json({message: req.t("User job data updated successfully")});
     }
-
-    // Encrypt job with encryptionKey
-    const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);
-
-    user.jobsData = encryptedJobsData;
-    await user.save();
-
-    res.json({ success: true });
   } catch (err) {
-    //console.error('Failed to save job', err);
-    //res.status(500).json({ error: true, message: 'Failed to save job' });
-    return nextError(next, req.t("Error updating user job: {{err}}", { err: err.message }), 500, err.stack);      
+    return nextError(next, req.t("Error updating user job data: {{err}}", { err: err.message }), 500, err.stack);
   }
+};
+
+/**
+ * Update current user's jobs data (callable internally)
+ */
+const updateUserJobsDataInternal = async (userId, jobsData) => {
+  if (!userId) {
+    //return res.status(400).json({ error: true, message: 'Jobs data required' });
+    return { error: true, status: 400, message: "User id is required" };
+  }
+  if (!jobsData) {
+    //return res.status(400).json({ error: true, message: 'Jobs data required' });
+    return { error: true, status: 400, message: "Jobs data is required" };
+  }
+
+  //try {
+  const user = await User.findById(userId);
+
+  // Generate key or retrieve from DB - TODO: move to login ...
+  // let encryptionKey = user.encryptionKey;
+  // if (!encryptionKey) {
+  //   encryptionKey = generateNewEncryptionKey();
+  //   user.encryptionKey = encryptionKey;
+  // }
+
+  if (!user.encryptionKey) {
+    return { error: true, status: 403, message: "User encryption key not found" };
+  }
+
+  // In development mode, store unencrypted jobs data, to debug in an easier way
+  if (config.mode.development) {
+    user.jobsDataCLEAN = jobsData;
+  }
+
+  // Encrypt job with encryptionKey
+  const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);
+
+  user.jobsData = encryptedJobsData;
+  await user.save();
+
+  //res.json({ success: true });
+  return { success: true };
+  // } catch (err) {
+  //   //console.error('Failed to save job', err);
+  //   //res.status(500).json({ error: true, message: 'Failed to save job' });
+  //   //return nextError(next, req.t("Error updating user job: {{err}}", { err: err.message }), 500, err.stack);
+  //   //return { error: true, status: 500, message: "Error updating user job: " + err.message };
+  //   throw(err);
+  // }
 };
 
 /*
@@ -529,9 +569,11 @@ const propertyLastNameValidate = (req, value/*, user*/) => { // validate and nor
   return [null, value];
 };
 
-const propertyPhoneValidate = (req, value/*, user*/) => { // validate and normalize phone number
+const propertyPhoneValidate = (req, value/*, user*/) => { // validate and normalize phone number (with int'l prefix)
   value = value?.trim();
-  if (value.match(/\d/g).length !== 10) {
+  const valueNormalized = value.replace(/^\+/, '00');
+  const digitsCount = valueNormalized.match(/\d/g).length;
+  if (digitsCount < 9 || digitsCount > 15) {
     return [ req.t("Phone is not valid, sorry"), value ];
   }
   return [null, value];
@@ -554,6 +596,7 @@ module.exports = {
   getUser,
   updateUser, 
   updateUserJobsData,
+  updateUserJobsDataInternal,
   //_updateRoles,
   //_updatePlan,
   promoteToDealer,

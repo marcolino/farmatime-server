@@ -30,16 +30,15 @@ const encryptData = async (value, encryptionKey) => {
   };
 };
 
-const decryptData = async (iv, data, encryptionKey) => {
+const decryptData = async (encryptedValue, encryptionKey) => {
   if (!encryptionKey) {
     throw new Error(i18n.t('No encryption key for user'));
   }
   const key = await importKey(encryptionKey);
-  //const key = encryptionKey; // TODO: solve html entities in snackbar errors
   const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: new Uint8Array(iv) },
+    { name: 'AES-GCM', iv: new Uint8Array(encryptedValue.iv) },
     key,
-    new Uint8Array(data)
+    new Uint8Array(encryptedValue.data)
   );
   return JSON.parse(new TextDecoder().decode(decrypted));
 };

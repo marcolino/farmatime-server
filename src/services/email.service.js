@@ -1,17 +1,15 @@
-//const Brevo = require("@getbrevo/brevo");
 const fs = require("fs");
 const path = require("path");
 const Brevo = require("sib-api-v3-sdk");
 const ejs = require("ejs");
 const { inline } = require("@css-inline/css-inline");
-//const i18next = require("i18next");
 const User = require("../models/user.model");
 const NotificationToken = require("../models/notificationToken.model");
 const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");
 
-// the email service class
+// The email service class
 class EmailService {
   constructor() {
     this.apiInstance = null;
@@ -27,7 +25,7 @@ class EmailService {
     };
   }
 
-  // setup method to configure the Brevo API client
+  // Setup method to configure the Brevo API client
   async setup(apiKey) {
     return new Promise((resolve, reject) => {
       try {
@@ -45,7 +43,74 @@ class EmailService {
   }
 
   /**
-   * method to send an email with HTML content
+   * Method to send an email with HTML content
+   * 
+   * @param {string} to - the recipient's email address (mandatory)
+   * @param {string} subject - the subject of the email (mandatory)
+   * @param {string} [toName] - the recipient's name (optional)
+   * @param {string} [from] - the senders's address (optional)
+   * @param {string} [fromName] - the senders's name (optional)
+   * @param {string} body - the HTML "email-body" of the email
+   * @returns {boolean} a boolean value that indicates if email was sent correctly
+   */
+  async send(req, params) {
+    try {
+      if (!this.apiInstance) {
+        throw new Error(req.t("Email service is not initialized, please setup first")); 
+      }
+      
+      if (!params) params = {};
+      if (!params.to) return logger.error("Parameter 'to' is mandatory to send email");
+      if (!params.subject) return logger.error("Parameter 'subject' is mandatory to send email");
+      if (!params.htmlContent) return logger.error("Parameter 'htmlContent' is mandatory to send email");
+      if (!params.toName) params.toName = null;
+      if (!params.from) params.from = config.email.doctor.from;
+      if (!params.fromName) params.fromName = config.email.doctor.fromName;
+      if (!params.replyTo) params.replyTo = ""; 
+      if (!params.replyToName) params.replyToName = "";
+
+      if (typeof params.to === "string") params.to = [params.to]; // accept also a single string with an email
+
+      const htmlContent = params.htmlContent;
+
+      // create smtp email object
+      let sendSmtpEmail = new Brevo.SendSmtpEmail();
+      const to = params.to.map(email => ({ email }));
+      sendSmtpEmail = {
+        to,
+        sender: {
+          email: params.from,
+          name: params.fromName,
+        },
+        replyTo: {
+          email: params.replyTo,
+          name: params.replyToName,
+        },
+        subject: params.subject,
+        htmlContent,
+      };
+      logger.info(`sendSmtpEmail:`, sendSmtpEmail);
+   
+      // if requested in config.email.dryrun, skip real email send, just log sendSmtpEmail
+      let response;
+      if (config.email.dryrun) {
+        response = {}; response.messageId = "virtual-send-message-id";
+      } else {
+        response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
+      }
+      
+      //logger.info(`Email sent to ${params.to} with message id ${response.messageId}`);
+      return true;
+    } catch (err) {
+      // logger.error(`Error sending email to ${params.to}:`, err);
+      // throw err;
+      const message = err.message + (err?.response?.body?.message ? ` (${err.response.body.message})` : '');
+      throw new Error(`Error sending email to ${params.to}: ${message}`);
+    }
+  }
+
+  /**
+   * Method to send an email with HTML content, and possibly a template
    * 
    * @param {string} to - the recipient's email address (mandatory)
    * @param {string} subject - the subject of the email (mandatory)
@@ -59,27 +124,23 @@ class EmailService {
    * 
    * Note: htmlContent and templateName parameters are alternative
    */
-  async send(req, params) {
+  async sendWithTemplate(req, params) {
     try {
       if (!this.apiInstance) {
-        const message = "Email service is not initialized, please call setup() first";
-        logger.error(message);
-        throw new Error(message);
+        throw new Error(req.t("Email service is not initialized, please setup first"));
       }
 
       let notificationToken;
       if (req) {
-        // TODO: DEBUG ONLY !!! Always send to me, even for guest users...
-        req.user = await User.findOne({ email: "marcosolari@gmail.com" })
-          .select(["-password", "-__v"])
-          //.exec()
-        ;
+        if (!req.user) {
+          req.user = await User.findOne({ email: config.email.notification.to })
+            .select(["-password", "-__v"])
+          ;
+        }
         
         // email send service needs an authenticatd user
         if (!req.user) {
-          const message = "No user found, can't send email";
-          logger.error(message);
-          throw new Error(message);
+          throw new Error("No user found, can't send email");
         }
 
         try {
@@ -237,42 +298,8 @@ class EmailService {
     }
   }
 
-  /*
   /**
-   * substitutes `class` tags in template contents,
-   * because many email clients do not respect classes, but only (come) inline styles
-   * 
-   * @param {string} name - the template name
-   * @returns {string} the template contents
-   * /
-  async inlineClasses(html) {
-    // add system style
-    //const css = this.readTemplateStyle(styleName);
-    
-    //console.log("html:", html);
-    //console.log("css:", css);
-
-    return inline(html);
-    // try {
-    //   const result = await inlineCss(html, { url: "/", extraCss: css });
-    //   console.log("inlineCss result:", result);
-    // } catch (err) {
-    //   console.error("inline classes error:", err);
-    //   throw err;
-    // }
-    // inlineCss(html, { url: "/", extraCss: css })
-    // .then(result => {
-    //   console.log("inlineCss result:", result);
-    // })
-    // .catch (err => {
-    //   console.error("inline classes error:", err);
-    //   throw err;
-    // });
-  }
-  */
-  
-  /**
-   * reads a template from file system
+   * Read a template from file system
    * 
    * @param {string} name - the template name
    * @returns {string} the template contents
@@ -288,7 +315,7 @@ class EmailService {
   }
 
   /**
-   * reads a template style from file system
+   * Read a template style from file system
    * 
    * @param {string} name - the template style name
    * @returns {string} the template style contents
@@ -304,6 +331,4 @@ class EmailService {
   }
 }
 
-// const emailServiceInstance = new EmailService();
-// module.exports = emailServiceInstance;
 module.exports = new EmailService();

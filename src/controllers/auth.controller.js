@@ -222,7 +222,8 @@ const socialLogin = async (req, res, next) => {
 
   // create tokens ad add them to request cookie
   try {
-    await createTokensAndCookies(req, res, next, user);
+    const tokens = await createTokensAndCookies(req, res, next, user);
+    payload.refreshTokenExpiresAt = tokens.refreshTokenExpiresAt;
   } catch (err) {
     return redirectToClientWithError(req, res, { message: err.message });
   }
@@ -245,8 +246,6 @@ const socialLogin = async (req, res, next) => {
   } catch (err) {
     return redirectToClientWithError(req, res, { message: req.t("Error creating encryption key: {{error}}", { error: err.message }) });
   }
-
-  
 
   redirectToClientWithSuccess(req, res, payload); // redirect to the client after successful login
 };
@@ -346,7 +345,7 @@ const signup = async (req, res, next) => {
     await signupVerification.save(); // save the signup verification code
     logger.info(`SIGNUP VERIFICATION CODE: ${signupVerification.code}`);
 
-    await emailService.send(req, {
+    await emailService.sendWithTemplate(req, {
       userId: user._id,
       to: user.email,
       subject: req.t("Signup Verification Code"),
@@ -389,7 +388,7 @@ const resendSignupVerificationCode = async (req, res, next) => {
       signupVerification = await user.generateVerificationCode(user._id);
       await signupVerification.save(); // save the verification code
 
-      await emailService.send(req, {
+      await emailService.sendWithTemplate(req, {
         to: user.email,
         subject: req.t("Signup Verification Code Resent"),
         templateName: "signupVerificationCodeSent",
@@ -525,25 +524,14 @@ const signin = async (req, res, next) => {
       });
     }
 
-    // create tokens and add them to request cookie
-    try {
-      await createTokensAndCookies(req, res, next, user);
-    } catch (err) {
-      return redirectToClientWithError(req, res, { message: err.message });
-    }
-  
     // decrypt jobs data, if present
     let jobsData;
     if (user.jobsData) {
-      jobsData = await decryptData(user.jobsData.iv, user.jobsData.data, user.encryptionKey);
+      jobsData = await decryptData(user.jobsData, user.encryptionKey);
+      logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobsData.jobs.length} jobs to process`);
     }
 
-    logger.info(`User signed in: ${user.email}`);
-
-    // audit logins
-    audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
-
-    res.status(200).json({
+    const payload = {
       id: user._id,
       email: user.email,
       firstName: user.firstName,
@@ -553,7 +541,22 @@ const signin = async (req, res, next) => {
       justRegistered: user.justRegistered,
       preferences: user.preferences.toObject(),
       jobsData,
-    });
+    };
+
+    // create tokens and add them to request cookie
+    try {
+      const tokens = await createTokensAndCookies(req, res, next, user);
+      payload.refreshTokenExpiresAt = tokens.refreshTokenExpiresAt;
+    } catch (err) {
+      return redirectToClientWithError(req, res, { message: err.message });
+    }
+  
+    logger.info(`User signed in: ${user.email}`);
+
+    // audit logins
+    audit({ req, mode: "action", subject: `User sign in`, htmlContent: `Sign in of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
+
+    res.status(200).json(payload);
   } catch (err) {
     return nextError(next, req.t("Error finding user in signin request: {{err}}", { err: err.message }), 500, err.stack);
   } 
@@ -672,7 +675,7 @@ const resetPassword = async (req, res, next) => {
       await user.save(); // save the updated user
 
       // send email
-      await emailService.send(req, {
+      await emailService.sendWithTemplate(req, {
         to: user.email,
         subject: req.t("Reset password code"),
         templateName: "resetPasswordCodeSent",
@@ -772,7 +775,7 @@ const resendResetPasswordCode = async (req, res, next) => {
       logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
       logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
-      await emailService.send(req, {
+      await emailService.sendWithTemplate(req, {
         to: user.email,
         subject: req.t("Reset password code"),
         templateName: "resetPasswordCodeSent",

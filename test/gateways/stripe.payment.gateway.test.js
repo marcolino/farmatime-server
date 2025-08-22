@@ -182,7 +182,7 @@ describe("Stripe payment gateway", function () {
       await stripeGateway.createCheckoutSession(req, res, next);
 
       expect(res.status.calledWith(400)).to.be.true;
-      expect(res.json.calledWith({ message: "Please call init" })).to.be.true;
+      expect(res.json.calledWith({ message: "Internal error (init not called)" })).to.be.true;
     });
 
     it("should return error if user not found", async () => {

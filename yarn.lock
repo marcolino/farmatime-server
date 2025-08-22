@@ -1415,6 +1415,7 @@ __metadata:
     dotenv: "npm:^16.4.7"
     ejs: "npm:^3.1.10"
     email-validator: "npm:^2.0.4"
+    entities: "npm:^6.0.1"
     eslint: "npm:^9.19.0"
     eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-node: "npm:^11.1.0"
@@ -1438,6 +1439,7 @@ __metadata:
     mongoose: "npm:7.8.6"
     morgan: "npm:^1.10.0"
     multer: "npm:^1.4.5-lts.1"
+    node-cron: "npm:^4.2.1"
     node-fetch: "npm:2"
     nodemon: "npm:^2.0.15"
     nyc: "npm:^17.1.0"
@@ -2929,7 +2931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"entities@npm:^6.0.0":
+"entities@npm:^6.0.0, entities@npm:^6.0.1":
   version: 6.0.1
   resolution: "entities@npm:6.0.1"
   checksum: 10/62af1307202884349d2867f0aac5c60d8b57102ea0b0e768b16246099512c28e239254ad772d6834e7e14cb1b6f153fc3d0c031934e3183b086c86d3838d874a
@@ -5940,6 +5942,13 @@ __metadata:
   version: 0.6.4
   resolution: "negotiator@npm:0.6.4"
   checksum: 10/d98c04a136583afd055746168f1067d58ce4bfe6e4c73ca1d339567f81ea1f7e665b5bd1e81f4771c67b6c2ea89b21cb2adaea2b16058c7dc31317778f931dab
+  languageName: node
+  linkType: hard
+
+"node-cron@npm:^4.2.1":
+  version: 4.2.1
+  resolution: "node-cron@npm:4.2.1"
+  checksum: 10/7550b105e4aab772597383e24c4b31b6d5dc9604c96bcefb1a4b8a94a432b8835e3010a0dfc1d34492edfb64a2e55f334cf3ad0a76901b72de11ef506cbfd31a
   languageName: node
   linkType: hard
 

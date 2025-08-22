@@ -38,7 +38,7 @@ describe("Auth signup controller", () => {
     roleStub = server.sinon.stub(Role, "findOne");
     planStub = server.sinon.stub(Plan, "findOne");
     userStub = server.sinon.stub(User.prototype, "save").resolves();
-    emailStub = server.sinon.stub(emailService, "send").resolves();
+    emailStub = server.sinon.stub(emailService, "sendWithTemplate").resolves();
     server.sinon.stub(logger, "error");
   });
 

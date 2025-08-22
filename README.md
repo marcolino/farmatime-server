@@ -8,7 +8,7 @@
 
 <!--[![Mocha tests ok](https://github.com/marcolino/medicare-server/blob/main/public/badges/mocha.svg)](tests)-->
 <!--![Test Status](https://github.com/marcolino/medicare-server/actions/workflows/test.yml/badge.svg)-->
-![Tests Passed](https://img.shields.io/badge/tests%20passed-71-brightgreen)
+![Tests Passed](https://img.shields.io/badge/tests%20passed-117-brightgreen)
 ![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/medicare-server)
 ![GitHub forks](https://img.shields.io/github/forks/marcolino/medicare-server?style=social)
 ![GitHub contributors](https://img.shields.io/github/contributors/marcolino/medicare-server)
@@ -74,7 +74,7 @@ It is strictly coupled with [medicare-client](https://github.com/marcolino/medic
 
 # Configuration
 
- - Copy .env.template to .env, and insert all keys values; if you prefer to use different services, felle free to change corresponding keys, and relevant code too.
+ - Copy .env.template to .env, and insert all keys values; if you prefer to use different services, feel free to change corresponding keys, and relevant code too.
  - Use `scripts/githubUploadSecrets.js` to upload .env secrets to github, so that github actions can complete.
 
 

@@ -22,7 +22,7 @@ describe("Auth - resetPassword", () => {
     // Stub User model's findOne method
     stubFindOne = sinon.stub(User, "findOne");
     // Stub email service's send method
-    stubSend = sinon.stub(emailService, "send");
+    stubSend = sinon.stub(emailService, "sendWithTemplate");
   });
 
   afterEach(() => {

@@ -1,8 +1,3 @@
-# fly.toml app configuration file generated for medicare-server-lingering-brook-4120 on 2024-08-24T17:23:36+02:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'medicare-staging'
 primary_region = 'cdg'
 
@@ -17,6 +12,11 @@ primary_region = 'cdg'
   min_machines_running = 0
   processes = ['app']
 
+# THIS IS NOT WORKING YES
+#[[jobs]]
+#  command = ['node', 'worker.js']
+#  schedule = '0 8 * * *' # every day at 8 AM o'clock
+
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'
@@ -24,9 +24,22 @@ primary_region = 'cdg'
 
 [env]
   NODE_ENV = 'staging'
-  # to avoid "PCI: Fatal: No config space access function found" errors
+  # to avoid 'PCI: Fatal: No config space access function found' errors
   NODE_OPTIONS = '--max-old-space-size=4096'
 
 [mounts]
   source = 'products_staging'
   destination = '/app/public/assets/products'
+
+# Worker process (does not expose HTTP)
+[processes]
+  app = "yarn start"
+  worker = "node worker.js"
+
+#[[machines]]
+#  name = "worker"
+#  count = 1
+
+[[machines]]
+  processes = ["worker"] # dedicate a machine for worker
+  count = 1

@@ -6,6 +6,7 @@ const i18nextMiddleware = require("i18next-http-middleware");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
+const { decode } = require("entities");
 const { logger } = require("./src/controllers/logger.controller");
 //const db = require("./src/models/db");
 const { initializeDatabase } = require("./src/models/db");
@@ -168,6 +169,7 @@ require("./src/routes/user.routes")(app);
 require("./src/routes/product.routes")(app);
 require("./src/routes/payment.routes")(app);
 require("./src/routes/misc.routes")(app);
+require("./src/routes/internal.routes")(app);
 
 // expose a /public folder on server
 if (config.publicBasePath) {
@@ -198,7 +200,7 @@ app.get("*", (req, res) => {
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next is needed to be considered error handling
   logger.error("Server error:", err);
   let status = err.status || 500;
-  let message = `${err.message.trim() || (req.t ? req.t("Server error") : "Server error")}`;
+  let message = `${decode(err.message.trim()) || (req.t ? req.t("Server error") : "Server error")}`;
 
   if (status === 500) { // audit errors
     const t = req.t || ((msg) => msg); // fallback to identity if req.t is not ready yet
@@ -211,6 +213,8 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   Date: ${localeDateTime()}
   Stack: ${secureStack(err.stack)}
 </pre>`,
+    }).catch(auditError => {
+      logger.error("Audit failed:", auditError);
     });
     message += " - " + t("We are aware of this error, and working to solve it") + ". " + t("Please, retry soon");
   }

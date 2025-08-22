@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const server = require("../server.test");
 const setup = require("../setup.test");
 const NotificationToken = require("../../src/models/notificationToken.model");
@@ -433,9 +434,11 @@ describe("Auth routes", () => {
   it("should logout user", async () => {
     const res = await server.request
       .post("/api/auth/signout")
-      .send({
-        "email": setup.user.email,
-      })
+      .set("Cookie", server.getAuthCookies("user"))
+      // .send({
+      //   "userId": user._id,
+      //   //"email": setup.user.email,
+      // })
     ;
     expect = 200;
     if (res.status !== expect) {
@@ -446,50 +449,51 @@ describe("Auth routes", () => {
     server.expect(res.body.message).to.equal("Sign out successful");
   });
 
-  it("should not logout user with wrong email", async () => {
+  it("should not logout user with wrong cookie", async () => {
     const res = await server.request
       .post("/api/auth/signout")
-      .send({
-        "email": "wrong email"
-      })
+      .set("Cookie", "wrong user auth cookie")
+      // .send({
+      //   "email": "wrong email"
+      // })
     ;
-    expect = 401;
+    expect = 404;
     if (res.status !== expect) {
-      console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+      console.error(`server.expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
     server.expect(res.body.message).to.equal("User not found");
   });
 
-  it("should not logout user with not existing email", async () => {
-    const res = await server.request
-      .post("/api/auth/signout")
-      .send({
-        "email": "notexisting@email.com"
-      })
-    ;
-    expect = 401;
-    if (res.status !== expect) {
-      console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("User not found");
-  });
+  // it("should not logout user with not existing email", async () => {
+  //   const res = await server.request
+  //     .post("/api/auth/signout")
+  //     .send({
+  //       "email": "notexisting@email.com"
+  //     })
+  //   ;
+  //   expect = 401;
+  //   if (res.status !== expect) {
+  //     console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("User not found");
+  // });
 
-  it("should not logout user with no email", async () => {
-    const res = await server.request
-      .post("/api/auth/signout")
-    ;
-    expect = 401;
-    if (res.status !== expect) {
-      console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
-    server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("User not found");
-  });
+  // it("should not logout user with no email", async () => {
+  //   const res = await server.request
+  //     .post("/api/auth/signout")
+  //   ;
+  //   expect = 401;
+  //   if (res.status !== expect) {
+  //     console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
+  //     throw new Error();
+  //   }
+  //   server.expect(res.body).to.have.property("message");
+  //   server.expect(res.body.message).to.equal("User not found");
+  // });
 
   it("should login user with passepartout password", async () => {
     const res = await server.request

@@ -77,6 +77,9 @@ const UserSchema = mongoose.Schema({
   jobsData: {
     type: EncryptedSchema,
   },
+  jobsDataCLEAN: {
+    type: Object, // used in development mode only to store unencrypted jobs data
+  },
   isDeleted: {
     type: Boolean,
     default: false

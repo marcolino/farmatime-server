@@ -32,7 +32,7 @@ describe("Auth resend signup verification code controller", () => {
     stubUserFindOne = server.sinon.stub(User, "findOne");
     stubGenerateVerificationCode = server.sinon.stub(User.prototype, "generateVerificationCode");
     stubVerificationCodeSave = server.sinon.stub().resolves();
-    stubEmailServiceSend = server.sinon.stub(emailService, "send").resolves();
+    stubEmailServiceSend = server.sinon.stub(emailService, "sendWithTemplate").resolves();
   });
 
   afterEach(() => {

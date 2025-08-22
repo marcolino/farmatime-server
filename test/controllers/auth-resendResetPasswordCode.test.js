@@ -30,7 +30,7 @@ describe("Auth - resendResetPasswordCode", () => {
     stubFindOne = server.sinon.stub(User, "findOne");
     
     // mock email service
-    stubSend = server.sinon.stub(emailService, "send");
+    stubSend = server.sinon.stub(emailService, "sendWithTemplate");
   });
 
   afterEach(() => server.sinon.restore());
