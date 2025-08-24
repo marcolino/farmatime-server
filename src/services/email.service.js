@@ -131,18 +131,7 @@ class EmailService {
       }
 
       let notificationToken;
-      if (req) {
-        if (!req.user) {
-          req.user = await User.findOne({ email: config.email.notification.to })
-            .select(["-password", "-__v"])
-          ;
-        }
-        
-        // email send service needs an authenticatd user
-        if (!req.user) {
-          throw new Error("No user found, can't send email");
-        }
-
+      if (req && req.user) {
         try {
           notificationToken = await NotificationToken.createToken(req.user, "email");
         } catch (err) {

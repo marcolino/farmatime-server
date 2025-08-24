@@ -100,6 +100,7 @@
   "Input file is corrupted": "Il file di input è danneggiato",
   "Insufficient Storage": "",
   "internal server error": "",
+  "Invalid worker key": "Worker key non valida",
   "IP": "IP",
   "length required": "",
   "Length Required": "",

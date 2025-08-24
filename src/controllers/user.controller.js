@@ -425,6 +425,18 @@ const deleteUser = async (req, res, next) => {
   }
 
   try {
+    // avoid deleting administrator user
+    const protectedEmail = config.email.administration.to;
+    const admin = await User.findOne({ email: protectedEmail });
+    if (admin) {
+      const match = await User.exists({ _id: admin._id, ...filter });
+      if (match) {
+        return res.status(403).json({
+          message: req.t("Deletion request includes the protected admin user and cannot be processed")
+        });
+      }
+    }
+
     const data = await User.deleteMany(filter);
     if (data.deletedCount > 0) {
       return res.status(200).json({ message: req.t("{{count}} user(s) have been deleted", { count: data.deletedCount }), count: data.deletedCount });
@@ -455,6 +467,17 @@ const removeUser = async (req, res, next) => {
   
   const payload = { isDeleted: true };
   try {
+    // avoid deleting administrator user
+    const protectedEmail = config.email.administration.to;
+    const admin = await User.findOne({ email: protectedEmail });
+    if (admin) {
+      const match = await User.exists({ _id: admin._id, ...filter });
+      if (match) {
+        return res.status(403).json({
+          message: req.t("Deletion request includes the protected admin user and cannot be processed")
+        });
+      }
+    }
 
     const data = await User.updateMany(filter, payload, { new: true, lean: true });
     if (data./*nModified*/modifiedCount > 0) {

@@ -124,7 +124,7 @@ const imageAddWaterMark = async (imageBuffer) => {
     const { width, height } = await sharp(resizedImageBuffer).metadata();
 
     // process the watermark
-    const watermarkPath = path.join(__dirname, "..", config.app.ui.products.images.watermark.path);
+    const watermarkPath = path.join(__dirname, "..", "..", config.app.ui.products.images.watermark.path);
     const watermarkOpacized = await sharp(watermarkPath)
       .composite([
         {

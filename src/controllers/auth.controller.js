@@ -815,6 +815,15 @@ const revoke = async (req, res, next) => {
       }
     }
 
+    // avoid deleting administrator user
+    const protectedEmail = config.email.administration.to;
+    const admin = await User.findOne({ email: protectedEmail });
+    if (String(admin._id) === String(userId)) {
+      return res.status(403).json({
+        message: req.t("Revocation request includes the protected admin user and cannot be processed")
+      });
+    }
+    
     const user = await User.findById(userId);
     if (!user) {
       return nextError(next, req.t("User not found"), 404);

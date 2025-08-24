@@ -489,7 +489,8 @@ const configBase = {
         images: {
           minHeight: 300,
           watermark: {
-            path: "assets/images/watermark.png",
+            //path: "assets/images/watermark.png",
+            path: "public/assets/images/Watermark.png",
             percentWidth: 33,
             percentOpacity: 12,
             contrast: 1.5,

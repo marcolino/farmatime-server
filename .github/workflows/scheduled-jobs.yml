@@ -1,0 +1,23 @@
+name: Scheduled Jobs
+
+env: # Global constants for all jobs/steps
+  JOB_RUNNER_URL_STAGING: https://medicare-staging.fly.dev/api/internal/runJobs
+  JOB_RUNNER_URL_PROD: https://medicare-prod.fly.dev/api/internal/runJobs
+  JOB_RUNNER_VERB: POST
+  WORKER_KEY: ${{ secrets.WORKER_KEY }}
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # every day at 07:00 UTC
+  workflow_dispatch: # allow manual trigger
+
+jobs:
+  run-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call medicare-staging job runner
+        run: |
+          curl -X "$JOB_RUNNER_VERB" "$JOB_RUNNER_URL_STAGING" -H "x-worker-key: $WORKER_KEY"
+      - name: Call medicare-prod job runner
+        run: |
+          curl -X "$JOB_RUNNER_VERB" "$JOB_RUNNER_URL_PROD" -H "x-worker-key: $WORKER_KEY"

@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import globals from "globals";
+import * as espree from "espree";
 
 export default [
   { 
@@ -8,8 +9,9 @@ export default [
   {
     files: ["**/*.js"],
     languageOptions: {
-      ecmaVersion: "latest",
+      ecmaVersion: 2024,
       sourceType: "commonjs",
+      parser: espree,
       globals: {
         ...globals.node
       }

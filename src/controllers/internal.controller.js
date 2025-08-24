@@ -88,14 +88,14 @@ const runJobs = async (req, res, next) => {
           const lastDate = new Date(medicine.fieldLastDate ?? "1970-01-01"); // default to a very old date if not set
           const frequencyDays = parseInt(medicine.fieldFrequency);
 
-          if (sinceDate > nowDate) {
+          if (sinceDate.yyyymmdd() > nowDate.yyyymmdd()) {
             logger.info(`    medicine ${medicine.id} should not yet be requested (since ${sinceDate.yyyymmdd()}), skipping it`);
             continue;
           }
 
           const nextDate = lastDate.addDays(frequencyDays);
           //logger.info(`    medicine nextDate is ${nextDate.yyyymmdd()}`); // ...
-          if (nextDate > nowDate) {
+          if (nextDate.yyyymmdd() > nowDate.yyyymmdd()) {
             logger.info(`    medicine ${medicine.id} is not due yet (next ${nextDate.yyyymmdd()}), skipping it`);
             continue;
           }
@@ -128,7 +128,6 @@ const runJobs = async (req, res, next) => {
           });
           try {
             const result = await updateUserJobsDataInternal(req.user._id, jobsDataNew);
-        
             if (result.error) {
               return res.status(result.status).json({
                 error: true,
@@ -136,8 +135,8 @@ const runJobs = async (req, res, next) => {
               });
             }
             logger.info("    updated medicine last date");
-          } catch (err) {
-            return nextError(next, req.t("Error updating user job data: {{err}}", { err: err.message }), 500, err.stack);
+          } catch (err) { // this error is very important, we could end up sending requests more frequently than requested!!!
+            return nextError(next, req.t("Error updating user job data: {{err}} !!!", { err: err.message }), 500, err.stack);
           }
           // const updateResult = await updateUserJobsData(req, {
           //   "userId": user._id,
