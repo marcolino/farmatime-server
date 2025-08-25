@@ -3,7 +3,7 @@ const path = require("path");
 const Brevo = require("sib-api-v3-sdk");
 const ejs = require("ejs");
 const { inline } = require("@css-inline/css-inline");
-const User = require("../models/user.model");
+//const User = require("../models/user.model");
 const NotificationToken = require("../models/notificationToken.model");
 const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
@@ -82,10 +82,12 @@ class EmailService {
           email: params.from,
           name: params.fromName,
         },
-        replyTo: {
-          email: params.replyTo,
-          name: params.replyToName,
-        },
+        ...(params.replyTo ? {
+          replyTo: {
+            email: params.replyTo,
+            name: params.replyToName,
+          },
+        } : {}),
         subject: params.subject,
         htmlContent,
       };
