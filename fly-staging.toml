@@ -12,7 +12,7 @@ primary_region = 'cdg'
   min_machines_running = 0
   processes = ['app']
 
-# THIS IS NOT WORKING YES
+# THIS IS NOT WORKING
 #[[jobs]]
 #  command = ['node', 'worker.js']
 #  schedule = '0 8 * * *' # every day at 8 AM o'clock
@@ -31,15 +31,15 @@ primary_region = 'cdg'
   source = 'products_staging'
   destination = '/app/public/assets/products'
 
-# Worker process (does not expose HTTP)
-[processes]
-  app = "yarn start"
-  worker = "node worker.js"
+## Worker process (does not expose HTTP)
+#[processes]
+#  app = "yarn start"
+#  worker = "node worker.js"
 
 #[[machines]]
 #  name = "worker"
 #  count = 1
 
-[[machines]]
-  processes = ["worker"] # dedicate a machine for worker
-  count = 1
+#[[machines]]
+#  processes = ["worker"] # dedicate a machine for worker
+#  count = 1

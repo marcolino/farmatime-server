@@ -2,7 +2,7 @@
   "ignoreUnresolved": [],
   "ignoreUnused": [
     "stripe",
-    "node-cron", "// used in worker.js"
+    //"node-cron", "// used in worker.js"
   ],
   "ignoreUnimported": [
     "src/gateways/Abstract.payment.gateway.js",
