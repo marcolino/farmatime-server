@@ -9,7 +9,7 @@ env: # Global constants for all jobs/steps
 on:
   schedule:
     - cron: "*/30 * * * *" # DEBUG ONLY
-    - cron: "0 7 * * *" # every day at 07:00 UTC
+#    - cron: "0 7 * * *" # every day at 07:00 UTC
   workflow_dispatch: # allow manual trigger
 
 jobs:

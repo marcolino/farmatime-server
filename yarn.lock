@@ -1439,7 +1439,6 @@ __metadata:
     mongoose: "npm:7.8.6"
     morgan: "npm:^1.10.0"
     multer: "npm:^1.4.5-lts.1"
-    node-cron: "npm:^4.2.1"
     node-fetch: "npm:2"
     nodemon: "npm:^2.0.15"
     nyc: "npm:^17.1.0"
@@ -5942,13 +5941,6 @@ __metadata:
   version: 0.6.4
   resolution: "negotiator@npm:0.6.4"
   checksum: 10/d98c04a136583afd055746168f1067d58ce4bfe6e4c73ca1d339567f81ea1f7e665b5bd1e81f4771c67b6c2ea89b21cb2adaea2b16058c7dc31317778f931dab
-  languageName: node
-  linkType: hard
-
-"node-cron@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "node-cron@npm:4.2.1"
-  checksum: 10/7550b105e4aab772597383e24c4b31b6d5dc9604c96bcefb1a4b8a94a432b8835e3010a0dfc1d34492edfb64a2e55f334cf3ad0a76901b72de11ef506cbfd31a
   languageName: node
   linkType: hard
 
