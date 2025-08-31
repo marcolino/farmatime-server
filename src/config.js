@@ -81,6 +81,7 @@ const configBase = {
       "GET",
       "POST",
     ],
+    localTimezone: "Europe/Rome",
   },
   db: {
     debug: false, // to debug database queries
@@ -419,8 +420,9 @@ const configBase = {
       // regardless of where the manifest.json is located, use: "start_url": "/";
       // if instead PWA is within a subdirectory (https://example.com/app), and it starts from that subdirectory,
       // use: "start_url": "/app"
-      startUrl: "./", // start_url value in manifest
-      display: "standalone", // display value in manifest
+      startUrl: "/pwa/", // manifest start_url
+      scope: "/pwa", // manifest scope
+      display: "standalone", // manifest display mode
     },
     currency,
     currencies,

@@ -7,37 +7,49 @@ const session = require("express-session");
 const MemoryStore = require("memorystore")(session);
 const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 module.exports = (app) => {
-  // Facebook OAuth Strategy
-  passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_OAUTH_CLIENT_ID,
-    clientSecret: process.env.FACEBOOK_OAUTH_SECRET_KEY,
-    callbackURL: `${config.baseUrl}/api/auth/facebook/callback`,
-    profileFields: ["id", "displayName", "email"], // request email and profile info
-  }, (accessToken, refreshToken, profile, done) => { // Facebook profile data is returned here
-    return done(null, profile);
-  }));
+  // Google OAuth Strategies (differentiate among web and pwa to avoid bad interferences)
+  const setupGoogleStrategy = (flow = "web") => {
+    passport.use(`google-${flow}`, new GoogleStrategy({
+      clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      //passReqToCallback: true,
+      callbackURL: `${config.baseUrl}/api/auth/google/callback/${flow}`,
+      proxy: true, // important for services like fly.io
+      profileFields: ["id", "displayName", "email"]
+      // TODO: remove accessToken, refreshToken below ?
+    }, (accessToken, refreshToken, profile, done) => { // Google profile data is returned here
+      logger.info(`Google Auth ${flow} Callback in Passport: accessToken:`, accessToken);
+      logger.info(`Google Auth ${flow} Callback in Passport: refreshToken:`, refreshToken);
+      logger.info(`Google Auth ${flow} Callback in Passport: profile:`, profile, profile?._json);
+      return done(null, profile);
+    }));
+  };
 
-  // Google OAuth Strategy
-  passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-    callbackURL: `${config.baseUrl}/api/auth/google/callback`,
+  // Facebook OAuth Strategies (differentiate among web and pwa to avoid bad interferences)
+  const setupFacebookStrategy = (flow = "web") => {
+    passport.use(new FacebookStrategy({
+      clientID: process.env.FACEBOOK_OAUTH_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_OAUTH_SECRET_KEY,
+      callbackURL: `${config.baseUrl}/api/auth/facebook/callback/${flow}`,
+      profileFields: ["id", "displayName", "email"], // request email and profile info
+      // TODO: remove accessToken, refreshToken below ?
+    }, (accessToken, refreshToken, profile, done) => { // Facebook profile data is returned here
+      logger.info(`Facebook Auth ${flow} Callback in Passport: accessToken:`, accessToken);
+      logger.info(`Facebook Auth ${flow} Callback in Passport: refreshToken:`, refreshToken);
+      logger.info(`Facebook Auth ${flow} Callback in Passport: profile:`, profile, profile?._json);
+      return done(null, profile);
+    }));
+  };
 
-    //passReqToCallback: true,
-    proxy: true, // important for services like fly.io
-    profileFields: ["id", "displayName", "email"]
-
-  }, (accessToken, refreshToken, profile, done) => { // Google profile data is returned here
-    console.log("Google Auth Callback in Passport:", { // eslint-disable-line no-console
-      profile: profile?._json,
-      baseUrl: config.baseUrl,
-      env: process.env.NODE_ENV
-    });
-    return done(null, profile);
-  }));
+  setupGoogleStrategy("web");
+  setupGoogleStrategy("pwa");
+  
+  setupFacebookStrategy("web");
+  setupFacebookStrategy("pwa");
 
   // serialize user for session management
   passport.serializeUser((user, done) => {

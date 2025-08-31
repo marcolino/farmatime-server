@@ -46,8 +46,8 @@
     "fly-deploy-production": "fly deploy -c 'fly-production.toml'",
     "fly-logs-staging": "flyctl logs -a medicare-staging",
     "fly-scale-1-worker-staging_DISABLED": "fly scale count worker=1 -a medicare-staging",
-    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging",
-    "pub": "NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production"
+    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging; date",
+    "pub": "NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production; date"
   },
   "keywords": [
     "node.js",
@@ -67,6 +67,8 @@
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "email-validator": "^2.0.4",

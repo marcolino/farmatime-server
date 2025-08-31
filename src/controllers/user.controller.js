@@ -283,9 +283,9 @@ const updateUserJobsDataInternal = async (userId, jobsData) => {
   }
 
   // In development mode, store unencrypted jobs data, to debug in an easier way
-  if (config.mode.development) {
-    user.jobsDataCLEAN = jobsData;
-  }
+  //if (config.mode.development) { TODO: enable if () when production is working!!!!!!!!!!!!!!!!!!!!!!
+  user.jobsDataCLEAN = jobsData;
+  //}
 
   // Encrypt job with encryptionKey
   const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);

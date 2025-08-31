@@ -7,6 +7,7 @@ const User = require("../models/user.model");
 const Role = require("../models/role.model");
 const AccessToken = require("../models/accessToken.model");
 const RefreshToken = require("../models/refreshToken.model");
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 
@@ -350,7 +351,7 @@ const secureStack = (stack) => {
  * next: {function} next function to be called
  * message: {string} error message, already translated
  * status: {integer} error status
- * stack: {string} error stack
+ * stack: {string} error stackpassport.
  * 
  * return: nothing, next() function is called with an error object
  */
@@ -361,23 +362,32 @@ const nextError = (next, message, status, stack) => {
   return next(error);
 };
 
-const redirectToClientWithSuccess = (req, res, payload) => {
-  return redirectToClient(req, res, true, payload);
+const redirectToClientWithSuccess = (req, res, payload, options = {}) => {
+  return redirectToClient(req, res, true, payload, options);
 };
 
 const redirectToClientWithError = (req, res, payload) => {
   return redirectToClient(req, res, false, payload);
 };
 
-const redirectToClient = (req, res, success, payload) => {
+const redirectToClient = (req, res, success, payload/*, options = {}*/) => {
+  // logger.info(`redirectToClient - success: ${success}`);
+  // logger.info(`redirectToClient - payload: ${JSON.stringify(payload)}`);
+  // logger.info(`redirectToClient - options: ${JSON.stringify(options)}`);
+  // const flow = options?.flow || "web";
+
+  logger.info(`redirectToClient - config.baseUrlClient ${config.baseUrlClient}`);
+  const baseUrl = `${config.baseUrlClient}`;
+  // logger.info(`redirectToClient - config.baseUrlClient ${config.baseUrlClient}`);
+  
   const url = new URL(
     success ?
-      `${config.baseUrlClient}/social-signin-success` :
-      `${config.baseUrlClient}/social-signin-error`
+      `${baseUrl}/social-signin-success` :
+      `${baseUrl}/social-signin-error`
   );
-  const stringifiedPayload = JSON.stringify(payload);
-  url.searchParams.set("data", stringifiedPayload);
-  //console.log(`redirecting to client url ${url.href }`);
+
+  url.searchParams.set("data", JSON.stringify(payload));
+  logger.info(`redirectToClient() - redirecting to client url ${url.href} with success: ${success}`);
   res.redirect(url);
 };
 

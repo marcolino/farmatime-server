@@ -3,13 +3,15 @@ const stream = require("stream");
 const { Logtail } = require("@logtail/node");
 const { LogtailTransport } = require("@logtail/winston");
 const { decode } = require("html-entities");
+const { formatInTimeZone } = require("date-fns-tz");
 const config = require("../config");
-
 
 let logger = null, logtail;
 const transports = [];
 const exceptionHandlers = [];
 const colorize = true;
+const timestampFormat = "yyyy-MM-dd HH:mm:ssXXX";
+
 if (!config.mode.test) {
   logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
 }
@@ -21,7 +23,7 @@ class LogtailStream extends stream.Writable {
   }
 
   _write(info, encoding, callback) {
-    const { level, message/*, ...rest*/ } = info;
+    const { level, message } = info;
     const splatSymbol = Object.getOwnPropertySymbols(info).find(
       (sym) => sym.toString() === "Symbol(splat)"
     );
@@ -34,35 +36,45 @@ class LogtailStream extends stream.Writable {
         .join(" ")}`;
     }
 
-    // decode any encoded characters
     logMessage = decode(logMessage);
 
     this.logtail
       .log(logMessage, null)
       .then(() => callback())
-      .catch(callback)
-    ;
+      .catch(callback);
   }
 }
 
-const formatWithArgs = winston.format.combine(
-  winston.format.colorize(), // enable colorization
-  winston.format.timestamp(),
-  winston.format.printf((info) => {
-    const { timestamp, level, message/*, ...meta*/ } = info;
+const isString = (x) => (typeof x === "string" || x instanceof String);
 
-    // extract additional arguments from Symbol(splat)
-    const splatSymbol = Object.getOwnPropertySymbols(info).find((sym) => sym.toString() === "Symbol(splat)");
+// Local TZ formatter
+const timestampLocal = winston.format.timestamp({
+  format: () =>
+    formatInTimeZone(new Date(), config.api.localTimezone, timestampFormat),
+});
+
+// UTC formatter (for Logtail)
+const timestampUTC = winston.format.timestamp({
+  format: () => new Date().toISOString(),
+});
+
+// ✅ Shared Rome format for console & file
+const formatWithArgsRome = winston.format.combine(
+  winston.format.colorize(),
+  timestampLocal,
+  winston.format.printf((info) => {
+    const { timestamp, level, message } = info;
+    const splatSymbol = Object.getOwnPropertySymbols(info).find(
+      (sym) => sym.toString() === "Symbol(splat)"
+    );
     const splatArgs = splatSymbol ? info[splatSymbol] : [];
 
-    // combine meta and splatArgs into a clean array or object
-    const extraArgs = splatArgs.length ? splatArgs : undefined;
-
-    // build the log output
     let logOutput = `${level}: ${timestamp} ${message}`;
-    if (extraArgs) {
-      extraArgs.forEach(extraArg => {
-        logOutput += ` ${isString(extraArg) ? extraArg : JSON.stringify(extraArg)}`;
+    if (splatArgs.length) {
+      splatArgs.forEach((extraArg) => {
+        logOutput += ` ${
+          isString(extraArg) ? extraArg : JSON.stringify(extraArg)
+        }`;
       });
     }
 
@@ -70,42 +82,41 @@ const formatWithArgs = winston.format.combine(
   })
 );
 
-const isString = (x) => {
-  return (typeof x === "string" || x instanceof String);
-};
-
-
 try {
+  // File logs → Local TZ
   transports.push(
     new winston.transports.File({ // File transport
       filename: config.logs.file.name,
-      format: formatWithArgs,
+      format: formatWithArgsRome,
       level: config.logs.levelMap.development,
       handleExceptions: true,
       maxsize: config.logs.file.maxsize,
-    }),
+    })
   );
+
+  // Console logs → Local TZ
   transports.push(
-    new winston.transports.Console({
-      format: formatWithArgs,
-      //level: config.logs.levelMap.development,
+    new winston.transports.Console({ // Console transport
+      format: formatWithArgsRome,
       level: config.mode.test ? config.logs.levelMap.test : "debug",
-      // level: // order matters: if production, staging can be true or false
-      //   config.mode.staging ? config.logs.levelMap.staging :
-      //   config.mode.production ? config.logs.levelMap.production : // eslint-disable-line indent
-      //   config.mode.development ? config.logs.levelMap.development : // eslint-disable-line indent
-      //   config.mode.test ? config.logs.levelMap.test : // eslint-disable-line indent
-      //   "debug", // eslint-disable-line indent
       handleExceptions: true,
       colorize,
     })
   );
+
+  // Logtail logs → UTC
   if (!config.mode.test) {
     transports.push(
-      new winston.transports.Stream({ // BetterStack transport stream
+      new winston.transports.Stream({ // Logtail stream transport
         stream: new LogtailStream(logtail),
-        format: formatWithArgs,
+        format: winston.format.combine(timestampUTC, winston.format.json()),
         level: config.logs.levelMap.development,
+        // level: // order matters: if production, staging can be true or false
+        // config.mode.staging ? config.logs.levelMap.staging :
+        // config.mode.production ? config.logs.levelMap.production : // eslint-disable-line indent
+        // config.mode.development ? config.logs.levelMap.development : // eslint-disable-line indent
+        // config.mode.test ? config.logs.levelMap.test : // eslint-disable-line indent
+        // "debug", // eslint-disable-line indent
         handleExceptions: true,
         colorize,
       })
@@ -115,24 +126,21 @@ try {
   throw new Error(`Winston transports creation error: ${err}`);
 }
 
-exceptionHandlers.push(new winston.transports.File({ filename: config.logs.file.name }));
-/* istanbul ignore next */
+exceptionHandlers.push(
+  new winston.transports.File({ filename: config.logs.file.name })
+);
 if (!config.mode.test) {
   exceptionHandlers.push(new LogtailTransport(logtail));
 }
 
 logger = winston.createLogger({
-  level: "debug", // default log level for transports that don’t override it
-  format: winston.format.combine( // default format for transports that don’t override it
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
+  level: "debug",
+  format: winston.format.combine(timestampLocal, winston.format.json()), // default Rome for local
   transports,
   exceptionHandlers,
 });
 
 module.exports = { logger };
-
-if (config.mode.test) { // export LogtailStream class only while testing, to ease tests
+if (config.mode.test) {
   module.exports.LogtailStream = LogtailStream;
 }

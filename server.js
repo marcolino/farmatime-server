@@ -211,7 +211,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next
   Mode: ${process.env.NODE_ENV}
   IP: ${remoteAddress(req)}
   Date: ${localeDateTime()}
-  Stack: ${secureStack(err.stack)}
+  Stack: ${err.stack}
 </pre>`,
     }).catch(auditError => {
       logger.error("Audit failed:", auditError);

@@ -25,31 +25,53 @@ const config = require("../config");
 
 // Google OAuth login
 const googleLogin = (req, res, next) => {
-  //console.log("googleLogin");
-  const rememberMe = req.parameters.rememberMe || false;
-  const state = JSON.stringify({ rememberMe }); // encode it as a string
-  passport.authenticate("google", {
+  logger.info("googleLogin flow params", req.params);
+
+  const flow = req.params.flow || 'web'; // 'web' or 'pwa'
+  const rememberMe = req.params.rememberMe || false;
+
+  logger.info("callbackURL:", `${config.baseUrl}/api/auth/google/callback/${flow}`);
+
+  const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
+  passport.authenticate(`google-${flow}`, {
     scope: config.app.oauth.scope.google,
-    state, // pass the state
+    state,
+    callbackURL: `${config.baseUrl}/api/auth/google/callback/${flow}`,
   })(req, res, next);
 };
 
 // Google OAuth callback
 const googleCallback = (req, res, next) => {
-  const state = req.query.state ? JSON.parse(req.query.state) : {};
-  //console.log("GOOGLE STATE:", state);
-  req.parameters.rememberMe = state.rememberMe || false; // put rememberMe flag in req parameters
+  // logger.info("googleCallback - GOOGLE PARAMETERS:", req.parameters);
+  const flow = req.parameters?.state?.flow || "web"; // get flow
+  const rememberMe =  req.parameters?.state?.rememberMe || false; // get rememberMe flag
+  // logger.info("googleCallback - flow:", flow);
+  // logger.info("googleCallback - rememberMe:", rememberMe);
 
-  passport.authenticate("google", { failureRedirect: "/" }, (err, profile) => {
+  passport.authenticate(`google-${flow}`, { failureRedirect: "/" }, (err, profile) => {
+    //err = new Error("BOOH ERROR");
     if (err) {
       logger.error("Google authentication error:", err);
-      return next(err); // handle error
+      return redirectToClientWithError(req, res, { message: req.t("Google authentication error: {{err}}", { err }) });
     }
+    
+    req.parameters.rememberMe = rememberMe;
+    req.parameters.flow = flow;
+    
     //logger.info("User logged in with Google social OAuth:", profile);
     const userSocial = {};
     userSocial.socialId = `${profile?.provider}:${profile?.id}`;
     userSocial.provider = profile?.provider;
-    userSocial.email = profile?.emails?.find(email => email.verified)?.value; // get first verified email
+
+    // Handle no email returned case
+    if (userSocial.emails?.length === 0) {
+      err = new Error(req.t("No email found, please log in with a different method"));
+      return redirectToClientWithError(req, res, { message: req.t("Google authentication error: {{err}}", { err }) });
+    }
+    userSocial.email = (
+      profile?.emails?.find(email => email.verified)?.value ??
+      profile?.emails[0]?.value
+    ); // get first verified email, if any, or the first email otherwise
     userSocial.firstName = profile?.name?.givenName;
     userSocial.lastName = profile?.name?.familyName;
     if (profile.photos) {
@@ -62,21 +84,70 @@ const googleCallback = (req, res, next) => {
 
 // Facebook OAuth login
 const facebookLogin = (req, res, next) => {
-  //console.log("facebookLogin");
-  const rememberMe = req.parameters.rememberMe || false;
-  const state = JSON.stringify({ rememberMe }); // encode it as a string
-  passport.authenticate("facebook", {
+  logger.info("facebookLogin flow params", req.params);
+
+  const flow = req.params.flow || 'web'; // 'web' or 'pwa'
+  const rememberMe = req.params.rememberMe || false;
+
+  const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
+  passport.authenticate(`facebook-${flow}`, {
     scope: config.app.oauth.scope.facebook,
-    state, // pass the state
+    state,
+    callbackURL: `${config.baseUrl}/api/auth/facebook/callback/${flow}`,
   })(req, res, next);
+
+  // //console.log("facebookLogin");
+  // const rememberMe = req.parameters.rememberMe || false;
+  // const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
+  // passport.authenticate("facebook", {
+  //   scope: config.app.oauth.scope.facebook,
+  //   state, // pass the state
+  // })(req, res, next);
 };
 
 // Facebook OAuth callback
 const facebookCallback = (req, res, next) => {
-  const state = req.query.state ? JSON.parse(req.query.state) : {};
-  //console.log("FACEBOOK STATE:", state);
-  req.parameters.rememberMe = state.rememberMe || false; // put rememberMe flag in req parameters
+  // logger.info("facebookCallback - FACEBOOK PARAMETERS:", req.parameters);
+  const flow = req.parameters?.state?.flow || "web"; // get flow
+  const rememberMe = req.parameters?.state?.rememberMe || false; // get rememberMe flag
   
+  // const state = req.query.state ? JSON.parse(req.query.state) : {};
+  // //console.log("FACEBOOK STATE:", state);
+  // req.parameters.rememberMe = state.rememberMe || false; // put rememberMe flag in req parameters
+  
+  passport.authenticate(`facebook-${flow}`, { failureRedirect: "/" }, (err, profile) => {
+    //err = new Error("BOOH ERROR");
+    if (err) {
+      logger.error("Facebook authentication error:", err);
+      return redirectToClientWithError(req, res, { message: req.t("Facebook authentication error: {{err}}", { err }) });
+    }
+
+    req.parameters.rememberMe = rememberMe;
+    req.parameters.flow = flow;
+
+    //logger.info("User logged in with Facebook social OAuth:", profile);
+    const userSocial = {};
+    userSocial.socialId = `${profile?.provider}:${profile?.id}`;
+    userSocial.provider = profile?.provider;
+
+    // Handle no email returned case
+    if (userSocial.emails?.length === 0) {
+      err = new Error(req.t("No email found, please log in with a different method"));
+      return redirectToClientWithError(req, res, { message: req.t("Google authentication error: {{err}}", { err }) });
+    }
+    userSocial.email = (
+      profile?.emails?.find(email => email.verified)?.value ??
+      profile?.emails[0]?.value
+    ); // get first verified email, if any, or the first email otherwise
+    userSocial.firstName = profile?.name?.givenName;
+    userSocial.lastName = profile?.name?.familyName;
+    if (profile.photos) {
+      userSocial.photo = profile.photos[0]?.value; // use only the first photo, if any
+    }
+    req.userSocial = userSocial;
+    return socialLogin(req, res, next);
+  })(req, res, next);
+  /*
   passport.authenticate("facebook", { failureRedirect: "/" }, (err, profile) => {
     if (err) {
       logger.error(`Facebook authentication error: ${err}`);
@@ -86,7 +157,10 @@ const facebookCallback = (req, res, next) => {
     const userSocial = {};
     userSocial.socialId = `${profile?.provider}:${profile?.id}`;
     userSocial.provider = profile?.provider;
-    userSocial.email = profile?.emails?.find(email => email.verified)?.value; // get first verified email
+    userSocial.email = (
+      profile?.emails?.find(email => email.verified)?.value ??
+      profile?.emails[0]?.value
+    ); // get first verified email, if any, or the first email otherwise
     userSocial.firstName = profile?.name?.givenName;
     userSocial.lastName = profile?.name?.familyName;
     if (profile.photos) {
@@ -96,11 +170,12 @@ const facebookCallback = (req, res, next) => {
     //console.log("User social (facebook):", userSocial);
     return socialLogin(req, res, next);
   })(req, res, next);
+  */
 };
 
 const socialLogin = async (req, res, next) => {
   if (!req?.userSocial) {
-    await logger.error("Social authentication incomplete");
+    logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
   }
 
@@ -110,6 +185,7 @@ const socialLogin = async (req, res, next) => {
 
   // check if a user with the given email exists already
   let user, plan, role;
+  logger.info("Checking if user exists:", req.userSocial.email);
   try {
     user = await User.findOne(
       { email: req.userSocial.email },
@@ -129,6 +205,7 @@ const socialLogin = async (req, res, next) => {
   }
   
   if (user) { // a user with given email exists already
+    logger.info("User found:", user);
     // check user is deleted
     if (user.isDeleted) { // we just force user's rebirth
       user.deleted = false;
@@ -151,6 +228,7 @@ const socialLogin = async (req, res, next) => {
       }); 
     } 
   } else { // user with given email does not exist, create a new one
+    logger.info("User not found, creating a new one:", req.userSocial.email);
     // get the role
     try {
       role = await Role.findOne({ name: roleName });
@@ -193,6 +271,7 @@ const socialLogin = async (req, res, next) => {
         isVerified: true, // socially registered user is verified automatically
         isDeleted: false, // socially registered user can't be deleted
       });
+      logger.info("New user created:", user);
       if (!user) {
         return redirectToClientWithError(req, res, {
           message: req.t("No user created")
@@ -209,6 +288,13 @@ const socialLogin = async (req, res, next) => {
   logger.info(`User social login email: ${user?.email}`);
   audit({ req, mode: "action", subject: `User social sign in`, htmlContent: `Social sign in with (${req.userSocial.provider}) provider of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
 
+  // decrypt jobs data, if present
+  let jobsData;
+  if (user.jobsData) {
+    jobsData = await decryptData(user.jobsData, user.encryptionKey);
+    logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobsData.jobs.length} jobs to process`);
+  }
+
   const payload = {
     id: user._id,
     email: user.email,
@@ -218,6 +304,7 @@ const socialLogin = async (req, res, next) => {
     plan: user.plan,
     deleted: user.deleted,
     justRegistered: user.justRegistered,
+    jobsData,
   };
 
   // create tokens ad add them to request cookie
@@ -240,6 +327,7 @@ const socialLogin = async (req, res, next) => {
     try {
       user.encryptionKey = encryptionKey;
       await user.save();
+      logger.info("New user with tokens, cookies and encryptionKey saved:", user);
     } catch (err) {
       return redirectToClientWithError(req, res, { message: req.t("Error saving encryption key: {{error}}", { error: err.message }) });
     }
@@ -247,7 +335,9 @@ const socialLogin = async (req, res, next) => {
     return redirectToClientWithError(req, res, { message: req.t("Error creating encryption key: {{error}}", { error: err.message }) });
   }
 
-  redirectToClientWithSuccess(req, res, payload); // redirect to the client after successful login
+  // redirect to the client after successful login
+  logger.info("socialLogin() Returning payload (flow is unused now):", JSON.stringify(payload) + ", flow:", req.parameters.flow);
+  redirectToClientWithSuccess(req, res, payload/*, { flow: req.parameters.flow }*/);
 };
 
 // social OAuth revoke
@@ -617,7 +707,7 @@ const signout = async (req, res, next) => {
     // }
     await signoutOperations(user.email, res);
 
-    return res.status(200).json({ message: req.t("Sign out successful") });
+    return res.status(200).json({ message: req.t("nd pwa flows") });
   } catch (err) {
     // User not found or other error
     if (err.message === "User not found") {
