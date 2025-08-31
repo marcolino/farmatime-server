@@ -31,7 +31,7 @@ const googleLogin = (req, res, next) => {
   const rememberMe = req.params.rememberMe || false;
 
   logger.info("callbackURL:", `${config.baseUrl}/api/auth/google/callback/${flow}`);
-
+  
   const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
   passport.authenticate(`google-${flow}`, {
     scope: config.app.oauth.scope.google,
@@ -707,7 +707,7 @@ const signout = async (req, res, next) => {
     // }
     await signoutOperations(user.email, res);
 
-    return res.status(200).json({ message: req.t("nd pwa flows") });
+    return res.status(200).json({ message: req.t("Sign out successful") });
   } catch (err) {
     // User not found or other error
     if (err.message === "User not found") {
