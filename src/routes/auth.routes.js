@@ -19,12 +19,10 @@ module.exports = function(app) {
   app.post(`${path}/resendResetPasswordCode`, controller.resendResetPasswordCode);
   //app.post(`${path}/refreshtoken`, controller.refreshToken);
   app.get(`${path}/google/:flow`, controller.googleLogin);
-  //app.get(`${path}/google/web`, controller.googleLogin);
-  //app.get(`${path}/google/pwa`, controller.googleLogin);
   app.get(`${path}/google/callback/web`, controller.googleCallback);
   app.get(`${path}/google/callback/pwa`, controller.googleCallback);
   app.post(`${path}/google/revoke`, controller.googleRevoke);
-  app.get(`${path}/facebook:flow`, controller.facebookLogin);
+  app.get(`${path}/facebook/:flow`, controller.facebookLogin);
   app.get(`${path}/facebook/callback/web`, controller.facebookCallback);
   app.get(`${path}/facebook/callback/pwa`, controller.facebookCallback);
   app.post(`${path}/facebook/revoke`, controller.facebookRevoke);

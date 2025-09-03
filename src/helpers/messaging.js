@@ -15,8 +15,8 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   // set "mode" symbol (dev/prod)
   const modeSymbol =
     config.mode.development ? "🚧" :
-      config.mode.production ? "🚀" :
-        config.mode.staging ? "🌐" :
+      config.mode.staging ? "🌐" :
+        config.mode.production ? "" : //"🚀" :
           "�"
     // eslint-disable-line indent -- unforeseen mode
   ;

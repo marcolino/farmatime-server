@@ -17,7 +17,7 @@
     "inject": "node scripts/inject.js",
     "run-worker_DISABLED": "node worker.js",
     "run-jobs": "curl -X POST http://localhost:5000/api/internal/runJobs",
-    "test": "NODE_ENV=test mocha --exit --timeout 10000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
+    "test": "NODE_ENV=test echo 'Running all tests'; mocha --exit --timeout 5000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
     "test-verbose": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail test/",
     "test:coverage": "nyc yarn test",
     "test:coverage:differential": "cat ./test/tmp/auth.controller.coverage; yarn test:coverage | grep auth.controller | tee -a ./test/tmp/auth.controller.coverage",
@@ -45,9 +45,10 @@
     "fly-deploy-staging": "fly deploy -c 'fly-staging.toml'",
     "fly-deploy-production": "fly deploy -c 'fly-production.toml'",
     "fly-logs-staging": "flyctl logs -a medicare-staging",
+    "fly-logs-production": "flyctl logs -a medicare-prod",
     "fly-scale-1-worker-staging_DISABLED": "fly scale count worker=1 -a medicare-staging",
-    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging; date",
-    "pub": "NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production; date"
+    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging && date",
+    "pub": "NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production && date"
   },
   "keywords": [
     "node.js",
@@ -101,10 +102,13 @@
       "built": false
     }
   },
+  "overrides": {
+    "typescript": "$typescript"
+  },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
-    "@typescript-eslint/eslint-plugin": "^8.35.0",
-    "@typescript-eslint/parser": "^8.35.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
     "chai": "4.3.7",
     "chai-spies": "^1.0.0",
     "eslint": "^9.19.0",
@@ -124,6 +128,7 @@
     "rewire": "^7.0.0",
     "sinon": "^20.0.0",
     "supertest": "^7.0.0",
+    "typescript": "5.3.3",
     "xml2js": "^0.6.2"
   },
   "DISABLED_packageManager": "yarn@4.6.0",

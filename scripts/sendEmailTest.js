@@ -51,7 +51,6 @@ sendSmtpEmail.htmlContent = `
 </html>
 `;
 
-console.log("sendSmtpEmail:", sendSmtpEmail);
 apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
   console.log("API called successfully. Returned data: " + JSON.stringify(data));
 }, function(error) {

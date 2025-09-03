@@ -134,7 +134,7 @@ describe("Stripe payment gateway", function () {
   
       try {
         const testGateway = new StripeGateway(config);
-        expect(() => testGateway.init()).to.throw(/Stripe API key not configured/);
+        expect(() => testGateway.init()).to.throw(/Chiave API di Stripe non configurata/);
       } finally {
         // restore original environment variable
         process.env.STRIPE_API_KEY_TEST = originalApiKey;

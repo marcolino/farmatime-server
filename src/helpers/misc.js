@@ -386,8 +386,8 @@ const redirectToClient = (req, res, success, payload/*, options = {}*/) => {
       `${baseUrl}/social-signin-error`
   );
 
+  logger.info(`redirectToClient() - redirecting to client url ${url.href}, appending data length of ${JSON.stringify(payload).length} with success: ${success}`);
   url.searchParams.set("data", JSON.stringify(payload));
-  logger.info(`redirectToClient() - redirecting to client url ${url.href} with success: ${success}`);
   res.redirect(url);
 };
 
@@ -421,12 +421,12 @@ const createTokensAndCookies = async (req, res, next, user) => {
     res.cookie("refreshToken", refreshToken, cookieOptions());
     const { exp: expA } = jwt.decode(accessToken);
     if (config.mode.development) {
-      console.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`); // eslint-disable-line no-console
+      logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
     }
     const { exp: expR } = jwt.decode(refreshToken);
-    if (config.mode.development) {
-      console.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`); // eslint-disable-line no-console
-    }
+    //if (config.mode.development) {
+    logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
+    //}
     return {
       accessToken,
       refreshToken,

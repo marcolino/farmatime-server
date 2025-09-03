@@ -101,6 +101,7 @@
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users)
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
 - review NOTES, clean it up...
+- complete socialRevoke in auth controller
 
 NEWFEATURE:
 - after social login, assign a default role to user ("user") ...

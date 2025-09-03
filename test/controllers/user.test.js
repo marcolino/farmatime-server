@@ -554,7 +554,7 @@ describe("User Controller", () => {
       countDocumentsStub.returns(countChain);
 
       await getUsers(req, res, next);
-      console.log("RES:", res);
+      //console.log("RES:", res);
 
       sinon.assert.calledWith(res.status, 200);
       // sinon.assert.calledWith(res.json, sinon.match({

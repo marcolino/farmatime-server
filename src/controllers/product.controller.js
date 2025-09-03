@@ -263,7 +263,7 @@ const uploadProductImage = async (req, res, next) => {
   //console.log(1);
   // we don't have req.parameters set in this endpoint because it' a multipart/form-data content-type
   if (!req.file) { // no image uploaded
-    res.status(400).json({ error: req.t("No image uploaded") });
+    return res.status(400).json({ error: req.t("No image uploaded") });
   }
   //console.log(2);
 

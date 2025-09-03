@@ -91,8 +91,8 @@ class EmailService {
         subject: params.subject,
         htmlContent,
       };
-      logger.info(`sendSmtpEmail:`, sendSmtpEmail);
-   
+      logger.info(`sendSmtpEmail:`, `to: ${sendSmtpEmail.to[0].email}, sender: ${sendSmtpEmail.sender.email}`, `subject: ${sendSmtpEmail.subject}`);
+
       // if requested in config.email.dryrun, skip real email send, just log sendSmtpEmail
       let response;
       if (config.email.dryrun) {

@@ -527,14 +527,14 @@ const configBase = {
     oauth: {
       scope: {
         google: ["profile", "email"],
-        facebook: ["email"],
+        facebook: ["profile", "email"],
       },
       responseType: "code",
       redirectSignIn: baseUrl,
       //redirectSignOut: baseUrl,
       federatedSigninProviders: [
         "Google",
-        "Facebook",
+        //"Facebook",
       ],
     },
     ecommerce: {
