@@ -386,7 +386,6 @@ const propertyValidate = async (req, value/*, product*/) => { // generic product
 };
 
 const propertyMdaCodeValidate = async (req, value/*, product*/) => { // validate and normalize mda code
-  // TODO: validate this code according to application specification
   if (value instanceof Error) { // TODO: implement meaningful checks, according to application specification
     return ["property is not valid"];
   }

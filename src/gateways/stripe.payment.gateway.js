@@ -20,33 +20,27 @@ class StripeGateway extends AbstractPaymentGateway {
   }
 
   init() {
-    //console.log(1);
     const apiKey = this.config.mode.stripelive ?
       process.env.STRIPE_API_KEY_LIVE :
       process.env.STRIPE_API_KEY_TEST
     ;
-    //console.log(2);
 
     if (!apiKey) {
-      //console.log(3);
       throw new Error(i18n.t("Stripe API key not configured for current environment"));
     }
 
-    //try { // TODO: re-enable try/catch, when understand how to test catch!
-    //console.log(4);
-    this.client = new Stripe(apiKey, {
-      apiVersion: "2023-08-16",
-      maxNetworkRetries: 2,
-      appInfo: {
-        name: config.app.api.name || "DefaultAPI",
-        version: String(config.app.api.version || "1.0.0"), // Ensure string
-      },
-    });
-    //console.log(5);
-    // } catch (err) {
-    //   //console.log(6);
-    //   throw new Error(i18n.t("Error initializing Stripe interface") + ": " + err.message);
-    // }
+    try { // (we have to understand how to test catch)
+      this.client = new Stripe(apiKey, {
+        apiVersion: "2023-08-16",
+        maxNetworkRetries: 2,
+        appInfo: {
+          name: config.app.api.name || "DefaultAPI",
+          version: String(config.app.api.version || "1.0.0"), // Ensure string
+        },
+      });
+    } catch (err) {
+      throw new Error(i18n.t("Error initializing Stripe interface") + ": " + err.message);
+    }
   }
 
   async createCheckoutSession(req, res, next) {

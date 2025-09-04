@@ -27,7 +27,7 @@ const config = require("../config");
 const googleLogin = (req, res, next) => {
   logger.info("googleLogin flow params", req.params);
   const flow = req.params.flow || 'web'; // 'web' or 'pwa'
-  const rememberMe = req.params.rememberMe || false;
+  const rememberMe = req.params.rememberMe ?? true; // assume a long lasting social session, by default...
   logger.info("googleLogin callbackURL: ", `${config.baseUrl}/api/auth/google/callback/${flow}`);
   const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
   passport.authenticate(`google-${flow}`, {
@@ -46,7 +46,7 @@ const googleCallback = (req, res, next) => {
     state = {}; // should not happen
   }
   const flow = state?.flow || "web"; // get flow
-  const rememberMe =  state?.rememberMe || false; // get rememberMe flag
+  const rememberMe =  state?.rememberMe || true; // assume a long lasting social session, by default...
   logger.info(">>> googleCallback() callbackURL:", `${config.baseUrl}/api/auth/google/callback/${flow}`);
   passport.authenticate(`google-${flow}`, {
     failureRedirect: "/",
@@ -90,7 +90,7 @@ const googleCallback = (req, res, next) => {
 const facebookLogin = (req, res, next) => {
   logger.info("facebookLogin flow params", req.params);
   const flow = req.params.flow || 'web'; // 'web' or 'pwa'
-  const rememberMe = req.params.rememberMe || false;
+  const rememberMe = req.params.rememberMe || true; // assume a long lasting social session, by default...
   logger.info("facebookLogin callbackURL: ", `${config.baseUrl}/api/auth/facebook/callback/${flow}`);
   const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
   passport.authenticate(`facebook-${flow}`, {
@@ -109,7 +109,7 @@ const facebookCallback = (req, res, next) => {
     state = {}; // should not happen
   }
   const flow = state?.flow || "web"; // get flow
-  const rememberMe =  state?.rememberMe || false; // get rememberMe flag
+  const rememberMe = state?.rememberMe || true; // assume a long lasting social session, by default...
   logger.info("facebookCallback callbackURL:", `${config.baseUrl}/api/auth/facebook/callback/${flow}`);
   passport.authenticate(`facebook-${flow}`, {
     failureRedirect: "/",
@@ -261,8 +261,6 @@ const socialLogin = async (req, res, next) => {
     }
   }
 
-  logger.info("User jobsData 2:", user.jobsData);
-
   // audit social logins
   logger.info(`User social login email: ${user?.email}`);
   audit({ req, mode: "action", subject: `User social sign in`, htmlContent: `Social sign in with (${req.userSocial.provider}) provider of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
@@ -271,7 +269,6 @@ const socialLogin = async (req, res, next) => {
   let jobsData;
   if (user.jobsData) {
     jobsData = await decryptData(user.jobsData, user.encryptionKey);
-  logger.info("jobsData 3:", user.jobsData);
     logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobsData.jobs.length} jobs to process`);
   }
 
@@ -317,22 +314,24 @@ const socialLogin = async (req, res, next) => {
 
   // redirect to the client after successful login
   logger.info("socialLogin() Returning payload length:", JSON.stringify(payload).length);
-  redirectToClientWithSuccess(req, res, payload/*, { flow: req.parameters.flow }*/);
+  redirectToClientWithSuccess(req, res, payload);
 };
 
 // social OAuth revoke
 const socialRevoke = async (req, res, _next) => {
   logger.log("socialRevoke");
 
-  // TODO: check the providers give these data
-  const { userId, provider, issuedAt/*, appId, */ } = req.body;
+  /**
+   * TODO:
+   * 1. check all the providers pass these data: { userId, provider, issuedAt, appId }
+   * 2. verify the authenticity of the request
+   * 3. update your database to reflect that the user has revoked access
+   * 4. perform any cleanup necessary for your application
+   */
+
+  const { userId, provider, issuedAt, appId } = req.body;
   
-  // TODO:
-  // 1. verify the authenticity of the request
-  // 2. update your database to reflect that the user has revoked access
-  // 3. perform any cleanup necessary for your application
-  
-  logger.log(`Access revoked for provider ${provider}, user ${userId} at ${issuedAt}`);
+  logger.log(`Access revoked for provider ${provider}, app {${appId}, user ${userId} at ${issuedAt}`);
 
   return res.status(200).json({
     message: `Revocation notification received from provider ${provider} for user id ${userId}`
@@ -366,7 +365,6 @@ const signup = async (req, res, next) => {
   try {
     role = await Role.findOne({ name: roleName });
   } catch (err) {
-    //logger.error(`Error finding role ${roleName}: ${err}`); // TODO: remove all these logger.error...
     return nextError(next, req.t("Error finding role {{roleName}}: {{err}}", { roleName, err: err.message }), 500, err.stack);
   }
   if (!role) {
@@ -393,7 +391,7 @@ const signup = async (req, res, next) => {
     plan: plan._id,
   });
 
-  // create user's encryption key and save it - TODO: move this to signup...
+  // create user's encryption key and save it
   try {
     const encryptionKey = await createEncryptionKey(user);
     user.encryptionKey = encryptionKey;
@@ -631,37 +629,6 @@ const signin = async (req, res, next) => {
     return nextError(next, req.t("Error finding user in signin request: {{err}}", { err: err.message }), 500, err.stack);
   } 
 };
-
-// const signout = async (req, res, next) => { // TODO: signout on email or id?
-//   const email = normalizeEmail(req.parameters.email); // TODO: always normalize email
-
-//   // invalidate access and refresh tokens
-//   try {
-//     const user = await User.findOneAndUpdate({ email }, {
-//       $set: {
-//         accessToken: null,
-//         refreshToken: null
-//       }
-//     });
-//     if (!user) {
-//       return res.status(401).json({ message: req.t("User not found") });
-//     }
-
-//     // audit signouts
-//     //audit({req, mode: "action", subject: `User sign out`, htmlContent: `Sign out of user ${user.firstName} ${user.lastName} (email: ${user.email})`);
-
-//     logger.info(`User signed out: ${user.email}`);
-
-//     // clear HTTP-only auth cookies
-//     res.clearCookie("accessToken", cookieOptions(false));
-//     res.clearCookie("refreshToken", cookieOptions(false));
-//     res.clearCookie("encryptionKey", cookieOptions(false));
-
-//     return res.status(200).json({ message: req.t("Sign out successful") });
-//   } catch (err) {
-//     return nextError(next, req.t("Error signing out user: {{err}}", { err: err.message }), 500, err.stack);
-//   }
-// };
 
 const signout = async (req, res, next) => {
   // revoke user account
@@ -901,8 +868,9 @@ const revoke = async (req, res, next) => {
 
     await signoutOperations(user.email, res);
 
-    // TODO: decide if marking user as deleted, or really fully remove it
-    // TODO: do check if user has a some pending status that impedes she to be deleted...
+    // TODO: decide if marking user as deleted, or really fully remove it...
+
+    // TODO: do check if user has a some pending status that impedes the deletion...
 
     // // mark user as deleted
     // user.isDeleted = true;
@@ -914,7 +882,8 @@ const revoke = async (req, res, next) => {
     
     return res.status(200).json({ message: req.t("User account has been completely revoked") });
   } catch (err) {
-    // note: for some reason, using : {{err}} in the message here does not work
+    // TODO: for some reason, using : {{err}} in the message here does not work
+    logger.warn("DEBUG ONLY (CHECK IF IT IS SHOWN IN AUDIT)- err.message and err when revoking user account:", err.message, err);
     return nextError(next, req.t("Error revoking user account: {{err}}", { err: err.message }), 500, err.stack);
   }
 };

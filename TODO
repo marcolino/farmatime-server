@@ -94,14 +94,16 @@
 - finish handling isGift (use it in audit of payment completed) - OK
 - make tests - OK
 - winston colorize does not seem to work in any transport - OK
+- implement complete deletion of "own" user account (not reserved for admin, but also to logged users) - OK
 
+- put shared code (in server: internalController.js:variablesExpand in client: JobEmailTemplateVariables.jsx) to /shared/src/ on sever, then add a script to copy all shared code from server to client, to be run before client-build step...
+- check why refreshToken with social login lasts only 30 or 60 minutes
+- remove all `logger.error(...)` in controllers, if then we do nextError() ... 
 - rename helpers to libs
-- server.sinon => sinon, server.expect => expect ...
 - reinstall from scratch (possibly on a fresh system), and compile README file
-- implement complete deletion of "own" user account (not reserved for admin, but also to logged users)
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
 - review NOTES, clean it up...
-- complete socialRevoke in auth controller
+- tests: server.sinon => sinon, server.expect => expect ...
 
 NEWFEATURE:
 - after social login, assign a default role to user ("user") ...
@@ -114,3 +116,4 @@ NEWFEATURE:
 - rimuovere gli account "rimossi", periodicamente (quando sarà necessario)
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
 - usare node builtin tests (see https://kashw1n.com/blog/nodejs-2025/)
+- complete socialRevoke in auth controller (for Facebook oauth2, when we will use it...)

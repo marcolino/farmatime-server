@@ -226,7 +226,7 @@ const configBase = {
   clientSmsPreferencesUrl: `${baseUrlClient}/sms-preferences`,
   payment: {
     gateway: "stripe",
-    gateways: { // TODO...
+    gateways: {
       stripe: {
         enabled: false,
         products: stripelive ? { // products for a typical SAAS

@@ -16,7 +16,6 @@ const runJobs = async (req, res, next) => {
     ;
     for (const user of users) {
       logger.info(`- Processing user ${user._id} (${user.email}, ${user.firstName} ${user.lastName})`);
-      //if (user.email !== "marcosolari@gmail.com") continue; // TODO: DEBUG ONLY, process only one user !!!
 
       if (!user.email) {
         logger.warn(`  User ${user._id} (${user.firstName} ${user.lastName}) has no email, skipping it`);

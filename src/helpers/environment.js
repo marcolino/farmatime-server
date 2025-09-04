@@ -21,7 +21,8 @@ const assertEnvironment = () => {
       throw ("Assertion failed: live mode is on and prodution mode is false!");
     }
 
-    // TODO: more logical assertions...
+    // Add more logical assertions here, if needed...
+    
   } catch (err) {
     const error = `Assertion failure: ${err}`;
     assertionsCheckFailure(error);

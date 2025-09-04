@@ -129,8 +129,8 @@ const updateUser = async (req, res, next) => {
   try {
     // collect update data
     const updateData = {};
-    const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan, preferences } = req.parameters;
-    const jobs = req.parameters.jobs; // TODO: move this to the previous line, jobs is a prop like another...
+    const { email, firstName, lastName, phone, fiscalCode, businessName, address, roles, plan, preferences, jobs } = req.parameters;
+    //const jobs = req.parameters.jobs; // T O D O: move this to the previous line, jobs is a prop like another...
 
     if (email !== undefined) {
       const [message, value] = await propertyEmailValidate(req, email, userId);
@@ -268,40 +268,28 @@ const updateUserJobsDataInternal = async (userId, jobsData) => {
     return { error: true, status: 400, message: "Jobs data is required" };
   }
 
-  //try {
-  const user = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
 
-  // Generate key or retrieve from DB - TODO: move to login ...
-  // let encryptionKey = user.encryptionKey;
-  // if (!encryptionKey) {
-  //   encryptionKey = generateNewEncryptionKey();
-  //   user.encryptionKey = encryptionKey;
-  // }
+    if (!user.encryptionKey) {
+      return { error: true, status: 403, message: "User encryption key not found" };
+    }
 
-  if (!user.encryptionKey) {
-    return { error: true, status: 403, message: "User encryption key not found" };
+    // In development mode, store unencrypted jobs data, to debug in an easier way
+    //if (config.mode.development) { TODO: enable this `if` when production is fully working!
+    user.jobsDataCLEAN = jobsData;
+    //}
+
+    // Encrypt job with encryptionKey
+    const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);
+
+    user.jobsData = encryptedJobsData;
+    await user.save();
+
+    return { success: true };
+  } catch(err) {
+    return { error: true, status: 500, message: err.message };
   }
-
-  // In development mode, store unencrypted jobs data, to debug in an easier way
-  //if (config.mode.development) { TODO: enable if () when production is working!!!!!!!!!!!!!!!!!!!!!!
-  user.jobsDataCLEAN = jobsData;
-  //}
-
-  // Encrypt job with encryptionKey
-  const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);
-
-  user.jobsData = encryptedJobsData;
-  await user.save();
-
-  //res.json({ success: true });
-  return { success: true };
-  // } catch (err) {
-  //   //console.error('Failed to save job', err);
-  //   //res.status(500).json({ error: true, message: 'Failed to save job' });
-  //   //return nextError(next, req.t("Error updating user job: {{err}}", { err: err.message }), 500, err.stack);
-  //   //return { error: true, status: 500, message: "Error updating user job: " + err.message };
-  //   throw(err);
-  // }
 };
 
 /*

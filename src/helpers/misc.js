@@ -329,7 +329,7 @@ const formatMoney = (number, locale = config.app.serverLocale, currency = config
 };
 
 /**
- * Returns stack only if not in production - TODO: deprecate this function?
+ * Returns stack only if not in production
  * 
  * err: {object} error object
  * 
@@ -425,6 +425,7 @@ const createTokensAndCookies = async (req, res, next, user) => {
     }
     const { exp: expR } = jwt.decode(refreshToken);
     //if (config.mode.development) {
+    let when = localeDateTime(new Date(expR * 1000)); console.log(when);
     logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
     //}
     return {

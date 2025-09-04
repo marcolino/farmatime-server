@@ -243,7 +243,7 @@ process.on("unhandledRejection", (reason, promise) => {
   if (reason instanceof Error) {
     logger.error(
       `Unhandled rejection at promise: ${promise}, reason: ${reason.message},
-      stack: ${secureStack(reason.stack)}`
+      stack: ${reason.stack}`
     );
   } else {
     logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
