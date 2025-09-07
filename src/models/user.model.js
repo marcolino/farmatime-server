@@ -74,10 +74,10 @@ const UserSchema = mongoose.Schema({
     type: String,
     max: 24
   },
-  jobsData: {
+  jobs: {
     type: EncryptedSchema,
   },
-  jobsDataCLEAN: {
+  jobsCLEAN: {
     type: Object, // used in development mode only to store unencrypted jobs data
   },
   isDeleted: {

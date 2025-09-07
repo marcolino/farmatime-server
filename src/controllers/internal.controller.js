@@ -1,7 +1,7 @@
 const User = require("../models/user.model");
 const { decryptData } = require("../helpers/encryption");
 const { logger } = require("../controllers/logger.controller");
-const { updateUserJobsDataInternal } = require("../controllers/user.controller");
+const { updateUserJobsInternal } = require("../controllers/user.controller");
 const emailService = require("../services/email.service");
 const { nextError } = require("../helpers/misc");
 //const config = require("../config");
@@ -28,13 +28,12 @@ const runJobs = async (req, res, next) => {
         continue;
       }
 
-      if (!user.jobsData) {
+      if (!user.jobs) {
         logger.warn(`  User ${user._id} (${user.firstName} ${user.lastName}) has no jobs data, skipping it`);
         continue;
       }
 
-      const jobsData = await decryptData(user.jobsData, user.encryptionKey);
-      const jobs = jobsData?.jobs;
+      const jobs = await decryptData(user.jobs, user.encryptionKey);
 
       req.user = user; // to be used in emailService.send
 
@@ -113,20 +112,19 @@ const runJobs = async (req, res, next) => {
           logger.info("    request sent via email");
 
           // update lastDate for this medicine job data
-          const jobsDataNew = jobsData; 
-          jobsDataNew.jobs = jobsData.jobs.map((jobData) => {
-            if (jobData.id === job.id) {
-              jobData.medicines = jobData.medicines.map((med) => {
+          const jobsNew = jobs.map((j) => {
+            if (j.id === job.id) {
+              j.medicines = j.medicines.map((med) => {
                 if (med.id === medicine.id) {
                   med.fieldLastDate = nowDate.toISOString();
                 }
                 return med;
               });
             }
-            return jobData;
+            return j;
           });
           try {
-            const result = await updateUserJobsDataInternal(req.user._id, jobsDataNew);
+            const result = await updateUserJobsInternal(req.user._id, jobsNew);
             if (result.error) {
               return res.status(result.status).json({
                 error: true,
@@ -137,11 +135,6 @@ const runJobs = async (req, res, next) => {
           } catch (err) { // this error is very important, we could end up sending requests more frequently than requested!!!
             return nextError(next, req.t("Error updating user job data: {{err}} !!!", { err: err.message }), 500, err.stack);
           }
-          // const updateResult = await updateUserJobsData(req, {
-          //   "userId": user._id,
-          //   "jobsData": jobsDataNew,
-          // });
-
         }
       }
     }

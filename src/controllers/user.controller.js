@@ -235,12 +235,12 @@ const updateUser = async (req, res, next) => {
 /**
  * Update current user's jobs data
  */
-const updateUserJobsData = async (req, res, next) => {
+const updateUserJobs = async (req, res, next) => {
   try {
     const userId = req.userId;
-    const jobsData = req.parameters.jobsData;
+    const jobs = req.parameters.jobs;
 
-    const result = await updateUserJobsDataInternal(userId, jobsData);
+    const result = await updateUserJobsInternal(userId, jobs);
 
     if (result.error) {
       return res.status(result.status).json({
@@ -258,14 +258,14 @@ const updateUserJobsData = async (req, res, next) => {
 /**
  * Update current user's jobs data (callable internally)
  */
-const updateUserJobsDataInternal = async (userId, jobsData) => {
+const updateUserJobsInternal = async (userId, jobs) => {
   if (!userId) {
-    //return res.status(400).json({ error: true, message: 'Jobs data required' });
+    //return res.status(400).json({ error: true, message: 'Jobs required' });
     return { error: true, status: 400, message: "User id is required" };
   }
-  if (!jobsData) {
-    //return res.status(400).json({ error: true, message: 'Jobs data required' });
-    return { error: true, status: 400, message: "Jobs data is required" };
+  if (!jobs) {
+    //return res.status(400).json({ error: true, message: 'Jobs required' });
+    return { error: true, status: 400, message: "Jobs is required" };
   }
 
   try {
@@ -277,13 +277,13 @@ const updateUserJobsDataInternal = async (userId, jobsData) => {
 
     // In development mode, store unencrypted jobs data, to debug in an easier way
     //if (config.mode.development) { TODO: enable this `if` when production is fully working!
-    user.jobsDataCLEAN = jobsData;
+    user.jobsCLEAN = jobs;
     //}
 
     // Encrypt job with encryptionKey
-    const encryptedJobsData = await encryptData(jobsData, user.encryptionKey);
+    const encryptedJobs = await encryptData(jobs, user.encryptionKey);
 
-    user.jobsData = encryptedJobsData;
+    user.jobs = encryptedJobs;
     await user.save();
 
     return { success: true };
@@ -455,16 +455,36 @@ const removeUser = async (req, res, next) => {
   
   const payload = { isDeleted: true };
   try {
-    // avoid deleting administrator user
+    // avoid deleting protected email user
     const protectedEmail = config.email.administration.to;
     const admin = await User.findOne({ email: protectedEmail });
     if (admin) {
-      const match = await User.exists({ _id: admin._id, ...filter });
-      if (match) {
+
+      const originalCount = await User.countDocuments(filter);
+      const adminExclusionFilter = {
+        $and: [
+          filter,
+          { _id: { $ne: admin._id } }
+        ]
+      };
+      const adminExclusionCount = await User.countDocuments(adminExclusionFilter);
+
+      if (originalCount === 0) {
+        // No documents match the original filter
+      } else if (adminExclusionCount < originalCount) {
+        // Documents match original filter, but some are the excluded admin._id
         return res.status(403).json({
           message: req.t("Deletion request includes the protected admin user and cannot be processed")
         });
+      } else {
+        // Documents exist excluding the admin._id, so safe to continue
       }
+      // const match = await User.exists({ _id: admin._id, ...filter });
+      // if (match) {
+      //   return res.status(403).json({
+      //     message: req.t("Deletion request includes the protected admin user and cannot be processed")
+      //   });
+      // }
     }
 
     const data = await User.updateMany(filter, payload, { new: true, lean: true });
@@ -606,8 +626,8 @@ module.exports = {
   getAllRoles,
   getUser,
   updateUser, 
-  updateUserJobsData,
-  updateUserJobsDataInternal,
+  updateUserJobs,
+  updateUserJobsInternal,
   //_updateRoles,
   //_updatePlan,
   promoteToDealer,

@@ -182,7 +182,7 @@ const socialLogin = async (req, res, next) => {
   
   if (user) { // a user with given email exists already
     logger.info("User found:", user._id, user.email, user.isVerified ? "(verified)" : "(not verified)", user.isDeleted ? "(deleted)" : "");
-    logger.info("User jobsData:", user.jobsData, typeof user.jobsData, user.jobsDataCLEAN);
+    logger.info("User jobs:", user.jobs, typeof user.jobs, user.jobsCLEAN);
     // check user is deleted
     if (user.isDeleted) { // we just force user's rebirth
       user.deleted = false;
@@ -266,10 +266,10 @@ const socialLogin = async (req, res, next) => {
   audit({ req, mode: "action", subject: `User social sign in`, htmlContent: `Social sign in with (${req.userSocial.provider}) provider of user ${user.firstName} ${user.lastName} (email: ${user.email})` });
 
   // decrypt jobs data, if present
-  let jobsData;
-  if (user.jobsData) {
-    jobsData = await decryptData(user.jobsData, user.encryptionKey);
-    logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobsData.jobs.length} jobs to process`);
+  let jobs;
+  if (user.jobs) {
+    jobs = await decryptData(user.jobs, user.encryptionKey);
+    logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobs.length} jobs to process`);
   }
 
   const payload = {
@@ -281,7 +281,7 @@ const socialLogin = async (req, res, next) => {
     plan: user.plan,
     deleted: user.deleted,
     justRegistered: user.justRegistered,
-    jobsData,
+    jobs,
   };
 
   // create tokens ad add them to request cookie
@@ -593,10 +593,10 @@ const signin = async (req, res, next) => {
     }
 
     // decrypt jobs data, if present
-    let jobsData;
-    if (user.jobsData) {
-      jobsData = await decryptData(user.jobsData, user.encryptionKey);
-      logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobsData.jobs.length} jobs to process`);
+    let jobs;
+    if (user.jobs) {
+      jobs = await decryptData(user.jobs, user.encryptionKey);
+      logger.info(`User ${user._id} (${user.firstName} ${user.lastName}) has ${jobs.length} jobs to process`);
     }
 
     const payload = {
@@ -608,7 +608,7 @@ const signin = async (req, res, next) => {
       plan: user.plan,
       justRegistered: user.justRegistered,
       preferences: user.preferences.toObject(),
-      jobsData,
+      jobs,
     };
 
     // create tokens and add them to request cookie

@@ -424,10 +424,9 @@ const createTokensAndCookies = async (req, res, next, user) => {
       logger.info(` access token will expire on ${localeDateTime(new Date(expA * 1000))}`);
     }
     const { exp: expR } = jwt.decode(refreshToken);
-    //if (config.mode.development) {
-    let when = localeDateTime(new Date(expR * 1000)); console.log(when);
-    logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
-    //}
+    if (config.mode.development) {
+      logger.info(`refresh token will expire on ${localeDateTime(new Date(expR * 1000))}`);
+    }
     return {
       accessToken,
       refreshToken,
