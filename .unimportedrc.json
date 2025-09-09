@@ -9,6 +9,6 @@
     "src/config.mda.js",
     "src/config.medicare.js",
     "src/helpers/customEjsLexer.js",
-    "src/misc/strings-for-translation.js"
+    "src/labels-to-be-translated.js"
   ]
 }

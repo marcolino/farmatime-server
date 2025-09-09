@@ -66,6 +66,7 @@
   "Error getting product: {{err}}": "Erreur lors de la récupération du produit : {{err}}",
   "Error getting products: {{err}}": "Erreur lors de la récupération des produits : {{err}}",
   "Error in reset password confirm: {{err}}": "Erreur dans la confirmation de réinitialisation du mot de passe : {{err}}",
+  "Error initializing Stripe interface": "Erreur lors de l'initialisation de l'interface Stripe",
   "Error processing image: {{err}}": "Erreur de traitement de l'image : {{err}}",
   "Error promoting user to {{role}}: {{err}}": "Erreur lors de la promotion de l'utilisateur au rôle de {{role}} : {{err}}",
   "Error resending reset password code: {{err}}": "Erreur lors de la renvoi du code de réinitialisation du mot de passe : {{err}}",

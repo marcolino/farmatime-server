@@ -62,6 +62,7 @@
   "Error getting product: {{err}}": "Error getting product: {{err}}",
   "Error getting products: {{err}}": "Error getting products: {{err}}",
   "Error in reset password confirm: {{err}}": "Error in reset password confirm: {{err}}",
+  "Error initializing Stripe interface": "Error initializing Stripe interface",
   "Error processing image: {{err}}": "Error processing image: {{err}}",
   "Error promoting user to {{role}}: {{err}}": "Error promoting user to {{role}}: {{err}}",
   "Error resending reset password code: {{err}}": "Error resending reset password code: {{err}}",
