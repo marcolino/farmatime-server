@@ -8,7 +8,7 @@
 
 <!--[![Mocha tests ok](https://github.com/marcolino/medicare-server/blob/main/public/badges/mocha.svg)](tests)-->
 <!--![Test Status](https://github.com/marcolino/medicare-server/actions/workflows/test.yml/badge.svg)-->
-![Tests Passed](https://img.shields.io/badge/tests%20passed-69-brightgreen)
+![Tests Passed](https://img.shields.io/badge/tests%20passed-327-brightgreen)
 ![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/medicare-server)
 ![GitHub forks](https://img.shields.io/github/forks/marcolino/medicare-server?style=social)
 ![GitHub contributors](https://img.shields.io/github/contributors/marcolino/medicare-server)
