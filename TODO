@@ -95,10 +95,10 @@
 - make tests - OK
 - winston colorize does not seem to work in any transport - OK
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users) - OK
+- check why refreshToken with social login lasts only 30 or 60 minutes - OK
 
 - enforce medicines count per user in job altering endpoints, and expose an endpoint for client too
 - put shared code (in server: internalController.js:variablesExpand in client: JobEmailTemplateVariables.jsx) to /shared/src/ on sever, then add a script to copy all shared code from server to client, to be run before client-build step...
-- check why refreshToken with social login lasts only 30 or 60 minutes - OK
 - remove all `logger.error(...)` in controllers, if then we do nextError() ... 
 - rename helpers to libs
 - reinstall from scratch (possibly on a fresh system), and compile README file
