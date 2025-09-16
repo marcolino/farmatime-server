@@ -75,8 +75,8 @@ const googleCallback = (req, res, next) => {
       profile?.emails?.find(email => email.verified)?.value ??
       profile?.emails[0]?.value
     ); // get first verified email, if any, or the first email otherwise
-    userSocial.firstName = profile?.name?.givenName;
-    userSocial.lastName = profile?.name?.familyName;
+    userSocial.firstName = profile?.name?.givenName ?? '';
+    userSocial.lastName = profile?.name?.familyName ?? '';
     if (profile.photos) {
       userSocial.photo = profile.photos[0]?.value; // use only the first photo, if any
     }

@@ -311,7 +311,6 @@ const updateUserEmailTemplate = async (req, res, next) => {
     const user = await User.findById(userId);
 
     user.emailTemplate = emailTemplate;
-    await user.save();
 
     return res.json({message: req.t("User jobs email template updated successfully")});
   } catch (err) {

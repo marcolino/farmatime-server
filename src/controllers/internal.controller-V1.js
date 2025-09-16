@@ -35,10 +35,10 @@ const runJobs = async (req, res, next) => {
 
       const jobs = await decryptData(user.jobs, user.encryptionKey);
       const emailTemplate = user.emailTemplate;
+
       req.user = user; // to be used in emailService.send
 
       for (const job of jobs) {
-        const medicines = []; // array of medicines to be requested now for this job
         //logger.info(`  job:`, job);
 
         if (!job.isActive) {
@@ -68,7 +68,6 @@ const runJobs = async (req, res, next) => {
 
         logger.info(` - Processing job ${job.id}`);
 
-        const nowDate = new Date();
         for (const medicine of job.medicines) {
 
           logger.info(`  - Processing medicine ${medicine.id} (${medicine.name})`);
@@ -83,8 +82,9 @@ const runJobs = async (req, res, next) => {
             continue;
           }
 
+          const nowDate = new Date();
           const sinceDate = new Date(medicine.fieldSinceDate);  
-          const lastDate = new Date(medicine.fieldLastDate ?? new Date("1970-01-01")); // default to a very old date if not set
+          const lastDate = new Date(medicine.fieldLastDate ?? "1970-01-01"); // default to a very old date if not set
           const frequencyDays = parseInt(medicine.fieldFrequency);
 
           if (sinceDate.yyyymmdd() > nowDate.yyyymmdd()) {
@@ -100,61 +100,42 @@ const runJobs = async (req, res, next) => {
           }
 
           // time is due for a request for this medicine
-          logger.info(`    medicine ${medicine.id} is due (next ${nextDate.yyyymmdd()})`);
-          medicines.push(medicine);
-        }
+          logger.info(`    medicine ${medicine.id} is due (next ${nextDate.yyyymmdd()}), REQUESTING!`);
+          await emailService.send(req, {
+            to: job.doctor.email,
+            toName: job.doctor.name,
+            replyTo: job.patient.email,
+            replyToName: `${job.patient.firstName} ${job.patient.lastName}`,
+            subject: emailTemplate.subject,
+            htmlContent: variablesExpand(req, emailTemplate.body, job, medicine.id, user),
+          });
 
-        // one or more medicines are due for this job, requesting them
-        if (medicines.length) {
+          logger.info("    request sent via email");
 
-          if (config.app.ui.jobs.unifyRequests) { // unify requests, all medicines for this user for this job for today are requested with a unique email
-            logger.info(`    ${medicines.length} medicines ${medicines.map(med => med.id).join(', ')} are being requested, unified`);
-            requestSend(req, job, medicines);
-          } else { // do not unify requests, all medicines for this user for this job for today are requested with separate emails
-            for (const medicine of medicines) {
-              logger.info(`    medicine ${medicine.id} is being requested, separately`);
-              requestSend(req, job, [medicine]);
-            }
-          }
-
-          const requestSend = async(req, job, medicines) => {
-            await emailService.send(req, {
-              to: job.doctor.email,
-              toName: job.doctor.name,
-              replyTo: job.patient.email,
-              replyToName: `${job.patient.firstName} ${job.patient.lastName}`,
-              subject: emailTemplate.subject,
-              htmlContent: variablesExpand(req, emailTemplate.body, job, medicines, user),
-            });
-
-            logger.info("    request sent via email");
-
-            // update lastDate for this medicine job data
-            try {
-              const jobsNew = jobs.map((j) => {
-                if (j.id === job.id) {
-                  j.medicines = j.medicines.map((med) => {
-                    //if (med.id === medicine.id) {
-                    med.fieldLastDate = nowDate.toISOString();
-                    //}
-                    return med;
-                  });
+          // update lastDate for this medicine job data
+          const jobsNew = jobs.map((j) => {
+            if (j.id === job.id) {
+              j.medicines = j.medicines.map((med) => {
+                if (med.id === medicine.id) {
+                  med.fieldLastDate = nowDate.toISOString();
                 }
-                return j;
+                return med;
               });
-              const result = await updateUserJobsInternal(req.user._id, jobsNew);
-              if (result.error) {
-                return res.status(result.status).json({
-                  error: true,
-                  message: req.t(result.message),
-                });
-              }
-              logger.info("    updated medicine last date");
-            } catch (err) { // this error is very important, we could end up sending requests more frequently than requested!!!
-              return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
             }
+            return j;
+          });
+          try {
+            const result = await updateUserJobsInternal(req.user._id, jobsNew);
+            if (result.error) {
+              return res.status(result.status).json({
+                error: true,
+                message: req.t(result.message),
+              });
+            }
+            logger.info("    updated medicine last date");
+          } catch (err) { // this error is very important, we could end up sending requests more frequently than requested!!!
+            return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
           }
-
         }
       }
     }
@@ -166,20 +147,20 @@ const runJobs = async (req, res, next) => {
 
 };
 
-const variablesExpand = (req, html, job, /*medicineId*/medicines, user) => { // TODO: client/server duplicated code...
+const variablesExpand = (req, html, job, medicineId, user) => { // TODO: client/server duplicated code...
   // Variable tokens
   const variableTokens = {
-    [req.t('[DOCTOR NAME]')]: (job, _medicines, _user) => job?.doctor?.name ?? req.t('[DOCTOR NAME]'),
-    [req.t('[PATIENT NAME]')]: (job, _medicines, _user) =>
+    [req.t('[DOCTOR NAME]')]: (job) => job?.doctor?.name ?? req.t('[DOCTOR NAME]'),
+    [req.t('[PATIENT NAME]')]: (job) =>
       job?.patient?.firstName || job?.patient?.lastName ? `${job?.patient?.firstName} ${job?.patient?.lastName}` : req.t('[PATIENT NAME]'),
-    //[req.t('[MEDICINE NAME]')]: (job) => job?.medicines?.find(med => medicineIds.includes(med.id)/*med.id === medicineId*/).name ?? req.t('[MEDICINE NAME]'),
-    [req.t('[MEDICINE NAME]')]: (_job, medicines, _user) => medicines.map(med => med.name).join('< br />\n') ?? req.t('[MEDICINE NAME]'),
-    [req.t('[USER NAME]')]: (_job, _medicines, user) => user?.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : req.t('[USER NAME]'),
-    [req.t('[USER EMAIL]')]: (_job, _medicines, user) => user?.email ?? req.t('[USER EMAIL]'),
+    [req.t('[MEDICINE NAME]')]: (job) => job?.medicines?.find(med => med.id === medicineId).name ?? req.t('[MEDICINE NAME]'),
+    [req.t('[USER NAME]')]: (_, user) =>
+      user?.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : req.t('[USER NAME]'),
+    [req.t('[USER EMAIL]')]: (_, user) => user?.email ?? req.t('[USER EMAIL]'),
   };
 
   Object.entries(variableTokens).forEach((token) => {
-    let replacement = variableTokens[token[0]](job, medicines, user);
+    let replacement = variableTokens[token[0]](job, user);
     html = html.replaceAll(token[0], replacement);
   });
   return html;

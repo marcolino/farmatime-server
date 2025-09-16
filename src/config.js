@@ -507,8 +507,10 @@ const configBase = {
       },
       backgroundVideo: "wind-turbines", // see in "/public/videos/*.mp4" for available videos
       jobs: {
-        storageKey: "jobs",
+        //storageKey: "jobs",
+        unifyRequests: true,
         maxRequestsPerUser: 32,
+
         medicines: {
           dragAndDrop: {
             desktop: {
