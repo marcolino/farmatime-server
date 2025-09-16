@@ -34,6 +34,7 @@ const runJobs = async (req, res, next) => {
       }
 
       const jobs = await decryptData(user.jobs, user.encryptionKey);
+      const emailTemplate = user.emailTemplate;
 
       req.user = user; // to be used in emailService.send
 
@@ -56,11 +57,11 @@ const runJobs = async (req, res, next) => {
           logger.info(`  job ${job.id} has no doctor email, skipping it`);
           continue;
         }
-        if (!job.emailTemplate?.subject) {
+        if (!emailTemplate?.subject) {
           logger.info(`  job ${job.id} has no email template subject, skipping it`);
           continue;
         }
-        if (!job.emailTemplate?.body) {
+        if (!emailTemplate?.body) {
           logger.info(`  job ${job.id} has no email template body, skipping it`);
           continue;
         }
@@ -105,8 +106,8 @@ const runJobs = async (req, res, next) => {
             toName: job.doctor.name,
             replyTo: job.patient.email,
             replyToName: `${job.patient.firstName} ${job.patient.lastName}`,
-            subject: job.emailTemplate.subject,
-            htmlContent: variablesExpand(req, job.emailTemplate.body, job, medicine.id, user),
+            subject: emailTemplate.subject,
+            htmlContent: variablesExpand(req, emailTemplate.body, job, medicine.id, user),
           });
 
           logger.info("    request sent via email");
