@@ -6,7 +6,7 @@
 // const { resendSignupVerificationCode } = require("./path/to/your/module"); // Adjust the path
 const server = require("../server.test");
 //const { logger } = require("../../src/controllers/logger.controller");
-//const { audit } = require("../../src/helpers/messaging");
+//const { audit } = require("../../src/libs/messaging");
 const User = require("../../src/models/user.model");
 const emailService = require("../../src/services/email.service");
 //const VerificationCode = require("../../src/models/verificationCode.model");

@@ -3,7 +3,7 @@
   "include": ["src/**/*.js", "src/**/*.jsx"],
   "exclude": [
     ".pnp*", ".yarn", "**/*.spec.js",
-    "src/helpers/customEjsLexer.js", "src/misc/**", "src/config.CUSTOM.js",
+    "src/libs/customEjsLexer.js", "src/misc/**", "src/config.CUSTOM.js",
     "src/gateways/another.payment.gateway.js",
     "src/gateways/another.payment.gateway.js",
     "src/gateways/testGateway.payment.gateway.js"

@@ -1,8 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
-const { hashString, dirSize } = require("../helpers/misc");
-const { audit } = require("../helpers/messaging");
+const { hashString, dirSize } = require("../libs/misc");
+const { audit } = require("../libs/messaging");
 const { logger } = require("../controllers/logger.controller");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");

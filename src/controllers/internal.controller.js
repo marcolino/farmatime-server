@@ -1,9 +1,9 @@
 const User = require("../models/user.model");
-const { decryptData } = require("../helpers/encryption");
+const { decryptData } = require("../libs/encryption");
 const { logger } = require("../controllers/logger.controller");
 const { updateUserJobsInternal } = require("../controllers/user.controller");
 const emailService = require("../services/email.service");
-const { nextError } = require("../helpers/misc");
+const { nextError } = require("../libs/misc");
 //const config = require("../config");
 
 const runJobs = async (req, res, next) => {
@@ -44,10 +44,10 @@ const runJobs = async (req, res, next) => {
           logger.info(`  job ${job.id} is not active, skipping it`);
           continue;
         }
-        if (!job.isConfirmed) {
-          logger.info(`  job ${job.id} is not confirmed, skipping it`);
-          continue;
-        }
+        // if (!job.isConfirmed) {
+        //   logger.info(`  job ${job.id} is not confirmed, skipping it`);
+        //   continue;
+        // }
         if (!job.doctor?.name) {
           logger.info(`  job ${job.id} has no doctor name, skipping it`);
           continue;
@@ -133,7 +133,7 @@ const runJobs = async (req, res, next) => {
             }
             logger.info("    updated medicine last date");
           } catch (err) { // this error is very important, we could end up sending requests more frequently than requested!!!
-            return nextError(next, req.t("Error updating user job data: {{err}} !!!", { err: err.message }), 500, err.stack);
+            return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
           }
         }
       }
@@ -149,13 +149,13 @@ const runJobs = async (req, res, next) => {
 const variablesExpand = (req, html, job, medicineId, user) => { // TODO: client/server duplicated code...
   // Variable tokens
   const variableTokens = {
-    [req.t('[DOCTOR NAME]')]: (job) => job?.doctor?.name ?? '',
+    [req.t('[DOCTOR NAME]')]: (job) => job?.doctor?.name ?? req.t('[DOCTOR NAME]'),
     [req.t('[PATIENT NAME]')]: (job) =>
-      job?.patient?.firstName || job?.patient?.lastName ? `${job?.patient?.firstName} ${job?.patient?.lastName}` : '',
-    [req.t('[MEDICINE NAME]')]: (job) => job?.medicines?.find(med => med.id === medicineId).name ?? '',
+      job?.patient?.firstName || job?.patient?.lastName ? `${job?.patient?.firstName} ${job?.patient?.lastName}` : req.t('[PATIENT NAME]'),
+    [req.t('[MEDICINE NAME]')]: (job) => job?.medicines?.find(med => med.id === medicineId).name ?? req.t('[MEDICINE NAME]'),
     [req.t('[USER NAME]')]: (_, user) =>
-      user?.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : '',
-    [req.t('[USER EMAIL]')]: (_, user) => user?.email ?? '',
+      user?.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : req.t('[USER NAME]'),
+    [req.t('[USER EMAIL]')]: (_, user) => user?.email ?? req.t('[USER EMAIL]'),
   };
 
   Object.entries(variableTokens).forEach((token) => {

@@ -16,7 +16,7 @@ class EmailService {
     this.systemPlaceholders = {
       sys_company_name: config.app.company.name,
       sys_company_title: config.app.company.title,
-      sys_company_mailto: config.app.company.mailto,
+      sys_company_mailto: config.app.company.email,
       sys_company_copyright: config.app.company.copyright,
       sys_company_logo: `${config.baseUrlPublic}/logo-main-header.png`,
       sys_company_support_mailto: config.email.support.to,

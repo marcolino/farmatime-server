@@ -5,9 +5,9 @@ const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
 const Role = require("../models/role.model");
 const RefreshToken = require("../models/refreshToken.model");
-const { isObject, isArray, normalizeEmail, isAdministrator, nextError } = require("../helpers/misc");
+const { isObject, isArray, normalizeEmail, isAdministrator, nextError } = require("../libs/misc");
 const emailService = require("../services/email.service");
-const { encryptData } = require("../helpers/encryption");
+const { encryptData } = require("../libs/encryption");
 const config = require("../config");
 
 const getAllUsersWithTokens = async (req, res, next) => {
@@ -240,7 +240,7 @@ const updateUserJobs = async (req, res, next) => {
     const userId = req.userId;
     const jobs = req.parameters.jobs;
 
-    const result = await updateUserJobsInternal(userId, jobs);
+    const result = await updateUserJobsInternal(req, userId, jobs);
 
     if (result.error) {
       return res.status(result.status).json({
@@ -248,31 +248,35 @@ const updateUserJobs = async (req, res, next) => {
         message: req.t(result.message),
       });
     } else {
-      return res.json({message: req.t("User job data updated successfully")});
+      return res.json({message: req.t("User jobs updated successfully")});
     }
   } catch (err) {
-    return nextError(next, req.t("Error updating user job data: {{err}}", { err: err.message }), 500, err.stack);
+    return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
 /**
  * Update current user's jobs data (callable internally)
  */
-const updateUserJobsInternal = async (userId, jobs) => {
+const updateUserJobsInternal = async (req, userId, jobs) => {
   if (!userId) {
     //return res.status(400).json({ error: true, message: 'Jobs required' });
-    return { error: true, status: 400, message: "User id is required" };
+    return { error: true, status: 400, message: req.t("User id is required") };
   }
   if (!jobs) {
     //return res.status(400).json({ error: true, message: 'Jobs required' });
-    return { error: true, status: 400, message: "Jobs is required" };
+    return { error: true, status: 400, message: req.t("Jobs is required") };
+  }
+  const requestsTotal = jobs.reduce((total, job) => total + job.medicines.length, 0);
+  if (requestsTotal >= config.app.ui.jobs.maxRequestsPerUser) {
+    return { error: true, status: 400, message: req.t("Sorry, currently the maximum number of total requests (medicines) per user is {{n}}", {n: config.app.ui.jobs.maxRequestsPerUser}) };
   }
 
   try {
     const user = await User.findById(userId);
 
     if (!user.encryptionKey) {
-      return { error: true, status: 403, message: "User encryption key not found" };
+      return { error: true, status: 403, message: req.t("User encryption key not found") };
     }
 
     // In development mode, store unencrypted jobs data, to debug in an easier way
@@ -292,80 +296,51 @@ const updateUserJobsInternal = async (userId, jobs) => {
   }
 };
 
-/*
-const _updateRoles = async (req, userId) => {
-  if (!userId) userId = req.userId;
-  if (req.parameters.userId && req.parameters.userId !== userId) {
-    if (!await isAdministrator(userId)) {
-      throw new Error(req.t("You must have admin role to update another user's roles"));
-    } else {
-      userId = req.parameters.userId;
-    }
-  }
+const updateUserEmailTemplate = async (req, res, next) => {
+  const userId = req.userId;
+  const emailTemplate = req.parameters.emailTemplate;
   
-  if (req.parameters.roles === undefined || !Array.isArray(req.parameters.roles) || req.parameters.roles.length === 0) {
-    throw new Error(req.t("Please specify at least one role"));
+  if (!userId) {
+    return res.status(400).json({ error: true, message: 'User id is required' });
   }
-
-  const user = await User.findOne({ _id: userId }).populate("roles", "-__v");
-  if (!user) {
-    throw new Error(req.t("User not found"));
-  }
-
-  const roles = await Role.find({ "_id": { $in: req.parameters.roles } });
-  if (!await isAdministrator(req.userId)) {
-    const requestedRolesMaxPriority = Math.max(...roles.map(role => role.priority));
-    const currentRolesMaxPriority = Math.max(...user.roles.map(role => role.priority));
-    if (requestedRolesMaxPriority > currentRolesMaxPriority) {
-      const error = new Error(req.t("Sorry, it is not possible to elevate roles for users"));
-      error.code = 403;
-      throw error;
-    }
-  }
-
-  user.roles = roles.map(role => role._id);
-  await user.save();
-  return roles;
-};
-*/
-
-/*
-const _updatePlan = async (req, userId) => {
-  if (!userId) userId = req.userId;
-  if (!await isAdministrator(userId)) {
-    const error = new Error(req.t("Sorry, you must have admin role to update plans"));
-    error.code = 403;
-    throw error;
-  } else {
-    userId = req.parameters.userId;
-  }
-
-  if (!req.parameters.plan || !req.parameters.plan._id) {
-    throw new Error(req.t("Plan is mandatory and must have a valid _id"));
+  if (!emailTemplate) {
+    return res.status(400).json({ error: true, message: 'Email template is required' });
   }
 
   try {
-    const user = await User.findOne({ _id: userId }).populate("plan", "-__v");
-    if (!user) {
-      throw new Error(req.t("User not found"));
-    }
+    const user = await User.findById(userId);
 
-    const plan = await Plan.findOne({ "_id": req.parameters.plan._id });
-    if (!plan) {
-      throw new Error(req.t("Plan not found"));
-    }
-
-    user.plan = plan._id;
+    user.emailTemplate = emailTemplate;
     await user.save();
 
-    return plan;
-    //return { message: req.t("Plan updated") };
+    return res.json({message: req.t("User jobs email template updated successfully")});
   } catch (err) {
-    logger.error("Error in updatePlan:", err);
-    throw err;
+    return nextError(next, req.t("Error updating jobs email template: {{err}}", { err: err.message }), 500, err.stack);   
   }
 };
-*/
+
+/**
+ * Check if user requests are not fully used already
+ */
+const checkUserJobRequestsFull = async (req, res) => {
+  const userId = req.userId;
+  const jobs = req.parameters.jobs;
+  
+  if (!userId) {
+    //return res.status(400).json({ error: true, message: 'Jobs required' });
+    return { error: true, status: 400, message: req.t("User id is required") };
+  }
+  if (!jobs) {
+    //return res.status(400).json({ error: true, message: 'Jobs required' });
+    return { error: true, status: 400, message: req.t("Jobs is required") };
+  }
+  const requestsTot = jobs.reduce((total, job) => total + job.medicines.length, 0);
+  const requestsMax = config.app.ui.jobs.maxRequestsPerUser;
+  if (requestsTot >= requestsMax) {
+    return { error: true, status: 400, message: req.t("Sorry, currently the maximum number of total requests (medicines) per user is {{n}}", { n: requestsMax }) };
+  }
+  return res.json({ message: req.t("User job requests ({{requestsTot}} are lower than maximum allowed ({{requestsMax}}", { requestsTot, requestsMax }) });
+};
 
 // promotes a user to "dealer" role
 const promoteToDealer = async (req, res, next) => {
@@ -528,14 +503,14 @@ const sendEmailToUsers = async (req, res, next) => {
       
     for (const user of users) {
       const to = user.email;
-      const [subject, body] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
+      const [subject, htmlContent] = expandEmailTags(user, req.parameters?.subject, req.parameters?.body);
       const style = "base"; // style is currently fixed
       try {
         req.language = user.language; // get user language
         await emailService.send(req, {
           to,
           subject,
-          body,
+          htmlContent,
           style,
         });
       } catch (err) {
@@ -550,14 +525,14 @@ const sendEmailToUsers = async (req, res, next) => {
 
 const expandEmailTags = (user, subject, body) => {
   const expand = (str) => {
-    str = str.replace(/\$NAME\$/, user.firstName);
-    str = str.replace(/\$SURNAME\$/, user.lastName);
-    str = str.replace(/\$EMAIL\$/, user.email);
-    str = str.replace(/\$PHONE\$/, user.phone);
-    str = str.replace(/\$ADDRESS\$/, user.address);
-    str = str.replace(/\$ROLES\$/, user.roles.map(role => role.name).join(", ")); // array of objects to csv string...
-    str = str.replace(/\$PLAN\$/, user.plan.name);
-    str = str.replace(/\$COMPANY\$/, user.company);
+    str = str.replace(/\$NAME\$/i, user.firstName);
+    str = str.replace(/\$SURNAME\$/i, user.lastName);
+    str = str.replace(/\$EMAIL\$/i, user.email);
+    str = str.replace(/\$PHONE\$/i, user.phone);
+    str = str.replace(/\$ADDRESS\$/i, user.address);
+    str = str.replace(/\$ROLES\$/i, user.roles.map(role => role.name).join(", ")); // array of objects to csv string...
+    str = str.replace(/\$PLAN\$/i, user.plan?.name);
+    str = str.replace(/\$COMPANY\$/i, user.company);
     return str;
   };
   subject = expand(subject);
@@ -628,6 +603,8 @@ module.exports = {
   updateUser, 
   updateUserJobs,
   updateUserJobsInternal,
+  updateUserEmailTemplate,
+  checkUserJobRequestsFull,
   //_updateRoles,
   //_updatePlan,
   promoteToDealer,

@@ -116,10 +116,10 @@
         "--timeout",
         "10000",
         "--colors",
-        "${workspaceFolder}/test/helpers/environment"
+        "${workspaceFolder}/test/libs/environment"
       ],
       "internalConsoleOptions": "openOnSessionStart",
-      "name": "Mocha Tests (helpers/environment only)",
+      "name": "Mocha Tests (libs/environment only)",
       //"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["run", "mocha"],

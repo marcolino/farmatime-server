@@ -4,8 +4,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 const Product = require("../models/product.model");
 //const { logger } = require("./logger.controller");
-const { saveImageFile } = require("../helpers/images");
-const { isObject, isArray, diacriticMatchRegex, diacriticsRemove, nextError } = require("../helpers/misc");
+const { saveImageFile } = require("../libs/images");
+const { isObject, isArray, diacriticMatchRegex, diacriticsRemove, nextError } = require("../libs/misc");
 const config = require("../config");
 
 

@@ -43,7 +43,7 @@ describe("Misc Controller Tests", () => {
     const miscController = proxyquire("../../src/controllers/misc.controller", {
       "../services/email.service": emailServiceStub,
       "../config": configStub,
-      "../helpers/misc": { nextError: nextErrorStub }
+      "../libs/misc": { nextError: nextErrorStub }
     });
 
     const { sendTestEmail } = miscController;
@@ -61,7 +61,7 @@ describe("Misc Controller Tests", () => {
     const miscController = proxyquire("../../src/controllers/misc.controller", {
       "../services/email.service": emailServiceStub,
       "../config": configStub,
-      "../helpers/misc": { nextError: nextErrorStub }
+      "../libs/misc": { nextError: nextErrorStub }
     });
   
     const { sendTestEmail } = miscController;

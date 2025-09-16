@@ -20,9 +20,8 @@ module.exports = (app) => {
       callbackURL: `${config.baseUrl}/api/auth/google/callback/${flow}`,
       proxy: true, // important for services like fly.io
       profileFields: ["id", "displayName", "email"]
-      // TODO: remove accessToken, refreshToken below ?
-    }, (accessToken, _refreshToken, profile, done) => { // Google profile data is returned here
-      logger.info(`Google Auth ${flow} Callback in Passport: accessToken length:`, accessToken.length);
+      // accessToken, refreshToken from oauth providers are not used, we use ours
+    }, (_accessToken, _refreshToken, profile, done) => { // Google profile data is returned here
       logger.info(`Google Auth ${flow} Callback in Passport: profile display name:`, profile.displayName);
       return done(null, profile);
     }));
@@ -35,9 +34,8 @@ module.exports = (app) => {
       clientSecret: process.env.FACEBOOK_OAUTH_SECRET_KEY,
       callbackURL: `${config.baseUrl}/api/auth/facebook/callback/${flow}`,
       profileFields: ["id", "displayName", "email"], // request email and profile info
-      // TODO: remove accessToken, refreshToken below ?
-    }, (accessToken, _refreshToken, profile, done) => { // Facebook profile data is returned here
-      logger.info(`Facebook Auth ${flow} Callback in Passport: accessToken length:`, accessToken.length);
+      // accessToken, refreshToken from oauth providers are not used, we use ours
+    }, (_accessToken, _refreshToken, profile, done) => { // Facebook profile data is returned here
       logger.info(`Facebook Auth ${flow} Callback in Passport: profile display name:`, profile.displayName);
       return done(null, profile);
     }));

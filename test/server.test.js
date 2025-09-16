@@ -86,7 +86,7 @@ require("./routes/product.test");
 //require("./routes/payment.test");
 require("./routes/misc.test");
 
-require("./helpers/environment.test");
+require("./libs/environment.test");
 
 require("./models/plan.model.test");
 require("./models/role.model.test");

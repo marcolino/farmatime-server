@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const { nextError } = require("../helpers/misc");
+const { nextError } = require("../libs/misc");
 const config = require("../config");
 
 const checkDuplicateEmail = async (req, res, next) => {

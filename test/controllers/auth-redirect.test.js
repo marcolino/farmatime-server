@@ -1,6 +1,6 @@
 const server = require("../server.test");
 //const authController = require("../../src/controllers/auth.controller");
-const { redirectToClientWithSuccess, redirectToClientWithError } = require("../../src/helpers/misc");
+const { redirectToClientWithSuccess, redirectToClientWithError } = require("../../src/libs/misc");
 const config = require("../../src/config");
 
 describe("Auth redirect to client controllers", async () => {

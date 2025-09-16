@@ -1,7 +1,7 @@
 {
-  "name": "acme",
-  "version": "0.0.0",
-  "description": "Web app backend implementation, with authentication, users and products handling",
+  "name": "medicare",
+  "version": "0.0.1",
+  "description": "Medicare web app backend",
   "author": "marcolino",
   "license": "ISC",
   "engines": {
@@ -17,7 +17,7 @@
     "inject": "node scripts/inject.js",
     "run-worker_DISABLED": "node worker.js",
     "run-jobs": "curl -X POST http://localhost:5000/api/internal/runJobs",
-    "test": "NODE_ENV=test echo 'Running all tests'; mocha --exit --timeout 5000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
+    "test": "NODE_ENV=test; echo 'Running all tests'; mocha --exit --timeout 5000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
     "test-verbose": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail test/",
     "test:coverage": "nyc yarn test",
     "test:coverage:differential": "cat ./test/tmp/auth.controller.coverage; yarn test:coverage | grep auth.controller | tee -a ./test/tmp/auth.controller.coverage",
@@ -108,8 +108,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
-    "@typescript-eslint/eslint-plugin": "^8.41.0",
-    "@typescript-eslint/parser": "^8.41.0",
     "chai": "4.3.7",
     "chai-spies": "^1.0.0",
     "eslint": "^9.19.0",
@@ -139,7 +137,8 @@
   "resolutions": {
     "semver": "^7.7.1",
     "esbuild": "^0.25.0",
-    "tough-cookie": "^5.1.1"
+    "tough-cookie": "^5.1.1",
+    "typescript": "5.3.3"
   },
   "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728"
 }

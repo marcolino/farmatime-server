@@ -13,7 +13,7 @@ i18next
       loadPath: __dirname + "/../locales/{{lng}}/{{ns}}.json"
     },
     fallbackLng: config.app.serverLocale, // fallback language
-    // saveMissing: true, // log missing translations
+    saveMissing: false, // do not save missing translations in translation_untranslated.json
     // missingKeyHandler: (lng, ns, key) => {
     //   console.log(`Missing translation: ${key}`);
     // },

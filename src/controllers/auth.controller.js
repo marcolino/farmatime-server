@@ -4,7 +4,7 @@ const validateEmail = require("email-validator");
 //const crypto = require("crypto");
 //const { cookieOptions } = require("../middlewares/authJwt");
 const emailService = require("../services/email.service");
-const { audit } = require("../helpers/messaging");
+const { audit } = require("../libs/messaging");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
@@ -16,8 +16,8 @@ const {
   isAdministrator, normalizeEmail, /*localeDateTime,*/ nextError,
   redirectToClientWithError, redirectToClientWithSuccess,
   createTokensAndCookies, cookieOptions,
-} = require("../helpers/misc");
-const { createEncryptionKey, decryptData } = require("../helpers/encryption");
+} = require("../libs/misc");
+const { createEncryptionKey, decryptData } = require("../libs/encryption");
 
 const passport = require("passport");
 const config = require("../config");

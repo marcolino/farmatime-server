@@ -1,5 +1,5 @@
-//const CustomHtmlLexer = require("./src/helpers/customHtmlLexer");
-const CustomEjsLexer = require("./src/helpers/customEjsLexer");
+//const CustomHtmlLexer = require("./src/libs/customHtmlLexer");
+const CustomEjsLexer = require("./src/libs/customEjsLexer");
 
 module.exports = {
   contextSeparator: "_",

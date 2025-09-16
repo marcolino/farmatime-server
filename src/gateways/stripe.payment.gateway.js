@@ -6,8 +6,8 @@ const Stripe = require("stripe");
 const AbstractPaymentGateway = require("./Abstract.payment.gateway");
 const User = require("../models/user.model");
 const { logger } = require("../controllers/logger.controller");
-const { audit } = require("../helpers/messaging");
-const { formatMoney, nextError } = require("../helpers/misc");
+const { audit } = require("../libs/messaging");
+const { formatMoney, nextError } = require("../libs/misc");
 const i18n = require("../middlewares/i18n");
 const config = require("../config");
 
@@ -20,7 +20,7 @@ class StripeGateway extends AbstractPaymentGateway {
   }
 
   init() {
-    const apiKey = this.config.mode.stripelive ?
+    const apiKey = this.config.payment.gateways.stripe.live ?
       process.env.STRIPE_API_KEY_LIVE :
       process.env.STRIPE_API_KEY_TEST
     ;

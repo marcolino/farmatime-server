@@ -21,8 +21,8 @@ const mockCreateTokensAndCookies = sinon.stub();
 // Use proxyquire to inject the mocked logger into auth.controller.js
 const authController = proxyquire("../../src/controllers/auth.controller", {
   "./logger.controller": { logger: mockLogger },
-  "../helpers/messaging": { audit: mockAudit },
-  "../helpers/misc": {
+  "../libs/messaging": { audit: mockAudit },
+  "../libs/misc": {
     redirectToClientWithError: stubRedirectToClientWithError,
     redirectToClientWithSuccess: stubRedirectToClientWithSuccess,
     createTokensAndCookies: mockCreateTokensAndCookies,

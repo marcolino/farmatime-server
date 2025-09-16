@@ -1,5 +1,5 @@
 const emailService = require("../services/email.service");
-const { nextError } = require("../helpers/misc");
+const { nextError } = require("../libs/misc");
 const config = require("../config");
 
 const ping = async (req, res) => {

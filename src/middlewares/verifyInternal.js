@@ -1,4 +1,4 @@
-const { nextError } = require("../helpers/misc");
+const { nextError } = require("../libs/misc");
 const config = require("../config");
 
 const checkWorkerKey = async (req, res, next) => {

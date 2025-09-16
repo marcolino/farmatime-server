@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { isAdministrator, localeDateTime, cookieOptions, isDealerAtLeast } = require("../helpers/misc");
+const { isAdministrator, localeDateTime, cookieOptions, isDealerAtLeast } = require("../libs/misc");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 

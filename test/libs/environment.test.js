@@ -3,9 +3,9 @@
  */
 const server = require("../server.test");
 
-const { assertEnvironment } = require("../../src/helpers/environment");
+const { assertEnvironment } = require("../../src/libs/environment");
 
-describe("Helpers - Environment", async () => {
+describe("Libs - Environment", async () => {
   it("should not assert environment with no environment", async () => {
     const envBackup = process.env;
     process.env = {}; // simulate no environment

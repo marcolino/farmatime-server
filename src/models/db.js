@@ -7,7 +7,7 @@ const Role = require("./role.model.js");
 const Plan = require("./plan.model.js");
 const Product = require("./product.model.js");
 const { uploadProductImage } = require("../controllers/product.controller.js");
-const { createEncryptionKey } = require("../helpers/encryption");
+const { createEncryptionKey } = require("../libs/encryption");
 const { logger } = require("../controllers/logger.controller.js");
 const demoData = require("../../data/demo.js");
 const i18n = require("../middlewares/i18n.js");
@@ -125,8 +125,8 @@ const populate = async () => {
     try {
       const roleCount = await Role.estimatedDocumentCount();
       if (roleCount === 0) {
-        for (const data of demoData.roles) {
-          await Role.create(data);
+        for (const role of demoData.roles) {
+          await Role.create(role);
         }
       }
       await addRoleToUser("admin", demoData.users.admin.email);

@@ -133,10 +133,14 @@
   "Payment Required": "",
   "Permanent Redirect": "",
   "Plan is mandatory": "Le régime est obligatoire",
+  "Plan is mandatory and must have a valid _id": "Un plan est obligatoire et doit avoir un _id valide",
   "Plan is wrong": "Le plan est incorrect",
+  "Plan not found": "Plan non trouvé",
+  "Plan updated": "Plan mis à jour",
   "Please click on the following": "Please click on the following",
   "Please contact support at {{email}}": "Veuillez contacter l'assistance à {{email}}",
   "Please make a new signin request": "Veuillez faire une nouvelle demande de connexion",
+  "Please specify at least one role": "Veuillez spécifier au moins un rôle",
   "Please verify your email before using it": "Please verify your email before using it",
   "Precondition Failed": "",
   "Precondition Required": "",
@@ -168,6 +172,7 @@
   "Sorry, this user is not allowed elevate plan": "Désolé, cet utilisateur n'est pas autorisé à élever le plan",
   "Sorry, this user is not allowed elevate roles": "Désolé, cet utilisateur n'est pas autorisé à élever des rôles",
   "Sorry, you must have admin role to save notification preferences": "Désolé, vous devez avoir un rôle d'administrateur pour mettre à jour les préférences",
+  "Sorry, you must have admin role to update plans": "Désolé, vous devez avoir un rôle d'administrateur pour mettre à jour les plans",
   "standard": "standard",
   "Switch Proxy": "",
   "Switching Protocols": "",
@@ -210,7 +215,6 @@
   "User {{email} signup completed": "User {{email} signup completed",
   "User {{email}} signin": "User {{email}} signin",
   "User {{email}} signup completed": "User {{email}} signup completed",
-  "User encryption key not found": "𐓙Clé de chiffrement de l'utilisateur non trouvée",
   "User login on {{when}}": "User login on {{when}}",
   "User not found!": "User not found!",
   "User oauth login creation/update error: {{error}}": "Erreur de création/mise à jour de connexion OAuth utilisateur : {{error}}",
@@ -234,5 +238,6 @@
   "You must have admin role to get another user's plan": "You must have admin role to get another user's plan",
   "You must have admin role to get another user's roles": "You must have admin role to get another user's roles",
   "You must have admin role to update another user": "Vous devez avoir un rôle d'administrateur pour mettre à jour un autre utilisateur",
-  "You must have admin role to update another user's profile": "Vous devez avoir un rôle d'administrateur pour mettre à jour le profil d'un autre utilisateur"
+  "You must have admin role to update another user's profile": "Vous devez avoir un rôle d'administrateur pour mettre à jour le profil d'un autre utilisateur",
+  "You must have admin role to update another user's roles": "Vous devez avoir un rôle d'administrateur pour mettre à jour les rôles d'un autre utilisateur"
 }

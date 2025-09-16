@@ -6,7 +6,7 @@ const rewire = require("rewire");
 const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
-const misc = require("../../src/helpers/misc");
+const misc = require("../../src/libs/misc");
 const Product = require("../../src/models/product.model");
 const productController = rewire("../../src/controllers/product.controller"); // for private functions
 const {
@@ -19,7 +19,7 @@ const {
   deleteProduct,
   removeProduct
 } = require("../../src/controllers/product.controller");
-const { diacriticMatchRegex, diacriticsRemove } = require("../../src/helpers/misc");
+const { diacriticMatchRegex, diacriticsRemove } = require("../../src/libs/misc");
 const config = require("../../src/config");
 
 
@@ -204,7 +204,7 @@ describe("Product Controller", () => {
         // Use proxyquire to inject the stubs
         getProducts = proxyquire("../../src/controllers/product.controller", {
           "../models/product.model": ProductStub,
-          "../helpers/misc": { nextError: nextErrorStub, diacriticMatchRegex, diacriticsRemove },
+          "../libs/misc": { nextError: nextErrorStub, diacriticMatchRegex, diacriticsRemove },
           "../config": config
         }).getProducts;
       });
@@ -220,7 +220,7 @@ describe("Product Controller", () => {
         const diacriticMatchRegexStub = sinon.stub().returns("regex_pattern");
         proxyquire.load("../../src/controllers/product.controller", {
           "../models/product.model": ProductStub,
-          "../helpers/misc": { nextError: nextErrorStub, diacriticMatchRegex: diacriticMatchRegexStub, diacriticsRemove },
+          "../libs/misc": { nextError: nextErrorStub, diacriticMatchRegex: diacriticMatchRegexStub, diacriticsRemove },
           "../config": config
         });
 
@@ -244,7 +244,7 @@ describe("Product Controller", () => {
         const escapedValueStub = sinon.stub().returns("[");
         proxyquire.load("../../src/controllers/product.controller", {
           "../models/product.model": ProductStub,
-          "../helpers/misc": { nextError: nextErrorStub },
+          "../libs/misc": { nextError: nextErrorStub },
           "../config": config
         });
 
@@ -307,7 +307,7 @@ describe("Product Controller", () => {
         // use proxyquire to inject the stubs
         getProducts = proxyquire("../../src/controllers/product.controller", {
           "../../src/models/product.model": ProductStub,
-          "../../src/helpers/misc": { nextError: nextErrorStub }
+          "../../src/libs/misc": { nextError: nextErrorStub }
         }).getProducts;
       });
     
@@ -407,7 +407,7 @@ describe("Product Controller", () => {
         // proxy the product controller
         getProduct = proxyquire("../../src/controllers/product.controller", {
           "../../src/models/product.model": ProductStub,
-          "../../src/helpers/misc": { nextError: nextErrorStub },
+          "../../src/libs/misc": { nextError: nextErrorStub },
           "mongoose": mongooseStub // mock the mongoose module
         }).getProduct;
       });
@@ -534,7 +534,7 @@ describe("Product Controller", () => {
         // Proxy the product controller
         insertProduct = proxyquire("../../src/controllers/product.controller", {
           "../../src/models/product.model": ProductMock,
-          "../../src/helpers/misc": { nextError: nextErrorStub }
+          "../../src/libs/misc": { nextError: nextErrorStub }
         }).insertProduct;
       });
     
@@ -1253,7 +1253,7 @@ describe("Product Controller", () => {
         // proxy the product controller
         updateProduct = proxyquire("../../src/controllers/product.controller", {
           "../../src/models/product.model": ProductStub,
-          "../../src/helpers/misc": { nextError: nextErrorStub }
+          "../../src/libs/misc": { nextError: nextErrorStub }
         }).updateProduct;
       });
 
@@ -1337,7 +1337,7 @@ describe("Product Controller", () => {
     
         deleteProduct = proxyquire("../../src/controllers/product.controller", {
           "../../src/models/product.model": ProductStub,
-          "../../src/helpers/misc": { nextError: nextErrorStub }
+          "../../src/libs/misc": { nextError: nextErrorStub }
         }).deleteProduct;
       });
     
@@ -1396,7 +1396,7 @@ describe("Product Controller", () => {
     
         deleteProduct = proxyquire("../../src/controllers/product.controller", {
           "../../src/models/product.model": ProductStub,
-          "../../src/helpers/misc": { nextError: nextErrorStub }
+          "../../src/libs/misc": { nextError: nextErrorStub }
         }).deleteProduct;
       });
     
@@ -1640,20 +1640,20 @@ describe("Product Controller", () => {
       };
       next = sinon.stub();
 
-      // Proxy the images helpers and the product controller
-      const imageHelpers = proxyquire("../../src/helpers/images", {
-        "../helpers/images": {
+      // Proxy the images libs and the product controller
+      const imageLibs = proxyquire("../../src/libs/images", {
+        "../libs/images": {
           imageConvertFormatAndLimitSize: mockImageConvert,
           imageAddWaterMark: mockImageWatermark
         }
       });
 
       uploadProductImage = proxyquire("../../src/controllers/product.controller", {
-        "../helpers/misc": {
+        "../libs/misc": {
           nextError: nextErrorStub
         },
         "../models/product.model": ProductStub,
-        "../helpers/images": imageHelpers
+        "../libs/images": imageLibs
       }).uploadProductImage;
     });
 

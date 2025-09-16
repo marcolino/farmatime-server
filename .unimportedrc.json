@@ -8,7 +8,7 @@
     "src/gateways/stripe.payment.gateway.js",
     "src/config.mda.js",
     "src/config.medicare.js",
-    "src/helpers/customEjsLexer.js",
+    "src/libs/customEjsLexer.js",
     "src/labels-to-be-translated.js"
   ]
 }

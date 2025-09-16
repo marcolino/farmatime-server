@@ -33,7 +33,7 @@ const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
 const apiName = "MediCare";
 const appName = "medicare";
-const description = "A powerful web app, easily customizable";
+const description = "A powerful web app to automate medicine prescription requests";
 const dir = "ltr";
 const charset = "UTF-8";
 const themeColor = "#4e4f4c";
@@ -63,7 +63,6 @@ const configBase = {
     development,
     staging,
     test,
-    stripelive,
     testInCI,
   },
   baseUrl,
@@ -229,6 +228,7 @@ const configBase = {
     gateways: {
       stripe: {
         enabled: false,
+        live: false,
         products: stripelive ? { // products for a typical SAAS
           // stripe mode is live
           free: {
@@ -359,7 +359,7 @@ const configBase = {
       title: `${company}`,
       phone: "+39 333 6480983",
       address: "Via Felisio, 19 - 10098 Rivoli (TO)",
-      mailto: "mailto:marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
+      email: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
         name: "medicare.it", // TODO: use real home site name
@@ -403,8 +403,8 @@ const configBase = {
       notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL: time after notification token expires (in notifiction emails for example)
       verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
       codeDeliveryMedium: "email", // "email" / "sms" / ...: the signup confirmation code delivery medium
-      clientSessionExpirationSeconds: 0, // time after which session "pre-expires": user is asked to signout if session is no longer in use - 0 means no expiration
-      clientSessionExpirationResponseMaximumSeconds: 900, // time after which - after a session "pre-expiration" prompt has been presented to user and no response is obtained, the session will be terminated, and user logged out
+      //clientSessionExpirationSeconds: 0, // time after which session "pre-expires": user is asked to signout if session is no longer in use - 0 means no expiration
+      //clientSessionExpirationResponseMaximumSeconds: 900, // time after which - after a session "pre-expiration" prompt has been presented to user and no response is obtained, the session will be terminated, and user logged out
       //"clientLastActivityCheckTimeoutSeconds": 3600, // unused...
     },
     images: {
@@ -508,13 +508,16 @@ const configBase = {
       backgroundVideo: "wind-turbines", // see in "/public/videos/*.mp4" for available videos
       jobs: {
         storageKey: "jobs",
-        dragAndDrop: {
-          desktop: {
-            enabled: true,
+        maxRequestsPerUser: 32,
+        medicines: {
+          dragAndDrop: {
+            desktop: {
+              enabled: true,
+            },
+            mobile: {
+              enabled: false,
+            }
           },
-          mobile: {
-            enabled: false,
-          }
         },
         qrcode: {
           encryption: false, // ecryption is more secure, but produces far too big qrcodes

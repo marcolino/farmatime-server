@@ -11,10 +11,10 @@ const { logger } = require("./src/controllers/logger.controller");
 //const db = require("./src/models/db");
 const { initializeDatabase } = require("./src/models/db");
 const Env = require("./src/models/env.model");
-const { assertEnvironment } = require("./src/helpers/environment");
-const { audit } = require("./src/helpers/messaging");
+const { assertEnvironment } = require("./src/libs/environment");
+const { audit } = require("./src/libs/messaging");
 const emailService = require("./src/services/email.service");
-const { localeDateTime, inject, remoteAddress, secureStack } = require("./src/helpers/misc");
+const { localeDateTime, inject, remoteAddress, secureStack } = require("./src/libs/misc");
 const i18n = require("./src/middlewares/i18n");
 const rateLimit = require("./src/middlewares/rateLimit");
 const checkReferer = require("./src/middlewares/checkReferer");
@@ -34,7 +34,7 @@ if (config.mode.staging) {
   logger.info("Staging mode");
 }
 if (config.payment.gateways.stripe.enabled) {
-  logger.info(`Stripe is enabled, and Stripe mode is ${config.mode.stripelive}`);
+  logger.info(`Stripe is enabled, and Stripe mode is ${config.payment.gateways.stripe.live}`);
 }
 
 // the client root: the folder with the frontend site

@@ -96,17 +96,21 @@
 - winston colorize does not seem to work in any transport - OK
 - implement complete deletion of "own" user account (not reserved for admin, but also to logged users) - OK
 - check why refreshToken with social login lasts only 30 or 60 minutes - OK
+- rename helpers to libs - OK
+- send email to users => "azione 123123431324 non prevista" ... - OK
+- enforce medicines count limit per user in job altering endpoints - OK
 
-- enforce medicines count per user in job altering endpoints, and expose an endpoint for client too
+- expose medicines count limit per user endpoint for client
+- split demo.json and prod.json data files to initialize database
 - put shared code (in server: internalController.js:variablesExpand in client: JobEmailTemplateVariables.jsx) to /shared/src/ on sever, then add a script to copy all shared code from server to client, to be run before client-build step...
 - remove all `logger.error(...)` in controllers, if then we do nextError() ... 
-- rename helpers to libs
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
 - review NOTES, clean it up...
 - tests: server.sinon => sinon, server.expect => expect ...
 
 NEWFEATURE:
+- periodicamente eseguire `yarn update-medicines`
 - after social login, assign a default role to user ("user") ...
 - make more tests (use also AI for this...)
 - configurare un account su Cloudflare...

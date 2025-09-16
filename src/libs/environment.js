@@ -1,4 +1,4 @@
-const { audit } = require("../helpers/messaging");
+const { audit } = require("../libs/messaging");
 const config = require("../config");
 
 

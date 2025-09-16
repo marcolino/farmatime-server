@@ -1,6 +1,6 @@
 const server = require("../server.test");
 const { logger } = require("../../src/controllers/logger.controller");
-const { audit } = require("../../src/helpers/messaging");
+const { audit } = require("../../src/libs/messaging");
 const User = require("../../src/models/user.model");
 const VerificationCode = require("../../src/models/verificationCode.model");
 const authController = require("../../src/controllers/auth.controller");

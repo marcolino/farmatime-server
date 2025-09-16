@@ -131,10 +131,14 @@
   "Payment Required": "",
   "Permanent Redirect": "",
   "Plan is mandatory": "Plan is mandatory",
+  "Plan is mandatory and must have a valid _id": "Plan is mandatory and must have a valid _id",
   "Plan is wrong": "Plan is wrong",
+  "Plan not found": "Plan not found",
+  "Plan updated": "Plan updated",
   "Please click on the following": "Please click on the following",
   "Please contact support at {{email}}": "Please contact support at {{email}}",
   "Please make a new signin request": "Please make a new signin request",
+  "Please specify at least one role": "Please specify at least one role",
   "Please verify your email before using it": "Please verify your email before using it",
   "Precondition Failed": "",
   "Precondition Required": "",
@@ -167,6 +171,7 @@
   "Sorry, this user is not allowed elevate plan": "",
   "Sorry, this user is not allowed elevate roles": "Sorry, this user is not allowed elevate roles",
   "Sorry, you must have admin role to save notification preferences": "Sorry, you must have admin role to save notification preferences",
+  "Sorry, you must have admin role to update plans": "Sorry, you must have admin role to update plans",
   "standard": "standard",
   "Switch Proxy": "",
   "Switching Protocols": "",
@@ -210,7 +215,6 @@
   "User {{email}} signin": "User {{email}} signin",
   "User {{email}} signup completed": "User {{email}} signup completed",
   "user already had role {{roleName}}": "user already had role {{roleName}}",
-  "User encryption key not found": "User encryption key not found",
   "user has been promoted to role {{roleName}}": "user has been promoted to role {{roleName}}",
   "User login oauth creation/update error: {{error}}": "User login oauth creation/update error: {{error}}",
   "User login on {{when}}": "User login on {{when}}",
@@ -235,5 +239,6 @@
   "You must have admin role to get another user's plan": "You must have admin role to get another user's plan",
   "You must have admin role to get another user's roles": "You must have admin role to get another user's roles",
   "You must have admin role to update another user": "You must have admin role to update another user",
-  "You must have admin role to update another user's profile": "You must have admin role to update another user's profile"
+  "You must have admin role to update another user's profile": "You must have admin role to update another user's profile",
+  "You must have admin role to update another user's roles": "You must have admin role to update another user's roles"
 }

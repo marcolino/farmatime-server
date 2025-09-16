@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === "development") { // load environment variables
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const config = require("../src/config");
-const { inject } = require("../src/helpers/misc");
+const { inject } = require("../src/libs/misc");
 
 // injected config file name
 const configFileNameInjected = "config.json";

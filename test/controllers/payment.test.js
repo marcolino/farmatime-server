@@ -82,8 +82,8 @@ describe("Payment controller tests", function() {
     paymentController = proxyquire("../../src/controllers/payment.controller", {
       "stripe": stripeModuleStub, // use the initialized Stripe instance
       "../config": configStub,
-      "../helpers/messaging": { audit: auditStub },
-      "../helpers/misc": {
+      "../libs/messaging": { audit: auditStub },
+      "../libs/misc": {
         formatMoney: sinon.stub().returns("$100.00"),
         nextError: sinon.stub().callsFake((next, message, status) => {
           const error = new Error(message);
@@ -228,7 +228,7 @@ describe("Payment controller tests", function() {
     paymentController = proxyquire("../../src/controllers/payment.controller", {
       "stripe": stripeModuleStub,
       "../config": configStub,
-      "../helpers/messaging": { audit: auditStub }
+      "../libs/messaging": { audit: auditStub }
     });
     reqStub.parameters = {};
     reqStub.parameters.cart = {};
