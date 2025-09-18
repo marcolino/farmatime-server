@@ -33,6 +33,7 @@
     "client-build": "cd ../medicare-client && yarn build",
     "github-upload-secrets": "scripts/buildEnvTemplate.sh && node scripts/githubUploadSecrets",
     "finish": "date && ffplay -loglevel 0 -autoexit -nodisp trumpet.wav",
+    "scheduler": "curl -X POST -s https://medicare-prod.fly.dev/api/internal/runJobs -H \"x-worker-key: $((grep WORKER_KEY .env | cut -f2 -d=))\" && echo",
     "fly-upgrade": "fly version upgrade",
     "fly-create-app-production": "flyctl apps list | grep -q 'medicare-prod' || flyctl apps create 'medicare-prod'",
     "fly-create-app-staging": "flyctl apps list | grep -q 'medicare-staging' || flyctl apps create 'medicare-staging'",

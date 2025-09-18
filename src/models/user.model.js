@@ -80,6 +80,9 @@ const UserSchema = mongoose.Schema({
   jobsCLEAN: {
     type: Object, // used in development mode only to store unencrypted jobs data
   },
+  emailTemplate: {
+    type: Object,
+  },
   isDeleted: {
     type: Boolean,
     default: false

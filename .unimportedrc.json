@@ -4,6 +4,7 @@
     "stripe"
   ],
   "ignoreUnimported": [
+    "server.js",
     "src/gateways/Abstract.payment.gateway.js",
     "src/gateways/stripe.payment.gateway.js",
     "src/config.mda.js",

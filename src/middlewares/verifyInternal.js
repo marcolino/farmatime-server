@@ -6,7 +6,7 @@ const checkWorkerKey = async (req, res, next) => {
     return next();
   }
   const workerKey = req.headers['x-worker-key'];
-  if (!workerKey || workerKey !==  process.env.WORKER_KEY) {
+  if (!workerKey || workerKey !== process.env.WORKER_KEY) {
     return nextError(next, req.t("Forbidden"), 401);
   }
   return next();

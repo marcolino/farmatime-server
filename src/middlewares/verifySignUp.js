@@ -26,12 +26,21 @@ const checkDuplicateEmail = async (req, res, next) => {
           codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
         });
       }
+
+      /**
+       * If a user with requested email exists, but she has a social id,
+       * she could be trying to sign up with email/password now, so let her pass
+       */
+      if (user.socialId) {
+        return next(); // pass
+      }
+      
       return res.status(400).json({
         message: req.t("This email is already taken, sorry"),
         code: "EMAIL_EXISTS_ALREADY",
       });
     }
-    return next();
+    return next(); // pass
   } catch (err) {
     return nextError(next, req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), 500, err.stack);
   }

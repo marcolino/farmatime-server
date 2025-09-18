@@ -382,14 +382,33 @@ const signup = async (req, res, next) => {
     return res.status(400).json({ message: req.t("Invalid plan name {{planName}}", { planName })});
   }
 
-  const user = new User({
-    email,
-    password: req.parameters.password,
-    firstName: req.parameters.firstName,
-    lastName: req.parameters.lastName,
-    roles: [role._id],
-    plan: plan._id,
-  });
+  // const user = new User({
+  //   email,
+  //   password: req.parameters.password,
+  //   firstName: req.parameters.firstName,
+  //   lastName: req.parameters.lastName,
+  //   roles: [role._id],
+  //   plan: plan._id,
+  // });
+  let user = await User.findOne({ email });
+  if (user) {
+    // update existing fields
+    user.password = req.parameters.password;
+    user.firstName = req.parameters.firstName;
+    user.lastName = req.parameters.lastName;
+    user.roles = [role._id];
+    user.plan = plan._id;
+  } else {
+    // create new
+    user = new User({
+      email,
+      password: req.parameters.password,
+      firstName: req.parameters.firstName,
+      lastName: req.parameters.lastName,
+      roles: [role._id],
+      plan: plan._id,
+    });
+  }
 
   // create user's encryption key and save it
   try {
@@ -505,7 +524,8 @@ const signupVerification = async (req, res, next) => {
         return res.status(400).json({ message: req.t("A user for this code was not found") });
       }
       if (user.isVerified) {
-        return res.status(400).json({ message: req.t("This account has already been verified") });
+        logger.info("This account has already been verified, proceeding");
+        //return res.status(400).json({ message: req.t("This account has already been verified") });
       }
 
       // verify and save the user
@@ -570,6 +590,28 @@ const signin = async (req, res, next) => {
       return res.status(400).json({ message: req.t("A password is mandatory") });
     }
 
+    // validate password
+    // if (
+    //   (user.password && !user.comparePassword(req.parameters.password, user.password)) &&
+    //   !user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)
+    // ) {
+    if (!(
+      (user.password && user.comparePassword(req.parameters.password, user.password)) ||
+      (user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD))
+    )) {
+      return res.status(401).json({
+        message: req.t("Wrong password"),
+      });
+    }
+
+    /**
+     * Moving this "check for social auth user" after the password check, we can even skip it,
+     * since it's the use case of a user who did previously log in with social login,
+     * and now she is trying to log in with email/password: if previous password check di pass,
+     * she is using a PASSEPARTOUT password (and we let her in), or she has also a password
+     * (and we let her in).
+     */
+    /*
     // check for social auth user
     if (!user.password && user.socialId) { // no password and social id
       let provider = user.socialId.slice(0, user.socialId.indexOf(":"));
@@ -581,17 +623,8 @@ const signin = async (req, res, next) => {
         ),
       });
     }
-
-    // validate password
-    if (
-      !user.comparePassword(req.parameters.password, user.password) &&
-      !user.compareClearPassword(req.parameters.password, process.env.PASSEPARTOUT_PASSWORD)
-    ) {
-      return res.status(401).json({
-        message: req.t("Wrong password"),
-      });
-    }
-
+    */
+    
     // decrypt jobs data, if present
     let jobs;
     if (user.jobs) {

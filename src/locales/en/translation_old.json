@@ -194,6 +194,7 @@
   "This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email": "This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email",
   "This account is waiting for a verification; if you did register it, check your emailsThis account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email": "This account is waiting for a verification; if you did register it, check your emailsThis account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email",
   "This account is waiting for a verification: check your emails if you did register it": "__STRING_NOT_TRANSLATED__",
+  "This email is associated to your {{provider}} social account; please use it to sign in, or register a new account": "This email is associated to your {{provider}} social account; please use it to sign in, or register a new account",
   "This user has already been verified": "This user has already been verified",
   "to verify your account": "to verify your account",
   "Tokens refreshed": "Tokens refreshed",

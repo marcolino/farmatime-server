@@ -195,6 +195,7 @@
   "This account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email": "Ce compte attend une vérification ; si vous l'avez enregistré, vérifiez vos emails, ou demandez un nouvel email en vous connectant avec votre email",
   "This account is waiting for a verification; if you did register it, check your emailsThis account is waiting for a verification; if you did register it, check your emails, or ask for a new email logging in with email": "__STRING_NOT_TRANSLATED__",
   "This account is waiting for a verification: check your emails if you did register it": "__STRING_NOT_TRANSLATED__",
+  "This email is associated to your {{provider}} social account; please use it to sign in, or register a new account": "Cet email est associé à votre compte social {{provider}} ; veuillez l'utiliser pour vous connecter ou enregistrer un nouveau compte",
   "This user has already been verified": "This user has already been verified",
   "to verify your account": "to verify your account",
   "Tokens refreshed": "𐓙Jetons rafraîchis",

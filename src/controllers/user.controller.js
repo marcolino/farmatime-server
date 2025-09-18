@@ -240,16 +240,8 @@ const updateUserJobs = async (req, res, next) => {
     const userId = req.userId;
     const jobs = req.parameters.jobs;
 
-    const result = await updateUserJobsInternal(req, userId, jobs);
-
-    if (result.error) {
-      return res.status(result.status).json({
-        error: true,
-        message: req.t(result.message),
-      });
-    } else {
-      return res.json({message: req.t("User jobs updated successfully")});
-    }
+    await updateUserJobsInternal(req, userId, jobs);
+    return res.json({message: req.t("User jobs updated successfully")});
   } catch (err) {
     return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
   }
@@ -272,28 +264,25 @@ const updateUserJobsInternal = async (req, userId, jobs) => {
     return { error: true, status: 400, message: req.t("Sorry, currently the maximum number of total requests (medicines) per user is {{n}}", {n: config.app.ui.jobs.maxRequestsPerUser}) };
   }
 
-  try {
-    const user = await User.findById(userId);
+  // do not use try(catch, caller are supposed to catch exceptions
+  const user = await User.findById(userId);
 
-    if (!user.encryptionKey) {
-      return { error: true, status: 403, message: req.t("User encryption key not found") };
-    }
-
-    // In development mode, store unencrypted jobs data, to debug in an easier way
-    //if (config.mode.development) { TODO: enable this `if` when production is fully working!
-    user.jobsCLEAN = jobs;
-    //}
-
-    // Encrypt job with encryptionKey
-    const encryptedJobs = await encryptData(jobs, user.encryptionKey);
-
-    user.jobs = encryptedJobs;
-    await user.save();
-
-    return { success: true };
-  } catch(err) {
-    return { error: true, status: 500, message: err.message };
+  if (!user.encryptionKey) {
+    return { error: true, status: 403, message: req.t("User encryption key not found") };
   }
+
+  // In development mode, store unencrypted jobs data, to debug in an easier way
+  //if (config.mode.development) { TODO: enable this `if` when production is fully working!
+  user.jobsCLEAN = jobs;
+  //}
+
+  // Encrypt job with encryptionKey
+  const encryptedJobs = await encryptData(jobs, user.encryptionKey);
+
+  user.jobs = encryptedJobs;
+  await user.save();
+
+  return true;
 };
 
 const updateUserEmailTemplate = async (req, res, next) => {
@@ -311,6 +300,7 @@ const updateUserEmailTemplate = async (req, res, next) => {
     const user = await User.findById(userId);
 
     user.emailTemplate = emailTemplate;
+    await user.save();
 
     return res.json({message: req.t("User jobs email template updated successfully")});
   } catch (err) {

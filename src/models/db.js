@@ -133,6 +133,7 @@ const populate = async () => {
       await addRoleToUser("operator", demoData.users.operator.email);
       await addRoleToUser("dealer", demoData.users.dealer.email);
       await addRoleToUser("user", demoData.users.user.email);
+      await addRoleToUser("user", demoData.users.userSocial.email);
     } catch (err) {
       logger.error("Error populating roles collection:", err.message);
       throw err;

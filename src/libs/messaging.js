@@ -44,7 +44,7 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
     actionSymbol = "🟠";
     break;
   case "error":
-    actionColor = "darktred";
+    actionColor = "darkred";
     actionSymbol = "🔴";
     break;
   case "":
