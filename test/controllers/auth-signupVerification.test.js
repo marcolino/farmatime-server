@@ -60,15 +60,21 @@ describe("Auth signup verification controller", () => {
     server.expect(res.json.calledWith({ message: "A user for this code was not found" })).to.be.true;
   });
 
-  it("should return 400 if user is already verified", async () => {
+  it("should return 200 even if user is already verified", async () => {
     req.parameters.code = "valid-code";
     stubVerificationCodeFindOne.resolves({ code: "valid-code", userId: "user-id" });
-    stubUserFindOne.resolves({ _id: "user-id", isVerified: true });
+    //stubUserFindOne.resolves({ _id: "user-id", isVerified: true });
+    stubUserFindOne.resolves({
+      _id: "user-id",
+      isVerified: true,
+      save: server.sinon.stub().resolves({ _id: "user-id", isVerified: true }), // add save()
+    });
 
     await authController.signupVerification(req, res, next);
-
-    server.expect(res.status.calledWith(400)).to.be.true;
-    server.expect(res.json.calledWith({ message: "This account has already been verified" })).to.be.true;
+    server.expect(res.status.calledOnceWithExactly(200)).to.be.true;
+    server.expect(
+      res.json.calledOnceWithExactly({ message: "The account has been verified, you can now log in" })
+    ).to.be.true;
   });
 
   it("should verify and save the user", async () => {

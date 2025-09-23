@@ -4,6 +4,7 @@ const { Logtail } = require("@logtail/node");
 const { LogtailTransport } = require("@logtail/winston");
 const { decode } = require("html-entities");
 const { formatInTimeZone } = require("date-fns-tz");
+const util = require("util");
 const config = require("../config");
 
 let logger = null, logtail;
@@ -12,8 +13,11 @@ const exceptionHandlers = [];
 const colorize = true;
 const timestampFormat = "yyyy-MM-dd HH:mm:ssXXX";
 
-if (!config.mode.test) {
-  logtail = new Logtail(process.env.BETTERSTACK_API_TOKEN);
+if (!config.mode.test && config.logs.betterstack.enabled) {
+  logtail = new Logtail(
+    process.env.BETTERSTACK_API_TOKEN,
+    { endpoint: process.env.BETTERSTACK_INGESTING_HOST },
+  );
 }
 
 class LogtailStream extends stream.Writable {
@@ -32,7 +36,13 @@ class LogtailStream extends stream.Writable {
     let logMessage = `[${level.toUpperCase()}] ${message}`;
     if (splatArgs.length) {
       logMessage += ` ${splatArgs
-        .map((arg) => (typeof arg === "string" ? arg : JSON.stringify(arg)))
+        .map((arg) =>
+          typeof arg === "string" ?
+            arg :
+            arg instanceof Error ?
+              arg.stack :
+              util.inspect(arg, { depth: 5, breakLength: 120 })
+        )
         .join(" ")}`;
     }
 
@@ -53,12 +63,7 @@ const timestampLocal = winston.format.timestamp({
     formatInTimeZone(new Date(), config.api.localTimezone, timestampFormat),
 });
 
-// UTC formatter (for Logtail)
-const timestampUTC = winston.format.timestamp({
-  format: () => new Date().toISOString(),
-});
-
-// ✅ Shared Rome format for console & file
+// Shared Rome format for console & file
 const formatWithArgsRome = winston.format.combine(
   winston.format.colorize(),
   timestampLocal,
@@ -73,7 +78,11 @@ const formatWithArgsRome = winston.format.combine(
     if (splatArgs.length) {
       splatArgs.forEach((extraArg) => {
         logOutput += ` ${
-          isString(extraArg) ? extraArg : JSON.stringify(extraArg)
+          isString(extraArg) ?
+            extraArg :
+            extraArg instanceof Error ?
+              extraArg.stack :
+              util.inspect(extraArg, { depth: 5, breakLength: 120 })
         }`;
       });
     }
@@ -85,7 +94,7 @@ const formatWithArgsRome = winston.format.combine(
 try {
   // File logs → Local TZ
   transports.push(
-    new winston.transports.File({ // File transport
+    new winston.transports.File({
       filename: config.logs.file.name,
       format: formatWithArgsRome,
       level: config.logs.levelMap.development,
@@ -96,7 +105,7 @@ try {
 
   // Console logs → Local TZ
   transports.push(
-    new winston.transports.Console({ // Console transport
+    new winston.transports.Console({
       format: formatWithArgsRome,
       level: config.mode.test ? config.logs.levelMap.test : "debug",
       handleExceptions: true,
@@ -105,18 +114,15 @@ try {
   );
 
   // Logtail logs → UTC
-  if (!config.mode.test) {
+  if (!config.mode.test && config.logs.betterstack.enabled) {
+    const timestampUTC = winston.format.timestamp({
+      format: () => new Date().toISOString(),
+    });
     transports.push(
-      new winston.transports.Stream({ // Logtail stream transport
+      new winston.transports.Stream({
         stream: new LogtailStream(logtail),
         format: winston.format.combine(timestampUTC, winston.format.json()),
         level: config.logs.levelMap.development,
-        // level: // order matters: if production, staging can be true or false
-        // config.mode.staging ? config.logs.levelMap.staging :
-        // config.mode.production ? config.logs.levelMap.production : // eslint-disable-line indent
-        // config.mode.development ? config.logs.levelMap.development : // eslint-disable-line indent
-        // config.mode.test ? config.logs.levelMap.test : // eslint-disable-line indent
-        // "debug", // eslint-disable-line indent
         handleExceptions: true,
         colorize,
       })
@@ -129,7 +135,7 @@ try {
 exceptionHandlers.push(
   new winston.transports.File({ filename: config.logs.file.name })
 );
-if (!config.mode.test) {
+if (!config.mode.test && config.logs.betterstack.enabled) {
   exceptionHandlers.push(new LogtailTransport(logtail));
 }
 
@@ -141,6 +147,3 @@ logger = winston.createLogger({
 });
 
 module.exports = { logger };
-if (config.mode.test) {
-  module.exports.LogtailStream = LogtailStream;
-}

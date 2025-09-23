@@ -358,7 +358,7 @@ const secureStack = (stack) => {
 const nextError = (next, message, status, stack) => {
   const error = new Error(message);
   error.status = status;
-  error.stack = secureStack(stack);
+  error.stack = stack; // secureStack(stack);
   return next(error);
 };
 

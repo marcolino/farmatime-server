@@ -1,24 +1,73 @@
 const User = require("../models/user.model");
+const Request = require("../models/request.model");
 const { decryptData } = require("../libs/encryption");
 const { logger } = require("../controllers/logger.controller");
-const { updateUserJobsInternal } = require("../controllers/user.controller");
+const { updateUserJobsLocal } = require("../controllers/user.controller");
 const emailService = require("../services/email.service");
 const { audit } = require("../libs/messaging");
 const { nextError } = require("../libs/misc");
 const config = require("../config");
 
+const getRequests = async (req, res, next) => {
+  try {
+    // get all requests
+    const requests = await Request.find()
+      .select()
+      .lean()
+      .exec()
+    ;
+    
+    return res.json({
+      requests,
+    });
+  } catch (err) { // catch requestSend exceptions
+    return nextError(next, req.t("Error getting requests: {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
+
 const runJobs = async (req, res, next) => {
   const requestSend = async (req, user, jobs, job, emailTemplate, medicines, now) => {
-    await emailService.send(req, {
+    const response  = await emailService.send(req, {
       to: job.doctor.email,
       toName: job.doctor.name,
       replyTo: job.patient.email,
       replyToName: `${job.patient.firstName} ${job.patient.lastName}`,
       subject: emailTemplate.subject,
       htmlContent: variablesExpand(req, emailTemplate.body, job, medicines, user),
+      tags: [
+        process.env.BREVO_WEBHOOK_SECRET, // to be used in the webhook to authenticate a request to track
+        config.email.trackTag, // to be used in the webhook to identify a request to track
+      ],
     });
+    const messageId = response.messageId;
     logger.info("    request sent via email");
 
+    try {
+      const status = { label: "created"/*, at field is automatically filled */ };
+      const request = await Request.create({
+        provider: config.email.provider,
+        providerMessageId: messageId,
+        patientFirstName: job.patient.firstName,
+        patientLastName: job.patient.lastName,
+        patientEmail: job.patient.email,
+        doctorName: job.doctor.name,
+        doctorEmail: job.doctor.email,
+        medicines: medicines.map((med) => ({
+          id: med.id,
+          name: med.name,
+          since: new Date(med.fieldSinceDate),
+          every: med.fieldFrequency
+        })),
+        userId: user._id,
+        jobId: job.id,
+        statuses: [status],
+        lastStatus: status.label,
+      });
+      logger.info("New request created:", request);
+    } catch (err) {
+      return nextError(next, err.message, 500, err.stack);
+    }
+    
     // update lastDate for this medicine job data
     const jobsNew = jobs.map((j) => {
       if (j.id === job.id) {
@@ -31,10 +80,9 @@ const runJobs = async (req, res, next) => {
       }
       return j;
     });
-    await updateUserJobsInternal(req, req.user._id, jobsNew);
+    await updateUserJobsLocal(req, req.user._id, jobsNew);
     logger.info("    updated medicine last date");
   };
-
 
   try {
     // get all users, to get all jobs to be sent
@@ -42,7 +90,7 @@ const runJobs = async (req, res, next) => {
       .select(["-password", "-__v"])
       .lean()
       .exec()
-      ;
+    ;
     
     let requestsCount = 0;
     for (const user of users) {
@@ -115,7 +163,7 @@ const runJobs = async (req, res, next) => {
           }
 
           const sinceDate = new Date(medicine.fieldSinceDate);  
-          const lastDate = new Date(medicine.fieldLastDate ?? new Date("1970-01-01")); // default to a very old date if not set
+          const lastDate = new Date(medicine.fieldLastDate ?? new Date("1970-01-01")); // default to a very old date if last send date is not set
           const frequencyDays = parseInt(medicine.fieldFrequency);
 
           if (sinceDate.yyyymmdd() > nowDate.yyyymmdd()) {
@@ -124,6 +172,7 @@ const runJobs = async (req, res, next) => {
           }
 
           const nextDate = lastDate.addDays(frequencyDays);
+          //const nextDate = nextScheduledDate(frequencyDays)
           //logger.info(`    medicine nextDate is ${nextDate.yyyymmdd()}`); // ...
           if (nextDate.yyyymmdd() > nowDate.yyyymmdd()) {
             logger.info(`    medicine ${medicine.id} is not due yet (next ${nextDate.yyyymmdd()}), skipping it`);
@@ -168,6 +217,67 @@ const runJobs = async (req, res, next) => {
   }
 };
 
+/**
+ * Check if user requests are not fully used already
+ */
+const checkUserJobRequests = async (req, res, next) => {
+  const userId = req.userId;
+  const medicines = req.parameters.medicines;
+  
+  try {
+    if (!userId) {
+      //return res.status(403).json({ error: true, message: 'Jobs required' });
+      return res.json({ err: true, status: 403, message: req.t("User id is required") });
+    }
+    if (!medicines) {
+      //return res.status(400).json({ error: true, message: 'Jobs required' });
+      return res.json({ err: true, status: 400, message: req.t("Medicines is required") });
+    }
+
+    const user = await User.findOne({ _id: req.userId });
+    const jobs = await decryptData(user.jobs, user.encryptionKey);
+
+    //const requestsTot = jobs.reduce((total, job) => total + job.medicines.length, 0);
+    const requestsCurrent = medicines.length;
+    const requestsPresent = jobs.reduce((sum, job) => sum + job.medicines.length, 0);
+    const requestsTot = requestsPresent + requestsCurrent;
+    const requestsMax = config.app.ui.jobs.maxRequestsPerUser;
+    logger.info("requestsCurrent:", requestsCurrent, "- requestsPresent:", requestsPresent);
+    logger.info("requestsTot:", requestsTot, "- requestsMax:", requestsMax);
+    if (requestsTot >= requestsMax) {
+      return res.json({ err: false, status: 200, check: false, message: req.t("Sorry, currently the maximum number of total medicine requests per user is {{n}}", { n: requestsMax }) });
+    }
+    return res.json({ err: false, status: 200, check: true, message: req.t("The number of total medicine requests ({{requestsTot}} are lower than maximum allowed ({{requestsMax}}", { requestsTot, requestsMax }) });
+  } catch (err) {
+    return nextError(next, err.message, 500, err.stack);
+  }
+};
+
+/*
+const nextScheduledDate = (origStr, freq) => {
+  const orig = new Date(origStr);       // ORIG (YYYY-MM-DD)
+  const today = new Date();             // Now
+  today.setHours(0, 0, 0, 0);           // normalize to midnight
+
+  // difference in days between today and ORIG
+  const diffDays = Math.floor((today - orig) / (1000 * 60 * 60 * 24));
+
+  let steps;
+  if (diffDays >= 0 && diffDays % freq === 0) {
+    // today is already on the schedule
+    steps = diffDays / freq;
+  } else {
+    // round up to the next multiple
+    steps = diffDays > 0 ? Math.ceil(diffDays / freq) : 0;
+  }
+
+  const next = new Date(orig);
+  next.setDate(orig.getDate() + steps * freq);
+
+  return next.toISOString().slice(0, 10);  // YYYY-MM-DD
+}
+*/
+
 const variablesExpand = (req, html, job, /*medicineId*/medicines, user) => { // TODO: client/server duplicated code...
   // Variable tokens
   const variableTokens = {
@@ -188,5 +298,7 @@ const variablesExpand = (req, html, job, /*medicineId*/medicines, user) => { // 
 };
 
 module.exports = {
+  getRequests,
   runJobs,
+  checkUserJobRequests,
 };

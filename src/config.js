@@ -45,7 +45,7 @@ const currencies = { // allowed currencies
   "CHF": "fr.",
   "GBP": "£",
 };
-const company = "Sistemi Solari Rossi";
+const company = "MediCare";
 const urlPublic = staging ? "https://medicare-staging.fly.dev" : "https://medicare-prod.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = (production || staging) ? urlPublic : urlLocal;
@@ -192,7 +192,7 @@ const configBase = {
       maxsize: 5 * (1024 ** 2), // max logs file size: 5MB
     },
     betterstack: {
-      enable: true,
+      enabled: true,
     },
     // papertrail: {
     //   enable: false,
@@ -201,7 +201,7 @@ const configBase = {
     // },
     levelMap: { // log levels for all currently foreseen modes
       test: "crit",
-      production: "debug", // when production will be fully stable, we can high this up to "info"...
+      production: "debug", // when production will be fully stable, we can high this up to "info", to log less...
       staging: "debug",
       development: "debug",
     },
@@ -274,30 +274,39 @@ const configBase = {
     },
   },
   email: {
-    dryrun: test || development, // if true, do not really send emails, use fake send
+    provider: "Brevo",
+    webhook: {
+      uuidRetentionDays: 365,
+    },
+    dryrun: !!test, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },
+    trackTag: "request-to-be-tracked-with-webkook",
     administration: {
-      from: "sistemisolarirossi@gmail.com", // "medicare@gmail.com" // when we read this account
-      fromName: "Sistemi Solari backend server",
+      from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
+      fromName: "MediCare backend server",
       to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      toName: "MEDICARE admin",
+      toName: "MediCare admin",
     },
     support: {
+      from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
+      fromName: "MediCare backend server",
       to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      toName: "MEDICARE support",
+      toName: "MediCare support",
     },
     notification: {
+      from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
+      fromName: "MediCare backend server",
       to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      toName: "MEDICARE notification",
+      toName: "MediCare notification",
     },
-    doctor: {
-      from: "medicareinfo6@gmail.com", // "medicare@gmail.com" // when we read this account
-      fromName: "MediCare",
-      replyTo: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      replyToName: "MEDICARE admin",
-    },
+    // doctor: {
+    //   from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
+    //   fromName: "MediCare",
+    //   // replyTo: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
+    //   // replyToName: "MediCare admin",
+    // },
     templatesPath: "../templates",
     templatesExtension: ".ejs",
   },
@@ -362,7 +371,7 @@ const configBase = {
       email: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
-        name: "medicare.it", // TODO: use real home site name
+        name: "medicare.it", // use real home site name
         url: baseUrl,
       },
       owner: {
@@ -510,7 +519,6 @@ const configBase = {
         //storageKey: "jobs",
         unifyRequests: true,
         maxRequestsPerUser: 32,
-
         medicines: {
           dragAndDrop: {
             desktop: {

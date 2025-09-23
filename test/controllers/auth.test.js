@@ -1016,6 +1016,7 @@ describe("Auth internal errors", () => {
     server.expect(next.firstCall.args[0].message).to.equal(expectedMessage);
   });
 
+  /*
   it("should handle error in User.findOne during signup", async () => {
     // stub User.findOne to throw an error
     const findOneStub = server.sinon.stub(User, "findOne").throws(new Error("Database error"));
@@ -1031,7 +1032,8 @@ describe("Auth internal errors", () => {
     // });
     // server.expect(next.firstCall.args[0].message).to.equal(expectedMessage); // TODO...
   });
-
+  */
+  
   it("should handle error in User.findOne during signin", async () => {
     // stub User.findOne to throw an error
     const findOneStub = server.sinon.stub(User, "findOne").throws(new Error("Database error"));

@@ -5,7 +5,7 @@ const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 // // address schema
-// const AddressSchema = mongoose.Schema({
+// const AddressSchema = new mongoose.Schema({
 //   street: String,
 //   streetNo: String,
 //   city: String,
@@ -20,7 +20,7 @@ const EncryptedSchema = new mongoose.Schema({
 });
 
 
-const UserSchema = mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   // username:
   //   type: String,
   //   required: "Username is required",

@@ -49,6 +49,9 @@ morgan.format("api-logs", ":method :url HTTP/:http-version :status ':referrer' -
 
 // instantiate express app
 const app = express();
+
+let server = null; // server will be app.listen() ...
+
 // initialize Passport and session management using the middleware
 passportSetup(app);
 
@@ -110,8 +113,8 @@ app.use(cors({
   credentials: true, // if cookies/auth headers are needed
 }));
 
-// initialize Passport and session management using the middleware
-passportSetup(app);
+// // initialize Passport and session management using the middleware
+// passportSetup(app);
 
 // parse requests of content-type: application/json
 app.use(express.json({
@@ -135,11 +138,15 @@ app.use((req, res, next) => {
 
 // handle maintenance mode
 app.use(async (req, res, next) => {
-  const env = await Env.load(); // load env and access it (it is cached for config.envReloadIntervalSeconds)
-  if (env.MAINTENANCE === "true") {
-    return res.status(503).json({ message: "On maintenance" });
+  try {
+    const env = await Env.load(); // load env and access it (it is cached for config.envReloadIntervalSeconds)
+    if (env.MAINTENANCE === "true") {
+      return res.status(503).json({ message: "On maintenance" });
+    }
+    next();
+  } catch (err) {
+    next(err);
   }
-  next();
 });
 
 // handle version, if needed (req.version is used to determine the API default version)
@@ -169,7 +176,8 @@ require("./src/routes/user.routes")(app);
 require("./src/routes/product.routes")(app);
 require("./src/routes/payment.routes")(app);
 require("./src/routes/misc.routes")(app);
-require("./src/routes/internal.routes")(app);
+require("./src/routes/request.routes")(app);
+require("./src/routes/webhook.routes")(app);
 
 // expose a /public folder on server
 if (config.publicBasePath) {
@@ -200,7 +208,7 @@ app.get("*", (req, res) => {
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next is needed to be considered error handling
   logger.error("Server error:", err);
   let status = err.status || 500;
-  let message = `${decode(err.message.trim()) || (req.t ? req.t("Server error") : "Server error")}`;
+  let message = decode(err.message.trim()) || (req.t ? req.t("Server error") : "Server error");
 
   if (status === 500) { // audit errors
     const t = req.t || ((msg) => msg); // fallback to identity if req.t is not ready yet
@@ -234,22 +242,36 @@ process.on("exit", () => {
 
 // handle all uncaught exceptions
 process.on("uncaughtException", (err) => {
-  logger.error("Uncaught Exception:", err);
-  process.exit(1);
+  const message = `Uncaught Exception: ${err.message}`;
+  shutdown(1, message);
 });
 
 // handle all unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
+  let message;
   if (reason instanceof Error) {
-    logger.error(
-      `Unhandled rejection at promise: ${promise}, reason: ${reason.message},
-      stack: ${reason.stack}`
-    );
+    message = `Unhandled rejection at promise: ${promise}, reason: ${reason.message}, stack: ${reason.stack}`;
   } else {
-    logger.error(`Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`);
+    message = `Unhandled rejection at promise: ${promise}, reason: ${JSON.stringify(reason)}`;
   }
-  process.exit(2);
+  shutdown(2, message);
 });
+
+// Graceful shutdown
+const shutdown = (code = 1, msg = null) => {
+  if (msg) {
+    logger.error("Fatal error, shutting down:", msg);
+  }
+  // Close DB, servers, etc.
+  if (server && server.close) {
+    server.close(() => {
+      logger.warn("HTTP server closed");
+      process.exit(code);
+    });
+  } else {
+    process.exit(code);
+  }
+};
 
 // define and run an async function to start all subprocesses
 (async () => {
@@ -273,7 +295,7 @@ process.on("unhandledRejection", (reason, promise) => {
     try {
       const port = config.api.port;
       const host = "0.0.0.0";
-      app.listen(port, host, () => {
+      server = app.listen(port, host, () => {
         logger.info(`Server is running on ${host}:${port}`);
         /* disabling audit server startup
         if (config.mode.production) { // audit server start up

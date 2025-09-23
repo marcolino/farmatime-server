@@ -12,14 +12,14 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
     return;
   }
 
-  // set "mode" symbol (dev/prod)
-  const modeSymbol =
-    config.mode.development ? "🚧" :
-      config.mode.staging ? "🌐" :
-        config.mode.production ? "" : //"🚀" :
-          "�"
-    // eslint-disable-line indent -- unforeseen mode
-  ;
+  // // set "mode" symbol (dev/prod)
+  // const modeSymbol =
+  //   config.mode.development ? "🚧" :
+  //     config.mode.staging ? "🌐" :
+  //       config.mode.production ? "" : //"🚀" :
+  //         "�"
+  //   // eslint-disable-line indent -- unforeseen mode
+  // ;
   
   const baseUrl = config.baseUrl;
 
@@ -66,7 +66,7 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
 
   const to = config.email.support.to;
   const toName = config.email.support.toName;
-  subject = `${(config.email.subject.prefix ? "[" + config.email.subject.prefix + "]" + " " + modeSymbol : " ")} ${actionSymbol} ${subject}`;
+  subject = `${(config.email.subject.prefix ? "[" + config.email.subject.prefix + "]" : " ")} ${actionSymbol} ${subject}`;
   htmlContent = `
     <div style="font-family: ${fontFamily};">
       <div style="font-size: ${bodyFontSize}; font-sweight: ${bodyFontWeight}; color: ${bodyColor}">

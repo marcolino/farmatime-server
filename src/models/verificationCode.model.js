@@ -4,7 +4,7 @@ const config = require("../config");
 // const VerificationCode = mongoose.model(
 //   "VerificationCode",
 //   new mongoose.Schema({
-const VerificationCodeSchema = mongoose.Schema({
+const VerificationCodeSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     required: "userId user reference is required in VerificationCode document",

@@ -32,8 +32,11 @@
     "checks": "yarn env-copy-check && yarn test && yarn i18n-check && yarn deps-check && yarn jshint-check && yarn eslint-check && echo \"All checks passed\"",
     "client-build": "cd ../medicare-client && yarn build",
     "github-upload-secrets": "scripts/buildEnvTemplate.sh && node scripts/githubUploadSecrets",
-    "finish": "date && ffplay -loglevel 0 -autoexit -nodisp trumpet.wav",
-    "scheduler": "curl -X POST -s https://medicare-prod.fly.dev/api/internal/runJobs -H \"x-worker-key: $((grep WORKER_KEY .env | cut -f2 -d=))\" && echo",
+    "finish-ok": "date && ffplay -loglevel 0 -autoexit -nodisp dev/sounds/trumpet.wav",
+    "finish-ko": "ffplay -loglevel 0 -autoexit -nodisp dev/sounds/cat.wav",
+    "run-jobs-dev": "curl -X POST -s http://localhost:5000/api/request/runJobs && echo",
+    "run-jobs-production": "curl -X POST -s https://medicare-prod.fly.dev/api/request/runJobs -H \"x-worker-key: $((grep WORKER_KEY .env | cut -f2 -d=))\" && echo",
+    "brevo-webhook-dev": "curl -X POST -H 'Content-Type: application/json' -d @test/tmp/BREVO_WEBHOOK_PAYLOAD_SAMPLE.json http://localhost:5000/api/webhook/brevo",
     "fly-upgrade": "fly version upgrade",
     "fly-create-app-production": "flyctl apps list | grep -q 'medicare-prod' || flyctl apps create 'medicare-prod'",
     "fly-create-app-staging": "flyctl apps list | grep -q 'medicare-staging' || flyctl apps create 'medicare-staging'",
@@ -50,8 +53,8 @@
     "fly-logs-staging": "flyctl logs -a medicare-staging",
     "fly-logs-production": "flyctl logs -a medicare-prod",
     "fly-scale-1-worker-staging_DISABLED": "fly scale count worker=1 -a medicare-staging",
-    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging && yarn finish",
-    "pub": "NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production && yarn finish"
+    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging && yarn finish-ok; yarn finish-ko",
+    "pub": "( NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production && yarn finish-ok ) || yarn finish-ko"
   },
   "keywords": [
     "node.js",
@@ -104,9 +107,6 @@
     "vitest": {
       "built": false
     }
-  },
-  "overrides": {
-    "typescript": "$typescript"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

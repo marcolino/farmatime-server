@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
-const EnvSchema = mongoose.Schema({
+const EnvSchema = new mongoose.Schema({
   key: {
     type: String,
   },

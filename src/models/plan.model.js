@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const PlanSchema = mongoose.Schema({
+const PlanSchema = new mongoose.Schema({
   name: {
     type: String,
     enum : [ "free", "standard", "unlimited" ],

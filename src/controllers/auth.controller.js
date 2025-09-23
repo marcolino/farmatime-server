@@ -451,7 +451,7 @@ const signup = async (req, res, next) => {
       ...(!config.mode.production) && { code: signupVerification.code } // to enble test mode to verify signup
     });
   } catch (err) {
-    return nextError(next, req.t("Error sending verification code via {{medium}}: {{err}}", { medium: config.app.auth.codeDeliveryMedium, err: err.message }), 400, err.stack);
+    return nextError(next, req.t("Error sending verification code via {{medium}}: {{err}} ({{reason}})", { medium: config.app.auth.codeDeliveryMedium, err: err.message, reason: err.response?.body?.message ?? null }), 400, err.stack);
   }
 };
 
@@ -915,8 +915,6 @@ const revoke = async (req, res, next) => {
     
     return res.status(200).json({ message: req.t("User account has been completely revoked") });
   } catch (err) {
-    // TODO: for some reason, using : {{err}} in the message here does not work
-    logger.warn("DEBUG ONLY (CHECK IF IT IS SHOWN IN AUDIT)- err.message and err when revoking user account:", err.message, err);
     return nextError(next, req.t("Error revoking user account: {{err}}", { err: err.message }), 500, err.stack);
   }
 };

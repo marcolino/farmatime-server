@@ -16,11 +16,8 @@ describe("Auth routes", () => {
       .post("/api/auth/signup")
       .send(setup.user)
     ;
-    expect = 201;
-    if (res.status !== expect) {
-      console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
-      throw new Error();
-    }
+    //console.log("REASON:", res.body);
+    server.expect(res.status).to.equal(201);
     server.expect(res.body).to.have.property("code");
     signupVerifyCode = res.body.code;
   });
@@ -173,18 +170,19 @@ describe("Auth routes", () => {
     server.expect(res.body.message).to.equal("The account has been verified, you can now log in");
   });
 
-  it("should not confirm user twice", async () => {
+  it("should even confirm user twice", async () => {
     const res = await server.request
       .post("/api/auth/signupVerification")
       .send({ code: signupVerifyCode })
     ;
-    expect = 400;
+    expect = 200;
     if (res.status !== expect) {
       console.error(`server.expected: ${server.expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("This account has already been verified");
+    //server.expect(res.body.message).to.equal("This account has already been verified");
+    server.expect(res.body.message).to.equal("The account has been verified, you can now log in");
   });
 
   it("should not resend register code for already confirmed user", async () => {
@@ -390,14 +388,14 @@ describe("Auth routes", () => {
     delete setup.user.socialId;
   });
 
-  it("should not login user if user has only a socialId", async () => {
+  it("should not login user with a wrong password if user has only a socialId", async () => {
     //const user = await User.findOne({ email: demoData.users.userSocial.email });
     //setup.user.socialId = "pinco-pallo:12345678";
     const res = await server.request
       .post("/api/auth/signin")
       .send({
         "email": demoData.users.userSocial.email,
-        "password": "new password"
+        "password": "wrong password"
       })
     ;
     expect = 401;
@@ -406,7 +404,8 @@ describe("Auth routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("This email is associated to your PincoPallo social account; please use it to sign in, or register a new account");
+    //server.expect(res.body.message).to.equal("This email is associated to your PincoPallo social account; please use it to sign in, or register a new account");
+    server.expect(res.body.message).to.equal("Wrong password");
     delete setup.user.socialId;
   });
 

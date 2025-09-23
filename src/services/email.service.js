@@ -64,13 +64,20 @@ class EmailService {
       if (!params.subject) return logger.error("Parameter 'subject' is mandatory to send email");
       if (!params.htmlContent) return logger.error("Parameter 'htmlContent' is mandatory to send email");
       if (!params.toName) params.toName = null;
-      if (!params.from) params.from = config.email.doctor.from;
-      if (!params.fromName) params.fromName = config.email.doctor.fromName;
+      if (!params.from) params.from = config.email.support.from;
+      if (!params.fromName) params.fromName = config.email.support.fromName;
       if (!params.replyTo) params.replyTo = ""; 
       if (!params.replyToName) params.replyToName = "";
 
       if (typeof params.to === "string") params.to = [params.to]; // accept also a single string with an email
 
+      const modeSymbol =
+        config.mode.development ? "🚧" :
+          config.mode.staging ? "🌐" :
+            config.mode.production ? "" : //"🚀" :
+              "�"
+        // eslint-disable-line indent -- unforeseen mode
+      ;
       const htmlContent = params.htmlContent;
 
       // create smtp email object
@@ -88,8 +95,9 @@ class EmailService {
             name: params.replyToName,
           },
         } : {}),
-        subject: params.subject,
+        subject: modeSymbol + ' ' + params.subject,
         htmlContent,
+        ...(params.tags ? { tags: params.tags } : {}),
       };
       logger.info(`sendSmtpEmail:`, `to: ${sendSmtpEmail.to[0].email}, sender: ${sendSmtpEmail.sender.email}`, `subject: ${sendSmtpEmail.subject}`);
 
@@ -101,8 +109,8 @@ class EmailService {
         response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       }
       
-      //logger.info(`Email sent to ${params.to} with message id ${response.messageId}`);
-      return true;
+      logger.info(`Email sent to ${params.to} with message id ${response.messageId}, response was:`, response);
+      return response;
     } catch (err) {
       // logger.error(`Error sending email to ${params.to}:`, err);
       // throw err;

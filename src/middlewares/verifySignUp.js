@@ -40,6 +40,7 @@ const checkDuplicateEmail = async (req, res, next) => {
         code: "EMAIL_EXISTS_ALREADY",
       });
     }
+    
     return next(); // pass
   } catch (err) {
     return nextError(next, req.t("Cannot check email {{email}}: {{err}}", { email: req.parameters.email, err: err.message }), 500, err.stack);

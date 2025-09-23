@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const config = require("../config");
 
-const ProductSchema = mongoose.Schema({
+const ProductSchema = new mongoose.Schema({
   mdaCode: {
     type: String,
   },

@@ -237,10 +237,9 @@ const updateUser = async (req, res, next) => {
  */
 const updateUserJobs = async (req, res, next) => {
   try {
-    const userId = req.userId;
     const jobs = req.parameters.jobs;
 
-    await updateUserJobsInternal(req, userId, jobs);
+    await updateUserJobsLocal(req, jobs);
     return res.json({message: req.t("User jobs updated successfully")});
   } catch (err) {
     return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
@@ -248,12 +247,12 @@ const updateUserJobs = async (req, res, next) => {
 };
 
 /**
- * Update current user's jobs data (callable internally)
+ * Update current user's jobs data (callable locally)
  */
-const updateUserJobsInternal = async (req, userId, jobs) => {
-  if (!userId) {
+const updateUserJobsLocal = async (req, jobs) => {
+  if (!req.userId) {
     //return res.status(400).json({ error: true, message: 'Jobs required' });
-    return { error: true, status: 400, message: req.t("User id is required") };
+    return { error: true, status: 403, message: req.t("User id is required") };
   }
   if (!jobs) {
     //return res.status(400).json({ error: true, message: 'Jobs required' });
@@ -261,18 +260,18 @@ const updateUserJobsInternal = async (req, userId, jobs) => {
   }
   const requestsTotal = jobs.reduce((total, job) => total + job.medicines.length, 0);
   if (requestsTotal >= config.app.ui.jobs.maxRequestsPerUser) {
-    return { error: true, status: 400, message: req.t("Sorry, currently the maximum number of total requests (medicines) per user is {{n}}", {n: config.app.ui.jobs.maxRequestsPerUser}) };
+    return { error: true, status: 400, message: req.t("Sorry, currently the maximum number of total medicine requests per user is {{n}}", {n: config.app.ui.jobs.maxRequestsPerUser}) };
   }
 
   // do not use try(catch, caller are supposed to catch exceptions
-  const user = await User.findById(userId);
+  const user = await User.findById(req.userId);
 
   if (!user.encryptionKey) {
     return { error: true, status: 403, message: req.t("User encryption key not found") };
   }
 
   // In development mode, store unencrypted jobs data, to debug in an easier way
-  //if (config.mode.development) { TODO: enable this `if` when production is fully working!
+  //if (config.mode.development) { TODO: enable this `if` when production is final
   user.jobsCLEAN = jobs;
   //}
 
@@ -290,7 +289,7 @@ const updateUserEmailTemplate = async (req, res, next) => {
   const emailTemplate = req.parameters.emailTemplate;
   
   if (!userId) {
-    return res.status(400).json({ error: true, message: 'User id is required' });
+    return res.status(403).json({ error: true, message: 'User id is required' });
   }
   if (!emailTemplate) {
     return res.status(400).json({ error: true, message: 'Email template is required' });
@@ -306,29 +305,6 @@ const updateUserEmailTemplate = async (req, res, next) => {
   } catch (err) {
     return nextError(next, req.t("Error updating jobs email template: {{err}}", { err: err.message }), 500, err.stack);   
   }
-};
-
-/**
- * Check if user requests are not fully used already
- */
-const checkUserJobRequestsFull = async (req, res) => {
-  const userId = req.userId;
-  const jobs = req.parameters.jobs;
-  
-  if (!userId) {
-    //return res.status(400).json({ error: true, message: 'Jobs required' });
-    return { error: true, status: 400, message: req.t("User id is required") };
-  }
-  if (!jobs) {
-    //return res.status(400).json({ error: true, message: 'Jobs required' });
-    return { error: true, status: 400, message: req.t("Jobs is required") };
-  }
-  const requestsTot = jobs.reduce((total, job) => total + job.medicines.length, 0);
-  const requestsMax = config.app.ui.jobs.maxRequestsPerUser;
-  if (requestsTot >= requestsMax) {
-    return { error: true, status: 400, message: req.t("Sorry, currently the maximum number of total requests (medicines) per user is {{n}}", { n: requestsMax }) };
-  }
-  return res.json({ message: req.t("User job requests ({{requestsTot}} are lower than maximum allowed ({{requestsMax}}", { requestsTot, requestsMax }) });
 };
 
 // promotes a user to "dealer" role
@@ -591,9 +567,8 @@ module.exports = {
   getUser,
   updateUser, 
   updateUserJobs,
-  updateUserJobsInternal,
+  updateUserJobsLocal,
   updateUserEmailTemplate,
-  checkUserJobRequestsFull,
   //_updateRoles,
   //_updatePlan,
   promoteToDealer,

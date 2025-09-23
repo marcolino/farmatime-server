@@ -1,8 +1,8 @@
 name: Scheduled Jobs
 
 env: # Global constants for all jobs/steps
-  JOB_RUNNER_URL_STAGING: https://medicare-staging.fly.dev/api/internal/runJobs
-  JOB_RUNNER_URL_PROD: https://medicare-prod.fly.dev/api/internal/runJobs
+  JOB_RUNNER_URL_STAGING: https://medicare-staging.fly.dev/api/request/runJobs
+  JOB_RUNNER_URL_PROD: https://medicare-prod.fly.dev/api/request/runJobs
   JOB_RUNNER_VERB: POST
   WORKER_KEY: ${{ secrets.WORKER_KEY }}
 

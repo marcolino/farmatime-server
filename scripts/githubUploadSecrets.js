@@ -25,6 +25,7 @@ dotenv.config({ path: LOCAL_ENV_FILE });
 // load or initialize the cache
 function loadCache() {
   if (fs.existsSync(CACHE_FILE)) {
+    console.log("Using cache");
     return JSON.parse(fs.readFileSync(CACHE_FILE, "utf-8"));
   }
   return {};
@@ -52,16 +53,21 @@ async function fetchPublicKey() {
       },
     });
     if (!response.ok) {
-      //console.error("Failed to fetch GitHub public key", response);
-      const errText = await response.text();
-      console.error("Failed to fetch GitHub public key", response.status, response.statusText, errText);
-      throw new Error(`Failed to fetch GitHub public key: ${response.status} ${response.statusText} - ${errText}`);
+      let message;
+      if (response.statis === 401) {
+        message = "Failed to fetch GitHub public key, probably it is expired: please go to https://github.com/settings/tokens, and possibly generate new token, with 'repo' and 'workflow' permissions.";
+      } else {
+        const errText = await response.text();
+        message = `Failed to fetch GitHub public key: ${response.status} ${response.statusText} - ${errText}`;
+      }
+      throw new Error(message);
     }
 
     const data = await response.json();
     return { key: data.key, keyId: data.key_id };
   } catch (err) {
-    console.error("Exception fetching GitHub public key", err);
+    const message = err.message;
+    throw new Error(`Exception fetching GitHub public key: ${message}`);
   }
 }
 
