@@ -27,7 +27,7 @@ const RequestSchema = new mongoose.Schema({
 
   // Relations
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  jobId: { type: Number },
+  jobId: { type: String /*mongoose.Schema.Types.ObjectId*/ },
 
   // Status tracking
   lastStatus: { type: String, index: true },
@@ -36,7 +36,7 @@ const RequestSchema = new mongoose.Schema({
     status: {
       type: String,
       enum: [
-        "delivered","opened","click","bounce","blocked","spam","error","unforeseen"
+        "request","delivered","click","opened","bounce","invalid_email","blocked","spam","unsubscribed","error","unforeseen"
       ],
       required: true,
     },

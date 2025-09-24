@@ -18,6 +18,7 @@
   "{{count}} user(s) have been deleted_other": "{{count}} utenti sono stati cancellati",
   "A filter must be an object": "Un filtro deve essere un oggetto",
   "A password is mandatory": "Una password è obbligatoria",
+  "A powerful web app to automate medicine prescription requests": "Una potente app web per automatizzare le richieste di prescrizione di farmaci",
   "A user for this code was not found": "Non è stato trovato un utente per questo codice",
   "A verification code has been sent to {{email}}": "Un codice di verifica è stato inviato a {{email}}",
   "admin": "amministratore",

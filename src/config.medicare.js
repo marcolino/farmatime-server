@@ -15,7 +15,7 @@ const config = {
   title: apiName, // app title
   // app: {
   //   company: {
-  //     name: `${company} s.r.l.`,
+  //     name: `${company}`,
   //     title: `${company}`,
   //     phone: "+39 333 3333333",
   //     address: "Via Leinì, 1/A - 10077 San Maurizio Canavese (TO)",

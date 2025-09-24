@@ -51,8 +51,11 @@ const brevo = async (req, res, next) => {
   switch (event) {
   case "request": // fall down
   case "delivered": // fall down
-  case "unique_opened": // fall down
   case "click": // fall down
+    //good = true;
+    break;
+  case "unique_opened": // fall down
+    status = "opened";
     //good = true;
     break;
   case "hard_bounce":

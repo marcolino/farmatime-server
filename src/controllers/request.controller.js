@@ -210,7 +210,7 @@ const runJobs = async (req, res, next) => {
     });
 
     return res.json({
-      message: `Processed all users jobs medicines, sent ${requestsCount} request(s).`
+      message: `Processed all users jobs medicines, sent ${requestsCount} medicine request(s).`
     });
   } catch (err) {
     return nextError(next, err.message, 500, err.stack);
@@ -235,7 +235,7 @@ const checkUserJobRequests = async (req, res, next) => {
     }
 
     const user = await User.findOne({ _id: req.userId });
-    const jobs = await decryptData(user.jobs, user.encryptionKey);
+    const jobs = user.jobs ? await decryptData(user.jobs, user.encryptionKey) : [];
 
     //const requestsTot = jobs.reduce((total, job) => total + job.medicines.length, 0);
     const requestsCurrent = medicines.length;

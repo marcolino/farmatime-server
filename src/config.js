@@ -33,7 +33,7 @@ const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
 const apiName = "MediCare";
 const appName = "medicare";
-const description = "A powerful web app to automate medicine prescription requests";
+//const description = "A powerful web app to automate medicine prescription requests";
 const dir = "ltr";
 const charset = "UTF-8";
 const themeColor = "#4e4f4c";
@@ -56,6 +56,11 @@ const baseUrlClientPreview = (production || staging) ? "" : "http://localhost:41
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
 //const customization = "mda"; // custom configuration to be merged with configBase
+
+function t(key) {
+  const i18n = require("./middlewares/i18n");
+  return i18n.t(key);
+}
 
 const configBase = {
   mode: {
@@ -364,11 +369,11 @@ const configBase = {
     title: apiName, // app title
     siteUrl: baseUrl, // site url
     company: {
-      name: `${company} s.r.l.`,
+      name: `${company}`,
       title: `${company}`,
       phone: "+39 333 6480983",
       address: "Via Felisio, 19 - 10098 Rivoli (TO)",
-      email: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
+      email: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
         name: "medicare.it", // use real home site name
@@ -519,6 +524,7 @@ const configBase = {
         //storageKey: "jobs",
         unifyRequests: true,
         maxRequestsPerUser: 32,
+
         medicines: {
           dragAndDrop: {
             desktop: {
@@ -564,15 +570,16 @@ const configBase = {
       },
     },
     index: { // to inject index.html
+      get _description() { return t("A powerful web app to automate medicine prescription requests"); },
+      get description() { return config.app.index._description; },  
       language: serverLocale,
       dir: dir,
       charset: charset,
-      description: description,
       themeColor: themeColor,
       cacheControl: cacheControl,
       og: {
         title: apiName,
-        description: description,
+        get description() { return config.app.index._description; },
         url: baseUrl, // i.e.: "https://ahrefs.com/blog/open-graph-meta-tags/""
         type: "website",
         image: { // use custom images for “shareable” pages (e.g., homepage, articles, etc.). Use your logo or any other branded image for the rest of your pages. Use images with a 1.91:1 ratio and minimum recommended dimensions of 1200x630 for optimal clarity across all devices.
@@ -585,7 +592,7 @@ const configBase = {
       twitter: {
         card: `${baseUrl}/apple-touch-icon.png`,
         title: apiName,
-        description: description,
+        get description() { return config.app.index._description; },
         image: `${baseUrl}/favicon-64x64.png`,
       },
       apple: {
