@@ -542,8 +542,11 @@ const propertyLastNameValidate = (req, value/*, user*/) => { // validate and nor
 
 const propertyPhoneValidate = (req, value/*, user*/) => { // validate and normalize phone number (with int'l prefix)
   value = value?.trim();
+  if (!value) {
+    return [null, value]; // phone is optional
+  }
   const valueNormalized = value.replace(/^\+/, '00');
-  const digitsCount = valueNormalized.match(/\d/g).length;
+  const digitsCount = valueNormalized.match(/\d/g)?.length;
   if (digitsCount < 9 || digitsCount > 15) {
     return [ req.t("Phone is not valid, sorry"), value ];
   }
