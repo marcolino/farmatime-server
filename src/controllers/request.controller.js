@@ -13,6 +13,10 @@ const getRequests = async (req, res, next) => {
   const requestedUserId = req.parameters.userId;
   const isAdmin = await isAdministrator(userId);
 
+  // DEBUG ONLY: artificial delay response
+  // const delay = ms => new Promise(resolve => setTimeout(resolve, ms * 1000));
+  // await delay(5); // waiting 1 second.
+
   // only admins can get requests of other users
   if (!isAdmin && requestedUserId && requestedUserId !== userId) {
     return res.status(403).json({ message: req.t("You must have admin role to get requests of another user") });
