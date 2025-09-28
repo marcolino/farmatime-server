@@ -8,6 +8,7 @@ const testInCI = (test && !!process.env.GITHUB_ACTIONS); // test mode, inside CI
 const production = (process.env.NODE_ENV === "production"); // production mode (production behaviour, production db on public host)
 const development = (process.env.NODE_ENV === "development"); // development mode (development behaviour, local db on local host)
 const staging = (process.env.NODE_ENV === "staging"); // staging mode (production behaviour, production db on local host)
+
 const stripelive = (process.env.LIVE_MODE === "true"); // stripe mode is "live"  
 
 /**
@@ -55,12 +56,6 @@ const baseUrlClient = (production || staging) ? urlPublicClient : urlLocalClient
 const baseUrlClientPreview = (production || staging) ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
-//const customization = "mda"; // custom configuration to be merged with configBase
-
-function t(key) {
-  const i18n = require("./middlewares/i18n");
-  return i18n.t(key);
-}
 
 const configBase = {
   mode: {
@@ -570,8 +565,7 @@ const configBase = {
       },
     },
     index: { // to inject index.html
-      get _description() { return t("A powerful web app to automate medicine prescription requests"); },
-      get description() { return config.app.index._description; },  
+      description: "INDEX_DESCRIPTION",
       language: serverLocale,
       dir: dir,
       charset: charset,

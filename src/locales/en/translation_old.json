@@ -5,6 +5,7 @@
   "{{count}} user(s) have been removed_other": "{{count}} user(s) have been removed",
   "A filter is mandatory to delete users (use \"*\" for all users)": "A filter is mandatory to delete users (use \"*\" for all users)",
   "A filter must be the string \"*\" or an object": "A filter must be the string \"*\" or an object",
+  "A powerful web app to automate medicine prescription requests": "A powerful web app to automate medicine prescription requests",
   "A reset code has been sent to {{email}} via {{codeDeliveryMedium}}": "A reset code has been sent to {{email}} via {{codeDeliveryMedium}}",
   "A verification code has been resent to {{to}} via {{codeDeliveryMedium}}": "A verification code has been resent to {{to}} via {{codeDeliveryMedium}}",
   "Accepted": "",

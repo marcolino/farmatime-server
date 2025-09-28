@@ -9,6 +9,10 @@ const RequestSchema = new mongoose.Schema({
   
   providerMessageId: { type: String, required: true, index: true },
 
+  // Snapshot of user info
+  userFirstName: { type: String, required: true },
+  userLastName: { type: String, required: true },
+  
   // Snapshot of patient/doctor info
   patientFirstName: { type: String, required: true },
   patientLastName: { type: String, required: true },

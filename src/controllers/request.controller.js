@@ -5,13 +5,28 @@ const { logger } = require("../controllers/logger.controller");
 const { updateUserJobsLocal } = require("../controllers/user.controller");
 const emailService = require("../services/email.service");
 const { audit } = require("../libs/messaging");
-const { nextError } = require("../libs/misc");
+const { nextError, isAdministrator } = require("../libs/misc");
 const config = require("../config");
 
 const getRequests = async (req, res, next) => {
+  const userId = req.userId;
+  const requestedUserId = req.parameters.userId;
+  const isAdmin = await isAdministrator(userId);
+
+  // only admins can get requests of other users
+  if (!isAdmin && requestedUserId && requestedUserId !== userId) {
+    return res.status(403).json({ message: req.t("You must have admin role to get requests of another user") });
+  }
+
+  // filter requests on requestedUserId was specified, and force filter on current user id if not admin
+  const filter = isAdmin ?
+    (requestedUserId ? { userId: requestedUserId } : {}) :
+    { userId: userId }
+  ;
+
   try {
     // get all requests
-    const requests = await Request.find()
+    const requests = await Request.find(filter)
       .select()
       .lean()
       .exec()
@@ -45,6 +60,8 @@ const runJobs = async (req, res, next) => {
     try {
       const status = { label: "created"/*, at field is automatically filled */ };
       const request = await Request.create({
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
         provider: config.email.provider,
         providerMessageId: messageId,
         patientFirstName: job.patient.firstName,
