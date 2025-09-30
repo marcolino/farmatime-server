@@ -62,7 +62,7 @@ const runJobs = async (req, res, next) => {
     logger.info("    request sent via email");
 
     try {
-      const status = { label: "created"/*, at field is automatically filled */ };
+      const status = { label: "created" /*, at field is automatically filled */ };
       const request = await Request.create({
         userFirstName: user.firstName,
         userLastName: user.lastName,
