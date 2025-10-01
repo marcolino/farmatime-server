@@ -1,4 +1,4 @@
-const apiName = "Farmatime";
+const apiName = "Farmatime"; 
 const appName = "farmatime";
 //const company = "Farmatime";
 
