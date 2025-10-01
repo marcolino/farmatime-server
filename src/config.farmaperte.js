@@ -1,6 +1,6 @@
-const apiName = "MediCare";
-const appName = "medicare";
-//const company = "Medicare";
+const apiName = "Farmaperte";
+const appName = "farmaperte";
+//const company = "Farmaperte";
 
 const config = {
   api: {
@@ -8,7 +8,7 @@ const config = {
   },
   logs: {
     file: {
-      name: "logs/medicare.log", // logs and exceptions file
+      name: "logs/farmaperte.log", // logs and exceptions file
     },
   },
   name: appName, // app name

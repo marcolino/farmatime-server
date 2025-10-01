@@ -14,7 +14,7 @@ const sendTestEmail = async (req, res, next) => {
   try {
     await emailService.sendWithTemplate(req, {
       to: "marcosolari@gmail.com",
-      toName: "Medicare Administrator",
+      toName: "Farmaperte Administrator",
       subject: "TEST SUBJECT 1",
       templateName: "test",
       templateParams: {

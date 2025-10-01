@@ -7,7 +7,7 @@
   "ignoreUnimported": [
     "server.js",
     "src/config.mda.js",
-    "src/config.medicare.js",
+    "src/config.farmaperte.js",
     "src/gateways/Abstract.payment.gateway.js",
     "src/gateways/stripe.payment.gateway.js",
     "src/labels-to-be-translated.js",

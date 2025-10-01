@@ -32,8 +32,8 @@ const customization = process.env.CUSTOMIZATION || null; // custom configuration
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
-const apiName = "MediCare";
-const appName = "medicare";
+const apiName = "Farmaperte";
+const appName = "farmaperte";
 //const description = "A powerful web app to automate medicine prescription requests";
 const dir = "ltr";
 const charset = "UTF-8";
@@ -46,8 +46,8 @@ const currencies = { // allowed currencies
   "CHF": "fr.",
   "GBP": "£",
 };
-const company = "MediCare";
-const urlPublic = staging ? "https://medicare-staging.fly.dev" : "https://medicare-prod.fly.dev";
+const company = "Farmaperte";
+const urlPublic = staging ? "https://farmaperte-staging.fly.dev" : "https://farmaperte-prod.fly.dev";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = (production || staging) ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;
@@ -188,7 +188,7 @@ const configBase = {
   },
   logs: {
     file: {
-      name: "logs/medicare.log", // logs and exceptions file
+      name: "logs/farmaperte.log", // logs and exceptions file
       maxsize: 5 * (1024 ** 2), // max logs file size: 5MB
     },
     betterstack: {
@@ -284,28 +284,28 @@ const configBase = {
     },
     trackTag: "request-to-be-tracked-with-webkook",
     administration: {
-      from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
-      fromName: "MediCare backend server",
-      to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      toName: "MediCare admin",
+      from: "farmaperte.posta@gmail.com", // "farmaperte@gmail.com" // when we read this account
+      fromName: "Farmaperte backend server",
+      to: "marcosolari@gmail.com", // "farmaperte@gmail.com" // when we read this account
+      toName: "Farmaperte admin",
     },
     support: {
-      from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
-      fromName: "MediCare backend server",
-      to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      toName: "MediCare support",
+      from: "farmaperte.posta@gmail.com", // "farmaperte@gmail.com" // when we read this account
+      fromName: "Farmaperte backend server",
+      to: "marcosolari@gmail.com", // "farmaperte@gmail.com" // when we read this account
+      toName: "Farmaperte support",
     },
     notification: {
-      from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
-      fromName: "MediCare backend server",
-      to: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-      toName: "MediCare notification",
+      from: "farmaperte.posta@gmail.com", // "farmaperte@gmail.com" // when we read this account
+      fromName: "Farmaperte backend server",
+      to: "marcosolari@gmail.com", // "farmaperte@gmail.com" // when we read this account
+      toName: "Farmaperte notification",
     },
     // doctor: {
-    //   from: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
-    //   fromName: "MediCare",
-    //   // replyTo: "marcosolari@gmail.com", // "medicare@gmail.com" // when we read this account
-    //   // replyToName: "MediCare admin",
+    //   from: "farmaperte.posta@gmail.com", // "farmaperte@gmail.com" // when we read this account
+    //   fromName: "Farmaperte",
+    //   // replyTo: "marcosolari@gmail.com", // "farmaperte@gmail.com" // when we read this account
+    //   // replyToName: "Farmaperte admin",
     // },
     templatesPath: "../templates",
     templatesExtension: ".ejs",
@@ -368,10 +368,10 @@ const configBase = {
       title: `${company}`,
       phone: "+39 333 6480983",
       address: "Via Felisio, 19 - 10098 Rivoli (TO)",
-      email: "medicare.posta@gmail.com", // "medicare@gmail.com" // when we read this account
+      email: "farmaperte.posta@gmail.com", // "farmaperte@gmail.com" // when we read this account
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
-        name: "medicare.it", // use real home site name
+        name: "farmaperte.it", // use real home site name
         url: baseUrl,
       },
       owner: {
@@ -573,7 +573,7 @@ const configBase = {
       cacheControl: cacheControl,
       og: {
         title: apiName,
-        get description() { return config.app.index._description; },
+        description: "INDEX_DESCRIPTION",
         url: baseUrl, // i.e.: "https://ahrefs.com/blog/open-graph-meta-tags/""
         type: "website",
         image: { // use custom images for “shareable” pages (e.g., homepage, articles, etc.). Use your logo or any other branded image for the rest of your pages. Use images with a 1.91:1 ratio and minimum recommended dimensions of 1200x630 for optimal clarity across all devices.
@@ -586,7 +586,7 @@ const configBase = {
       twitter: {
         card: `${baseUrl}/apple-touch-icon.png`,
         title: apiName,
-        get description() { return config.app.index._description; },
+        description: "INDEX_DESCRIPTION",
         image: `${baseUrl}/favicon-64x64.png`,
       },
       apple: {

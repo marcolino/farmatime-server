@@ -140,9 +140,9 @@ async function processSecrets() {
       // update the cache if the upload was successful
       if (uploadSuccess) {
         cache[secretName] = secretHash;
-        console.log("Uploaded", key, secretName);
+        console.log(`Uploaded secret: ${secretName}`);
       } else {
-        console.log("Error uploading", key, secretName);
+        console.log(`Error uploading secret key: ${key}, value: ${ secretName }`);
       }
 
       return uploadSuccess;

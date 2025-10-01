@@ -1,4 +1,4 @@
-app = 'medicare-prod'
+app = 'farmaperte-prod'
 primary_region = 'cdg'
 
 [build]
