@@ -3,30 +3,30 @@
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
 
-[![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/farmaperte-server?style=flat)](version)
-[![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/farmaperte-server?style=flat)](license)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/marcolino/farmatime-server?style=flat)](version)
+[![GitHub package.json license](https://img.shields.io/github/package-json/license/marcolino/farmatime-server?style=flat)](license)
 
-<!--[![Mocha tests ok](https://github.com/marcolino/farmaperte-server/blob/main/public/badges/mocha.svg)](tests)-->
-<!--![Test Status](https://github.com/marcolino/farmaperte-server/actions/workflows/test.yml/badge.svg)-->
+<!--[![Mocha tests ok](https://github.com/marcolino/farmatime-server/blob/main/public/badges/mocha.svg)](tests)-->
+<!--![Test Status](https://github.com/marcolino/farmatime-server/actions/workflows/test.yml/badge.svg)-->
 ![Tests Passed](https://img.shields.io/badge/tests%20passed-320-brightgreen)
-![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/farmaperte-server)
-![GitHub forks](https://img.shields.io/github/forks/marcolino/farmaperte-server?style=social)
-![GitHub contributors](https://img.shields.io/github/contributors/marcolino/farmaperte-server)
+![GitHub last commit](https://img.shields.io/github/last-commit/marcolino/farmatime-server)
+![GitHub forks](https://img.shields.io/github/forks/marcolino/farmatime-server?style=social)
+![GitHub contributors](https://img.shields.io/github/contributors/marcolino/farmatime-server)
 ![Maintenance](https://img.shields.io/maintenance/yes/2025)
-![GitHub issues](https://img.shields.io/github/issues/marcolino/farmaperte-server)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/marcolino/farmaperte-server)
-![GitHub repo size](https://img.shields.io/github/repo-size/marcolino/farmaperte-server)
+![GitHub issues](https://img.shields.io/github/issues/marcolino/farmatime-server)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/marcolino/farmatime-server)
+![GitHub repo size](https://img.shields.io/github/repo-size/marcolino/farmatime-server)
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/marcolino/farmaperte-server/ci.yml?branch=main)
-![Known Vulnerabilities](https://snyk.io/test/github/marcolino/farmaperte-server/badge.svg)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/marcolino/farmatime-server/ci.yml?branch=main)
+![Known Vulnerabilities](https://snyk.io/test/github/marcolino/farmatime-server/badge.svg)
 
 ![React](https://img.shields.io/badge/react-18.2.0-blue?logo=react)
 ![Express](https://img.shields.io/badge/express-4.17.1-lightgrey?logo=express)
 ![MongoDB](https://img.shields.io/badge/mongoDB-4.4-green?logo=mongodb)
 
 # Summary
-[farmaperte-server](https://github.com/marcolino/farmaperte-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site , with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
-It is strictly coupled with [farmaperte-client](https://github.com/marcolino/farmaperte-client/), the client project.
+[farmatime-server](https://github.com/marcolino/farmatime-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site , with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
+It is strictly coupled with [farmatime-client](https://github.com/marcolino/farmatime-client/), the client project.
 
 # Features
 - Production-ready APIs
@@ -39,7 +39,7 @@ It is strictly coupled with [farmaperte-client](https://github.com/marcolino/far
 - Monorepo or Polyrepo
 - Custom Code
 - Admin UI
-- farmaperte-server Console & CLI
+- farmatime-server Console & CLI
 
 
 # Technology
@@ -79,26 +79,26 @@ It is strictly coupled with [farmaperte-client](https://github.com/marcolino/far
 
 
 # Tests Coverage
-[Mocha unit+e2e tests coverage](https://marcolino.github.io/farmaperte-server/coverage/index.html) 
+[Mocha unit+e2e tests coverage](https://marcolino.github.io/farmatime-server/coverage/index.html) 
 
 
 # Getting Started
 
-You can get started with farmaperte-server immediately on the farmaperte-server Cloud. 
+You can get started with farmatime-server immediately on the farmatime-server Cloud. 
 
 Alternatively you can set up a local development environment.
 
-See the [farmaperte-server Website](http://farmaperte-server.com/) or [farmaperte-server Docs](http://docs.farmaperte-server.com/) for more details.
+See the [farmatime-server Website](http://farmatime-server.com/) or [farmatime-server Docs](http://docs.farmatime-server.com/) for more details.
 
 
 ## Tutorials 
 
-- [To-do Application using farmaperte-server and React](https://docs.farmaperte-server.com/tutorials/react-todos/)
+- [To-do Application using farmatime-server and React](https://docs.farmatime-server.com/tutorials/react-todos/)
 
 
-## farmaperte-server Cloud (SaaS)
+## farmatime-server Cloud (SaaS)
 
-Launch farmaperte-server from [farmaperte-preod.fly.dev](https://farmaperte-preod.fly.dev/)
+Launch farmatime-server from [farmatime-preod.fly.dev](https://farmatime-preod.fly.dev/)
 
 
 ## Development Environment (Local)
@@ -114,19 +114,19 @@ Launch farmaperte-server from [farmaperte-preod.fly.dev](https://farmaperte-preo
 
 ### Getting Started With Local Development
 
-farmaperte-server is using a monorepo with multiple apps and libraries.
+farmatime-server is using a monorepo with multiple apps and libraries.
 
 Follow these simple instructions to set up a local development environment.
 
 1. Clone the repository and install dependencies:
 
   ```bash
-  git clone https://github.com/marcolino/farmaperte-server.git
-  cd farmaperte-server
+  git clone https://github.com/marcolino/farmatime-server.git
+  cd farmatime-server
   yarn install
   ```
 
-2. Run the [setup script](https://github.com/farmaperte-server/farmaperte-server/blob/master/scripts/setup.js), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
+2. Run the [setup script](https://github.com/farmatime-server/farmatime-server/blob/master/scripts/setup.js), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
 
   ```bash
   yarn setup:dev
@@ -163,7 +163,7 @@ Follow these simple instructions to set up a local development environment.
 6. To start developing, run the `start-dev` target of the desired app:
 
   ```bash
-  # This will start the farmaperte-server Server in development mode
+  # This will start the farmatime-server Server in development mode
   yarn start-dev 
   ```
 
@@ -174,22 +174,22 @@ That's it, you are good to go! Happy hacking! 👾
 
 # Version 0.0.1
 
-farmaperte-server is currently in version 0.0.1. This is the first major release of farmaperte-server with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
+farmatime-server is currently in version 0.0.1. This is the first major release of farmatime-server with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
 
 
 ## Support
 
-Ask your questions and participate in discussions regarding farmaperte-server-related and web-dev topics at the farmaperte-server github project page.
+Ask your questions and participate in discussions regarding farmatime-server-related and web-dev topics at the farmatime-server github project page.
 
 
 ## Create a Bug Report
 
-If you see an error message or run into an issue, please [create bug report](https://github.com/farmaperte-server/farmaperte-server/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and helps all farmaperte-server users.
+If you see an error message or run into an issue, please [create bug report](https://github.com/farmatime-server/farmatime-server/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+). This effort is valued and helps all farmatime-server users.
 
 
 ## Submit a Feature Request
 
-If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/farmaperte-server/farmaperte-server/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
+If you have an idea, or you're missing a capability that would make development easier and more robust, please [Submit feature request](https://github.com/farmatime-server/farmatime-server/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
 If a similar feature request already exists, don't forget to leave a "+1".
 If you add some more information such as your thoughts and vision about the feature, your comments will be embraced warmly.
@@ -197,7 +197,7 @@ If you add some more information such as your thoughts and vision about the feat
 
 # Contributing
 
-farmaperte-server is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the farmaperte-server community.
+farmatime-server is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the farmatime-server community.
 
 Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
 
@@ -212,7 +212,7 @@ Thanks goes to these wonderful people ([:hugs:](https://allcontributors.org/docs
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/marcolino"><img src="https://avatars.githubusercontent.com/u/849127?v=4?s=100" width="100px;" alt="Marco Solari"/><br /><sub><b>Marco Solari</b></sub></a><br /><a href="https://github.com/marcolino/farmaperte-server/commits?author=marcolino" title="Code">💻</a></td>
+      <td align="center"><a href="https://github.com/marcolino"><img src="https://avatars.githubusercontent.com/u/849127?v=4?s=100" width="100px;" alt="Marco Solari"/><br /><sub><b>Marco Solari</b></sub></a><br /><a href="https://github.com/marcolino/farmatime-server/commits?author=marcolino" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

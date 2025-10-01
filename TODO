@@ -84,7 +84,7 @@
   use fly.io persistent volumes, and add a check to avoid exceeding maximum allowed space in the free tier - OK
 - replace mailto:support@yourcompany.com with config.email.support... - OK
 - alle volte si vede ancora "Devi essere autenticato per questa azione" al logout - OK
-- use API_KEY from ../farmaperte-server/.env in scripts/translate - OK
+- use API_KEY from ../farmatime-server/.env in scripts/translate - OK
 - integrate scripts/translate.py in yarn pub script (at requezt) - OK
 - IP to flag: se sono 2, scegliere il primo - OK
 - audit mode: [ACTION], non è bello... - OK

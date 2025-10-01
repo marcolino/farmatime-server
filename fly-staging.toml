@@ -1,4 +1,4 @@
-app = 'farmaperte-staging'
+app = 'farmatime-staging'
 primary_region = 'cdg'
 
 [build]

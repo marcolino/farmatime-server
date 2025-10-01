@@ -7,7 +7,7 @@ set -euo pipefail
 # ------------------------------
 # Configuration
 # ------------------------------
-WEBHOOK_URL="https://farmaperte-prod.fly.dev/webhook/brevo"
+WEBHOOK_URL="https://farmatime-prod.fly.dev/webhook/brevo"
 BREVO_WEBHOOKS="https://api.brevo.com/v3/webhooks"
 BREVO_EMAIL_API_KEY=$(grep BREVO_EMAIL_API_KEY .env | cut -f2 -d=)
 BREVO_WEBHOOK_SECRET=$(grep BREVO_WEBHOOK_SECRET .env | cut -f2 -d=)

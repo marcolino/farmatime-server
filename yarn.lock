@@ -3460,9 +3460,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"farmaperte@workspace:.":
+"farmatime@workspace:.":
   version: 0.0.0-use.local
-  resolution: "farmaperte@workspace:."
+  resolution: "farmatime@workspace:."
   dependencies:
     "@css-inline/css-inline": "npm:^0.14.3"
     "@eslint/js": "npm:^9.19.0"
