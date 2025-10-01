@@ -1,5 +1,5 @@
-const apiName = "Farmatime"; 
-const appName = "farmatime";
+const apiName = "farmatime";
+const appName = "FarmaTime";
 //const company = "Farmatime";
 
 const config = {
@@ -12,7 +12,7 @@ const config = {
     },
   },
   name: appName, // app name
-  title: apiName, // app title
+  title: appName, // app title
   // app: {
   //   company: {
   //     name: `${company}`,
