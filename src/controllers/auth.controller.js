@@ -839,11 +839,11 @@ const resendResetPasswordCode = async (req, res, next) => {
       // save the updated user object
       await user.save();
 
-      const subject = req.t("Reset Password Verification Code");
-      const to = user.email;
-      const from = config.email.administration.from;
-      logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
-      logger.info(`Reset password code: ${user.resetPasswordCode}`);
+      // const subject = req.t("Reset Password Verification Code");
+      // const to = user.email;
+      // const from = config.email.from;
+      // logger.info(`Sending email to: ${to}, from: ${from}, subject: ${subject}`);
+      // logger.info(`Reset password code: ${user.resetPasswordCode}`);
 
       await emailService.sendWithTemplate(req, {
         to: user.email,

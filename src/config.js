@@ -34,6 +34,7 @@ const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
 const apiName = "Farmatime";
 const appName = "farmatime";
+const appTitle = "FarmaTime";
 //const description = "A powerful web app to automate medicine prescription requests";
 const dir = "ltr";
 const charset = "UTF-8";
@@ -46,8 +47,10 @@ const currencies = { // allowed currencies
   "CHF": "fr.",
   "GBP": "£",
 };
-const company = "Farmatime";
-const urlPublic = staging ? "https://farmatime-staging.fly.dev" : "https://farmatime-prod.fly.dev";
+const company = "FarmaTime";
+const domain = "farmatime.it";
+//const urlPublic = staging ? "https://farmatime-staging.fly.dev" : "https://farmatime-prod.fly.dev";
+const urlPublic = staging ? "https://staging.farmatime.it" : "https://www.farmatime.it";
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = (production || staging) ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;
@@ -65,6 +68,7 @@ const configBase = {
     test,
     testInCI,
   },
+  domain,
   baseUrl,
   baseUrlPublic: urlPublic, // for image urls in emails, they must always be public urls
   baseUrlClient, // base url of the client (while developing client base url and server base url differ, while in production baseUrl === baseUrlClient)
@@ -283,24 +287,20 @@ const configBase = {
       prefix: apiName,
     },
     trackTag: "request-to-be-tracked-with-webkook",
+    from: "posta@farmatime.it",
+    fromName: "FarmaTime",
     administration: {
-      from: "farmatime.posta@gmail.com", // "farmatime@gmail.com" // when we read this account
-      fromName: "Farmatime backend server",
-      to: "marcosolari@gmail.com", // "farmatime@gmail.com" // when we read this account
+      to: "postmaster@farmatime.it",
       toName: "Farmatime admin",
     },
     support: {
-      from: "farmatime.posta@gmail.com", // "farmatime@gmail.com" // when we read this account
-      fromName: "Farmatime backend server",
-      to: "marcosolari@gmail.com", // "farmatime@gmail.com" // when we read this account
+      to: "support@farmatime.it",
       toName: "Farmatime support",
     },
-    notification: {
-      from: "farmatime.posta@gmail.com", // "farmatime@gmail.com" // when we read this account
-      fromName: "Farmatime backend server",
-      to: "marcosolari@gmail.com", // "farmatime@gmail.com" // when we read this account
-      toName: "Farmatime notification",
-    },
+    // notification: {
+    //   to: "notification@farmatime.it",
+    //   toName: "Farmatime notifications",
+    // },
     // doctor: {
     //   from: "farmatime.posta@gmail.com", // "farmatime@gmail.com" // when we read this account
     //   fromName: "Farmatime",
@@ -361,7 +361,7 @@ const configBase = {
       test,
     },
     name: appName, // app name
-    title: apiName, // app title
+    title: appTitle, // app title
     siteUrl: baseUrl, // site url
     company: {
       name: `${company}`,

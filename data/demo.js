@@ -18,7 +18,7 @@ const demoData = {
       "justRegistered": false,
       "isDeleted": false,
     },
-    ...(config.production ? {} : {
+    ...(config.mode.production ? {} : {
       "operator": { // role: operator
         "email": "alice@mail.com",
         "password": "Alice!",
@@ -33,7 +33,7 @@ const demoData = {
         "isDeleted": false,
       }
     }),
-    ...(config.production ? {} : {
+    ...(config.mode.production ? {} : {
       "dealer": { // role: dealer
         "email": "bob@mail.com",
         "password": "Bob!",
@@ -48,7 +48,7 @@ const demoData = {
         "isDeleted": false,
       },
     }),
-    ...(config.production ? {} : {
+    ...(config.mode.production ? {} : {
       "user": { // role: user
         "email": "charlie@mail.com",
         "password": "Charlie!",
@@ -63,7 +63,7 @@ const demoData = {
         "isDeleted": false,
       },
     }),
-    ...(config.production ? {} : {
+    ...(config.mode.production ? {} : {
       "userSocial": { // role: user (with social id)
         "email": "donnie@mail.com",
         "socialId": "PincoPallo:12345678",
@@ -81,7 +81,7 @@ const demoData = {
   },
   "roles": config.roles,
   "plans": config.plans,
-  ...(config.production ? {} : {
+  ...(config.mode.production ? {} : {
     "products": [
       {
         "mdaCode": "0332",
@@ -150,7 +150,7 @@ const demoData = {
       },
     ],
   }),
-  ...(config.production ? {} : {
+  ...(config.mode.production ? {} : {
     "productsImages": {
       "0332": "data/assets/products/images/pexels-001.jpg",
       "0334": "data/assets/products/images/pexels-002.jpg",

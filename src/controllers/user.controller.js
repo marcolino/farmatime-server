@@ -216,7 +216,6 @@ const updateUser = async (req, res, next) => {
       .populate("roles", "-__v")
       .populate("plan", "-__v")
     ;
-
     if (!updatedUser) {
       throw new Error(req.t("User not found"));
     }

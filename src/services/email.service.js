@@ -64,8 +64,8 @@ class EmailService {
       if (!params.subject) return logger.error("Parameter 'subject' is mandatory to send email");
       if (!params.htmlContent) return logger.error("Parameter 'htmlContent' is mandatory to send email");
       if (!params.toName) params.toName = null;
-      if (!params.from) params.from = config.email.support.from;
-      if (!params.fromName) params.fromName = config.email.support.fromName;
+      if (!params.from) params.from = config.email.from;
+      if (!params.fromName) params.fromName = config.email.fromName;
       if (!params.replyTo) params.replyTo = ""; 
       if (!params.replyToName) params.replyToName = "";
 
@@ -157,8 +157,8 @@ class EmailService {
       if (!params.to) return logger.error("Parameter 'to' is mandatory to send email");
       if (!params.subject) return logger.error("Parameter 'subject' is mandatory to send email");
       if (!params.toName) params.toName = null;
-      if (!params.from) params.from = config.email.administration.from;
-      if (!params.fromName) params.fromName = config.email.administration.fromName;
+      if (!params.from) params.from = config.email.from;
+      if (!params.fromName) params.fromName = config.email.fromName;
       if (!params.templateName) params.templateName = "base";
       if (!params.templateParams) params.templateParams = {};
       if (!params.templateParams.style) params.templateParams.style = "base";

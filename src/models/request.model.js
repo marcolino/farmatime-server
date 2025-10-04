@@ -35,7 +35,8 @@ const RequestSchema = new mongoose.Schema({
 
   // Status tracking
   lastStatus: { type: String, index: true },
-  lastStatusUpdate: { type: Date },
+  lastStatusAt: { type: Date },
+  lastReason: { type: String },
   events: [{
     status: {
       type: String,
@@ -45,6 +46,7 @@ const RequestSchema = new mongoose.Schema({
       required: true,
     },
     at: { type: Date, default: Date.now, set: normalizeDate },
+    reason: { type: String },
   }],
 }, {
   versionKey: false, // No version keys

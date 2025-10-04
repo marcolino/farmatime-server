@@ -13,7 +13,6 @@ const demoData = require("../../data/demo.js");
 const i18n = require("../middlewares/i18n.js");
 const config = require("../config.js");
 
-
 const connect = async () => {
   // set up database connection uri
   const connUri = ((config.mode.production || config.mode.staging) ? // production/staging db uri
@@ -130,10 +129,10 @@ const populate = async () => {
         }
       }
       await addRoleToUser("admin", demoData.users.admin.email);
-      await addRoleToUser("operator", demoData.users.operator.email);
-      await addRoleToUser("dealer", demoData.users.dealer.email);
-      await addRoleToUser("user", demoData.users.user.email);
-      await addRoleToUser("user", demoData.users.userSocial.email);
+      if (demoData.users.operator) await addRoleToUser("operator", demoData.users.operator.email);
+      if (demoData.users.dealer) await addRoleToUser("dealer", demoData.users.dealer.email);
+      if (demoData.users.user) await addRoleToUser("user", demoData.users.user.email);
+      if (demoData.users.userSocial) await addRoleToUser("user", demoData.users.userSocial.email);
     } catch (err) {
       logger.error("Error populating roles collection:", err.message);
       throw err;

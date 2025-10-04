@@ -25,8 +25,8 @@
 ![MongoDB](https://img.shields.io/badge/mongoDB-4.4-green?logo=mongodb)
 
 # Summary
-[farmatime-server](https://github.com/marcolino/farmatime-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site , with optional ecommerce (currently using Stripe service for payments), users authentication and handling.
-It is strictly coupled with [farmatime-client](https://github.com/marcolino/farmatime-client/), the client project.
+[farmatime-server](https://github.com/marcolino/farmatime-server/) is the server side of an open‑source project for a general-purpose web app implementing a showcase site, with optional ecommerce (currently using Stripe service for payments), users authentication and handling. Used language for server code is node.js.
+It is coupled with [farmatime-client](https://github.com/marcolino/farmatime-client/), the react client project. Used language for client code is JavaScript.
 
 # Features
 - Production-ready APIs
@@ -39,7 +39,6 @@ It is strictly coupled with [farmatime-client](https://github.com/marcolino/farm
 - Monorepo or Polyrepo
 - Custom Code
 - Admin UI
-- farmatime-server Console & CLI
 
 
 # Technology

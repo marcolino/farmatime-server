@@ -113,8 +113,15 @@ app.use(cors({
   credentials: true, // if cookies/auth headers are needed
 }));
 
-// // initialize Passport and session management using the middleware
-// passportSetup(app);
+// redirect apex domain to www ('farmatime.it' => 'www.farmatime.it')
+if (config.mode.production) {
+  app.use((req, res, next) => {
+    if (req.hostname === config.domain) {
+      return res.redirect(301, config.baseUrl + req.originalUrl);
+    }
+    next();
+  });
+}
 
 // parse requests of content-type: application/json
 app.use(express.json({
@@ -201,7 +208,11 @@ app.all(/^\/api(\/.*)?$/, (req, res) => {
 
 // handle client routes for all other urls
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(rootClient, "index.html"));
+  res.sendFile(path.resolve(rootClient, "index.html"), {
+    headers: {
+      'Cache-Control': 'no-store, must-revalidate' // disable caching of index.html, to avoid i.e. `TypeError: Failed to fetch dynamically imported module: https://www.farmatime.it/assets/Home-B7Iy_yKo.js`
+    }
+  });
 });
 
 // handle errors in API routes

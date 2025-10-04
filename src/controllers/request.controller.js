@@ -46,7 +46,12 @@ const getRequests = async (req, res, next) => {
 
 const runJobs = async (req, res, next) => {
   const requestSend = async (req, user, jobs, job, emailTemplate, medicines, now) => {
-    const response  = await emailService.send(req, {
+    let response;
+    response = await emailService.send(req, {
+      fromName:
+        (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` :
+          (job.patient.firstName && job.patient.lastName) ? `${job.patient.firstName} ${job.patient.lastName}` :
+            config.email.fromName,
       to: job.doctor.email,
       toName: job.doctor.name,
       replyTo: job.patient.email,
@@ -62,7 +67,7 @@ const runJobs = async (req, res, next) => {
     logger.info("    request sent via email");
 
     try {
-      const status = { label: "created" /*, at field is automatically filled */ };
+      const status = { label: "created" /*, at field is automatically filled */, reason: "" };
       const request = await Request.create({
         userFirstName: user.firstName,
         userLastName: user.lastName,
@@ -83,6 +88,7 @@ const runJobs = async (req, res, next) => {
         jobId: job.id,
         statuses: [status],
         lastStatus: status.label,
+        lastReason: status.reason,
       });
       logger.info("New request created:", request);
     } catch (err) {
@@ -101,8 +107,14 @@ const runJobs = async (req, res, next) => {
       }
       return j;
     });
-    await updateUserJobsLocal(req, req.user._id, jobsNew);
-    logger.info("    updated medicine last date");
+
+    req.userId = user._id; // to be used in updateUserJobsLocal
+    response = await updateUserJobsLocal(req, jobsNew);
+    if (response.error) {
+      return nextError(next, response.message, response.status ?? 500);
+    } else {
+      logger.info("    updated medicine last date");
+    }
   };
 
   try {
