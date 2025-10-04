@@ -8,16 +8,16 @@ env: # Global constants for all jobs/steps
 
 on:
   schedule:
-    - cron: "1 0 * * *" # every day at 00:01 UTC
+    - cron: "1 5 * * *" # every day at 00:01 UTC
   workflow_dispatch: # allow manual trigger
 
 jobs:
   run-jobs:
     runs-on: ubuntu-latest
     steps:
-      - name: Call farmatime-staging job runner
-        run: |
-          curl -X "$JOB_RUNNER_VERB" "$JOB_RUNNER_URL_STAGING" -H "x-worker-key: $WORKER_KEY"
+     # - name: Call farmatime-staging job runner
+     #   run: |
+     #     curl -X "$JOB_RUNNER_VERB" "$JOB_RUNNER_URL_STAGING" -H "x-worker-key: $WORKER_KEY"
       - name: Call farmatime-prod job runner
         run: |
           curl -X "$JOB_RUNNER_VERB" "$JOB_RUNNER_URL_PROD" -H "x-worker-key: $WORKER_KEY"
