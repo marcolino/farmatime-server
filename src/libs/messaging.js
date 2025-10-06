@@ -7,8 +7,9 @@ ip3country.init();
 
 
 const audit = async ({ req, mode, subject, htmlContent }) => {
-  if (config.mode.test) { // in test mode, just a console.info
-    //console.info(`Audit test environment, subject: ${subject}, contents: ${htmlContent}`);
+  if (config.mode.test) { // in test mode, just a console.warn
+    // eslint-disable-next-line no-console
+    console.warn(`Audit for test environment, subject: ${subject}, contents: ${htmlContent}`);
     return;
   }
 
@@ -32,7 +33,6 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   // lookup flag from country string
   const remoteFlag = countryCodeToFlag(remoteCountry);
 
-  
   let actionColor, actionSymbol;
   switch (mode) {
   case "action":
@@ -46,6 +46,14 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   case "error":
     actionColor = "darkred";
     actionSymbol = "🔴";
+    break;
+  case "scheduler":
+    actionColor = "darkpurple";
+    actionSymbol = "🟣";
+    break;
+  case "webhook":
+    actionColor = "darkbrown";
+    actionSymbol = "🟤";
     break;
   case "":
     actionColor = "darkgray";
@@ -64,7 +72,7 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
   const footerFontWeight = "normal";
   const footerColor = "gray";
 
-  const to = config.email.support.to;
+  const to = config.email.administration.to;
   const toName = config.email.support.toName;
   subject = `${(config.email.subject.prefix ? "[" + config.email.subject.prefix + "]" : " ")} ${actionSymbol} ${subject}`;
   htmlContent = `
@@ -79,7 +87,6 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
       </div>
     </div>
   `;
-  //htmlContent = htmlContent.replaceAll("\n", "<br />\n")
   await emailService.send(req, { to, toName, subject, htmlContent });
 };
 

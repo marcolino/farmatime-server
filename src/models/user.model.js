@@ -50,6 +50,11 @@ const UserSchema = new mongoose.Schema({
       ref: "Role"
     }
   ],
+  root: {
+    type: Boolean,
+    default: false,
+    immutable: true, // cannot be changed once set
+  },
   plan: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Plan"

@@ -45,7 +45,6 @@ function hashSecretValue(value) {
 async function fetchPublicKey() {
   try {
     const url = `https://api.github.com/repos/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}/actions/secrets/public-key`;
-    //console.log(url);
     const response = await fetch(url, {
       headers: {
         Authorization: `token ${process.env.GITHUB_TOKEN}`,

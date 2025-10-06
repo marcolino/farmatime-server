@@ -13,7 +13,6 @@ const getProducts = async (req, res, next) => {
   try {
     const filter = req.parameters.filter ?? {};
     if (typeof filter !== "object") {
-      //console.log(1)
       return res.status(400).json({ message: req.t("A filter must be an object") });
     }
 
@@ -116,16 +115,11 @@ const getProductImageById = (req, res) => {
   const imageId = req.parameters.imageId;
   const imagePath = path.join(__dirname, "images", imageId);
 
-  //console.log("+++ imageId:", imageId)
-  //console.log("+++ imagePath:", imagePath)
-
   // check if the image exists
   if (!fs.existsSync(imagePath)) {
-    //console.log("+++ 404")
     return res.status(404).json({ message: req.t("Image by id {{id}} not found", { id: imageId }) });
   }
   
-  //console.log("+++ imagePath 2:", imagePath)
   return res.sendFile(imagePath);
 };
 
@@ -174,12 +168,9 @@ const updateProduct = async (req, res, next) => {
     // validate and normalize fields
     let [message, value] = [null, null];
 
-    //console.log(1);
     if ((productNew.mdaCode !== undefined)) {
-      //console.log(2);
       [message, value] = await propertyMdaCodeValidate(req, productNew.mdaCode, productNew);
       if (message) return res.status(400).json({ message });
-      //console.log(3);
       product.mdaCode = value;
     }
     if ((productNew.oemCode !== undefined)) {
@@ -243,65 +234,50 @@ const updateProduct = async (req, res, next) => {
       product.type = value;
     }
 
-    //console.log(4);
     try {
       await product.save();
       return res.status(200).json({ product });
     } catch (err) {
-      //console.log(5, err);
       return nextError(next, req.t("Error saving product to update: {{err}}", { err: err.message }), 500, err.stack);
     }
-    //console.log(6);
   } catch (err) {
-    //console.log(7, err);
     return nextError(next, req.t("Error finding product to update: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
 // upload product image
 const uploadProductImage = async (req, res, next) => {
-  //console.log(1);
   // we don't have req.parameters set in this endpoint because it' a multipart/form-data content-type
   if (!req.file) { // no image uploaded
     return res.status(400).json({ error: req.t("No image uploaded") });
   }
-  //console.log(2);
 
   const productId = req.body.productId;
   try {
-    //console.log(3);
     const product = await Product.findOne({
       _id: productId
     });
 
     if (!product) {
-      //console.log(4);
       return res.status(400).json({ message: req.t("Product not found") });
     }
 
     try {
-      //console.log(5);
       const result = await saveImageFile(req);
-      //console.log(6);
       product.imageNameOriginal = result.imageNameOriginal;
       product.imageName = result.imageName;
     } catch (err) {
-      //console.log(7, err);
       return nextError(next, req.t("Error saving product image: {{err}}", { err: err.message }), 500, err.stack);
     }
 
     try {
-      //console.log(8);
       await product.save();
-      //console.log(9);
     } catch (err) {
       return nextError(next, req.t("Error updating product: {{err}}", { err: err.message }), 500, err.stack);      
     }
 
-    //console.log(10);
     return res.status(200).json({ message: req.t("Image uploaded to {{fileName} from {{filePath}}", { fileName: product.imageName, filePath: req.file.path }) });
   } catch (err) {
-    //console.log(11, err.message);
     return nextError(next, req.t("Error finding product: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
@@ -355,14 +331,11 @@ const removeProduct = async (req, res, next) => {
   try {
     const data = await Product.updateMany(filter, payload, { new: true, lean: true });
     if (data.modifiedCount > 0) {
-      //console.log(1, data.modifiedCount);
       return res.status(200).json({ message: req.t("{{count}} product(s) have been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
     } else {
-      //console.log(2, data.modifiedCount);
       return res.status(400).json({ message: "No products have been removed" });
     }
   } catch (err) {
-    //console.log(1, err);
     return nextError(next, req.t("Error updating product to remove: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };

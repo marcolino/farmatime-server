@@ -46,15 +46,12 @@ process.argv.forEach((val, index) => {
       const command = `trans -brief -s ${sourceLanguage} -t ${actualLanguage} "${stringEscaped}"`;
       try {
         const translatedString = execSync(command).toString().trim();
-        //console.log({string, translatedString})
         return { [string]: translatedString };
       } catch (err){ 
         console.error(err);
-        console.log("sdterr:", err.stderr.toString());
         process.exit(-1);
       }
     });
-    //console.log({translatedStringsParsed});
 
     const mappedObject = Object.fromEntries(
       Object.entries(parsedData).map(([key, value]) => {

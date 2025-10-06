@@ -283,12 +283,6 @@ class EmailService {
 
       // inline css styles
       const templateContentRenderedInlined = inline(templateContentRendered);
-      // // restore unescaped template strings
-      // const templateContentRenderedInlined = templateContentRenderedInlinedEscaped.
-      //   replace(/&lt;%/g, "<%").
-      //   replace(/%&gt;/g, "%>")
-      // ;
-      //fs.writeFileSync("/var/www/html/t.html", templateContentInlined);
 
       //console.log("templateContentRenderedInlined:", templateContentRenderedInlined);
       return templateContentRenderedInlined;

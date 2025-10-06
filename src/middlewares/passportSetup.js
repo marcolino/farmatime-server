@@ -12,7 +12,6 @@ const config = require("../config");
 
 module.exports = (app) => {
   // Google OAuth Strategies (differentiate among web and pwa to avoid bad interferences)
-  //console.log("process.env.GOOGLE_OAUTH_CLIENT_ID:", process.env.GOOGLE_OAUTH_CLIENT_ID);
   const setupGoogleStrategy = (flow = "web") => {
     passport.use(`google-${flow}`, new GoogleStrategy({
       clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,

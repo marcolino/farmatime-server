@@ -106,16 +106,15 @@ ProductSchema.pre(/^find|^count/, function(next) {
 //       locale: config.db.collation.locale,
 //       strength: config.db.collation.strength,
 //     };
-//     console.log("COLLATION APPLIED:", this.options.collation);
+//     // COLLATION APPLIED: this.options.collation
 //   }
-//   console.log("COLLATION ALREADY PRESENT:", this.options.collation);
+//   // COLLATION ALREADY PRESENT: this.options.collation
 //   next();
 // });
 
 // ProductSchema.post(/^find/, function() {
 //   // trap regular expression errors...
 //   try {
-//     //console.log("Find operation completed");
 //     next();
 //   } catch (error) {
 //     next(error);

@@ -75,7 +75,6 @@ const getAllPlans = async (req, res, next) => {
     ;
     return res.status(200).json({ plans: docs });
   } catch (err) {
-    //console.log("Error getting all plans:", err.message);
     return nextError(next, req.t("Error getting all plans: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
@@ -352,14 +351,13 @@ const deleteUser = async (req, res, next) => {
   }
 
   try {
-    // avoid deleting administrator user
-    const protectedEmail = config.email.administration.to;
-    const admin = await User.findOne({ email: protectedEmail });
-    if (admin) {
-      const match = await User.exists({ _id: admin._id, ...filter });
+    // avoid deleting root user
+    const root = await User.findOne({ root: true });
+    if (root) {
+      const match = await User.exists({ _id: root._id, ...filter });
       if (match) {
         return res.status(403).json({
-          message: req.t("Deletion request includes the protected admin user and cannot be processed")
+          message: req.t("Deletion request includes the protected root user and cannot be processed")
         });
       }
     }
@@ -392,43 +390,24 @@ const removeUser = async (req, res, next) => {
     }
   }
   
-  const payload = { isDeleted: true };
   try {
-    // avoid deleting protected email user
-    const protectedEmail = config.email.administration.to;
-    const admin = await User.findOne({ email: protectedEmail });
-    if (admin) {
 
-      const originalCount = await User.countDocuments(filter);
-      const adminExclusionFilter = {
-        $and: [
-          filter,
-          { _id: { $ne: admin._id } }
-        ]
-      };
-      const adminExclusionCount = await User.countDocuments(adminExclusionFilter);
-
-      if (originalCount === 0) {
-        // No documents match the original filter
-      } else if (adminExclusionCount < originalCount) {
-        // Documents match original filter, but some are the excluded admin._id
+    // avoid deleting root user
+    const root = await User.findOne({ root: true });
+    if (root) {
+      const match = await User.exists({ _id: root._id, ...filter });
+      if (match) {
         return res.status(403).json({
-          message: req.t("Deletion request includes the protected admin user and cannot be processed")
+          message: req.t("Removal request includes the protected root user and cannot be processed")
         });
-      } else {
-        // Documents exist excluding the admin._id, so safe to continue
       }
-      // const match = await User.exists({ _id: admin._id, ...filter });
-      // if (match) {
-      //   return res.status(403).json({
-      //     message: req.t("Deletion request includes the protected admin user and cannot be processed")
-      //   });
-      // }
     }
 
+    const payload = { isDeleted: true };
+
     const data = await User.updateMany(filter, payload, { new: true, lean: true });
-    if (data./*nModified*/modifiedCount > 0) {
-      return res.status(200).json({ message: req.t("{{count}} user has been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
+    if (data.modifiedCount > 0) {
+      return res.status(200).json({ message: req.t("{{count}} user has been removed", { count: data.modifiedCount }), count: data.modifiedCount });
     } else {
       return res.status(400).json({ message: req.t("No user has been removed") });
     }
@@ -514,7 +493,6 @@ const propertyEmailValidate = async (req, email, userId) => { // validate and no
 
   // check if email exists but belongs to the same user
   const existingUser = await User.findOne({ email: normalizedEmail });
-  //console.log("existingUser:", existingUser);
   if (existingUser && existingUser._id.toString() !== userId.toString()) {
     return [req.t("The email {{email}} is already in use", { email }), null];
   }

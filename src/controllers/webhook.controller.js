@@ -1,10 +1,8 @@
 const Request = require("../models/request.model");
 const WebhookUUID = require("../models/WebhookUUID.model"); 
 const { logger } = require("../controllers/logger.controller");
-//const emailService = require("../services/email.service");
+const { audit } = require("../libs/messaging");
 const { nextError } = require("../libs/misc");
-//const { get } = require("mongoose");
-//const config = require("../config");
 
 
 const brevo = async (req, res, next) => {
@@ -19,7 +17,7 @@ const brevo = async (req, res, next) => {
   const provider = "Brevo";
   const providerMessageId = payload['message-id'] || payload.messageId;
   if (!providerMessageId) {
-    return nextError(next, "No message-id in Brevo webhook", unrecoverableErrorStatus);
+    return nextErrorAndAudit(req, next, "No message-id in Brevo webhook", unrecoverableErrorStatus);
   }
   const event = payload.event; // E.g. "delivered", "open", "click", "hard_bounce"
   const uuid = payload.uuid; // Universally unique identifier
@@ -35,7 +33,7 @@ const brevo = async (req, res, next) => {
     ).lean();
     if (oldWebhook.events && oldWebhook.events.some(ev => ev.status === event)) {
       // Same event already seen
-      return nextError(next, `UUID ${uuid} is already seen, same event ${event}, ignoring`, unrecoverableErrorStatus);
+      return nextErrorAndAudit(req, next, `UUID ${uuid} is already seen, same event ${event}, ignoring`, unrecoverableErrorStatus);
     }
     if (oldWebhook.events && oldWebhook.events.length > 0) {
       // UUID existed, but new event type
@@ -45,23 +43,8 @@ const brevo = async (req, res, next) => {
       logger.info(`UUID ${uuid} is new, proceeding`);
     }
   } catch (err) { // just log error, do not fail if Webhooh UUID access fails...
-    return nextError(next, err.message, unrecoverableErrorStatus);
+    return nextErrorAndAudit(req, next, err.message, unrecoverableErrorStatus);
   }
-  // try {
-  //   const oldWebhook = await WebhookUUID.findOne({ uuid });
-  //   //if (await WebhookUUID.exists({ uuid })) {
-  //   if (oldWebhook) {
-  //     if (oldWebhook.events && oldWebhook.events.some(ev => ev.status === event)) {
-  //       return nextError(next, `UUID ${uuid} is already seen, same event ${event}, ignoring`, unrecoverableErrorStatus);
-  //     }
-  //     logger.info(`UUID ${uuid} is already seen, changed event, proceeding`);
-  //   } else {
-  //     logger.info(`UUID ${uuid} is new, proceeding`);
-  //     await WebhookUUID.create({ uuid });
-  //   }
-  // } catch (err) { // Just log error, do not fail if Webhooh UUID access fails...
-  //   return nextError(next, err.message, unrecoverableErrorStatus);
-  // }
 
   /**
    * Get status from event, to transform unforeseen events to "unforeseen" status, to avoid db errors
@@ -110,10 +93,10 @@ const brevo = async (req, res, next) => {
       providerMessageId,
     }).lean();
   } catch (err) {
-    return nextError(next, `Cannot find request with message id ${providerMessageId}: ${err.message}`, unrecoverableErrorStatus, err.stack);
+    return nextErrorAndAudit(req, next, `Cannot find request with message id ${providerMessageId}: ${err.message}`, unrecoverableErrorStatus, err.stack);
   }
   if (!requestCurrent) {
-    return nextError(next, `No request found for ${providerMessageId}`, unrecoverableErrorStatus);
+    return nextErrorAndAudit(req, next, `No request found for ${providerMessageId}`, unrecoverableErrorStatus);
   }
   const eventDate = payload.date ? new Date(payload.date) : new Date();
   requestCurrent.events.push({ status, at: eventDate, reason: payload.reason }); // Push current event
@@ -138,30 +121,8 @@ const brevo = async (req, res, next) => {
     );
     logger.info(`Completed webhook '${event}' event registration`, result);
   } catch (err) {
-    return nextError(next, err.message, unrecoverableErrorStatus, err.stack);
+    return nextErrorAndAudit(req, next, err.message, unrecoverableErrorStatus, err.stack);
   }
-  /*
-  try {
-    await Request.updateOne(
-      {
-        provider,
-        providerMessageId,
-      },
-      {
-        $set: {
-          lastStatus: status,
-          lastStatusAt: new Date(payload.date), // Note: status updates could arrive in mixed order, and with some seconds delay...
-        },
-        $push: {
-          events: { status: status, at: new Date(payload.date) }
-        }
-      }
-    );
-    logger.info(`Completed webhook '${event}' event registration`);
-  } catch (err) {
-    return nextError(next, err.message, unrecoverableErrorStatus, err.stack);
-  }
-  */
   res.sendStatus(successStatus);
 };
 
@@ -196,6 +157,14 @@ const getHighestStatus = (events) => {
     }
     return best;
   }, [null, null]);
+};
+
+const nextErrorAndAudit = (req, next, message, status = 500, stack = null) => {
+  logger.error(`Webhook error: ${message}`, { status, stack });
+  audit({
+    req, mode: "webhook", subject: "Webhook processor", htmlContent: message
+  });
+  return nextError(next, message, status, stack);
 };
 
 module.exports = {

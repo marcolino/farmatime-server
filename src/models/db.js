@@ -267,10 +267,6 @@ const addImageToProduct = async (imagePath, productMdaCode) => {
         productId: product._id
       },
       t: i18n.t,
-      // t: (...x) => console.log(...x),
-      // i18n: {
-      //   t: (...x) => console.log(...x)
-      // },
     };
 
     // upload the product image

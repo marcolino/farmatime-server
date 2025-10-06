@@ -16,7 +16,6 @@ class StripeGateway extends AbstractPaymentGateway {
   constructor(config) {
     super();
     this.config = config;
-    //console.log("StripeGateway received config:", JSON.stringify(config.app.api, null, 2));
   }
 
   init() {
@@ -47,15 +46,11 @@ class StripeGateway extends AbstractPaymentGateway {
     if (!this.client) {
       return res.status(400).json({ message: req.t("Internal error (init not called)") });
     }
-    //console.log(8);
     const cart = req.parameters.cart; // cart is an object with items array
     
     if (!cart || !cart.items || cart.items.length === 0) {
-      //console.log(9, cart);
       return res.status(400).json({ message: req.t("Empty cart") });
     }
-    //console.log(10);
-    //logger.info("**************** CART:", cart);
   
     // create line items
     const line_items = cart.items.map(item => {
@@ -80,22 +75,16 @@ class StripeGateway extends AbstractPaymentGateway {
     });
   
     // create customer
-    //console.log(3, req);
     let user, stripeCustomerId;
     if (req.userId) { // user is authenticated
-      //console.log(3);
       user = await User.findById(req.userId);
-      //console.log("3a:", user);
       if (!user) {
         return res.status(403).json({ message: req.t("User with id {{userId}} not found", { userId: req.userId }) });
       }
-      //console.log(4);
       try {
         if (user.stripeCustomerId) { // user already has a customer id, she did buy already: use it
-          //console.log(6);
           stripeCustomerId = user.stripeCustomerId;
         } else {
-          //console.log(7);
           // user does not have a customer id, she did never buy before: create a customer
           const customer = await this.client.customers.create({
             email: user.email,
@@ -104,16 +93,12 @@ class StripeGateway extends AbstractPaymentGateway {
               userId: req.userId, // optional, to map our userId with the Stripe customer
             },
           });
-          //console.log(20, customer);
           stripeCustomerId = customer.id;
         }
-        //console.log(0);
         user.stripeCustomerId = stripeCustomerId;
         await user.save(); // save customer id to user
         logger.info(`Payment customer created`);
-        //console.log(1);
       } catch (err) {
-        //console.log(21, err.message);
         logger.error("Payment checkout customer creation error:", err);
         audit({ req, mode: "error", subject: `Payment checkout customer creation error`, htmlContent: `Payment checkout customer creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
         return res.status(400).json({ message: err.message });
@@ -124,7 +109,6 @@ class StripeGateway extends AbstractPaymentGateway {
   
     // create session
     try {
-      //console.log(31);
       const session = await this.client.checkout.sessions.create({
         mode: "payment",
         line_items,
@@ -140,9 +124,7 @@ class StripeGateway extends AbstractPaymentGateway {
           userId: user?.id, // user id
         },
       });
-      //console.log(32, session);
       if (!session?.url) { // incomplete response, we miss the redirect url
-        //console.log(33, session);
         throw new Error(req.t("No session url"));
       }
       logger.info(`Payment checkout session created`);
@@ -156,44 +138,33 @@ class StripeGateway extends AbstractPaymentGateway {
       });
   
       // if user did accept to receive offers emails, set it in user"s prefereces
-      //console.log(35, "user:", user, "cart:", cart);
       if (user && cart.acceptToReceiveOffersEmails) {
         user.preferences.notifications.email.offers = true;
-        //console.log("Before save:", user);
         await user.save(); // save preferences to user
-        //console.log("After save called");
       }
   
       return res.status(200).json({ session, user }); // return the session with the redirect url, and the user, possibly with updated notifications
     } catch (err) {
-      //console.log(33, err.message);
       audit({req, mode: "error", subject: `Payment checkout session creation error`, htmlContent: `Payment checkout session creation error for user ${user.firstName} ${user.lastName} (email: ${user.email}):\n${err.message}` });
       return nextError(next, req.t("Payment checkout session creation error: {{err}}", { err: err.message }), 500, err.stack);
     }
   }
   
   async paymentSuccess(req, res, next) {
-    //console.log("**************** paymentSuccess");
     if (!this.client) {
-      //console.log("**************** paymentSuccess", !this.client);
       return res.status(400).json({ message: req.t("Please call init") });
     }
     //const currency = config.currencies[config.currency];
     let customer;
     try {
-      //console.log("**************** paymentSuccess BENE", req.query.session_id);
       const session = await this.client.checkout.sessions.retrieve(req.query.session_id, {
         expand: ["customer", "payment_intent"], // include customer and payment details
       });
-      //console.log("**************** SESSION:", session); // eslint-disable-line no-console
       customer = session.customer;
-      //console.log("**************** CUSTOMER:", customer); // eslint-disable-line no-console
       const shippingInfo = session.shipping_details;
-      //console.log("**************** SHIPPINGINFO:", shippingInfo); // eslint-disable-line no-console
   
       // const session = await stripe.checkout.sessions.retrieve(req.parameters.session_id);
       // const customer = session.customer ? await stripe.customers.retrieve(session.customer) : null;
-  
       const items = await this.client.checkout.sessions.listLineItems(session.id);
       logger.info(`Session ${req.parameters.session_id} payment successful for ${items.data.length} product${items.data.length > 1 ? "s" : ""}${customer ? ` by customer ${customer.email}` : ""}`);
       audit({
@@ -237,7 +208,6 @@ class StripeGateway extends AbstractPaymentGateway {
           "(no shipping info)"
         )
       });
-      //console.log("session.metadata.isGift", session.metadata.isGift);
       res.redirect(config.payment.gateways.stripe.paymentSuccessUrlClient);
     } catch (err) { // should not happen...
       audit({req, mode: "error", subject: `Error retrieving payment info on payment success`, htmlContent: `Payment checkout session creation error for customer ${customer?.name} (email: ${customer?.email}):\n${err.message}` });
@@ -247,16 +217,12 @@ class StripeGateway extends AbstractPaymentGateway {
   
   async paymentCancel(req, res, next) {
     if (!this.client) {
-      //console.log(1);
       return res.status(400).json({ message: req.t("Please call init") });
     }
     let customer;
     try {
-      //console.log(2);
       const session = await this.client.checkout.sessions.retrieve(req.parameters.session_id);
-      //console.log(3);
       customer = session.customer ? await this.client.customers.retrieve(session.customer) : null;
-      //const items = await stripe.checkout.sessions.listLineItems(session.id);
       logger.info(`Payment canceled`);
       audit({req, mode: "action", subject: "Payment canceled", htmlContent: `
           Session id: ${req.parameters.session_id}\n
@@ -272,7 +238,6 @@ class StripeGateway extends AbstractPaymentGateway {
       });
       res.redirect(config.payment.gateways.stripe.paymentCancelUrlClient);
     } catch (err) { // should not happen...
-      //console.log(9, err.message);
       audit({req, mode: "error", subject: `Error retrieving payment info on payment cancel`, htmlContent: `Payment checkout session creation error for customer ${customer?.name} (email: ${customer?.email}):\n${err.message}` });
       return nextError(next, req.t("Error retrieving payment info on payment cancel callback: {{err}}"), 500, err.stack);
     }

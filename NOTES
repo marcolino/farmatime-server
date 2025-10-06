@@ -215,7 +215,6 @@ fly auth login
 ```
 
 This command opens your default browser and directs you to the login page. After logging in, close the tab to return to your terminal [2].
-Login with email <marcosolari@gmail.com>
 
 ### Step 3: Launch Your App
 

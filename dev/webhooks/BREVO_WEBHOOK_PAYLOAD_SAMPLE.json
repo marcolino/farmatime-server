@@ -1,0 +1,18 @@
+{
+  "id": 1559577,
+  "email": "user@mail.com",
+  "message-id": "<202510051005.27539234405@smtp-relay.mailin.fr>",
+  "date": "2025-10-07 03:49:12",
+  "tags": [
+    "request-to-be-tracked-with-webkook",
+    "lskjfgheSDF435mSlfk2rtuHJ3o83D4fljeif7ilYy2347DSFi2fedgefdLg2434xGr2"
+  ],
+  "event": "delivered",
+  "subject": "Hello dear friend",
+  "ts_event": 1758225312,
+  "ts": 1758225312,
+  "reason": "recipient did open this email and she was really happy...",
+  "ts_epoch": 1758225312860,
+  "sender_email": "posta@farmatime.it",
+  "uuid": "6a266cea-5420-4a87-a5a9-3bca90115c9h"
+}
