@@ -7,9 +7,9 @@ ip3country.init();
 
 
 const audit = async ({ req, mode, subject, htmlContent }) => {
-  if (config.mode.test) { // in test mode, just a console.warn
+  if (config.mode.staging) { // in test mode, just a console.warn
     // eslint-disable-next-line no-console
-    console.warn(`Audit for test environment, subject: ${subject}, contents: ${htmlContent}`);
+    console.warn(`Audit for staging environment, subject: ${subject}, contents: ${htmlContent}`);
     return;
   }
 

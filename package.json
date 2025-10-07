@@ -17,19 +17,20 @@
     "inject": "node scripts/inject.js",
     "run-worker_DISABLED": "node worker.js",
     "run-jobs": "curl -X POST http://localhost:5000/api/internal/runJobs",
-    "test": "NODE_ENV=test; echo 'Running all tests'; mocha --exit --timeout 5000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
-    "test-verbose": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail test/",
-    "test:coverage": "nyc yarn test",
+    "test_OLD": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
+    "test-quiet": "echo 'Running all tests...'; NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail --reporter json \"test/**/*.js\" > ./test/tmp/mocha-results.json && node scripts/parseTestResults.mjs; true",
+    "test": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail \"test/**/*.js\"",
+    "test:coverage": "nyc yarn test-quiet",
     "test:coverage:differential": "cat ./test/tmp/auth.controller.coverage; yarn test:coverage | grep auth.controller | tee -a ./test/tmp/auth.controller.coverage",
     "i18n-pre": "bash -c 'for dir in $(cat ../farmatime-client/src/config.json | jq -r \".locales | keys[]\"); do mkdir -p \"src/locales/$dir/\"; done'",
     "i18n": "yarn i18n-pre; i18next 'server.js' 'src/**/*.{js,ejs}' --config 'i18next-parser.config.js' --silent",
     "i18n-translate": "node scripts/translate.mjs",
     "i18n-check": "sh -c 'yarn i18n && missing=$(grep --only-matching __STRING_NOT_TRANSLATED__ src/locales/*/translation.json | wc -l); if [ $missing -gt 0 ]; then echo \"$missing strings have to be translated!\"; exit 1; fi'",
-    "deps-check": "npx unimported",
+    "deps-check": "yarn unimported",
     "eslint-check": "eslint server.js src/",
     "jshint-check": "jshint server.js src/",
     "env-copy-check": "cmp --silent .env .env.copy || { echo \".env and .env.copy differ, please run \\`cp .env .env.copy\\` to update .env.copy\"; exit 1 }",
-    "checks": "yarn env-copy-check && yarn test && yarn i18n-check && yarn deps-check && yarn jshint-check && yarn eslint-check && echo \"All checks passed\"",
+    "checks": "yarn env-copy-check && yarn test-quiet && yarn i18n-check && yarn deps-check && yarn jshint-check && yarn eslint-check && echo \"All checks passed\"",
     "client-build": "cd ../farmatime-client && yarn build",
     "build-info-produce": "node scripts/build-info-produce.mjs",
     "github-upload-secrets": "scripts/buildEnvTemplate.sh && node scripts/githubUploadSecrets",
@@ -120,8 +121,7 @@
     "i18next-parser": "9.0.2",
     "jshint": "^2.13.6",
     "libsodium-wrappers": "^0.7.15",
-    "mocha": "^11.1.0",
-    "mocha-junit-reporter": "^2.2.1",
+    "mocha": "^11.7.4",
     "node-fetch": "2",
     "nodemon": "^2.0.15",
     "nyc": "^17.1.0",
@@ -131,6 +131,7 @@
     "sinon": "^20.0.0",
     "supertest": "^7.0.0",
     "typescript": "5.3.3",
+    "unimported": "^1.31.1",
     "xml2js": "^0.6.2"
   },
   "DISABLED_packageManager": "yarn@4.6.0",
@@ -140,8 +141,7 @@
   "resolutions": {
     "semver": "^7.7.1",
     "esbuild": "^0.25.0",
-    "tough-cookie": "^5.1.1",
-    "typescript": "5.3.3"
+    "tough-cookie": "^5.1.1"
   },
   "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728"
 }

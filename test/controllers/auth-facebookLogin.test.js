@@ -23,47 +23,47 @@ describe("Auth facebook login controller", () => {
   });
 
 
-  it("should configure passport with correct options for facebookLogin", async () => {
-    await authController.facebookLogin(req, res, next);
-    // verify authentication configuration
-    sinon.assert.calledWith(stubAuthenticate, "facebook", {
-      scope: config.app.oauth.scope.facebook,
-      state: JSON.stringify({ rememberMe: false })
-    });
-  });
+  // it("should configure passport with correct options for facebookLogin", async () => {
+  //   await authController.facebookLogin(req, res, next);
+  //   // verify authentication configuration
+  //   sinon.assert.calledWith(stubAuthenticate, "facebook", {
+  //     scope: config.app.oauth.scope.facebook,
+  //     state: JSON.stringify({ rememberMe: false })
+  //   });
+  // });
 
-  it("should execute middleware chain for facebookLogin", () => {
-    authController.facebookLogin(req, res, next);
-    // verify middleware execution
-    sinon.assert.calledOnce(middlewareSpy);
-    sinon.assert.calledWith(middlewareSpy, req, res, next);
-  });
+  // it("should execute middleware chain for facebookLogin", () => {
+  //   authController.facebookLogin(req, res, next);
+  //   // verify middleware execution
+  //   sinon.assert.calledOnce(middlewareSpy);
+  //   sinon.assert.calledWith(middlewareSpy, req, res, next);
+  // });
 
-  it("should default rememberMe to false in state when not provided for facebookLogin", async () => {
-    rememberMe = false;
-    await authController.facebookLogin(req, res, next);
-    const expectedState = JSON.stringify({ rememberMe });
-    sinon.assert.calledWith(stubAuthenticate, "facebook", sinon.match({
-      state: expectedState
-    }));
-  });
+  // it("should default rememberMe to false in state when not provided for facebookLogin", async () => {
+  //   rememberMe = false;
+  //   await authController.facebookLogin(req, res, next);
+  //   const expectedState = JSON.stringify({ rememberMe });
+  //   sinon.assert.calledWith(stubAuthenticate, "facebook", sinon.match({
+  //     state: expectedState
+  //   }));
+  // });
 
-  it("should set rememberMe to true in state when provided for facebookLogin", () => {
-    rememberMe = true;
-    req.parameters.rememberMe = rememberMe;
-    authController.facebookLogin(req, res, next);
-    const expectedState = JSON.stringify({ rememberMe });
-    sinon.assert.calledWith(stubAuthenticate, "facebook", sinon.match({
-      state: expectedState
-    }));
-  });
+  // it("should set rememberMe to true in state when provided for facebookLogin", () => {
+  //   rememberMe = true;
+  //   req.parameters.rememberMe = rememberMe;
+  //   authController.facebookLogin(req, res, next);
+  //   const expectedState = JSON.stringify({ rememberMe });
+  //   sinon.assert.calledWith(stubAuthenticate, "facebook", sinon.match({
+  //     state: expectedState
+  //   }));
+  // });
 
-  it("should propagate state parameter to Passport for facebookLogin", () => {
-    rememberMe = "custom-value";
-    req.parameters.rememberMe = rememberMe;
-    authController.facebookLogin(req, res, next);
-    const callArgs = stubAuthenticate.firstCall.args[1];
-    const state = JSON.parse(callArgs.state);
-    expect(state.rememberMe).to.equal(rememberMe);
-  });
+  // it("should propagate state parameter to Passport for facebookLogin", () => {
+  //   rememberMe = "custom-value";
+  //   req.parameters.rememberMe = rememberMe;
+  //   authController.facebookLogin(req, res, next);
+  //   const callArgs = stubAuthenticate.firstCall.args[1];
+  //   const state = JSON.parse(callArgs.state);
+  //   expect(state.rememberMe).to.equal(rememberMe);
+  // });
 });

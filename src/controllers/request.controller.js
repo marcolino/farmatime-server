@@ -67,7 +67,11 @@ const runJobs = async (req, res, next) => {
     logger.info("    request sent via email");
 
     try {
-      const status = { label: "created" /*, at field is automatically filled */, reason: "" };
+      const event = {        
+        status: "request",
+        /*, at field is automatically filled */
+        reason: "",
+      };
       const request = await Request.create({
         userFirstName: user.firstName,
         userLastName: user.lastName,
@@ -86,9 +90,9 @@ const runJobs = async (req, res, next) => {
         })),
         userId: user._id,
         jobId: job.id,
-        statuses: [status],
-        lastStatus: status.label,
-        lastReason: status.reason,
+        events: [event],
+        lastStatus: event.status,
+        lastReason: event.reason,
       });
       logger.info("New request created:", request);
     } catch (err) {

@@ -1,7 +1,7 @@
 import fs from "fs";
-import xml2js from "xml2js";
+//import xml2js from "xml2js";
 
-const testResultsFile = "./test/tmp/test-results.xml";
+const testResultsFile = "./test/tmp/mocha-results.json";
 const readmeFile = "./README.md";
 
 if (!fs.existsSync(testResultsFile)) {
@@ -9,25 +9,24 @@ if (!fs.existsSync(testResultsFile)) {
   process.exit(1);
 }
 
-const parser = new xml2js.Parser();
-const xml = fs.readFileSync(testResultsFile);
+// Read the JSON file
+const rawData = await fs.promises.readFile(testResultsFile, "utf-8");
 
-parser.parseString(xml, (err, result) => {
-  if (err) {
-    console.error("Error parsing XML:", err);
-    process.exit(1);
-  }
+// Parse it
+const json = JSON.parse(rawData);
 
-  const testsuite = result.testsuites; //.testsuite[0];
-  const passedTests = testsuite.$.tests - testsuite.$.failures;
-  console.log(`Passed tests: ${passedTests}`);
+// Extract the number of passed tests
+const testsPassed = json.stats?.passes ?? 0;
 
-  // update README dile
-  const badgeUrl = `https://img.shields.io/badge/tests%20passed-${passedTests}-brightgreen`;
-  const readmeContent = fs.readFileSync(readmeFile, "utf8");
-  const updatedReadme = readmeContent.replace(
-    /!\[Tests Passed\]\(.*\)/,
-    `![Tests Passed](${badgeUrl})`
-  );
-  fs.writeFileSync(readmeFile, updatedReadme);
-});
+console.log(`Passed tests: ${testsPassed}`);
+
+// update README dile
+const badgeUrl = `https://img.shields.io/badge/tests%20passed-${testsPassed}-brightgreen`;
+const readmeContent = fs.readFileSync(readmeFile, "utf8");
+const updatedReadme = readmeContent.replace(
+  /!\[Tests Passed\]\(.*\)/,
+  `![Tests Passed](${badgeUrl})`
+);
+fs.writeFileSync(readmeFile, updatedReadme);
+
+process.exit(0);
