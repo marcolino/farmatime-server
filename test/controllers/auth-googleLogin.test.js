@@ -7,7 +7,7 @@ const config = require("../../src/config");
 
 
 describe("Auth google login controller", () => {
-  let req, res, next, stubAuthenticate
+  let req, res, next, stubAuthenticate;
 
   beforeEach(() => {
     middlewareSpy = sinon.spy();
@@ -28,9 +28,10 @@ describe("Auth google login controller", () => {
   it("should configure passport with correct options for googleLogin", () => {
     authController.googleLogin(req, res, next);
     // verify authentication configuration
-    sinon.assert.calledWith(stubAuthenticate, "google", {
+    sinon.assert.calledWith(stubAuthenticate, "google-web", {
       scope: config.app.oauth.scope.google,
-      state: JSON.stringify({ rememberMe: false })
+      state: JSON.stringify({ rememberMe: true, flow: "web" }),
+      callbackURL: `${config.baseUrl}/api/auth/google/callback/web`,
     });
   });
 
@@ -41,11 +42,11 @@ describe("Auth google login controller", () => {
     sinon.assert.calledWith(middlewareSpy, req, res, next);
   });
 
-  it("should default rememberMe to false in state when not provided for googleLogin", () => {
-    rememberMe = false;
+  it("should default rememberMe to true in state when not provided for googleLogin", () => {
+    rememberMe = true;
     authController.googleLogin(req, res, next);
-    const expectedState = JSON.stringify({ rememberMe });
-    sinon.assert.calledWith(stubAuthenticate, "google", sinon.match({
+    const expectedState = JSON.stringify({ rememberMe, "flow": "web" });
+    sinon.assert.calledWith(stubAuthenticate, "google-web", sinon.match({
       state: expectedState
     }));
   });
@@ -54,15 +55,15 @@ describe("Auth google login controller", () => {
     rememberMe = true;
     req.parameters.rememberMe = rememberMe;
     authController.googleLogin(req, res, next);
-    const expectedState = JSON.stringify({ rememberMe });
-    sinon.assert.calledWith(stubAuthenticate, "google", sinon.match({
+    const expectedState = JSON.stringify({ rememberMe, "flow": "web" });
+    sinon.assert.calledWith(stubAuthenticate, "google-web", sinon.match({
       state: expectedState
     }));
   });
 
   it("should propagate state parameter to Passport for googleLogin", () => {
     rememberMe = "custom-value";
-    req.parameters.rememberMe = rememberMe;
+    req.params = { rememberMe };  
     authController.googleLogin(req, res, next);
     const callArgs = stubAuthenticate.firstCall.args[1];
     const state = JSON.parse(callArgs.state);

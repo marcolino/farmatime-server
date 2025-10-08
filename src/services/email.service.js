@@ -109,7 +109,7 @@ class EmailService {
         response = await this.apiInstance.sendTransacEmail(sendSmtpEmail);
       }
       
-      logger.info(`Email sent to ${params.to} with message id ${response.messageId}, response was:`, response);
+      logger.info(`Email sent to ${params.to} with message id ${response.messageId}`);
       return response;
     } catch (err) {
       // logger.error(`Error sending email to ${params.to}:`, err);

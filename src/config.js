@@ -216,7 +216,12 @@ const configBase = {
     maxFileSize: 10 * (1024 ** 2), // 10 MB
   },
   envReloadIntervalSeconds: 60, // the seconds interval when to reload env collection from database
-  clientDomains: [
+  clientDomains: [...new Set([
+    baseUrl,
+    baseUrlClient,
+    baseUrlClientPreview,
+  ])],
+  clientDomains_NOT_UNIQUE: [ // TODO: REMOVEME
     baseUrl,
     baseUrlClient,
     baseUrlClientPreview,

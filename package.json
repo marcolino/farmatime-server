@@ -37,7 +37,7 @@
     "finish-ok": "date && ffplay -loglevel 0 -autoexit -nodisp dev/sounds/trumpet.wav",
     "finish-ko": "ffplay -loglevel 0 -autoexit -nodisp dev/sounds/finish.wav",
     "run-jobs-dev": "curl -X POST -s http://localhost:5000/api/request/runJobs && echo",
-    "run-jobs-production": "curl -X POST -s https://farmatime-prod.fly.dev/api/request/runJobs -H \"x-worker-key: $((grep WORKER_KEY .env | cut -f2 -d=))\" && echo",
+    "run-jobs-production": "curl -X POST -s https://www.farmatime.it/api/request/runJobs -H \"x-worker-key: $((grep WORKER_KEY .env | cut -f2 -d=))\" && echo",
     "brevo-webhook-dev": "curl -X POST -H 'Content-Type: application/json' -d @dev/webhooks/BREVO_WEBHOOK_PAYLOAD_SAMPLE.json http://localhost:5000/api/webhook/brevo",
     "fly-upgrade": "fly version upgrade",
     "fly-create-app-production": "flyctl apps list | grep -q 'farmatime-prod' || flyctl apps create 'farmatime-prod'",
@@ -54,9 +54,8 @@
     "fly-deploy-production": "fly deploy -c 'fly-production.toml'",
     "fly-logs-staging": "flyctl logs -a farmatime-staging",
     "fly-logs-production": "flyctl logs -a farmatime-prod",
-    "fly-scale-1-worker-staging_DISABLED": "fly scale count worker=1 -a farmatime-staging",
-    "pub-staging": "NODE_ENV=staging npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging && yarn finish-ok; yarn finish-ko",
-    "pub": "( NODE_ENV=production npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production && yarn finish-ok ) || yarn finish-ko"
+    "pub-staging": "NODE_ENV=staging FLY_NO_TELEMETRY=1 npm run client-build && yarn fly-pre-deploy-staging && yarn fly-deploy-staging && yarn finish-ok; yarn finish-ko",
+    "pub": "( NODE_ENV=production FLY_NO_TELEMETRY=1 npm run client-build && yarn fly-pre-deploy-production && yarn fly-deploy-production && yarn finish-ok ) || yarn finish-ko"
   },
   "keywords": [
     "node.js",

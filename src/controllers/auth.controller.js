@@ -26,8 +26,8 @@ const config = require("../config");
 // Google OAuth login
 const googleLogin = (req, res, next) => {
   logger.info("googleLogin flow params", req.params);
-  const flow = req.params.flow || 'web'; // 'web' or 'pwa'
-  const rememberMe = req.params.rememberMe ?? true; // assume a long lasting social session, by default...
+  const flow = req.params?.flow || 'web'; // 'web' or 'pwa'
+  const rememberMe = req.params?.rememberMe ?? true; // assume a long lasting social session, by default...
   logger.info("googleLogin callbackURL: ", `${config.baseUrl}/api/auth/google/callback/${flow}`);
   const state = JSON.stringify({ rememberMe, flow }); // encode it as a string
   passport.authenticate(`google-${flow}`, {

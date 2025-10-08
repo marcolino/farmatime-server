@@ -83,7 +83,7 @@ require("./config/config.test");
 require("./routes/auth.test");
 require("./routes/user.test");
 require("./routes/product.test");
-//require("./routes/payment.test");
+require("./routes/payment.test");
 require("./routes/misc.test");
 
 require("./libs/environment.test");
@@ -92,22 +92,24 @@ require("./models/plan.model.test");
 require("./models/role.model.test");
 require("./models/accessToken.model.test");
 require("./models/refreshToken.model.test");
-//require("./models/env.model.test"); // TODO...
-//require("./models/notificationToken.model.test"); // TODO...
-//require("./models/product.model.test"); // TODO...
-//require("./models/user.model.test"); // TODO...
-//require("./models/verificationCode.model.test"); // TODO...
+//require("./models/env.model.test"); // TODO (this tests must be implemented yet)
+//require("./models/notificationToken.model.test"); // TODO (this tests must be implemented yet)
+//require("./models/product.model.test"); // TODO (this tests must be implemented yet)
+//require("./models/user.model.test"); // TODO (this tests must be implemented yet)
+//require("./models/verificationCode.model.test"); // TODO (this tests must be implemented yet)
 
 require("./controllers/auth.test");
 require("./controllers/auth-social.test");
 require("./controllers/auth-signupVerification.test");
 require("./controllers/auth-resendSignupVerificationCode.test");
 require("./controllers/auth-signup.test");
-// require("./controllers/auth-googleLogin.test"); // TODO...
-// require("./controllers/auth-facebookLogin.test"); // TODO...
-// require("./controllers/auth-googleCallback.test"); // TODO...
-// require("./controllers/auth-facebookCallback.test"); // TODO...
-// require("./controllers/auth-socialLogin.test"); // TODO...
+
+require("./controllers/auth-googleLogin.test");
+//require("./controllers/auth-facebookLogin.test"); // TODO (Facebook oAuth2 provider is not enabled yet)
+require("./controllers/auth-googleCallback.test");
+//require("./controllers/auth-facebookCallback.test"); // TODO (Facebook oAuth2 provider is not enabled yet)
+require("./controllers/auth-socialLogin.test"); // TODO...
+
 require("./controllers/auth-socialRevoke.test");
 require("./controllers/auth-resetPassword.test");
 require("./controllers/auth-resendResetPasswordCode.test");

@@ -160,7 +160,7 @@ describe("Payment routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith("The Checkout Session&#39;s total amount due must add up to at least"));
+    server.expect(res.body.message).to.be.a("string").and.satisfy(msg => msg.startsWith("The Checkout Session's total amount due must add up to at least "));
   });
   
   it("should create a checkout session for a regular product for a guest user", async () => {

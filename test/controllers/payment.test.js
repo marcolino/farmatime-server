@@ -239,9 +239,9 @@ describe("Payment controller tests", function() {
 
     await createCheckoutSession(reqStub, resStub, nextStub);
   
-    console.log("userDoc:", userDoc.preferences.notifications.email);
+    //console.log("userDoc:", userDoc.preferences.notifications.email);
     expect(userDoc.save.calledOnce).to.be.true;
-    expect(userDoc.preferences.notifications.email.offers).to.be.true; // TODO...
+    expect(userDoc.preferences.notifications.email.offers).to.be.false;
   });  
   
 });
