@@ -46,6 +46,7 @@ const getRequests = async (req, res, next) => {
 
 const runJobs = async (req, res, next) => {
   const requestSend = async (req, user, jobs, job, emailTemplate, medicines, now) => {
+    let request;
     let response;
     response = await emailService.send(req, {
       fromName:
@@ -68,11 +69,11 @@ const runJobs = async (req, res, next) => {
 
     try {
       const event = {        
-        status: "request",
+        status: "create",
         /*, at field is automatically filled */
         reason: "",
       };
-      const request = await Request.create({
+      request = await Request.create({
         userFirstName: user.firstName,
         userLastName: user.lastName,
         provider: config.email.provider,
@@ -119,6 +120,8 @@ const runJobs = async (req, res, next) => {
     } else {
       logger.info("    updated medicine last date");
     }
+
+    return request;
   };
 
   try {
@@ -130,6 +133,7 @@ const runJobs = async (req, res, next) => {
     ;
     
     let requestsCount = 0;
+    let requestsDetailsForAudit = "";
     for (const user of users) {
       logger.info(`- Processing user ${user._id} (${user.email}, ${user.firstName} ${user.lastName})`);
 
@@ -224,18 +228,26 @@ const runJobs = async (req, res, next) => {
         // one or more medicines are due for this job, requesting them
         if (medicines.length) {
           try {
+            let request;
             if (config.app.ui.jobs.unifyRequests) { // unify requests, all medicines for this user for this job for today are requested with a unique email
               logger.info(`    ${medicines.length} medicines ${medicines.map(med => med.id).join(', ')} are being requested, unified`);
-              await requestSend(req, user, jobs, job, emailTemplate, medicines, nowDate);
+              request = await requestSend(req, user, jobs, job, emailTemplate, medicines, nowDate);
               requestsCount++;
             } else { // do not unify requests, all medicines for this user for this job for today are requested with separate emails
               for (const medicine of medicines) {
                 logger.info(`    medicine ${medicine.id} is being requested, separately`);
-                await requestSend(req, user, jobs, job, emailTemplate, [medicine], nowDate);
+                request = await requestSend(req, user, jobs, job, emailTemplate, [medicine], nowDate);
                 requestsCount++;
               }
             }
-          } catch (err) { // catch requestSend exceptions
+            requestsDetailsForAudit += `
+User: ${request.user.firstName} ${request.user.lastName} &lt;${request.user.email}&gt;<br />
+Patient: ${request.patient.firstName} ${request.patient.lastName} &lt;${request.patient.email}&gt;<br />
+Doctor: ${request.doctor.name} &lt;${request.doctor.email}&gt;<br />
+Medicines:<br />
+${request.medicines.map(medicine => ` - ${medicine.name}, since ${medicine.fieldSinceDate} every ${parseInt(medicine.fieldFrequency)}`).join('<br />')}
+<hr /><br />`;
+          } catch (err) { // catch requestSend exceptionsparseInt(medicine.fieldFrequency)
             return nextError(next, req.t("Error sending requests: {{err}}", { err: err.message }), 500, err.stack);
           }
         }
@@ -243,7 +255,11 @@ const runJobs = async (req, res, next) => {
     }
     logger.info('- Done processing all users jobs medicines.');
     audit({
-      req, mode: "scheduler", subject: "Processed all users jobs medicines", htmlContent: `Sent ${requestsCount} request(s).`
+      req, mode: "scheduler", subject: "Processed all users jobs medicines", htmlContent: `
+      Sent ${requestsCount} request(s):<br />
+      <br />
+      ${requestsDetailsForAudit}
+      `
     });
 
     return res.json({

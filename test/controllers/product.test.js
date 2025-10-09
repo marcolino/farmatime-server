@@ -1463,7 +1463,7 @@ describe("Product Controller", () => {
       sinon.assert.calledOnce(updateStub);
       sinon.assert.calledWith(updateStub, { _id: { $in: ["1", "2"] } }, { isDeleted: true }, { new: true, lean: true });
       sinon.assert.calledOnce(next);
-      expect(next.args[0][0].message).to.equal("Error updating product to remove: Bang!");
+      expect(next.args[0][0].message).to.equal("Error updating product to delete: Bang!");
       expect(next.args[0][0].status).to.equal(500);
       expect(next.args[0][0].stack).to.equal(mockError.stack);
     });

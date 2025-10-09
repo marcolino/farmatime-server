@@ -213,7 +213,7 @@ const cookieOptions = (setAge = true) => {
 
 /*
 // tokens cleanup functions
-const cleanupExpiredTokens = async (req,) => { // we should not need this function, expired tokens should be automatically removed
+const cleanupExpiredTokens = async (req,) => { // we should not need this function, expired tokens should be automatically deleted
   const expiredSinceSeconds = req.expiredSinceSeconds ?? 0;
   const expirationTime = new Date();
   expirationTime.setSeconds(expirationTime.getSeconds() + expiredSinceSeconds);

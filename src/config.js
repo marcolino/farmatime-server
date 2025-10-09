@@ -216,16 +216,11 @@ const configBase = {
     maxFileSize: 10 * (1024 ** 2), // 10 MB
   },
   envReloadIntervalSeconds: 60, // the seconds interval when to reload env collection from database
-  clientDomains: [...new Set([
+  clientDomains: [...new Set([ // be sure the follwing array is unique
     baseUrl,
     baseUrlClient,
     baseUrlClientPreview,
   ])],
-  clientDomains_NOT_UNIQUE: [ // TODO: REMOVEME
-    baseUrl,
-    baseUrlClient,
-    baseUrlClientPreview,
-  ],
   clientEmailUnsubscribeUrl: `${baseUrlClient}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrlClient}/email-preferences`,
   clientPushNotificationsUnsubscribeUrl: `${baseUrlClient}/push-notifications-unsubscribe`,
@@ -454,16 +449,11 @@ const configBase = {
       },
     },
     spinner: { // loading spinner
-      /** choose one in type in:
-       *    Audio, Comment, Grid, Hearts, Hourglass, Oval,
-       *    RotatingLines, RotatingSquare, ThreeDots, Watch
-       */
-      //type: "Watch",
       delay: 500,
-      thickness: 4,
-      size: 64,
-      opacity: 0.9,
-      color: "ochra",
+      thickness: 5,
+      size: 92,
+      opacity: 0.5,
+      color: "gold"
     },
     serverLocale, // server locale
     locales: { // supported locales

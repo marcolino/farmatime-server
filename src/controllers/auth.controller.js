@@ -182,7 +182,7 @@ const socialLogin = async (req, res, next) => {
   
   if (user) { // a user with given email exists already
     logger.info("User found:", user._id, user.email, user.isVerified ? "(verified)" : "(not verified)", user.isDeleted ? "(deleted)" : "");
-    logger.info("User jobs:", user.jobs, typeof user.jobs, user.jobsCLEAN);
+    //logger.info("User jobs:", user.jobsCLEAN);
     // check user is deleted
     if (user.isDeleted) { // we just force user's rebirth
       user.deleted = false;

@@ -20,6 +20,7 @@ const brevo = async (req, res, next) => {
     return nextErrorAndAudit(req, next, "No message-id in Brevo webhook", unrecoverableErrorStatus);
   }
   const event = payload.event; // E.g. "delivered", "open", "click", "hard_bounce"
+  const reason = payload.reason;
   const uuid = payload.uuid; // Universally unique identifier
 
   /**
@@ -96,10 +97,18 @@ const brevo = async (req, res, next) => {
     return nextErrorAndAudit(req, next, `Cannot find request with message id ${providerMessageId}: ${err.message}`, unrecoverableErrorStatus, err.stack);
   }
   if (!requestCurrent) {
-    return nextErrorAndAudit(req, next, `No request found for ${providerMessageId}`, unrecoverableErrorStatus);
+    return nextErrorAndAudit(req, next, `No request found for ${providerMessageId}, status was: ${status}, reason: ${reason}, date: ${payload.date}`, unrecoverableErrorStatus);
   }
-  const eventDate = payload.date ? new Date(payload.date) : new Date();
-  requestCurrent.events.push({ status, at: eventDate, reason: payload.reason }); // Push current event
+  /**
+   * Treat Brevo date as UTC: Brevo sends dates in local time
+   * (we have Rome timezone set), without an explicit timezone:
+   * this is wrong! Forcing a "Z" we convert it to true UTC.
+   */
+  const eventDate = payload.date ?
+    new Date(payload.date + "Z") :
+    new Date()
+  ;
+  requestCurrent.events.push({ status, at: eventDate, reason: reason }); // Push current event
   
   // Status updates could arrive in mixed order, and with some seconds delay...
   const [lastStatus, lastStatusDate, lastReason] = getHighestStatus(requestCurrent.events); 

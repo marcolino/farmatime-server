@@ -15,7 +15,7 @@ const checkDuplicateEmail = async (req, res, next) => {
     if (user) {
       if (user.isDeleted) { // notify user has been deleted, for the moment it is not usable
         return res.status(400).json({
-          message: req.t("This account has been deleted, currently this email cannot be used"),
+          message: req.t("This account has been removed, currently this email cannot be used"),
           code: "ACCOUNT_DELETED",
         });
       }

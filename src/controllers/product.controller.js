@@ -331,12 +331,12 @@ const removeProduct = async (req, res, next) => {
   try {
     const data = await Product.updateMany(filter, payload, { new: true, lean: true });
     if (data.modifiedCount > 0) {
-      return res.status(200).json({ message: req.t("{{count}} product(s) have been removed", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
+      return res.status(200).json({ message: req.t("{{count}} product(s) have been deleted", { count: data./*nModified*/modifiedCount }), count: data./*nModified*/modifiedCount });
     } else {
       return res.status(400).json({ message: "No products have been removed" });
     }
   } catch (err) {
-    return nextError(next, req.t("Error updating product to remove: {{err}}", { err: err.message }), 500, err.stack);      
+    return nextError(next, req.t("Error updating product to delete: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
   
