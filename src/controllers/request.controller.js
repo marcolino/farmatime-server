@@ -5,7 +5,7 @@ const { logger } = require("../controllers/logger.controller");
 const { updateUserJobsLocal } = require("../controllers/user.controller");
 const emailService = require("../services/email.service");
 const { audit } = require("../libs/messaging");
-const { nextError, isAdministrator, formatDateYYYYMMDDHHMM } = require("../libs/misc");
+const { nextError, isAdministrator } = require("../libs/misc");
 const config = require("../config");
 
 const getRequests = async (req, res, next) => {
@@ -241,12 +241,13 @@ const runJobs = async (req, res, next) => {
                 requestsCount++;
               }
             }
+            logger.info("MEDICINE[0]:", request.medicines[0]); // TODO: DEBUG ONLY
             requestsDetailsForAudit += `
 User: ${request.userFirstName} ${request.userLastName} &lt;${request.userEmail}&gt;<br />
 Patient: ${request.patientFirstName} ${request.patientLastName} &lt;${request.patientEmail}&gt;<br />
 Doctor: ${request.doctorName} &lt;${request.doctorEmail}&gt;<br />
 Medicines:<br />
-${request.medicines.map(medicine => ` - ${medicine.name}, since ${formatDateYYYYMMDDHHMM(medicine.since)} every ${parseInt(medicine.every)} day(s)`).join('<br />')}
+${request.medicines.map(medicine => ` - ${medicine.name}, since ${medicine.since.toISOString()} every ${parseInt(medicine.every)} day(s)`).join('<br />')}
 <hr /><br />`;
           } catch (err) { // catch requestSend exceptionsparseInt(medicine.fieldFrequency)
             return nextError(next, req.t("Error sending requests: {{err}}", { err: err.message }), 500, err.stack);

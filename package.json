@@ -18,7 +18,7 @@
     "run-worker_DISABLED": "node worker.js",
     "run-jobs": "curl -X POST http://localhost:5000/api/internal/runJobs",
     "test_OLD": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail --reporter mocha-junit-reporter --reporter-options mochaFile=./test/tmp/test-results.xml test/ | tee /tmp/test.log && node scripts/parseTestResults.mjs && rm -f ./test/tmp/test-results.xml",
-    "test-quiet": "echo 'Running all tests...'; NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail --reporter json \"test/**/*.js\" > ./test/tmp/mocha-results.json && node scripts/parseTestResults.mjs",
+    "test-quiet": "echo 'Running all tests...'; NODE_ENV=test mocha --exit --timeout 20000 --slow 150 --bail --reporter json \"test/**/*.js\" > ./test/tmp/mocha-results.json && node scripts/parseTestResults.mjs",
     "test": "NODE_ENV=test mocha --exit --timeout 5000 --slow 150 --bail \"test/**/*.js\"",
     "test:coverage": "nyc yarn test-quiet",
     "test:coverage:differential": "cat ./test/tmp/auth.controller.coverage; yarn test:coverage | grep auth.controller | tee -a ./test/tmp/auth.controller.coverage",

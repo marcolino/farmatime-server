@@ -1,27 +1,19 @@
 const ip3country = require("ip3country");
 const { remoteAddress, countryCodeToFlag, localeDateTime } = require("../libs/misc");
 const emailService = require("../services/email.service");
+const { logger } = require("../controllers/logger.controller");
 const config = require("../config");
 
 ip3country.init();
 
 
 const audit = async ({ req, mode, subject, htmlContent }) => {
-  if (config.mode.staging) { // in test mode, just a console.warn
-    // eslint-disable-next-line no-console
-    console.warn(`Audit for staging environment, subject: ${subject}, contents: ${htmlContent}`);
+  logger.info(`Audit: subject: ${subject}, contents: ${htmlContent}`);
+
+  if (!config.mode.production) { // not in production mode, ignore real auditing
     return;
   }
 
-  // // set "mode" symbol (dev/prod)
-  // const modeSymbol =
-  //   config.mode.development ? "🚧" :
-  //     config.mode.staging ? "🌐" :
-  //       config.mode.production ? "" : //"🚀" :
-  //         "�"
-  //   // eslint-disable-line indent -- unforeseen mode
-  // ;
-  
   const baseUrl = config.baseUrl;
 
   // get remote IP address

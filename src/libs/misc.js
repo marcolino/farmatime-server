@@ -410,6 +410,18 @@ const createTokensAndCookies = async (req, res, next, user) => {
   try {
     accessToken = await AccessToken.createToken(user);
     refreshToken = await RefreshToken.createToken(user, req.parameters.rememberMe);
+    if (!accessToken) {
+      throw new Error('AccessToken creation returned null/undefined');
+    }
+    if (typeof accessToken !== 'string') {
+      throw new Error(`AccessToken is not a string: ${typeof accessToken}`);
+    }
+    if (!refreshToken) {
+      throw new Error('RefreshToken creation returned null/undefined');
+    }
+    if (typeof refreshToken !== 'string') {
+      throw new Error(`RefreshToken is not a string: ${typeof refreshToken}`);
+    }
   } catch (err) {
     return nextError(next, req.t("Error creating tokens: {{err}}", { err: err.message }), 500, err.stack);
   }
@@ -450,15 +462,6 @@ const cookieOptions = (setAge = true) => {
   } : options;
 };
 
-const formatDateYYYYMMDDHHMM = (date, language = i18n.language) => {
-  const locale = localeMap[language] || enUS; // fallback to enUS if locale is unknown
-  const dateObj = new Date(date);
-  const formatString = "P p"; // locale aware format
-  // Format using local time (Date() is automatically local)
-  const formatted = format(dateObj, formatString, { locale });
-  return formatted;
-};
-
 module.exports = {
   isString,
   isObject,
@@ -485,5 +488,4 @@ module.exports = {
   redirectToClientWithError,
   createTokensAndCookies,
   cookieOptions,
-  formatDateYYYYMMDDHHMM,
 };

@@ -68,8 +68,8 @@ describe("RefreshToken model", () => {
 
     const token = await RefreshToken.createToken(user, rememberMe);
 
-    // verify the function returns undefined for duplicate key error
-    server.expect(token).to.be.undefined;
+    // verify the function returns a string token for duplicate key error
+    server.expect(token).to.be.string;
   });
 
   it("should throw an error for other save errors", async () => {

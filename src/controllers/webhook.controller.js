@@ -99,15 +99,7 @@ const brevo = async (req, res, next) => {
   if (!requestCurrent) {
     return nextErrorAndAudit(req, next, `No request found for ${providerMessageId}, status was: ${status}, reason: ${reason}, date: ${payload.date}`, unrecoverableErrorStatus);
   }
-  /**
-   * Treat Brevo date as UTC: Brevo sends dates in local time
-   * (we have Rome timezone set), without an explicit timezone:
-   * this is wrong! Forcing a "Z" we convert it to true UTC.
-   */
-  const eventDate = payload.date ?
-    new Date(payload.date + "Z") :
-    new Date()
-  ;
+  const eventDate = new Date();
   requestCurrent.events.push({ status, at: eventDate, reason: reason }); // Push current event
   
   // Status updates could arrive in mixed order, and with some seconds delay...
