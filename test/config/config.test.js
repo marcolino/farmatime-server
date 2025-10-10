@@ -351,7 +351,7 @@ describe("Config merging", () => {
     const config = proxyquire(configFile, {
       fs: fsStub,
       path: pathStub,
-      "config.mda.js": customConfig,
+      "config.farmatime.js": customConfig,
       dotenv: { config: sinon.stub().returns({ parsed: {} }) }
     });
 
