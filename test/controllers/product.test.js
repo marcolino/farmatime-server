@@ -1475,7 +1475,7 @@ describe("Product Controller", () => {
     });
 
 
-    it("should return success when products are removed", async () => {
+    it("should return success when products are deleted", async () => {
       // stub updateMany to return modifiedCount: 2
       updateStub.resolves({
         acknowledged: true,
@@ -1488,7 +1488,7 @@ describe("Product Controller", () => {
     
       sinon.assert.calledWith(res.status, 200);
       sinon.assert.calledWith(res.json, {
-        message: "2 product(s) have been removed",
+        message: "2 product(s) have been deleted",
         count: 2
       });
     });
@@ -1506,7 +1506,7 @@ describe("Product Controller", () => {
     
       sinon.assert.calledWith(res.status, 200);
       sinon.assert.calledWith(res.json, {
-        message: "2 product(s) have been removed",
+        message: "2 product(s) have been deleted",
         count: 2
       });
     });
