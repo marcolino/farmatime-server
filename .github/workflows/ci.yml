@@ -50,7 +50,7 @@ jobs:
             echo "❌ CUSTOMIZATION is empty or not defined"
             exit 1
           else
-            echo "✅ CUSTOMIZATION is set"
+            echo "✅ CUSTOMIZATION is set: " $CUSTOMIZATION[0]
           fi
       - name: Run Tests
         run: yarn test
