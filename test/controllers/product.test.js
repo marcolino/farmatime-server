@@ -20,6 +20,8 @@ const {
   removeProduct
 } = require("../../src/controllers/product.controller");
 const { diacriticMatchRegex, diacriticsRemove } = require("../../src/libs/misc");
+
+process.env.CUSTOMIZATION = "farmatime"; 
 const config = require("../../src/config");
 
 
