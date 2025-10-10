@@ -365,11 +365,15 @@ describe("Config merging", () => {
 
 describe("Config file with test flag forced to false", () => {
   const configFile = "../../src/config.js";
-  let config, originalGlobalIt;
+  let config, originalGlobalIt, originalCustomization;
 
   beforeEach(() => {
     // backup the original global.it
     originalGlobalIt = global.it;
+    originalCustomization = process.env.CUSTOMIZATION;
+    
+    // force a known customization value so CI masking doesn’t cause undefined
+    process.env.CUSTOMIZATION = "farmatime";
 
     // temporarily unset global.it to simulate non-test environments
     delete global.it;
@@ -382,7 +386,7 @@ describe("Config file with test flag forced to false", () => {
   afterEach(() => {
     // restore global.it after the test
     global.it = originalGlobalIt;
-
+    process.env.CUSTOMIZATION = originalCustomization;
     // clear the require cache again
     delete require.cache[require.resolve(configFile)];
   });
