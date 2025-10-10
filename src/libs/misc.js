@@ -450,6 +450,15 @@ const cookieOptions = (setAge = true) => {
   } : options;
 };
 
+const formatDateYYYYMMDDHHMM = (date, language = i18n.language) => {
+  const locale = localeMap[language] || enUS; // fallback to enUS if locale is unknown
+  const dateObj = new Date(date);
+  const formatString = "P p"; // locale aware format
+  // Format using local time (Date() is automatically local)
+  const formatted = format(dateObj, formatString, { locale });
+  return formatted;
+};
+
 module.exports = {
   isString,
   isObject,
@@ -476,4 +485,5 @@ module.exports = {
   redirectToClientWithError,
   createTokensAndCookies,
   cookieOptions,
+  formatDateYYYYMMDDHHMM,
 };

@@ -5,7 +5,7 @@ const { logger } = require("../controllers/logger.controller");
 const { updateUserJobsLocal } = require("../controllers/user.controller");
 const emailService = require("../services/email.service");
 const { audit } = require("../libs/messaging");
-const { nextError, isAdministrator } = require("../libs/misc");
+const { nextError, isAdministrator, formatDateYYYYMMDDHHMM } = require("../libs/misc");
 const config = require("../config");
 
 const getRequests = async (req, res, next) => {
@@ -76,6 +76,7 @@ const runJobs = async (req, res, next) => {
       request = await Request.create({
         userFirstName: user.firstName,
         userLastName: user.lastName,
+        userEmail: user.email,
         provider: config.email.provider,
         providerMessageId: messageId,
         patientFirstName: job.patient.firstName,
@@ -241,11 +242,11 @@ const runJobs = async (req, res, next) => {
               }
             }
             requestsDetailsForAudit += `
-User: ${request.user.firstName} ${request.user.lastName} &lt;${request.user.email}&gt;<br />
-Patient: ${request.patient.firstName} ${request.patient.lastName} &lt;${request.patient.email}&gt;<br />
-Doctor: ${request.doctor.name} &lt;${request.doctor.email}&gt;<br />
+User: ${request.userFirstName} ${request.userLastName} &lt;${request.userEmail}&gt;<br />
+Patient: ${request.patientFirstName} ${request.patientLastName} &lt;${request.patientEmail}&gt;<br />
+Doctor: ${request.doctorName} &lt;${request.doctorEmail}&gt;<br />
 Medicines:<br />
-${request.medicines.map(medicine => ` - ${medicine.name}, since ${medicine.fieldSinceDate} every ${parseInt(medicine.fieldFrequency)}`).join('<br />')}
+${request.medicines.map(medicine => ` - ${medicine.name}, since ${formatDateYYYYMMDDHHMM(medicine.since)} every ${parseInt(medicine.every)} day(s)`).join('<br />')}
 <hr /><br />`;
           } catch (err) { // catch requestSend exceptionsparseInt(medicine.fieldFrequency)
             return nextError(next, req.t("Error sending requests: {{err}}", { err: err.message }), 500, err.stack);

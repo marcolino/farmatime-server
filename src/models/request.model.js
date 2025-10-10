@@ -12,6 +12,7 @@ const RequestSchema = new mongoose.Schema({
   // Snapshot of user info
   userFirstName: { type: String, required: true },
   userLastName: { type: String, required: true },
+  userEmail: { type: String, required: true },
   
   // Snapshot of patient/doctor info
   patientFirstName: { type: String, required: true },

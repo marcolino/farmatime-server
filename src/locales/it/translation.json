@@ -29,6 +29,7 @@
   "Could not delete user(s) with filter {{filter}}: {{err}}": "Impossibile eliminare l'utente/i con il filtro {{filter}}: {{err}}",
   "Could not find any product by id {{id}}": "Prodotto di id {{id}} non trovato",
   "Could not find this user": "Utente non trovato",
+  "create": "creata",
   "dealer": "concessionario",
   "Deletion request includes the protected root user and cannot be processed": "La richiesta di eliminazione include l'utente protetto root e non può essere processata",
   "Email is not valid": "L'email non è valida",

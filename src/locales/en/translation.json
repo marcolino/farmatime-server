@@ -26,6 +26,7 @@
   "Could not delete user(s) with filter {{filter}}: {{err}}": "Could not delete user(s) with filter {{filter}}: {{err}}",
   "Could not find any product by id {{id}}": "Could not find any product by id {{id}}",
   "Could not find this user": "Could not find this user",
+  "create": "created",
   "dealer": "dealer",
   "Deletion request includes the protected root user and cannot be processed": "Deletion request includes the protected root user and cannot be processed",
   "Email is not valid": "Email is not valid",

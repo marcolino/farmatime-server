@@ -3,6 +3,8 @@
  */
 /* eslint-disable no-undef */
 
+t("create");
+
 // A powerful web app to automate medicine prescription requests";
 // HTTP errors
 t("Moved permanently"); // 301, Spostato in modo permanente
