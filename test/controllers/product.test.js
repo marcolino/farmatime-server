@@ -218,23 +218,36 @@ describe("Product Controller", () => {
 
         const fakeConfig = {
           mode: { test: true },
+          db: {
+            products: {
+              search: { caseInsensitive: true, mode: "EXACT" }
+            }
+          },
           api: { localTimezone: "UTC" },
-          logs: { 
-            file: { name: "mock.log", maxsize: 1000 }, 
-            levelMap: { test: "info", development: "debug" }, 
-            betterstack: { enabled: false } 
+          logs: {
+            file: { name: "mock.log", maxsize: 1000 },
+            levelMap: { test: "info", development: "debug" },
+            betterstack: { enabled: false }
           }
         };
 
         // mock diacriticMatchRegex to verify it's called with correct arguments
         const diacriticMatchRegexStub = sinon.stub().returns("regex_pattern");
 
-        proxyquire.load("../../src/controllers/product.controller", {
-          "../models/product.model": ProductStub,
-          "../libs/misc": { nextError: nextErrorStub, diacriticMatchRegex: diacriticMatchRegexStub, diacriticsRemove },
-          "../config": fakeConfig
-        });
-        
+       // Load the controller with stubbed dependencies
+        const productController = proxyquire.load(
+          "../../src/controllers/product.controller",
+          {
+            "../models/product.model": ProductStub,
+            "../libs/misc": {
+              nextError: nextErrorStub,
+              diacriticMatchRegex: diacriticMatchRegexStub,
+              diacriticsRemove
+            },
+            "../config": fakeConfig // << inject fake config here
+          }
+        );
+
         // stub Product.schema.path to return searchable: true
         ProductStub.schema.path.withArgs("make").returns({
           options: {
@@ -242,7 +255,8 @@ describe("Product Controller", () => {
           }
         });
 
-        await getProducts(req, res, next);
+        // then you can call getProducts
+        await productController.getProducts(req, res, next);;
 
         sinon.assert.called(ProductStub.schema.path);
         expect(ProductStub.find.calledOnce).to.be.true;
