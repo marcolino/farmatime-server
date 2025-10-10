@@ -40,6 +40,11 @@ const connect = async () => {
     throw new Error(err);
   }
 
+  if (config.mode.testInCI /*process.env.GITHUB_ACTIONS*/) { // TODO: DEBUG ONLY
+    console.log("🔍 MONGO_TEST_REMOTE_URL:", process.env.MONGO_TEST_REMOTE_URL);
+    console.log("🔍 connUri:", connUri);
+  }
+
   try {
     logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":*****"));
     await mongoose.connect(connUri);
