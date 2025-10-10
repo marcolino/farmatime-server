@@ -218,35 +218,20 @@ describe("Product Controller", () => {
 
         const fakeConfig = {
           mode: { test: true },
-          db: {
-            products: {
-              search: { caseInsensitive: true, mode: "EXACT" }
-            }
-          },
+          db: { products: { search: { caseInsensitive: true, mode: "EXACT" } } },
           api: { localTimezone: "UTC" },
-          logs: {
-            file: { name: "mock.log", maxsize: 1000 },
-            levelMap: { test: "info", development: "debug" },
-            betterstack: { enabled: false }
-          }
+          logs: { file: { name: "mock.log", maxsize: 1000 }, levelMap: { test: "info", development: "debug" }, betterstack: { enabled: false } }
         };
 
         // mock diacriticMatchRegex to verify it's called with correct arguments
-        const diacriticMatchRegexStub = sinon.stub().returns("regex_pattern");
+        //const diacriticMatchRegexStub = sinon.stub().returns("regex_pattern");
 
-       // Load the controller with stubbed dependencies
-        const productController = proxyquire.load(
-          "../../src/controllers/product.controller",
-          {
-            "../models/product.model": ProductStub,
-            "../libs/misc": {
-              nextError: nextErrorStub,
-              diacriticMatchRegex: diacriticMatchRegexStub,
-              diacriticsRemove
-            },
-            "../config": fakeConfig // << inject fake config here
-          }
-        );
+        // Load the controller with stubbed dependencies
+        const productController = proxyquire("../../src/controllers/product.controller", {
+          "../models/product.model": ProductStub,
+          "../libs/misc": { nextError: nextErrorStub, diacriticMatchRegex: sinon.stub().returns("regex_pattern"), diacriticsRemove },
+          "../config": fakeConfig
+        });
 
         // stub Product.schema.path to return searchable: true
         ProductStub.schema.path.withArgs("make").returns({
