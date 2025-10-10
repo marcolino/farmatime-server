@@ -224,6 +224,17 @@ describe("Logger module", () => {
   });
 
   describe("Logger exception handling", () => {
+    let sandbox;
+
+    beforeEach(() => {
+      sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+      sandbox.restore();
+      delete require.cache[require.resolve("../../src/controllers/logger.controller")];
+    });
+    
     it("should handle exceptions with File transport", () => {
       // convert the Map of handlers to an array
       const handlersArray = Array.from(logger.exceptions.handlers.values());
@@ -272,13 +283,34 @@ describe("Logger module", () => {
     it("should throw an error when Winston logger creation fails", () => {
       const error = new Error("Winston logger creation error");
 
+      // Fake Winston with full format helpers
       const fakeWinston = {
+        transports: { File: class {}, Console: class {}, Stream: class {} },
+        format: {
+          combine: (...args) => args,
+          colorize: () => "colorize-mock",
+          timestamp: () => "timestamp-mock",
+          printf: (fn) => fn,
+          json: () => "json-mock"
+        },
         createLogger: sandbox.stub().throws(error)
+      };
+
+      // Minimal fake config so logger.controller.js doesn’t crash
+      const fakeConfig = {
+        mode: { test: true },
+        logs: {
+          file: { name: "mock.log", maxsize: 1000 },
+          levelMap: { test: "info", development: "debug" },
+          betterstack: { enabled: false }
+        },
+        api: { localTimezone: "UTC" }
       };
 
       expect(() => {
         proxyquire("../../src/controllers/logger.controller", {
-          winston: fakeWinston
+          winston: fakeWinston,
+          "../config": fakeConfig
         });
       }).to.throw(error);
     });
