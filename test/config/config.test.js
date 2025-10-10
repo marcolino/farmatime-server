@@ -321,16 +321,16 @@ describe("Config merging", () => {
 
   beforeEach(() => {
     originalCustomization = process.env.CUSTOMIZATION;
-    process.env.CUSTOMIZATION = "mda";
+    process.env.CUSTOMIZATION = "farmatime";
 
     fsStub = {
       existsSync: sinon.stub()
         .withArgs(".env").returns(true)
-        .withArgs(sinon.match(/config\.mda\.js/)).returns(true)
+        .withArgs(sinon.match(/config\.farmatime\.js/)).returns(true)
     };
 
     pathStub = {
-      join: sinon.stub().returns("config.mda.js")
+      join: sinon.stub().returns("config.farmatime.js")
     };
   });
 

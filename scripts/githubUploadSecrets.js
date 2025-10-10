@@ -134,6 +134,9 @@ async function processSecrets() {
       }
 
       const encryptedValue = await encryptSecret(key, secretValue);
+      
+      /*console.log(`Uploading secret: ${secretName} ${secretValue} (${encryptedValue})`); // TODO: DEBUG ONLY!!!*/
+
       const uploadSuccess = await uploadSecret(secretName, encryptedValue, keyId);
 
       // update the cache if the upload was successful
