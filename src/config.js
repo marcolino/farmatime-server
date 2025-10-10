@@ -326,6 +326,7 @@ const configBase = {
   },
   envRequiredVariables: [
     "LIVE_MODE",
+    "CUSTOMIZATION",
     "JWT_ACCESS_TOKEN_SECRET",
     "JWT_REFRESH_TOKEN_SECRET",
     "JWT_NOTIFICATION_TOKEN_SECRET",
