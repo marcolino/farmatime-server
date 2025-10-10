@@ -613,7 +613,7 @@ if (customization) {
   if (fs.existsSync(configCustomizationPath)) {
     configCustom = require(configCustomizationPath);
   } else {
-    throw new Error(`Config file ${configCustomizationPath} not found`);
+    throw new Error(`Config file ${configCustomizationPath} not found (customization: ${customization}, ${typeof customization})`);
   }
 }
 
