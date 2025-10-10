@@ -52,6 +52,12 @@ jobs:
           else
             echo "✅ CUSTOMIZATION is set: " $CUSTOMIZATION[0]
           fi
+
+      - name: Print CUSTOMIZATION before test
+        run: |
+          echo "CUSTOMIZATION='$CUSTOMIZATION'"
+          node -e "console.log('process.env.CUSTOMIZATION:', process.env.CUSTOMIZATION)"
+
       - name: Run Tests
         run: yarn test
 
