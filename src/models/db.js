@@ -40,11 +40,16 @@ const connect = async () => {
     throw new Error(err);
   }
 
-  if (config.mode.testInCI /*process.env.GITHUB_ACTIONS*/) { // TODO: DEBUG ONLY
-    console.log("🔍 MONGO_TEST_REMOTE_URL:", process.env.MONGO_TEST_REMOTE_URL);
-    console.log("🔍 connUri:", connUri);
+  if (process.env.GITHUB_ACTIONS) { // TODO: DEBUG ONLY
+    console.log("🔍 CI detected");
+    console.log("🔍 Mongo connection parameters:");
+    console.log("- SCHEME:", process.env.MONGO_TEST_REMOTE_SCHEME ? "✅" : "❌");
+    console.log("- USER:", process.env.MONGO_TEST_REMOTE_USER ? "✅" : "❌");
+    console.log("- PASS:", process.env.MONGO_TEST_REMOTE_PASS ? "✅" : "❌");
+    console.log("- URL:", process.env.MONGO_TEST_REMOTE_URL ? "✅" : "❌");
+    console.log("- DB:", process.env.MONGO_TEST_REMOTE_DB ? "✅" : "❌");
   }
-
+  
   try {
     logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":*****"));
     await mongoose.connect(connUri);
