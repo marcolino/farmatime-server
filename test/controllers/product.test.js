@@ -216,14 +216,25 @@ describe("Product Controller", () => {
       it("should apply diacriticMatchRegex when searchable is true", async () => {
         req.parameters.filter = { make: "Toyota" };
 
+        const fakeConfig = {
+          mode: { test: true },
+          api: { localTimezone: "UTC" },
+          logs: { 
+            file: { name: "mock.log", maxsize: 1000 }, 
+            levelMap: { test: "info", development: "debug" }, 
+            betterstack: { enabled: false } 
+          }
+        };
+
         // mock diacriticMatchRegex to verify it's called with correct arguments
         const diacriticMatchRegexStub = sinon.stub().returns("regex_pattern");
+
         proxyquire.load("../../src/controllers/product.controller", {
           "../models/product.model": ProductStub,
           "../libs/misc": { nextError: nextErrorStub, diacriticMatchRegex: diacriticMatchRegexStub, diacriticsRemove },
-          "../config": config
+          "../config": fakeConfig
         });
-
+        
         // stub Product.schema.path to return searchable: true
         ProductStub.schema.path.withArgs("make").returns({
           options: {
