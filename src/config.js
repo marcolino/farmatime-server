@@ -28,7 +28,7 @@ if (!(production || staging)) {
   }
 }
 
-const customization = process.env.CUSTOMIZATION || null; // custom configuration to be merged with configBase
+const customization = process.env.CUSTOMIZATION || ""; // custom configuration to be merged with configBase
 
 const apiPort = 5000; // development only
 const apiPortClient = 5005; // development only
