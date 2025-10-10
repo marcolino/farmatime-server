@@ -41,7 +41,7 @@ const RequestSchema = new mongoose.Schema({
     status: {
       type: String,
       enum: [
-        "request","delivered","click","opened","bounce","invalid_email","blocked","spam","unsubscribed","error","unforeseen"
+        "created","request","delivered","click","opened","bounce","invalid_email","blocked","spam","unsubscribed","error","unforeseen"
       ],
       required: true,
     },
