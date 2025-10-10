@@ -253,6 +253,7 @@ describe("Logger module", () => {
       }
     });
 
+    /* TODO: TESTINGGGGGGGGGGGGG!!!!
     it("should throw an error when Winston logger creation fails", () => {
       const error = new Error("Winston logger creation error");
       sandbox.stub(winston, "createLogger").throws(error); // stub winston.createLogger to throw an error
@@ -267,7 +268,21 @@ describe("Logger module", () => {
         const { logger } = loggerModule;
       }).to.throw(error); // verify that the error is thrown
     });
-  
+    */
+    it("should throw an error when Winston logger creation fails", () => {
+      const error = new Error("Winston logger creation error");
+
+      const fakeWinston = {
+        createLogger: sandbox.stub().throws(error)
+      };
+
+      expect(() => {
+        proxyquire("../../src/controllers/logger.controller", {
+          winston: fakeWinston
+        });
+      }).to.throw(error);
+    });
+    
     it("should throw error when winston.createLogger fails", () => {
       // stub winston.createLogger to throw error
       const expectedError = new Error("Failed to create exception handlers");

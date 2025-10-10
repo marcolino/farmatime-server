@@ -44,20 +44,6 @@ jobs:
                --header 'Content-Type: application/json' --include \
                --request POST "$URL" --data "$JSON_DATA"
 
-      - name: Check secret value CUSTOMIZATION presence
-        run: |
-          if [ -z "$CUSTOMIZATION" ]; then
-            echo "❌ CUSTOMIZATION is empty or not defined"
-            exit 1
-          else
-            echo "✅ CUSTOMIZATION is set"
-          fi
-
-      - name: Print CUSTOMIZATION before test
-        run: |
-          echo "CUSTOMIZATION='$CUSTOMIZATION'"
-          node -e "console.log('process.env.CUSTOMIZATION:', process.env.CUSTOMIZATION)"
-
       - name: Run Tests
         run: yarn test
 
