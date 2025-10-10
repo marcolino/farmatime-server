@@ -44,6 +44,14 @@ jobs:
                --header 'Content-Type: application/json' --include \
                --request POST "$URL" --data "$JSON_DATA"
 
+      - name: Check secret value CUSTOMIZATION presence
+        run: |
+          if [ -z "$CUSTOMIZATION" ]; then
+            echo "❌ CUSTOMIZATION is empty or not defined"
+            exit 1
+          else
+            echo "✅ CUSTOMIZATION is set"
+          fi
       - name: Run Tests
         run: yarn test
 
