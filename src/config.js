@@ -88,6 +88,7 @@ const configBase = {
   },
   db: {
     debug: false, // to debug database queries
+    serverSelectionTimeoutSeconds: 10, // 10s max wait for MongoDB to respond
     products: {
       search: {
         mode: "ANYWHERE", // EXACT ("borghi" does not find "Lamborghini") / ANYWHERE ("borghi" finds "Lamborghini")
