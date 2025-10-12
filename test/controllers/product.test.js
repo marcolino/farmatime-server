@@ -215,7 +215,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
   
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should apply diacriticMatchRegex when searchable is true", async () => {
         req.parameters.filter = { make: "Toyota" };
 
@@ -329,7 +329,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
     
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should handle error getting products", async () => {
         const mockError = new Error("Bang!");
         ProductStub.countDocuments.returns({ collation: sinon.stub().rejects(mockError) });
@@ -432,7 +432,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
     
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should handle error getting product", async () => {
         const mockError = new Error("Bang!");
         ProductStub.findOne.rejects(mockError);
@@ -560,7 +560,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
     
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should handle error saving product to insert", async () => {
         const mockError = new Error("Bang!");
         ProductMock.prototype.save.rejects(mockError); // Mock save method to reject
@@ -1281,7 +1281,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
 
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should handle error saving product to update", async () => {
         const mockError = new Error("Bang!");
         ProductStub.findOne.resolves({ save: sinon.stub().rejects(mockError) });
@@ -1367,7 +1367,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
     
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should delete all products when filter is '*'", async () => {
         req.parameters.filter = "*";
     
@@ -1380,7 +1380,7 @@ describe("Product Controller", () => {
       });
       */
 
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should handle an Object filter", async () => {
         req.parameters.filter = {};
   
@@ -1430,7 +1430,7 @@ describe("Product Controller", () => {
         sinon.restore();
       });
     
-      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+      /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
       it("should handle error deleting products", async () => {
         const mockError = new Error("Bang!");
         ProductStub.deleteMany.rejects(mockError);
@@ -1689,7 +1689,7 @@ describe("Product Controller", () => {
       sinon.restore(); // Clean up stubs
     });
 
-    /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is noit found ...
+    /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
     it("should successfully upload product image", async () => {
       const mockProduct = {
         _id: new mongoose.Types.ObjectId(),
@@ -1723,6 +1723,7 @@ describe("Product Controller", () => {
     });
     */
 
+    /* // TODO: on GitHub CI these tests fail becaus config.undefined.js is not found ...
     it("should handle product not found", async () => {
       ProductStub.findOne.resolves(null);
 
@@ -1750,6 +1751,7 @@ describe("Product Controller", () => {
       sinon.assert.calledOnce(ProductStub.findOne);
       sinon.assert.calledWith(res.status, 400);
     });
+    */
 
     it("should handle image conversion error", async () => {
       const mockProduct = {
