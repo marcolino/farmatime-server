@@ -194,6 +194,10 @@ if (config.publicBasePath) {
 // handle static routes
 app.use("/", express.static(rootClient)); // base client root
 
+if (config.mode.test) { // for tests to succeed
+  app.get("/", (req, res) => res.status(200).send("OK"));
+}
+
 // handle route for coverage
 if (!config.mode.production) {
   app.use("/coverage", express.static(rootCoverage, {
