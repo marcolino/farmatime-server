@@ -533,8 +533,21 @@ const signupVerification = async (req, res, next) => {
       try {
         const userNew = await user.save();
         logger.info(`User signup: ${JSON.stringify(userNew)}`);
+
         // notify support about registrations
         audit({ req, mode: "action", subject: `User sign up`, htmlContent: `Sign up of user ${userNew.firstName} ${userNew.lastName} (email: ${userNew.email})` });
+
+        // notify user she did signup correctly
+        await emailService.sendWithTemplate(req, {
+          to: user.email,
+          subject: req.t("Signup Completed"),
+          templateName: "signupCompleted",
+          templateParams: {
+            userFirstName: user.firstName,
+            userLastName: user.lastName,
+          },
+        });
+
         return res.status(200).json({ message: req.t("The account has been verified, you can now log in") });
       } catch (err) {
         return nextError(next, req.t("Error saving user in signup verification: {{err}}", { err: err.message }), 500, err.stack);

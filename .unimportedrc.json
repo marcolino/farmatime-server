@@ -1,13 +1,13 @@
 {
-  "ignoreUnresolved": [
-  ],
+  "ignoreUnresolved": [],
   "ignoreUnused": [
     "stripe"
   ],
   "ignoreUnimported": [
     "server.js",
-    "src/config.mda.js",
     "src/config.farmatime.js",
+    "src/config.mda.js",
+    "src/controllers/payment.controller.js",
     "src/gateways/Abstract.payment.gateway.js",
     "src/gateways/stripe.payment.gateway.js",
     "src/labels-to-be-translated.js",
