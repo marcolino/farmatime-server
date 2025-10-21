@@ -136,7 +136,7 @@ app.use((req, res, next) => { // TODO: put value (10) in config
 });
 
 // all res.json calls now generate ETags automatically
-app.use(withAutoJsonETag());
+app.use(withAutoJsonETag);
 
 // use i18n
 app.use(i18nextMiddleware.handle(i18n));
