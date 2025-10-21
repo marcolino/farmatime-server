@@ -19,7 +19,7 @@ const i18n = require("./src/middlewares/i18n");
 const rateLimit = require("./src/middlewares/rateLimit");
 const checkReferer = require("./src/middlewares/checkReferer");
 const passportSetup = require("./src/middlewares/passportSetup");
-const withAutoJsonETag = require("./middlewares/withAutoJsonETag");
+const withAutoJsonETag = require("./src/middlewares/withAutoJsonETag");
 const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // client injected config file name
