@@ -1,6 +1,6 @@
-// src/middleware/withAutoETag.js
 const crypto = require("crypto");
 const { logger } = require("../controllers/logger.controller"); // TODO: DEVEL ONLY
+
 
 const withAutoJsonETag = (req, res, next) => {
   if (req.method !== "GET") {

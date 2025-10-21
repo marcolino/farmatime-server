@@ -105,6 +105,7 @@
 - on new user, there is no default email template, until template is editied and saved - OK
 - split demo.json and prod.json data files to initialize database (NO) - OK
 
+- test withAutoJsonETag ...
 - remove all `logger.error(...)` in controllers, if then we do nextError() ... 
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
