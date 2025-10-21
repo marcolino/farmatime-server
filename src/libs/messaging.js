@@ -75,7 +75,15 @@ const audit = async ({ req, mode, subject, htmlContent }) => {
       <br />
       <br />
       <div style="font-size: ${footerFontSize}; font-sweight: ${footerFontWeight}; color: ${footerColor}">
-        Environment is ${config.mode.development ? "development" : "production"}, staging mode is ${config.mode.staging ? "true" : "false"}, request for url ${baseUrl} from IP ${remoteAddress(req)}, country ${remoteCountry} ${remoteFlag} at ${localeDateTime()}
+        Environment is
+        ${
+  config.mode.development ? "development" :
+    config.mode.production ? "production" :
+      config.mode.staging ? "staging" :
+        config.mode.test ? "test" :
+          "unknown"
+}.
+        request for url ${baseUrl} from IP ${remoteAddress(req)}, country ${remoteCountry} ${remoteFlag} at ${localeDateTime() }
       </div>
     </div>
   `;

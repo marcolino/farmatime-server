@@ -106,6 +106,19 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  isPWAInstalled: {
+    type: Boolean,
+    default: false
+  },
+  requestErrors: [{
+    creationDate: {
+      type: Date,
+      required: true
+    },
+    seenDate: {
+      type: Date,
+    },
+  }],
   preferences: {
     locale: {
       type: String,

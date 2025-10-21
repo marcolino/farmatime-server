@@ -58,7 +58,9 @@ const brevo = async (req, res, next) => {
     break;
   case "click":
     break;
+  case "opened":
   case "unique_opened":
+  case "proxy_open":
     status = "opened";
     break;
   case "hard_bounce":
@@ -70,6 +72,8 @@ const brevo = async (req, res, next) => {
   case "blocked":
     break;
   case "spam":
+    break;
+  case "deferred":
     break;
   case "unsubscribed":
     break;
@@ -133,16 +137,17 @@ const getHighestStatus = (events) => {
   const statuses = {
     "request": 1,
     "delivered": 2,
-    "click": 3,
-    "opened": 4,
-    "hard_bounce": 5,
-    "soft_bounce": 6,
-    "invalid_email": 7,
-    "blocked": 8,
-    "spam": 9,
-    "unsubscribed": 10,
-    "error": 11,
-    "unforeseen": 99
+    "hard_bounce": 3,
+    "soft_bounce": 4,
+    "invalid_email": 5,
+    "blocked": 6,
+    "spam": 7,
+    "unsubscribed": 8,
+    "error": 9,
+    "deferred": 10,
+    "unforeseen": 99,
+    "click": 101,
+    "opened": 102,
   };
 
   return events.reduce((best, current) => {

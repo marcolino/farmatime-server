@@ -51,6 +51,7 @@ const company = "FarmaTime";
 const domain = "farmatime.it";
 //const urlPublic = staging ? "https://farmatime-staging.fly.dev" : "https://farmatime-prod.fly.dev";
 const urlPublic = staging ? "https://staging.farmatime.it" : "https://www.farmatime.it";
+const urlPublicNaked = production ? urlPublic.replace(/:\/\/www./, '://') : ''; // naked url (w/o www)
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = (production || staging) ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;
@@ -104,34 +105,36 @@ const configBase = {
         baseUrl,
         baseUrlClient,
         baseUrlClientPreview,
-        "https://accounts.google.com",
-        "https://oauth2.googleapis.com",
-        "https://fonts.googleapis.com",
-        "https://fonts.gstatic.com",
-        "https://www.gravatar.com",
-        "https://secure.gravatar.com",
-        //"https://*.tile.openstreetmap.org", // do not use wildards, because also used literally in checkReferer
-        "https://a.tile.openstreetmap.org",
-        "https://b.tile.openstreetmap.org",
-        "https://c.tile.openstreetmap.org",
-        "https://checkout.stripe.com",
+        urlPublicNaked,
+        "https://accounts.google.com", // oauth2
+        "https://oauth2.googleapis.com", // oauth2
+        "https://fonts.googleapis.com", // fonts
+        "https://fonts.gstatic.com", // fonts
+        "https://www.gravatar.com", // avatars
+        "https://secure.gravatar.com", // avatars
+        "https://a.tile.openstreetmap.org", // maps
+        "https://b.tile.openstreetmap.org", // maps
+        "https://c.tile.openstreetmap.org", // maps
+        "https://checkout.stripe.com", // ecommerce
       ],
       fontSrc: [
-        "https://fonts.googleapis.com",
-        "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com", // fonts
+        "https://fonts.gstatic.com", // fonts
       ],
       styleSrc: [
-        "https://fonts.googleapis.com",
-        "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com", // fonts
+        "https://fonts.gstatic.com", // fonts
       ],
       imgSrc: [
-        "https://www.gravatar.com",
-        "https://secure.gravatar.com",
-        //"https://*.tile.openstreetmap.org", // do not use wildards, because also used literally in checkReferer
-        "https://a.tile.openstreetmap.org",
-        "https://b.tile.openstreetmap.org",
-        "https://c.tile.openstreetmap.org",
-        "https://cdnjs.cloudflare.com",
+        "https://www.gravatar.com", // avatars
+        "https://secure.gravatar.com", // avatars
+        "https://i0.wp.com", // avatars
+        "https://i1.wp.com", // avatars
+        "https://i2.wp.com", // avatars
+        "https://a.tile.openstreetmap.org", // maps
+        "https://b.tile.openstreetmap.org", // maps
+        "https://c.tile.openstreetmap.org", // maps
+        "https://cdnjs.cloudflare.com", // cloudflare CDN
       ]
     }
   },
@@ -374,7 +377,7 @@ const configBase = {
       title: company,
       phone: "+39 333 6480983",
       address: "Via Felisio, 19 - 10098 Rivoli (TO)",
-      email: "farmatime.posta@gmail.com", // "farmatime@gmail.com" // when we read this account
+      email: "posta@farmatime.it",
       copyright: `© ${new Date().getFullYear()} ${company}. All rights reserved.`,
       homeSite: {
         name: "farmatime.it", // use real home site name
@@ -409,6 +412,7 @@ const configBase = {
       },
       redirect: "follow",
       timeoutSeconds: production ? 20 : 30, // the maximum time in seconds to wait for an API response (production to free fly.io instance must be at lest 20 seconds...)
+      productionDomains: [urlPublic, urlPublicNaked],
     },
     auth: {
       cookiesExpirationSeconds: 60 * 60 * 24 * ((7 * 2) + 1), // 2 week + 1 day TTL: should be longer than refreshTokenExpirationSeconds, to avoid cookie expiration before tokens inside expiration

@@ -99,11 +99,12 @@
 - rename helpers to libs - OK
 - send email to users => "azione 123123431324 non prevista" ... - OK
 - enforce medicines count limit per user in job altering endpoints - OK
+- expose medicines count limit per user endpoint for client - OK
+- signup:1 Access to XMLHttpRequest at 'https://www.farmatime.it/api/auth/signup' from origin 'https://farmatime.it' has been blocked by CORS policy - OK, TO BE TESTED
+- add Gravatar domain: https://i2.wp.com/ to CORS whitelist - OK
+- on new user, there is no default email template, until template is editied and saved - OK
+- split demo.json and prod.json data files to initialize database (NO) - OK
 
-- on new user, there is no default email template, until template is editied and saved
-- expose medicines count limit per user endpoint for client
-- split demo.json and prod.json data files to initialize database
-- put shared code (in server: internalController.js:variablesExpand in client: JobEmailTemplateVariables.jsx) to /shared/src/ on sever, then add a script to copy all shared code from server to client, to be run before client-build step...
 - remove all `logger.error(...)` in controllers, if then we do nextError() ... 
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
@@ -111,7 +112,8 @@
 - tests: server.sinon => sinon, server.expect => expect ...
 
 NEWFEATURE:
-- periodicamente eseguire `yarn update-medicines`
+- periodically run `yarn update-medicines` on client (and then `yarn pub`)
+- put shared code - on server: internalController.js:variablesExpand, on client: JobEmailTemplateVariables.jsx - to /shared/src/ on sever, then add a script to copy all shared code from server to client, to be run before client-build step...
 - after social login, assign a default role to user ("user") ...
 - make more tests (use also AI for this...)
 - configurare un account su Cloudflare...

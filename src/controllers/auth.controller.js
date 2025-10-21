@@ -655,6 +655,7 @@ const signin = async (req, res, next) => {
       justRegistered: user.justRegistered,
       preferences: user.preferences.toObject(),
       jobs,
+      requestErrors: jobs ? true : false, // TODO: set to true/false based on unread requests errors for this user...
     };
 
     // create tokens and add them to request cookie

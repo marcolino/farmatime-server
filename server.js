@@ -19,6 +19,7 @@ const i18n = require("./src/middlewares/i18n");
 const rateLimit = require("./src/middlewares/rateLimit");
 const checkReferer = require("./src/middlewares/checkReferer");
 const passportSetup = require("./src/middlewares/passportSetup");
+const withAutoJsonETag = require("./middleware/withAutoETag");
 const config = require("./src/config");
 
 const configFileNameInjected = "config.json"; // client injected config file name
@@ -127,6 +128,15 @@ if (config.mode.production) {
 app.use(express.json({
   limit: config.api.payloadLimit, // limit payload to avoid too much data to be uploaded
 }));
+
+// add cache control (in seconds) globally (for CloudFlare, browsers)
+app.use((req, res, next) => { // TODO: put value (10) in config
+  res.set("Cache-Control", "public, max-age=10");
+  next();
+});
+
+// all res.json calls now generate ETags automatically
+app.use(withAutoJsonETag());
 
 // use i18n
 app.use(i18nextMiddleware.handle(i18n));
