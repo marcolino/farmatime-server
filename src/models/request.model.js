@@ -34,7 +34,7 @@ const RequestSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   jobId: { type: String /*mongoose.Schema.Types.ObjectId*/ },
 
-  // Status tracking
+  // Status tracking - TODO: DO WE REALLY NEED last... properties?
   lastStatus: { type: String, index: true },
   lastStatusAt: { type: Date },
   lastReason: { type: String },
@@ -42,11 +42,12 @@ const RequestSchema = new mongoose.Schema({
     status: {
       type: String,
       enum: [
-        "create","request","delivered","click","opened","bounce","invalid_email","blocked","spam","unsubscribed","error","unforeseen"
+        "create","request","delivered","click","opened","hard_bounce","soft_bounce","invalid_email","blocked","spam","unsubscribed","error","unforeseen"
       ],
       required: true,
     },
     at: { type: Date, default: Date.now, set: normalizeDate },
+    seenAt: { type: Date, default: null, set: normalizeDate },
     reason: { type: String },
   }],
 }, {

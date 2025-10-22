@@ -51,7 +51,7 @@ const company = "FarmaTime";
 const domain = "farmatime.it";
 //const urlPublic = staging ? "https://farmatime-staging.fly.dev" : "https://farmatime-prod.fly.dev";
 const urlPublic = staging ? "https://staging.farmatime.it" : "https://www.farmatime.it";
-const urlPublicNaked = production ? urlPublic.replace(/:\/\/www./, '://') : ''; // naked url (w/o www)
+const urlPublicNaked = production ? urlPublic.replace(/:\/\/www\./, '://') : ''; // naked url (w/o www)
 const urlLocal = `http://localhost:${apiPort}`;
 const baseUrl = (production || staging) ? urlPublic : urlLocal;
 const urlPublicClient = urlPublic;
@@ -86,6 +86,7 @@ const configBase = {
       "POST",
     ],
     localTimezone: "Europe/Rome",
+    cacheControlMaxAge: 10, // seconds
   },
   db: {
     debug: false, // to debug database queries
@@ -413,6 +414,7 @@ const configBase = {
       redirect: "follow",
       timeoutSeconds: production ? 20 : 30, // the maximum time in seconds to wait for an API response (production to free fly.io instance must be at lest 20 seconds...)
       productionDomains: [urlPublic, urlPublicNaked],
+      serverPollingIntervalSeconds: 60, // server polling interval seconds for clients
     },
     auth: {
       cookiesExpirationSeconds: 60 * 60 * 24 * ((7 * 2) + 1), // 2 week + 1 day TTL: should be longer than refreshTokenExpirationSeconds, to avoid cookie expiration before tokens inside expiration

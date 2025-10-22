@@ -56,11 +56,23 @@ let server = null; // server will be app.listen() ...
 // initialize Passport and session management using the middleware
 passportSetup(app);
 
+// redirect apex domain to www ('farmatime.it' => 'www.farmatime.it')
+if (config.mode.production) {
+  app.use((req, res, next) => {
+    if (req.hostname === config.domain) {
+      return res.redirect(301, config.baseUrl + req.originalUrl);
+    }
+    next();
+  });
+}
+
+// CSP setup (this policy enforcement MUST be after the redirect logic above)
 app.use(helmet.contentSecurityPolicy({
   useDefaults: true,
   directives: {
     defaultSrc: [
-      "'self'"
+      "'self'",
+      ...config.security.allowedReferers.connectSrc,
     ],
     connectSrc: [
       "'self'",
@@ -114,24 +126,14 @@ app.use(cors({
   credentials: true, // if cookies/auth headers are needed
 }));
 
-// redirect apex domain to www ('farmatime.it' => 'www.farmatime.it')
-if (config.mode.production) {
-  app.use((req, res, next) => {
-    if (req.hostname === config.domain) {
-      return res.redirect(301, config.baseUrl + req.originalUrl);
-    }
-    next();
-  });
-}
-
 // parse requests of content-type: application/json
 app.use(express.json({
   limit: config.api.payloadLimit, // limit payload to avoid too much data to be uploaded
 }));
 
 // add cache control (in seconds) globally (for CloudFlare, browsers)
-app.use((req, res, next) => { // TODO: put value (10) in config
-  res.set("Cache-Control", "public, max-age=10");
+app.use((req, res, next) => {
+  res.set("Cache-Control", `public, max-age=${config.api.cacheControlMaxAge}`);
   next();
 });
 

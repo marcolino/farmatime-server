@@ -135,7 +135,7 @@ async function processSecrets() {
 
       const encryptedValue = await encryptSecret(key, secretValue);
       
-      /*console.log(`Uploading secret: ${secretName} ${secretValue} (${encryptedValue})`); // TODO: DEBUG ONLY!!!*/
+      /*console.log(`Uploading secret: ${secretName} ${secretValue} (${encryptedValue})`);
 
       const uploadSuccess = await uploadSecret(secretName, encryptedValue, keyId);
 

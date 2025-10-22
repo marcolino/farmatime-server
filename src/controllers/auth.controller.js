@@ -655,7 +655,7 @@ const signin = async (req, res, next) => {
       justRegistered: user.justRegistered,
       preferences: user.preferences.toObject(),
       jobs,
-      requestErrors: jobs ? true : false, // TODO: set to true/false based on unread requests errors for this user...
+      //requestErrors: jobs ? true : false, // set to true/false based on unread requests errors for this user...
     };
 
     // create tokens and add them to request cookie
@@ -1009,9 +1009,9 @@ module.exports = {
   facebookLogin,
   facebookCallback,
   facebookRevoke,
-  notificationVerification,
-  notificationPreferencesSave,
   socialLogin,
   socialRevoke,
+  notificationVerification,
+  notificationPreferencesSave,
   encryptionKey,
 };

@@ -241,7 +241,7 @@ const runJobs = async (req, res, next) => {
                 requestsCount++;
               }
             }
-            logger.info("MEDICINE[0]:", request.medicines[0]); // TODO: DEBUG ONLY
+            //logger.info("MEDICINE[0]:", request.medicines[0]); // DEBUG ONLY
             requestsDetailsForAudit += `
 User: ${request.userFirstName} ${request.userLastName} &lt;${request.userEmail}&gt;<br />
 Patient: ${request.patientFirstName} ${request.patientLastName} &lt;${request.patientEmail}&gt;<br />
@@ -300,11 +300,106 @@ const checkUserJobRequests = async (req, res, next) => {
     logger.info("requestsCurrent:", requestsCurrent, "- requestsPresent:", requestsPresent);
     logger.info("requestsTot:", requestsTot, "- requestsMax:", requestsMax);
     if (requestsTot >= requestsMax) {
-      return res.json({ err: false, status: 200, check: false, message: req.t("Sorry, currently the maximum number of total medicine requests per user is {{n}}", { n: requestsMax }) });
+      return res.json({ status: 200, check: false, message: req.t("Sorry, currently the maximum number of total medicine requests per user is {{n}}", { n: requestsMax }) });
     }
-    return res.json({ err: false, status: 200, check: true, message: req.t("The number of total medicine requests ({{requestsTot}} are lower than maximum allowed ({{requestsMax}}", { requestsTot, requestsMax }) });
+    return res.json({ status: 200, check: true, message: req.t("The number of total medicine requests ({{requestsTot}} are lower than maximum allowed ({{requestsMax}}", { requestsTot, requestsMax }) });
   } catch (err) {
     return nextError(next, err.message, 500, err.stack);
+  }
+};
+
+/**
+ * Get request errors for user
+ */
+const getRequestErrors = async (req, res, next) => {
+  const userId = req.userId;
+  const since = req.parameters.since;
+  
+  try {
+    if (!userId) {
+      return res.json({ err: true, status: 403, message: req.t("User id is required") });
+    }
+    // if (!since) {
+    //   return res.json({ err: true, status: 400, message: req.t("Since date is required") });
+    // }
+
+    const filter = {};
+    filter.userId = req.userId; // Get all requests for this user
+    if (since) { // Get all requests after requested date
+      filter.createdAt = { $gt: since };
+    }
+
+    const errorStatuses = [
+      "hard_bounce",
+      //"soft_bounce",
+      "invalid_email",
+      "blocked",
+      "spam",
+      "unsubscribed",
+      "error",
+      "deferred",
+      "unforeseen",
+    ];
+
+    try {
+      // get all requests
+      const requests = await Request.find(filter)
+        .select()
+        .lean()
+        //.exec() // we can always safely omit exec() in standard contexts, when we do `await` ...
+      ;
+      const requestErrors = requests
+        .flatMap(req => req.events
+          .filter(ev => errorStatuses.includes(ev.status))
+          .map(ev => ({
+            status: ev.status,
+            at: ev.at,
+            seenAt: ev.seenAt,
+          }))
+        )
+      ;
+      logger.info("requestErrors:", requestErrors); // DEBUG ONLY
+
+      return res.json({ status: 200, requestErrors });
+    } catch (err) { // catch requestSend exceptions
+      return nextError(next, req.t("Error getting requests: {{err}}", { err: err.message }), 500, err.stack);
+    }
+  } catch (err) {
+    return nextError(next, err.message, 500, err.stack);
+  }
+};
+
+/**
+ * Set all request errors for user as seen
+ */
+const setRequestErrorsSeen = async (req, res, next) => {
+  const userId = req.userId;
+
+  try {
+    if (!userId) {
+      return res.json({ err: true, status: 403, message: req.t("User id is required") });
+    }
+
+    const now = new Date();
+
+    // Set all 'unseen' requests for this user as seen now
+    const result = await Request.updateMany(
+      { userId },
+      { $set: { "events.$[elem].seenAt": now } },
+      { arrayFilters: [{ "elem.seenAt": null }] }
+    );
+    logger.info("Result of Request.updateMany:", result); // DEBUG ONLY
+    /**
+     * result:
+     * {
+     *   acknowledged: true,
+     *   matchedCount: 42,
+     *   modifiedCount: 37
+     * }
+     */
+    return res.status(200).json({ message: "request errors seet as seen" });
+  } catch (err) {
+    return nextError(next, req.t("Error updating user: {{err}}", { err: err.message }), 500, err.stack);      
   }
 };
 
@@ -356,4 +451,6 @@ module.exports = {
   getRequests,
   runJobs,
   checkUserJobRequests,
+  getRequestErrors,
+  setRequestErrorsSeen,
 };
