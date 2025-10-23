@@ -178,6 +178,7 @@
   "Signup Completed": "Signup Completed",
   "Signup Verification Code": "Signup Verification Code",
   "Signup Verification Code Resent": "Signup Verification Code Resent",
+  "Since date is required": "Since date is required",
   "Social authentication incomplete": "Social authentication incomplete",
   "Sorry, currently the maximum number of total medicine requests per user is {{n}}": "Sorry, currently the maximum number of total medicine requests per user is {{n}}",
   "Sorry, it is not possible to elevate roles for users": "Sorry, it is not possible to elevate roles for users",

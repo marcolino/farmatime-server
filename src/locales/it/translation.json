@@ -181,6 +181,7 @@
   "Signup Completed": "Registrazione completata",
   "Signup Verification Code": "Codice di verifica registrazione",
   "Signup Verification Code Resent": "Codice di verifica registrazione reinviato",
+  "Since date is required": "La data di inizio è obbligatoria",
   "Social authentication incomplete": "Autenticazione sociale incompleta",
   "Sorry, currently the maximum number of total medicine requests per user is {{n}}": "Spiacenti, attualmente il numero massimo di richieste di farmaci totali per utente è {{n}}",
   "Sorry, it is not possible to elevate roles for users": "Spiacenti, non è possibile elevare i ruoli degli utenti",
