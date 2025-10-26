@@ -225,6 +225,7 @@ const configBase = {
     baseUrl,
     baseUrlClient,
     baseUrlClientPreview,
+    urlPublicNaked,
   ])],
   clientEmailUnsubscribeUrl: `${baseUrlClient}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrlClient}/email-preferences`,

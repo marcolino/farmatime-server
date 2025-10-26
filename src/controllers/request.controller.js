@@ -331,7 +331,7 @@ const getRequestErrors = async (req, res, next) => {
 
     const errorStatuses = [
       "hard_bounce",
-      //"soft_bounce",
+      "soft_bounce", // soft_bounce is an error too...
       "invalid_email",
       "blocked",
       "spam",
