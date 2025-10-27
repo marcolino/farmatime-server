@@ -93,8 +93,8 @@ const runJobs = async (req, res, next) => {
         userId: user._id,
         jobId: job.id,
         events: [event],
-        lastStatus: event.status,
-        lastReason: event.reason,
+        // lastStatus: event.status,
+        // lastReason: event.reason,
       });
       logger.info("New request created:", request);
     } catch (err) {

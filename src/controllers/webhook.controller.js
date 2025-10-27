@@ -107,7 +107,7 @@ const brevo = async (req, res, next) => {
   requestCurrent.events.push({ status, at: eventDate, reason: reason }); // Push current event
   
   // Status updates could arrive in mixed order, and with some seconds delay...
-  const [lastStatus, lastStatusDate, lastReason] = getHighestStatus(requestCurrent.events); 
+  //const [lastStatus, lastStatusDate, lastReason] = getHighestStatus(requestCurrent.events); 
 
   try {
     const result = await Request.updateOne(
@@ -118,9 +118,9 @@ const brevo = async (req, res, next) => {
       {
         $set: {
           events: requestCurrent.events, // Update all events
-          lastStatus,
-          lastStatusDate,
-          lastReason
+          // lastStatus,
+          // lastStatusDate,
+          // lastReason
         },
       }
     );
@@ -131,6 +131,7 @@ const brevo = async (req, res, next) => {
   res.sendStatus(successStatus);
 };
 
+/*
 const getHighestStatus = (events) => {
   if (!events || events.length === 0) return [null, null, null];
 
@@ -164,6 +165,7 @@ const getHighestStatus = (events) => {
     return best;
   }, [null, null]);
 };
+*/
 
 const nextErrorAndAudit = (req, next, message, status = 500, stack = null) => {
   logger.error(`Webhook error: ${message}`, { status, stack });

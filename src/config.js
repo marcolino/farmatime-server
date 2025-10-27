@@ -538,6 +538,10 @@ const configBase = {
             }
           },
         },
+        requestsScheduled: {
+          minimumYear: 2025, // app started production in this year, no sense going backwards
+          maximumYear: new Date().getFullYear() + 10,
+        },
         qrcode: {
           encryption: false, // ecryption is more secure, but produces far too big qrcodes
           size: 360,

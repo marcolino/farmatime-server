@@ -35,9 +35,9 @@ const RequestSchema = new mongoose.Schema({
   jobId: { type: String /*mongoose.Schema.Types.ObjectId*/ },
 
   // Status tracking - TODO: DO WE REALLY NEED last... properties?
-  lastStatus: { type: String, index: true },
-  lastStatusAt: { type: Date },
-  lastReason: { type: String },
+  // lastStatus: { type: String, index: true },
+  // lastStatusAt: { type: Date },
+  // lastReason: { type: String },
   events: [{
     status: {
       type: String,
