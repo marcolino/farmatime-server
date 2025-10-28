@@ -137,9 +137,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// all res.json calls now generate ETags automatically
-app.use(withAutoJsonETag);
-
 // use i18n
 app.use(i18nextMiddleware.handle(i18n));
 
@@ -230,6 +227,9 @@ app.get("*", (req, res) => {
     }
   });
 });
+
+// Only apply JSON ETag middleware for APIs - TODO: do we really want this?
+app.use(withAutoJsonETag);
 
 // handle errors in API routes
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars -- next is needed to be considered error handling

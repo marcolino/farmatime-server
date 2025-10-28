@@ -113,6 +113,9 @@ const configBase = {
         "https://fonts.gstatic.com", // fonts
         "https://www.gravatar.com", // avatars
         "https://secure.gravatar.com", // avatars
+        "https://i0.wp.com", // avatars
+        "https://i1.wp.com", // avatars
+        "https://i2.wp.com", // avatars
         "https://a.tile.openstreetmap.org", // maps
         "https://b.tile.openstreetmap.org", // maps
         "https://c.tile.openstreetmap.org", // maps
