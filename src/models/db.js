@@ -36,37 +36,28 @@ const connect = async () => {
 
   if (!connUri) {
     const err = `Unforeseen mode ${JSON.stringify(config.mode)}, cannot connect database`;
-    logger.error(err);
+    //logger.error(err);
     throw new Error(err);
   }
 
-  try {
-    logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":*****"));
-    await mongoose.connect(connUri, {
-      serverSelectionTimeoutMS: config.db.serverSelectionTimeoutSeconds * 1000, // max time to wait for MongoDB to respond
-    });
+  logger.info("Connecting to database uri:", connUri.replace(`:${process.env.MONGO_PASS}`, ":*****"));
+  await mongoose.connect(connUri, {
+    serverSelectionTimeoutMS: config.db.serverSelectionTimeoutSeconds * 1000, // max time to wait for MongoDB to respond
+  });
 
-    // wait until connection is fully established
-    await mongoose.connection.asPromise();
-    if (!mongoose.connection.db) {
-      throw new Error("Database connection is established but db is not yet available even after promise await");
-    }
-    logger.info("Database connected");
-
-    mongoose.set("debug", config.db.debug);
-
-    // show MongoDB version
-    try {
-      const admin = new mongoose.mongo.Admin(mongoose.connection.db);
-      const info = await admin.buildInfo();
-      logger.info(`MongoDB v${info.version}`);
-    } catch (err) {
-      logger.error("MongoDB build info error:", err);
-    }
-  } catch (err) {
-    logger.error("Database connection error:", err);
-    throw err;
+  // wait until connection is fully established
+  await mongoose.connection.asPromise();
+  if (!mongoose.connection.db) {
+    throw new Error("Database connection is established but db is not yet available even after promise await");
   }
+  logger.info("Database connected");
+
+  mongoose.set("debug", config.db.debug);
+
+  // show MongoDB version
+  const admin = new mongoose.mongo.Admin(mongoose.connection.db);
+  const info = await admin.buildInfo();
+  logger.info(`MongoDB v${info.version}`);
 };
 
 /**
@@ -83,12 +74,12 @@ const populate = async () => {
       const envCount = await Env.estimatedDocumentCount();
       if (envCount === 0) {
         for (const data of demoData.envs) {
-          try {
-            await Env.create(data);
-          } catch (err) {
-            logger.error("error creating Env:", err);
-            throw err;
-          }
+          //try {
+          await Env.create(data);
+          //} catch (err) {
+          //  logger.error("error creating Env:", err);
+          //  throw err;
+          //}
         }
       }
     } catch (err) {
@@ -187,7 +178,7 @@ const addRoleToUser = async (roleName, userEmail) => {
     }
 
     // find the user by their email
-    const user = await User.findOne({ email: userEmail }); //.exec();
+    const user = await User.findOne({ email: userEmail }).exec();
     if (!user) {
       throw new Error(`user with email "${userEmail}" not found`);
     }

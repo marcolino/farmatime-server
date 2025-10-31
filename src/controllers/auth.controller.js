@@ -54,7 +54,6 @@ const googleCallback = (req, res, next) => {
   }, (err, profile) => {
     //err = new Error("FAKE GOOGLE OAUTH2 ERROR");
     if (err) {
-      logger.error("Google authentication error:", err);
       return redirectToClientWithError(req, res, { message: req.t("Google authentication error: {{err}}", { err: err.message + (err.code ? ` (${err.code})`: '') }) });
     }
     
@@ -117,7 +116,6 @@ const facebookCallback = (req, res, next) => {
   }, (err, profile) => {
     //err = new Error("FAKE FACEBOOK OAUTH2 ERROR");
     if (err) {
-      logger.error("Facebook authentication error:", err);
       return redirectToClientWithError(req, res, { message: req.t("Facebook authentication error: {{err}}", { err: err.message + (err.code ? ` (${err.code})`: '') }) });
     }
 
@@ -151,7 +149,6 @@ const facebookCallback = (req, res, next) => {
 
 const socialLogin = async (req, res, next) => {
   if (!req?.userSocial) {
-    logger.error("Social authentication incomplete");
     return redirectToClientWithError(req, res, { message: req.t("Social authentication incomplete") });
   }
 

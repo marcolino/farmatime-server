@@ -155,6 +155,7 @@ const runJobs = async (req, res, next) => {
       }
 
       const jobs = await decryptData(user.jobs, user.encryptionKey);
+      
       const emailTemplate = user.emailTemplate;
       req.user = user; // to be used in emailService.send
 
@@ -204,8 +205,7 @@ const runJobs = async (req, res, next) => {
             continue;
           }
 
-          const sinceDate = new Date(medicine.fieldSinceDate);  
-          const lastDate = new Date(medicine.fieldLastDate ?? new Date("1970-01-01")); // default to a very old date if last send date is not set
+          const sinceDate = new Date(medicine.fieldSinceDate);
           const frequencyDays = parseInt(medicine.fieldFrequency);
 
           if (sinceDate.yyyymmdd() > nowDate.yyyymmdd()) {
@@ -213,17 +213,28 @@ const runJobs = async (req, res, next) => {
             continue;
           }
 
-          const nextDate = lastDate.addDays(frequencyDays);
-          //const nextDate = nextScheduledDate(frequencyDays)
-          //logger.info(`    medicine nextDate is ${nextDate.yyyymmdd()}`); // ...
-          if (nextDate.yyyymmdd() > nowDate.yyyymmdd()) {
-            logger.info(`    medicine ${medicine.id} is not due yet (next ${nextDate.yyyymmdd()}), skipping it`);
-            continue;
+          let isDue = false;
+
+          // If fieldLastDate was not set, this is the first request and should be sent today
+          if (!medicine.fieldLastDate) {
+            isDue = true;
+            const nextDate = nowDate.addDays(frequencyDays);
+            logger.info(`    medicine ${medicine.id} is due for first request (next ${nextDate.yyyymmdd()})`);
+          } else {
+            const lastDate = new Date(medicine.fieldLastDate);
+            const nextDate = lastDate.addDays(frequencyDays);
+
+            if (nextDate.yyyymmdd() <= nowDate.yyyymmdd()) {
+              isDue = true;
+              logger.info(`    medicine ${medicine.id} is due (next ${nextDate.yyyymmdd()})`);
+            } else {
+              logger.info(`    medicine ${medicine.id} is not due yet (next ${nextDate.yyyymmdd()}), skipping it`);
+            }
           }
 
-          // time is due for a request for this medicine
-          logger.info(`    medicine ${medicine.id} is due (next ${nextDate.yyyymmdd()})`);
-          medicines.push(medicine);
+          if (isDue) { // time is due for a request for this medicine
+            medicines.push(medicine);
+          }
         }
 
         // one or more medicines are due for this job, requesting them
@@ -231,7 +242,11 @@ const runJobs = async (req, res, next) => {
           try {
             let request;
             if (config.app.ui.jobs.unifyRequests) { // unify requests, all medicines for this user for this job for today are requested with a unique email
-              logger.info(`    ${medicines.length} medicines ${medicines.map(med => med.id).join(', ')} are being requested, unified`);
+              if (medicines.length === 1) {
+                logger.info(`    1 medicine (${medicines[0].id}) is being requested`);
+              } else {
+                logger.info(`    ${medicines.length} medicines (${medicines.map(med => med.id).join(', ')}) are being requested, unified`);
+              }
               request = await requestSend(req, user, jobs, job, emailTemplate, medicines, nowDate);
               requestsCount++;
             } else { // do not unify requests, all medicines for this user for this job for today are requested with separate emails
@@ -257,11 +272,14 @@ ${request.medicines.map(medicine => ` - ${medicine.name}, since ${medicine.since
     }
     logger.info('- Done processing all users jobs medicines.');
     audit({
-      req, mode: "scheduler", subject: "Processed all users jobs medicines", htmlContent: `
-      Sent ${requestsCount} request(s):<br />
+      req,
+      mode: "scheduler",
+      subject: "Processed all users jobs medicines",
+      htmlContent: `
+      Sent ${requestsCount} request(s)` + (requestsCount > 0) ? `:<br />
       <br />
       ${requestsDetailsForAudit}
-      `
+      ` : '',
     });
 
     return res.json({
@@ -346,7 +364,7 @@ const getRequestErrors = async (req, res, next) => {
       const requests = await Request.find(filter)
         .select()
         .lean()
-        //.exec() // we can always safely omit exec() in standard contexts, when we do `await` ...
+        .exec()
       ;
       const requestErrors = requests
         .flatMap(req => req.events

@@ -384,7 +384,12 @@ const redirectToClient = (req, res, success, payload/*, options = {}*/) => {
       `${baseUrl}/social-signin-error`
   );
 
-  logger.info(`redirectToClient() - redirecting to client url ${url.href}, appending data length of ${JSON.stringify(payload).length} with success: ${success}`);
+  const message = `redirectToClient() - redirecting to client url ${url.href}, appending data length of ${JSON.stringify(payload).length}`;
+  if (success) {
+    logger.info(message);
+  } else {
+    logger.error(message);
+  }
   url.searchParams.set("data", JSON.stringify(payload));
   res.redirect(url);
 };

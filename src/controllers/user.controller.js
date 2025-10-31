@@ -1,5 +1,6 @@
 const emailValidate = require("email-validator");
 const codiceFiscaleValidate = require("codice-fiscale-js");
+const { decryptData } = require("../libs/encryption");
 const { logger } = require("./logger.controller");
 const User = require("../models/user.model");
 const Plan = require("../models/plan.model");
@@ -60,9 +61,58 @@ const getUsers = async (req, res, next) => {
       .lean()
       .exec()
     ;
+
     return res.status(200).json({users});
   } catch (err) {
     return nextError(next, req.t("Error getting all users: {{err}}", { err: err.message }), 500, err.stack);      
+  }
+};
+
+const getUsersJobs = async (req, res, next) => {
+  // TODO: check if user is not admin that requested user is the same as logged user
+  // TODO: require req.parameters.userId
+  // TODO: collaborate with middleware verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser
+  // TODO: require req.parameters.userId = "*" for all users
+
+  try {
+    const filter = req.parameters.filter ?? {};
+    let userId = req.parameters.userId ?? req.userId;
+    if (userId === "*") {
+      delete filter.userId; // get all users jobs
+    } else {
+      filter._id = userId;
+    }
+    if (typeof filter !== "object") {
+      return res.status(400).json({ message: req.t("A filter must be an object") });
+    }
+    const users = await User.find(filter)
+      .select(["-password", "-__v"])
+      .lean()
+      .exec()
+    ;
+    
+    // Decrypt jobs
+    const jobs = [];
+    if (req.parameters.decryptJobs) {
+      for (const user of users) {
+        if (!user.encryptionKey) {
+          throw new Error(req.t("User has no encryptionKey"));
+        }
+        if (user.jobs) {
+          const userJobs = await decryptData(user.jobs, user.encryptionKey);
+          for (const userJob of userJobs) { // add user id to user jobs
+            userJob.userId = user._id;
+            userJob.userFirstName = user.firstName;
+            userJob.userLastName = user.lastName;
+          }
+          jobs.push(...userJobs);
+        }
+      }
+    }
+
+    return res.status(200).json({jobs});
+  } catch (err) {
+    return nextError(next, req.t("Error getting all users: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -220,7 +270,6 @@ const updateUser = async (req, res, next) => {
     }
     return res.status(200).json({ user: updatedUser });
   } catch (err) {
-    logger.error("Error updating user:", err);
     if (err.codeName === "DuplicateKey") {
       if (err.keyValue.email) {
         return nextError(next, req.t("The email {{email}} is already in use", { email: err.keyValue.email }), 400);      
@@ -438,7 +487,7 @@ const sendEmailToUsers = async (req, res, next) => {
       .populate("roles", "-__v")
       .populate("plan", "-__v")
       .exec()
-      ;
+    ;
     if (!users || users.length === 0) {
       logger.warn(`No user found with filter ${filter}`);
       return res.status(400).json({ message: req.t("No user found with filter {{filter}}", { filter }) });
@@ -545,6 +594,7 @@ module.exports = {
   getAllPlans,
   getAllRoles,
   getUser,
+  getUsersJobs,
   updateUser, 
   updateUserJobs,
   updateUserJobsLocal,

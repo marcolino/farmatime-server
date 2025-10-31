@@ -43,7 +43,7 @@ const saveImageFile = async (req) => {
     const subject = i18n.t("Image file save size watermark limit reached");
     const message = i18n.t("Persistent storage size watermark limit reached ({{watermark}}), image is saved, but storage plan should be boosted", { watermark: config.persistentStorage.size.watermark });
     const mode = "error";
-    //logger.error(message);
+    logger.error(message);
     audit({req, mode, subject, htmlContent: message});
   }
 

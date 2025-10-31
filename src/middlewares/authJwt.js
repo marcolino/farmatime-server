@@ -72,7 +72,7 @@ const verifyAccessToken = (req, res, next) => {
     });
   } catch (err) {
     if (err instanceof TokenExpiredError) {
-      logger.error("verifyAccessToken: token expired");
+      logger.error("verifyAccessToken: token expired:", err.message);
       return res.status(401).json({
         message: req.t("Session is expired, please make a new signin request"),
         code: "EXPIRED_TOKEN",

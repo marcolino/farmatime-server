@@ -8,6 +8,7 @@ module.exports = app => {
   app.get(`${path}/getAllUsersWithTokens`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.getAllUsersWithTokens);
   app.get(`${path}/getUsers`, [authJwt.verifyAccessToken, authJwt.isAdmin], controller.getUsers);
   app.get(`${path}/getUser`, authJwt.verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser, controller.getUser);
+  app.get(`${path}/getUsersJobs`, [authJwt.verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser], controller.getUsersJobs);
   app.post(`${path}/updateUser`, authJwt.verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser, controller.updateUser);
   app.post(`${path}/updateUserJobs`, authJwt.verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser, controller.updateUserJobs);
   app.post(`${path}/updateUserEmailTemplate`, authJwt.verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser, controller.updateUserEmailTemplate);

@@ -214,6 +214,7 @@
   "User already had role {{roleName}}": "L'utilisateur avait déjà le rôle {{roleName}}",
   "User encryption key not found": "Clé de chiffrement de l'utilisateur non trouvée",
   "User has been promoted to role {{roleName}}": "L'utilisateur a été promu au rôle {{roleName}}",
+  "User has no encryptionKey": "L'utilisateur ne possède pas de clé de chiffrement",
   "User id is required": "L'identifiant utilisateur est requis",
   "User jobs email template updated successfully": "Modèle d'e-mail d'activités utilisateur mis à jour avec succès",
   "User jobs updated successfully": "Les activités de l'utilisateur ont été mises à jour avec succès",

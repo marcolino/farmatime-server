@@ -211,6 +211,7 @@
   "User already had role {{roleName}}": "User already had role {{roleName}}",
   "User encryption key not found": "User encryption key not found",
   "User has been promoted to role {{roleName}}": "User has been promoted to role {{roleName}}",
+  "User has no encryptionKey": "User has no encryptionKey",
   "User id is required": "User id is required",
   "User jobs email template updated successfully": "User jobs email template updated successfully",
   "User jobs updated successfully": "User jobs updated successfully",

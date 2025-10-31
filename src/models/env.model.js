@@ -27,6 +27,7 @@ EnvSchema.statics.load = async function() {
       lastEnvLoadTime = currentTime;
     } catch (err) {
       logger.error("Error loading env from database:", err);
+      throw err;
     }
     //logger.info("Env loaded from database");
   }
