@@ -452,52 +452,6 @@ const signup = async (req, res, next) => {
   }
 };
 
-const resendSignupVerificationCode = async (req, res, next) => {
-  try {
-    let signupVerification;
-    if (!req.parameters?.email) {
-      return res.status(400).json({ message: req.t("Please specify an email") });
-    }
-    const email = normalizeEmail(req.parameters.email);
-    const user = await User.findOne(
-      { email },
-      null,
-      { allowUnverified: true },
-    );
-    if (user) {
-      if (user.isVerified) {
-        return res.status(400).json({ message: req.t("This account has already been verified, you can log in") });
-      }
-
-      signupVerification = await user.generateVerificationCode(user._id);
-      await signupVerification.save(); // save the verification code
-
-      await emailService.sendWithTemplate(req, {
-        to: user.email,
-        subject: req.t("Signup Verification Code Resent"),
-        templateName: "signupVerificationCodeSent",
-        templateParams: {
-          userFirstName: user.firstName,
-          userLastName: user.lastName,
-          signupVerificationCode: signupVerification.code,
-        },
-      });
-    } else { // email not found... but we do not error out, to reduce attack surface...
-      //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
-    }
-    
-    res.status(200).json({
-      message: req.t("If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
-        { to: user?.email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium }),
-      codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
-      ...(!config.mode.production) && { code: signupVerification?.code } // to enable non production modes to confirm signup
-    });
-
-  } catch (err) {
-    return nextError(next, req.t("Error resending signup code: {{err}}", { err: err.message }), 500, err.stack);
-  }
-};
-
 const signupVerification = async (req, res, next) => {
   if (!req.parameters.code) {
     return res.status(400).json({ message: req.t("Code is mandatory") });
@@ -554,6 +508,52 @@ const signupVerification = async (req, res, next) => {
     }
   } catch (err) {
     return nextError(next, req.t("Error verifying signup: {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
+
+const resendSignupVerificationCode = async (req, res, next) => {
+  try {
+    let signupVerification;
+    if (!req.parameters?.email) {
+      return res.status(400).json({ message: req.t("Please specify an email") });
+    }
+    const email = normalizeEmail(req.parameters.email);
+    const user = await User.findOne(
+      { email },
+      null,
+      { allowUnverified: true },
+    );
+    if (user) {
+      if (user.isVerified) {
+        return res.status(400).json({ message: req.t("This account has already been verified, you can log in") });
+      }
+
+      signupVerification = await user.generateVerificationCode(user._id);
+      await signupVerification.save(); // save the verification code
+
+      await emailService.sendWithTemplate(req, {
+        to: user.email,
+        subject: req.t("Signup Verification Code Resent"),
+        templateName: "signupVerificationCodeSent",
+        templateParams: {
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          signupVerificationCode: signupVerification.code,
+        },
+      });
+    } else { // email not found... but we do not error out, to reduce attack surface...
+      //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
+    }
+    
+    res.status(200).json({
+      message: req.t("If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
+        { to: user?.email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium }),
+      codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
+      ...(!config.mode.production) && { code: signupVerification?.code } // to enable non production modes to confirm signup
+    });
+
+  } catch (err) {
+    return nextError(next, req.t("Error resending signup code: {{err}}", { err: err.message }), 500, err.stack);
   }
 };
 
@@ -776,7 +776,7 @@ const resetPassword = async (req, res, next) => {
     }
     
     res.status(200).json({
-      message: req.t("If the account exists, a reset code has been sent to {{email}} via {{codeDeliveryMedium}}.\nPlease copy and paste it here.", {email: email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium}),
+      message: req.t("If the account exists, a reset code has been sent to {{email}} via {{codeDeliveryMedium}}.\nPlease copy and paste it here", {email: email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium}),
       codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
       codeDeliveryEmail: user?.email,
       ...(!config.mode.production) && { code: user?.resetPasswordCode } // to enble non production modes to confirm reset password
@@ -990,10 +990,186 @@ const encryptionKey = async (req, res/*, next*/) => {
   }
 };
 
+const changeEmail = async (req, res, next) => {
+  if (!validateEmail.validate(req.parameters.emailNew)) {
+    return res.status(400).json({ message: req.t("Please supply a valid email") });
+  }
+  const email = normalizeEmail(req.parameters.email);
+  const emailNew = normalizeEmail(req.parameters.emailNew);
+
+  if (email === emailNew) {
+    return res.status(400).json({ message: req.t("Email is unchanged", { emailNew }) });
+  }
+
+  let userNew = await User.findOne({ email: emailNew });
+  if (userNew) {
+    return res.status(400).json({ message: req.t("Sorry, email {{emailNew}} is already registered", { emailNew }) });
+  }
+
+  let user = await User.findOne({ email });
+  if (!user) { // should not happen
+    return res.status(500).json({ message: req.t("User not found") });
+  }
+  try {
+    user.isEmailNewVerified = false;
+    await user.save();
+  } catch (err) {
+    return nextError(next, req.t("New user email error: {{err}}", { err: err.message }), 500, err.stack);
+  }
+    
+  // send verification code
+  try {
+    const changeEmailVerification = user.generateVerificationCode(user._id);
+    await changeEmailVerification.save(); // save the signup verification code
+    logger.info(`CHANGE EMAIL VERIFICATION CODE: ${changeEmailVerification.code}`);
+
+    await emailService.sendWithTemplate(req, {
+      userId: user._id,
+      to: emailNew,
+      subject: req.t("Email Change Verification Code"),
+      templateName: "changeEmailVerificationCodeSent",
+      templateParams: {
+        userFirstName: user.firstName,
+        userLastName: user.lastName,
+        changeEmailVerificationCode: changeEmailVerification.code,
+      },
+    });
+
+    return res.status(201).json({
+      message: req.t("A verification code has been sent to {{email}}", { email: emailNew }),
+      codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
+      codeDeliveryEmail: user.email,
+      ...(!config.mode.production) && { code: changeEmailVerification.code } // to enble test mode to verify signup
+    });
+  } catch (err) {
+    return nextError(next, req.t("Error sending verification code via {{medium}}: {{err}} ({{reason}})", { medium: config.app.auth.codeDeliveryMedium, err: err.message, reason: err.response?.body?.message ?? null }), 400, err.stack);
+  }
+};
+
+const changeEmailVerification = async (req, res, next) => {
+  if (!req.parameters.code) {
+    return res.status(400).json({ message: req.t("Code is mandatory") });
+  }
+
+  // if (!req.parameters.email) {
+  //   return res.status(400).json({ message: req.t("Email is mandatory") });
+  // }
+  if (!req.parameters.emailNew) {
+    return res.status(400).json({ message: req.t("New email is mandatory") });
+  }
+  //const email = normalizeEmail(req.parameters.email);
+  const emailNew = normalizeEmail(req.parameters.emailNew);
+
+  try {
+    // find a matching code
+    const code = await VerificationCode.findOne({ code: req.parameters.code });
+    if (!code) {
+      return res.status(400).json({ message: req.t("This code is not valid, it may be expired") });
+    }
+
+    // we found a code, find a matching user
+    try {
+      const user = await User.findOne(
+        { _id: code.userId },
+        null,
+        //{ allowUnverified: true },
+      );
+      if (!user) {
+        return res.status(400).json({ message: req.t("A user for this code was not found") });
+      }
+      if (user.isEmailNewVerified) {
+        logger.info("The new email for this account has already been verified, proceeding");
+        //return res.status(400).json({ message: req.t("This account has already been verified") });
+      }
+
+      // verify and save the user
+      //user.isVerified = true;
+      user.email = emailNew;
+      user.isEmailNewVerified = true;
+      try {
+        const userNew = await user.save();
+        logger.info(`User changed email: ${JSON.stringify(userNew)}`);
+
+        // notify support about registrations
+        audit({ req, mode: "action", subject: `User email change`, htmlContent: `Email change for user ${userNew.firstName} ${userNew.lastName} (email: ${userNew.email})` });
+
+        // notify user she did signup correctly
+        await emailService.sendWithTemplate(req, {
+          to: user.email,
+          subject: req.t("Email Change Completed"),
+          templateName: "emailChangeCompleted",
+          templateParams: {
+            userFirstName: user.firstName,
+            userLastName: user.lastName,
+          },
+        });
+
+        return res.status(200).json({ message: req.t("The email change for this account has been verified") });
+      } catch (err) {
+        return nextError(next, req.t("Error saving user in email change verification: {{err}}", { err: err.message }), 500, err.stack);
+      }
+    } catch (err) {
+      return nextError(next, req.t("Error finding user in email change verification: {{err}}", { err: err.message }), 500, err.stack);
+    }
+  } catch (err) {
+    return nextError(next, req.t("Error verifying email change: {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
+
+const resendChangeEmailVerificationCode = async (req, res, next) => {
+  try {
+    let changeEmailVerification;
+    if (!req.parameters?.email) {
+      return res.status(400).json({ message: req.t("Please specify an email") });
+    }
+    if (!req.parameters?.emailNew) {
+      return res.status(400).json({ message: req.t("Please specify a new email") });
+    }
+    //const email = normalizeEmail(req.parameters.email);
+    const emailNew = normalizeEmail(req.parameters.emailNew);
+    const user = await User.findOne(
+      { email: emailNew },
+      null,
+      //{ allowUnverified: true },
+    );
+    if (user) {
+      if (user.isEmailNewVerified) {
+        return res.status(400).json({ message: req.t("The new email for this account has already been verified") });
+      }
+
+      changeEmailVerification = await user.generateVerificationCode(user._id);
+      await changeEmailVerification.save(); // save the verification code
+
+      await emailService.sendWithTemplate(req, {
+        to: user.emailNew,
+        subject: req.t("Email Change Verification Code Resent"),
+        templateName: "changeEmailVerificationCodeSent",
+        templateParams: {
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          changeEmailVerificationCode: signupVerification.code,
+        },
+      });
+    } else { // email not found... but we do not error out, to reduce attack surface...
+      //return res.status(400).json({ message: req.t("The email address {{email}} is not associated with any account; double-check your email address and try again", {email: email})});
+    }
+    
+    res.status(200).json({
+      message: req.t("A verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
+        { to: user?.email, codeDeliveryMedium: config.app.auth.codeDeliveryMedium }),
+      codeDeliveryMedium: config.app.auth.codeDeliveryMedium,
+      ...(!config.mode.production) && { code: signupVerification?.code } // to enable non production modes to confirm signup
+    });
+
+  } catch (err) {
+    return nextError(next, req.t("Error resending signup code: {{err}}", { err: err.message }), 500, err.stack);
+  }
+};
+
 module.exports = {
   signup,
-  resendSignupVerificationCode,
   signupVerification,
+  resendSignupVerificationCode,
   signin,
   signout,
   resetPassword,
@@ -1011,4 +1187,7 @@ module.exports = {
   notificationVerification,
   notificationPreferencesSave,
   encryptionKey,
+  changeEmail,
+  changeEmailVerification,
+  resendChangeEmailVerificationCode,
 };

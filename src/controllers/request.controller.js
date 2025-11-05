@@ -276,10 +276,10 @@ ${request.medicines.map(medicine => ` - ${medicine.name}, since ${medicine.since
       mode: "scheduler",
       subject: "Processed all users jobs medicines",
       htmlContent: `
-      Sent ${requestsCount} request(s)` + (requestsCount > 0) ? `:<br />
+      Sent ${requestsCount} request(s)` + (requestsCount > 0 ? `:<br />
       <br />
       ${requestsDetailsForAudit}
-      ` : '',
+      ` : ''),
     });
 
     return res.json({

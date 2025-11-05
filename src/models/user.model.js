@@ -110,6 +110,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isEmailNewVerified: {
+    type: Boolean,
+    default: false
+  },
   requestErrors: [{
     creationDate: {
       type: Date,

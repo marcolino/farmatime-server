@@ -59,7 +59,7 @@ passportSetup(app);
 // redirect apex domain to www ('farmatime.it' => 'www.farmatime.it')
 if (config.mode.production) {
   app.use((req, res, next) => {
-    if (req.hostname === config.domain) {
+    if (req.hostname === config.app.domain) {
       return res.redirect(301, config.baseUrl + req.originalUrl);
     }
     next();

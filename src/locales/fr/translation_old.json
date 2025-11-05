@@ -40,7 +40,6 @@
   "Deletion request includes the protected admin user and cannot be processed": "__Deletion request includes the protected admin user and cannot be processed",
   "Early Hints": "",
   "Email is already in use": "cet email est déjà utilisé",
-  "Email is mandatory": "Email is mandatory",
   "Error adding watermark to image {{imageName}}: {{err}}": "Erreur lors de l'ajout d'un filigrane à l'image {{imageName}}\u00a0: {{err}}",
   "Error checking outcome details from url {{url}}": "Erreur lors de la vérification des détails du résultat à partir de l'URL {{url}}",
   "Error checking outcome url {{url}}": "Error checking outcome url {{url}}",

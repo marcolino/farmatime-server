@@ -651,7 +651,7 @@ const config = require("../../src/config");
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal(`If the account exists, a reset code has been sent to ${setup.user.email} via email.\nPlease copy and paste it here.`);
+    server.expect(res.body.message).to.equal(`If the account exists, a reset code has been sent to ${setup.user.email} via email.\nPlease copy and paste it here`);
     server.expect(res.body).to.have.property("code"); // not in production of course
     //server.expect(res.body.code).to.be.an("integer");
     resetPasswordCode = res.body.code;

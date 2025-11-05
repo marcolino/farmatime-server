@@ -27,4 +27,7 @@ module.exports = function(app) {
   app.get(`${path}/facebook/callback/pwa`, controller.facebookCallback);
   app.post(`${path}/facebook/revoke`, controller.facebookRevoke);
   app.get(`${path}/encryptionKey`, controller.encryptionKey);
+  app.post(`${path}/changeEmail`, [authJwt.verifyAccessToken], controller.changeEmail);
+  app.post(`${path}/changeEmailVerification`, [authJwt.verifyAccessToken], controller.changeEmailVerification);
+  app.post(`${path}/resendChangeEmailVerificationCode`, [authJwt.verifyAccessToken], controller.resendChangeEmailVerificationCode);
 };
