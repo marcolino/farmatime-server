@@ -108,8 +108,8 @@
 - remove all .exec() in mongoose queries: we can always safely omit exec() in standard contexts, when we do `await` ... - NO - OK
 - test withAutoJsonETag - OK
 - when creating request, add userId - OK
+- do not let users change email in profile... If needed ask for confirmation again ... - OK
 
-- do not let users change email in profile... If needed ask for confirmation again ...
 - reinstall from scratch (possibly on a fresh system), and compile README file
 - always do `const productId = mongoose.Types.ObjectId(req.parameters.productId);` for every endpoint using an objectId from parameters
 - review NOTES, clean it up...

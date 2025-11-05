@@ -317,7 +317,7 @@ const shutdown = (code = 1, msg = null) => {
   if (config.mode.development) {
     inject(rootClient, rootClientSrc, configFileNameInjected, config.app);
   }
-  
+
   if (!config.mode.test) { // listen for requests if not test mode
     try {
       const port = config.api.port;

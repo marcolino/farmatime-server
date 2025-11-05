@@ -98,6 +98,8 @@ class EmailService {
         subject: modeSymbol + ' ' + params.subject,
         htmlContent,
         ...(params.tags ? { tags: params.tags } : {}),
+        trackOpens: true,
+        trackClicks: true,
       };
       logger.info(`sendSmtpEmail:`, `to: ${sendSmtpEmail.to[0].email}, sender: ${sendSmtpEmail.sender.email}`, `subject: ${sendSmtpEmail.subject}`);
 

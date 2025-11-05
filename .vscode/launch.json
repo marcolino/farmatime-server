@@ -137,6 +137,20 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/server.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Express App",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/server.js",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["start-dev"],
+      "console": "integratedTerminal", // to show logs in console
+      "outputCapture": "std", // ensures stdout/stderr are shown
+      "env": {
+        "NODE_ENV": "development"
+      }
     }
   ]
 }
