@@ -143,9 +143,9 @@ class EmailService {
       }
 
       let notificationToken;
-      if (req && req.user) {
+      if (req && req.userId) {
         try {
-          notificationToken = await NotificationToken.createToken(req.user, "email");
+          notificationToken = await NotificationToken.createToken(req.userId, "email");
         } catch (err) {
           const message = `Error creating email notification token: ${err.message}`;
           logger.error(message);

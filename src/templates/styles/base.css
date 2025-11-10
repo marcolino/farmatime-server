@@ -94,7 +94,7 @@ body {
 
 /* --- Dark mode protection --- */
 @media (prefers-color-scheme: dark) {
-  body, .email-container, .email-body, .email-header, .email-footer, p, td, h1, h2, a {
+  /*body, */.email-container, .email-body, .email-header, .email-footer, p, td, h1, h2, a {
     background-color: #a5dc6f !important;
     color: #000000 !important;
   }

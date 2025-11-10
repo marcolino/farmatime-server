@@ -37,6 +37,7 @@
     "run-jobs-dev": "curl -X POST -s http://localhost:5000/api/request/runJobs && echo",
     "run-jobs-production": "curl -X POST -s https://www.farmatime.it/api/request/runJobs -H \"x-worker-key: $((grep WORKER_KEY .env | cut -f2 -d=))\" && echo",
     "brevo-webhook-dev": "curl -X POST -H 'Content-Type: application/json' -d @dev/webhooks/BREVO_WEBHOOK_PAYLOAD_SAMPLE.json http://localhost:5000/api/webhook/brevo",
+    "ejs-preview": "node scripts/ejs-preview.js",
     "fly-upgrade": "fly version upgrade",
     "fly-create-app-production": "flyctl apps list | grep -q 'farmatime-prod' || flyctl apps create 'farmatime-prod'",
     "fly-create-app-staging": "flyctl apps list | grep -q 'farmatime-staging' || flyctl apps create 'farmatime-staging'",

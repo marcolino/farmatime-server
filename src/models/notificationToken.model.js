@@ -42,9 +42,9 @@ const NotificationTokenSchema = new mongoose.Schema({
   }
 });
 
-NotificationTokenSchema.statics.createToken = async function (user, type) {
+NotificationTokenSchema.statics.createToken = async function (userId, type) {
   let token = jwt.sign(
-    { id: user.id, jti: uuidv4() }, // add a unique "jti" claim, to avoid token duplications
+    { id: userId, jti: uuidv4() }, // add a unique "jti" claim, to avoid token duplications
     process.env.JWT_NOTIFICATION_TOKEN_SECRET, {
       expiresIn: config.app.auth.notificationTokenExpirationSeconds,
     }
@@ -54,7 +54,7 @@ NotificationTokenSchema.statics.createToken = async function (user, type) {
   const object = new this({
     type,
     token,
-    user: user._id,
+    user: userId,
     expiresAt: expiresAt,
   });
   try {
