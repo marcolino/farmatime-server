@@ -311,6 +311,7 @@ IMPORTANT:
 I18N Auto-translation mark:
  𐓙
 
+Email templates: removing `style="background-color:#a5dc6f; color:#000000;"` from email-body and email-footer fields (it is not necessary for Android Gmail, but it could help for other email clients...)
 
 Available domain names proposals:
 

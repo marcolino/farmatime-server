@@ -91,26 +91,3 @@ body {
   color: #666666;
   text-decoration: underline;
 }
-
-/* --- Dark mode protection --- */
-@media (prefers-color-scheme: dark) {
-  body, .email-container, .email-body, .email-header, .email-footer, p, td, h1, h2, a {
-    background-color: #a5dc6f !important;
-    color: #000000 !important;
-  }
-}
-
-/* Gmail Android dark mode workaround */
-.email-container, .email-body, .email-footer, .email-header {
-  background-color: #a5dc6f !important;
-  color: #000000 !important;
-}
-p, td, a, h1, h2 {
-  color: #000000 !important;
-}
-
-/* Prevent Gmail from inverting colors */
-u + .body .email-container {
-  background-color: #a5dc6f !important;
-  color: #000000 !important;
-}

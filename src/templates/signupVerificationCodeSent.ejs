@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html charset=UTF-8" />
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
     <title><%= sys_company_name %></title>
     <style><%= sys_style %></style>
   </head>
@@ -17,7 +20,7 @@
         </td>
       </tr>
       <tr>
-        <td class="email-body">
+        <td class="email-body" style="background-color:#a5dc6f; color:#000000;">
           <p><%= t("Hello") %>, <b><%= userFirstName %> <%= userLastName %></b>.</p>
           <p></p>
           <p><%= t("The code to confirm your email is") %></p>

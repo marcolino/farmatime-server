@@ -1097,7 +1097,7 @@ const changeEmailVerification = async (req, res, next) => {
         await emailService.sendWithTemplate(req, {
           to: user.email,
           subject: req.t("Email Change Completed"),
-          templateName: "emailChangeCompleted",
+          templateName: "changeEmailCompleted",
           templateParams: {
             userFirstName: user.firstName,
             userLastName: user.lastName,

@@ -20,18 +20,25 @@ body {
   -webkit-font-smoothing: antialiased;
   background-color: #ffffff;
 }
-/* container */
+
+/* Color scheme declaration */
+:root {
+  color-scheme: light dark;
+}
+
+/* container - FORCE GREEN BACKGROUND */
 .email-container {
   max-width: 600px;
   margin: 0 auto;
-  background-color: #a5dc6f;
+  background-color: #a5dc6f !important; /* FORCE light green */
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
-/* header */
+
+/* header - FORCE GREEN BACKGROUND */
 .email-header {
-  background-color: #a5dc6f;
+  background-color: #a5dc6f !important; /* FORCE light green */
   padding-top: 20px;
   text-align: center;
 }
@@ -46,10 +53,12 @@ body {
   font-size: 24px;
   font-weight: normal;
 }
-/* body */
+
+/* body - FORCE WHITE BACKGROUND in light mode */
 .email-body {
   padding: 20px;
   color: #000000;
+  background-color: #ffffff !important; /* FORCE white */
 }
 .email-body h2 {
   font-size: 20px;
@@ -79,10 +88,10 @@ body {
   text-decoration: none;
   font-weight: bold;
 }
-/* footer */
+
+/* footer - FORCE GREEN BACKGROUND */
 .email-footer {
-  background-color: #a5dc6f;
-  /*color: #444444;*/
+  background-color: #a5dc6f !important; /* FORCE light green */
   padding: 20px;
   text-align: center;
   font-size: 12px;
@@ -92,25 +101,51 @@ body {
   text-decoration: underline;
 }
 
-/* --- Dark mode protection --- */
+/* DARK MODE OVERRIDES - FORCE DARK GREEN BACKGROUNDS */
 @media (prefers-color-scheme: dark) {
-  body, .email-container, .email-body, .email-header, .email-footer, p, td, h1, h2, a {
-    background-color: #a5dc6f !important;
-    color: #000000 !important;
+  .email-container {
+    background-color: #2a4a1a !important; /* DARK GREEN */
   }
-}
-
-/* Gmail Android dark mode workaround */
-.email-container, .email-body, .email-footer, .email-header {
-  background-color: #a5dc6f !important;
-  color: #000000 !important;
-}
-p, td, a, h1, h2 {
-  color: #000000 !important;
-}
-
-/* Prevent Gmail from inverting colors */
-u + .body .email-container {
-  background-color: #a5dc6f !important;
-  color: #000000 !important;
+  
+  .email-header {
+    background-color: #2a4a1a !important; /* DARK GREEN */
+  }
+  
+  .email-header h1 {
+    color: #ffffff !important;
+  }
+  
+  .email-body {
+    background-color: #1a3d2a !important; /* DARKER GREEN */
+    color: #ffffff !important;
+  }
+  
+  .email-body h2 {
+    color: #ffffff !important;
+  }
+  
+  .email-body p {
+    color: #e8e8e8 !important;
+  }
+  
+  .email-body a {
+    color: #8ab4f8 !important;
+  }
+  
+  .email-footer {
+    background-color: #2a4a1a !important; /* DARK GREEN */
+    color: #e8e8e8 !important;
+  }
+  
+  .email-footer a {
+    color: #a8d5ba !important;
+  }
+  
+  /* Fix for bold/italic text in dark mode */
+  .email-body b,
+  .email-body strong,
+  .email-body i,
+  .email-body em {
+    color: inherit !important;
+  }
 }

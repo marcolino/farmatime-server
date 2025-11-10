@@ -60,6 +60,7 @@ const baseUrlClient = (production || staging) ? urlPublicClient : urlLocalClient
 const baseUrlClientPreview = (production || staging) ? "" : "http://localhost:4173";
 const clientSrc = `../${appName}-client/src`; // client app source relative folder to inject config file (do not change for customizations)
 const serverLocale = "it"; // server locale
+const indexDescription = "Una potente app web per automatizzare le richieste di prescrizione di farmaci";
 
 const configBase = {
   mode: {
@@ -580,7 +581,7 @@ const configBase = {
       },
     },
     index: { // to inject index.html
-      description: "INDEX_DESCRIPTION",
+      description: indexDescription,
       language: serverLocale,
       dir: dir,
       charset: charset,
@@ -588,7 +589,7 @@ const configBase = {
       cacheControl: cacheControl,
       og: {
         title: apiName,
-        description: "INDEX_DESCRIPTION",
+        description: indexDescription,
         url: baseUrl, // i.e.: "https://ahrefs.com/blog/open-graph-meta-tags/""
         type: "website",
         image: { // use custom images for “shareable” pages (e.g., homepage, articles, etc.). Use your logo or any other branded image for the rest of your pages. Use images with a 1.91:1 ratio and minimum recommended dimensions of 1200x630 for optimal clarity across all devices.
@@ -601,7 +602,7 @@ const configBase = {
       twitter: {
         card: `${baseUrl}/apple-touch-icon.png`,
         title: apiName,
-        description: "INDEX_DESCRIPTION",
+        description: indexDescription,
         image: `${baseUrl}/favicon-64x64.png`,
       },
       apple: {
