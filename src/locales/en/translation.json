@@ -117,7 +117,7 @@
   "If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}": "If the account exists, a verification code has been sent to {{to}} via {{codeDeliveryMedium}}",
   "If you did not request an email change, please ignore this email": "If you did not request an email change, please ignore this email",
   "If you did not request it, please ignore this email": "If you did not request it, please ignore this email",
-  "If you have any questions, feel free to": "If you have any questions, feel free to",
+  "If you have any questions": "If you have any questions",
   "Image by id {{id}} not found": "Image by id {{id}} not found",
   "Image file save size overflow limit reached": "Image file save size overflow limit reached",
   "Image file save size watermark limit reached": "Image file save size watermark limit reached",

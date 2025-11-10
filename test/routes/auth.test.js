@@ -868,7 +868,7 @@ describe("Auth routes", () => {
 
   it("should save notification preferences (from external routing) with a valid token", async () => {
     const user = await User.findOne({ email: demoData.users.user.email });
-    const notificationToken = await NotificationToken.createToken(user, "email");
+    const notificationToken = await NotificationToken.createToken(user._id, "email");
     const res = await server.request
       .post("/api/auth/notificationPreferencesSaveExternal")
       //.set("Cookie", server.getAuthCookies("user"))
