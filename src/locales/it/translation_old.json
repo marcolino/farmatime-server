@@ -54,6 +54,7 @@
   "Error finding user in social {{provider}} signin request: {{err}}": "Errore nel trovare l'utente nella richiesta di accesso sociale {{provider}}: {{err}}",
   "Error finding users": "Errore nel trovare gli utenti",
   "Error finding users: {{err}": "𐓙Errore nel trovare gli utenti: {{err}}",
+  "Error generating a persistent encryption key: {{err}}": "Errore nella generazione di una chiave di crittografia persistente: {{err}}",
   "Error getting all plans": "Errore nella lettura di tutti i piani",
   "Error getting roles": "Errore nella lettura dei ruoli",
   "Error getting roles: {{err}}": "𐓙Errore nel recupero dei ruoli: {{err}}",

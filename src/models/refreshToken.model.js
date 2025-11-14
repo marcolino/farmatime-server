@@ -22,27 +22,20 @@ const RefreshTokenSchema = new mongoose.Schema({
 });
 
 RefreshTokenSchema.statics.createToken = async function (user, rememberMe) {
-  let expiresIn = (rememberMe ?
-    config.app.auth.refreshTokenExpirationSeconds
-    :
+  const expiresIn = (rememberMe ?
+    config.app.auth.refreshTokenExpirationSeconds :
     config.app.auth.refreshTokenExpirationDontRememberMeSeconds
   );
-  let token = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn });
+  const token = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn });
 
-  //console.log(`refresh token create, lasts for ${expiresIn} seconds`);
-  
-  const expiresAt = Date.now() + (
-    (rememberMe ?
-      config.app.auth.refreshTokenExpirationSeconds :
-      config.app.auth.refreshTokenExpirationDontRememberMeSeconds
-    ) * 1000);
-  const object = new this({
+  const expiresAt = Date.now() + (expiresIn * 1000);
+  const obj = new this({
     token,
     user: user._id,
     expiresAt,
   });
   try {
-    await object.save();
+    await obj.save();
   } catch (err) {
     if (err.code === 11000) { // ignore "Error: E11000 duplicate key error collection", it means a double signin...
       logger.warn("Duplicate refresh token, double signin; this is not critical, but should not happen...");

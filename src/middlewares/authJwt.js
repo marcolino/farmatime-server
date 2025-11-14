@@ -1,6 +1,15 @@
 const jwt = require("jsonwebtoken");
-const { isAdministrator, localeDateTime, cookieOptions, isDealerAtLeast } = require("../libs/misc");
+const User = require("../models/user.model");
+const {
+  isAdministrator, localeDateTime, cookieOptions,
+  isDealerAtLeast, normalizeEmail
+} = require("../libs/misc");
 const { logger } = require("../controllers/logger.controller");
+// const {
+//   isAdministrator, normalizeEmail, /*localeDateTime,*/ nextError,
+//   redirectToClientWithError, redirectToClientWithSuccess,
+//   createTokensAndCookies, cookieOptions,
+// } = require("../libs/misc");
 const config = require("../config");
 
 const { TokenExpiredError } = jwt;
@@ -11,13 +20,17 @@ const verifyAccessToken = (req, res, next) => {
     // extract the token from the cookies
     const accessToken = req.cookies.accessToken;
 
+    /* TODO: IS IT OK???
+    // Try to avoid "You must be authenticated for this action" when token is expired
     if (!accessToken) {
       return res.status(401).json({
         message: req.t("You must be authenticated for this action"),
         code: "NO_TOKEN",
+        action: "SIGNOUT",
       });
     }
-  
+    */
+    
     // verify the token
     jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
@@ -25,38 +38,59 @@ const verifyAccessToken = (req, res, next) => {
           // access token expired, attempt to refresh
           const refreshToken = req.cookies.refreshToken;
           if (!refreshToken) {
-            return res.status(401).json({ message: "Refresh token is missing", code: "NO_REFRESH_TOKEN" });
+            return res.status(401).json({
+              message: req.t("Refresh token is missing"),
+              code: "NO_REFRESH_TOKEN",
+              action: "SIGNOUT",
+            });
           }
 
-          jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET, async (refreshErr, refreshDecoded) => {
-            if (refreshErr) {
-              if (refreshErr.name === "TokenExpiredError") {
-                // refresh token expired set EXPIRED_TOKEN code
-                return res.status(401).json({ message: "Refresh token is expired", code: "EXPIRED_TOKEN" });
+          jwt.verify(
+            refreshToken,
+            process.env.JWT_REFRESH_TOKEN_SECRET,
+            async (err, decoded) => {
+              if (err) {
+                clearCookies(res);
+                if (err.name === "TokenExpiredError") {
+                  // refresh token expired set EXPIRED_TOKEN code
+                  return res.status(401).json({
+                    message: req.t("Refresh token is expired"),
+                    code: "EXPIRED_TOKEN",
+                    action: "SIGNOUT",
+                  });
+                }
+                return res.status(401).json({
+                  message: req.t("Invalid refresh token ({{err}}", { err: err.name }),
+                  code: "INVALID_REFRESH_TOKEN",
+                  action: "SIGNOUT",
+                });
               }
-              return res.status(401).json({ message: "Invalid refresh token", code: "INVALID_REFRESH_TOKEN" });
-            }
 
-            // refresh token is valid, issue a new access token
-            const newAccessToken = jwt.sign({ id: refreshDecoded.id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
-              expiresIn: config.app.auth.accessTokenExpirationSeconds + "s",
-            });
+              // refresh token is valid, issue a new access token
+              const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
+                expiresIn: config.app.auth.accessTokenExpirationSeconds + "s",
+              });
 
-            // set the new access token in cookies
-            res.cookie("accessToken", newAccessToken, cookieOptions());
-           
-            // attach user ID to request object
-            req.userId = refreshDecoded.id;
-            logger.info("access token refresh successful");
-            if (config.mode.development) {
-              logger.info(`                     now is ${localeDateTime(new Date())}`);
-              const { exp } = jwt.decode(accessToken);
-              logger.info(`access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
+              // set the new access token in cookies
+              res.cookie("accessToken", newAccessToken, cookieOptions());
+            
+              // attach user ID to request object
+              req.userId = decoded.id;
+              logger.info("access token refresh successful");
+              if (config.mode.development) {
+                logger.info(`                     now is ${localeDateTime(new Date())}`);
+                const { exp } = jwt.decode(accessToken);
+                logger.info(`access token will expire on ${localeDateTime(new Date(exp * 1000))}`);
+              }
+              return next(); // proceed with the request
             }
-            return next(); // proceed with the request
-          });
+          );
         } else {
-          return res.status(401).json({ message: "Invalid access token", code: "INVALID_ACCESS_TOKEN" });
+          return res.status(401).json({
+            message: req.t("Invalid access token ({{err}})", { err: err.name }),
+            code: "INVALID_ACCESS_TOKEN",
+            action: "SIGNOUT",
+          });
         }
       } else {
         // access token is valid
@@ -76,6 +110,7 @@ const verifyAccessToken = (req, res, next) => {
       return res.status(401).json({
         message: req.t("Session is expired, please make a new signin request"),
         code: "EXPIRED_TOKEN",
+        action: "SIGNOUT",
       });
     }
 
@@ -85,6 +120,7 @@ const verifyAccessToken = (req, res, next) => {
         req.t("Session is not valid, please make a new signin request") +
         (config.mode.development ? ` (${err.message})` : ""),
       code: "INVALID_TOKEN",
+      action: "SIGNOUT",
     });
   }
 };
@@ -96,6 +132,26 @@ const verifyAccessTokenAllowGuest = (req, res, next) => {
     return next();
   }
   return verifyAccessToken(req, res, next);
+};
+
+const verifyAccessTokenAllowExpired = (req, res, next) => {
+  const accessToken = req.cookies.accessToken;
+
+  if (!accessToken) { // no token is fine - allow signout for guests
+    return next();
+  }
+
+  // Try to decode without verification to extract userId
+  try {
+    const decoded = jwt.decode(accessToken);
+    if (decoded && decoded.id) {
+      req.userId = decoded.id;
+    }
+    return next();
+  } catch (err) {
+    logger.warn(`verifyAccessTokenAllowExpired jwt.decode error (${err.message}), continuing...`);
+    return next(); // if even decoding fails, still allow signout
+  }
 };
 
 const verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser = async (req, res, next) => {
@@ -196,6 +252,44 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+// Clear cookies for current user
+const clearCookies = async (res) => {
+  // Clear HTTP-only auth cookies on the response object
+  res.clearCookie("accessToken", cookieOptions(false));
+  res.clearCookie("refreshToken", cookieOptions(false));
+  res.clearCookie("encryptionKey", cookieOptions(false));
+  logger.info("Cookies cleared");
+};
+
+// Clear tokens for a given user id or email
+const clearTokens = async ({ userId, userEmail }) => {
+  // Find user and invalidate tokens
+  let filter = null;
+  if (userId) {
+    filter = { _id: userId };
+  } else {
+    if (!userEmail) {
+      logger.warn("clearTokens: no userId nor userEmail passed!");
+      return;
+    }
+    filter = { email: normalizeEmail(userEmail) };
+  }
+
+  const user = await User.findOneAndUpdate(
+    filter,
+    {
+      $set: {
+        accessToken: null,
+        refreshToken: null,
+      },
+    }
+  );
+  if (!user) {
+    throw new Error("User not found");
+  }
+  logger.info(`Tokens cleared for user ${user.email}`);
+};
+
 /*
 // options for HTTP-only cookies (secure, not accessible by javascript on the client)
 const cookieOptions = (setAge = true) => {
@@ -231,10 +325,13 @@ const cleanupExpiredTokens = async (req,) => { // we should not need this functi
 module.exports = {
   verifyAccessToken,
   verifyAccessTokenAllowGuest,
+  verifyAccessTokenAllowExpired,
   verifyAccessTokenForOtherUserIfAdminOtherwiseIfUser,
   verifyNotificationToken,
   verifyRestrictProducts,
   isAdmin,
   //cookieOptions,
   //cleanupExpiredTokens,
+  clearCookies,
+  clearTokens,
 };

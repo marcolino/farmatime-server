@@ -15,7 +15,7 @@ i18next
     fallbackLng: config.app.serverLocale, // fallback language
     saveMissing: false, // do not save missing translations in translation_untranslated.json
     // missingKeyHandler: (lng, ns, key) => {
-    //   console.log(`Missing translation: ${key}`);
+    //   logger.warn(`Missing translation: ${key}`);
     // },
     preload: Object.keys(config.app.locales), // preload all supported languages
     detection: {

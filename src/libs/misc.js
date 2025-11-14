@@ -55,8 +55,10 @@ const objectContains = (big, small) => {
   return true;
 };
 
-// check if two arrays of objects do contain exactly
-// the same objects(comparing one property of objects)
+/**
+ * Check if two arrays of objects do contain exactly
+ * the same objects(comparing one property of objects)
+ */
 const arraysContainSameObjects = (a1, a2, property) => {
   const extractProps = (array) => array.map(obj => obj[property]);
   const sortProps = (props) => props.sort((a, b) => a - b);
@@ -122,7 +124,7 @@ const normalizeEmail = (email) => {
     if (separatorIndex > 0) {
       localPart = localPart.substring(0, separatorIndex);
     }
-    */
+   */
   return localPart + "@" + domain;
 };
 
@@ -140,12 +142,12 @@ const remoteAddress = (req) => {
 const isAdministrator = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
-    if (user && user.roles.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)) {
-      return true;
-    }
-    return false;
+    return (
+      user &&
+      user.roles?.some(role => role.priority >= config.roles.find(role => role.name === "admin").priority)
+    );
   } catch (err) {
-    console.warn(`Error finding user by id ${userId}:`, err); // eslint-disable-line no-console
+    logger.warn(`Error finding user by id ${userId}:`, err);
     return false;
   }
 };
@@ -154,30 +156,26 @@ const isDealerAtLeast = async (userId) => {
   try {
     const user = await User.findOne({ _id: userId }).populate("roles", "-__v").lean();
     const dealerRole = await Role.findOne({ name: "dealer" }).lean();
-    if (!user) {
-      return false;
-    }
-    if (user.roles?.some(role => role.priority >= config.roles.find(role => role.priority >= dealerRole.priority).priority)) {
-      return true;
-    }
-    return false;
+    return (
+      user &&
+      user.roles?.some(role => role.priority >= config.roles.find(role => role.priority >= dealerRole.priority).priority)
+    );
   } catch (err) {
-    console.warn(`Error finding user by id ${userId}:`, err); // eslint-disable-line no-console
+    logger.warn(`Error finding user by id ${userId}:`, err);
     return false;
   }
 };
 
 const cleanDomain = (domain) => {
-  // we don't need to trim leading whitespace
-  // because validation rejects it as invalid;
-  // we don't need to strip a trailing "."
-  // because validation rejects it as invalid.
-  domain = url.domainToASCII(domain);
-  return domain;
+  /**
+   * We don't need to trim nor strip leading whitespace
+   * because validation rejects it as invalid;
+   */
+  return url.domainToASCII(domain);
 };
 
 /**
- * inject data into client config file (development only)
+ * Inject data into client config file (development only)
  */
 const inject = (rootClient, rootClientSrc, outputFile, dataToInject) => {
   const rootClientOutputFilePath = path.resolve(rootClient, outputFile);
@@ -219,7 +217,7 @@ const JSONstringifyRecursive = (t, seen = new Set()) => {
 };
 */
 
-// utility to hash a string
+// Utility to hash a string
 const hashString = (value) => {
   return crypto.createHash("sha256").update(value).digest("hex");
 };
@@ -230,14 +228,6 @@ const getFieldType = (schema, fieldPath) => {
   if (!schemaType) {
     return null;  // fieldPath does not exist in the schema
   }
-
-  // if (schemaType.instance === "Array") {
-  //   return "Array";
-  // }
-
-  // if (schemaType.instance === "String") {
-  //   return "String";
-  // }
 
   return schemaType.instance;
 };
@@ -395,21 +385,6 @@ const redirectToClient = (req, res, success, payload/*, options = {}*/) => {
 };
 
 const createTokensAndCookies = async (req, res, next, user) => {
-  // // generate a persistent base-64 encryption key from the user's DB ID + server secret
-  // try {
-  //   const encryptionKey = crypto.pbkdf2Sync(
-  //     user._id.toString(), // Immutable user ID
-  //     process.env.ENCRYPTION_KEY_SECRET, // Server-side pepper
-  //     100000, // Iterations
-  //     32, // Key length (32 bytes = AES-256)
-  //     "sha512" // Hash algorithm
-  //   ).toString("base64");
-  //   // Set as HTTP-only cookie (secure, SameSite Strict)
-  //   res.cookie("encryptionKey", encryptionKey, cookieOptions());
-  // } catch (err) {
-  //   return nextError(next, req.t("Error generating a persistent encryption key: {{err}}", { err: err.message }), 500, err.stack);
-  // }
-
   // create access and refresh tokens
   let accessToken, refreshToken;
   try {

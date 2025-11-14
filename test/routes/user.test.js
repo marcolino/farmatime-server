@@ -38,7 +38,7 @@ describe("User routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("You must be authenticated for this action");
+    server.expect(res.body.message).to.equal("Invalid access token (JsonWebTokenError)");
   });
 
 
@@ -892,7 +892,7 @@ describe("User routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("You must be authenticated for this action");
+    server.expect(res.body.message).to.equal("Invalid access token (JsonWebTokenError)");
   });
 
   it("should not delete user without admin privileges", async () => {
@@ -974,7 +974,7 @@ describe("User routes", () => {
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("You must be authenticated for this action");
+    server.expect(res.body.message).to.equal("Invalid access token (JsonWebTokenError)");
   });
 
   it("should not remove user without admin privileges", async () => {

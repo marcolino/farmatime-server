@@ -448,7 +448,7 @@ describe("Auth routes", () => {
     server.expect(res.body.message).to.equal("Sign out successful");
   });
 
-  it("should not logout user with wrong cookie", async () => {
+  it("should logout user event with wrong cookie", async () => {
     const res = await server.request
       .post("/api/auth/signout")
       .set("Cookie", "wrong user auth cookie")
@@ -456,13 +456,13 @@ describe("Auth routes", () => {
       //   "email": "wrong email"
       // })
     ;
-    expect = 404;
+    expect = 200;
     if (res.status !== expect) {
       console.error(`server.expected: ${expect}, actual: ${res.status}`, res.body.stack ?? res.body.message ?? "");
       throw new Error();
     }
     server.expect(res.body).to.have.property("message");
-    server.expect(res.body.message).to.equal("User not found");
+    server.expect(res.body.message).to.equal("Sign out successful");
   });
 
   // it("should not logout user with not existing email", async () => {

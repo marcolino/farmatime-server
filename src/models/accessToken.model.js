@@ -38,18 +38,17 @@ const AccessTokenSchema = new mongoose.Schema({
 });
 
 AccessTokenSchema.statics.createToken = async function (user) {
-  let token = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_TOKEN_SECRET, {
-    expiresIn: config.app.auth.accessTokenExpirationSeconds,
-  });
+  const expiresIn = config.app.auth.accessTokenExpirationSeconds;
+  const token = jwt.sign({ id: user.id }, process.env.JWT_ACCESS_TOKEN_SECRET, { expiresIn });
 
-  const expiresAt = Date.now() + (config.app.auth.accessTokenExpirationSeconds * 1000);
-  const object = new this({
+  const expiresAt = Date.now() + (expiresIn * 1000);
+  const obj = new this({
     token,
     user: user._id,
     expiresAt: expiresAt,
   });
   try {
-    await object.save();
+    await obj.save();
   } catch (err) {
     if (err.code === 11000) { // ignore "Error: E11000 duplicate key error collection", it means a double signin...
       logger.warn("Duplicate access token, double signin; this is not critical, but should not happen...");

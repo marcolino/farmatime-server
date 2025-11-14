@@ -129,11 +129,8 @@ const paymentSuccess = async (req, res, next) => {
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
       expand: ["customer", "payment_intent"], // include customer and payment details
     });
-    //console.log("**************** SESSION:", session); // eslint-disable-line no-console
     customer = session.customer;
-    //console.log("**************** CUSTOMER:", customer); // eslint-disable-line no-console
     const shippingInfo = session.shipping_details;
-    //console.log("**************** SHIPPINGINFO:", shippingInfo); // eslint-disable-line no-console
 
     // const session = await stripe.checkout.sessions.retrieve(req.parameters.session_id);
     // const customer = session.customer ? await stripe.customers.retrieve(session.customer) : null;
@@ -181,8 +178,6 @@ const paymentSuccess = async (req, res, next) => {
         "(no shipping info)"
       )
     });
-    //console.log("session.metadata.deliveryCode", session.metadata.deliveryCode);
-    //console.log("session.metadata.isGift", session.metadata.isGift);
 
     res.redirect(config.payment.stripe.paymentSuccessUrlClient);
   } catch (err) { // should not happen...

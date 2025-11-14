@@ -52,6 +52,7 @@
   "Error finding user in social {{provider}} signin request: {{err}}": "Error finding user in social {{provider}} signin request: {{err}}",
   "Error finding users": "Error finding users",
   "Error finding users: {{err}": "Error finding users: {{err}",
+  "Error generating a persistent encryption key: {{err}}": "Error generating a persistent encryption key: {{err}}",
   "Error getting all plans": "Error getting all plans",
   "Error getting roles": "Error getting roles",
   "Error getting roles: {{err}}": "Error getting roles: {{err}}",

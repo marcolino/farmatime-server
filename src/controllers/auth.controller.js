@@ -1,4 +1,4 @@
-//const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const validateEmail = require("email-validator");
 //const crypto = require("crypto");
@@ -12,10 +12,11 @@ const Plan = require("../models/plan.model");
 // const AccessToken = require("../models/accessToken.model");
 // const RefreshToken = require("../models/refreshToken.model");
 const VerificationCode = require("../models/verificationCode.model");
+const { clearCookies, clearTokens } = require("../middlewares/authJwt");
 const {
   isAdministrator, normalizeEmail, /*localeDateTime,*/ nextError,
   redirectToClientWithError, redirectToClientWithSuccess,
-  createTokensAndCookies, cookieOptions,
+  createTokensAndCookies, /*cookieOptions,*/
 } = require("../libs/misc");
 const { createEncryptionKey, decryptData } = require("../libs/encryption");
 
@@ -674,73 +675,94 @@ const signin = async (req, res, next) => {
   } 
 };
 
-const signout = async (req, res, next) => {
-  // revoke user account
+const signout = async (req, res, _next) => {
+  await clearCookies(res);
+
   try {
-    let userId = req.userId;
-    if (req.parameters.userId && req.parameters.userId !== userId) { // request to signout another user's profile
-      // this test should be done in routing middleware, but doing it here allows for a more specific error message
+    let userId = null;
+    
+    // check if userId was provided in request body, by ad admin
+    if (req.parameters.userId) { // request to signout another user's profile
+      /**
+       * Note: this test should be done in routing middleware,
+       * but doing it here allows for a more specific error message
+       */
       if (!await isAdministrator(userId)) { // check if request is from admin
-        return res.status(403).json({ message: req.t("You must have admin role to signout another user's account") });
+        logger.warn("You must have admin role to signout another user's account");
+        // ignore userId parameter from non-admin users
       } else {
         userId = req.parameters.userId; // if admin, accept a specific user id in request
+        logger.debug("Accepted userId from parameters:", userId);
       }
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return nextError(next, req.t("User not found"), 404);
+    if (!userId) {
+
+      logger.debug("NO USER ID IN signout, GETTING IT FROM accessToken: DOES IT EVER HAPPEN???");
+
+      // Extract user ID from token if available, but don't require valid token
+      const accessToken = req.cookies.accessToken;
+      logger.debug("Access token from cookies:", accessToken);
+      if (accessToken) {
+        try {
+          // Try to decode without verification to get userId from expired token
+          const decoded = jwt.decode(accessToken);
+          if (decoded && decoded.id) {
+            userId = decoded.id;
+            logger.debug("Got user id from access token:", userId);
+          } else {
+            throw new Error("Wrong result fron token decode");
+          }
+        } catch (err) {
+          logger.debug(`Could not decode access token during signout (${err.message}), proceeding`);
+          // Ignore decode errors, we'll proceed without userId
+        }
+      }
     }
 
-    // const email = req.parameters.email;
-    // if (!email) {
-    //   return res.status(400).json({ message: req.t("Email is required to sign out") });
+    // // If no userId from token, check if provided in request body
+    // if (!userId && req.parameters.userId) {
+    //   userId = req.parameters.userId;
     // }
-    await signoutOperations(user.email, res);
+    // if (req.parameters.userId && userId && req.parameters.userId !== userId) { // request to signout another user's profile
+    //   // This test should be done in routing middleware, but doing it here allows for a more specific error message
+    //   if (!await isAdministrator(userId)) { // check if request is from admin
+    //     logger.warn("You must have admin role to signout another user's account");
+    //     // ignore 
+    //   } else {
+    //     userId = req.parameters.userId; // if admin, accept a specific user id in request
+    //   }
+    // }
 
+    await clearTokens({ userId });
+
+    // // CHANGED: Clear cookies FIRST - this is the most important part
+    // res.clearCookie("accessToken", cookieOptions(false));
+    // res.clearCookie("refreshToken", cookieOptions(false));
+    // res.clearCookie("encryptionKey", cookieOptions(false));
+
+    // // Only try to update database if we have a valid userId
+    // if (userId) {
+    //   try {
+    //     // Use the helper function but don't pass res (cookies already cleared)
+    //     await clearTokensAndCookies({ userId });
+        
+    //     logger.info(`User signed out successfully: ${userId}`);
+    //   } catch (dbError) {
+    //     // Log but don't fail the request - user is already signed out client-side
+    //     logger.warn("Database update during signout failed:", dbError.message);
+    //   }
+    // } else {
+    //   logger.info("Signout completed for user with expired/invalid token");
+    // }
+
+    // CHANGED: Always return success - the client state is cleared regardless
     return res.status(200).json({ message: req.t("Sign out successful") });
+    
   } catch (err) {
-    // User not found or other error
-    if (err.message === "User not found") {
-      return res.status(401).json({ message: req.t("User not found") });
-    }
-    return nextError(next, req.t("Error signing out user: {{err}}", { err: err.message }), 500, err.stack);
+    return res.status(200).json({ message: req.t("Sign out completed with error {{err}}", err.message) });
   }
 };
-
-// Helper function to perform signout operations for a given user email
-const signoutOperations = async (email, res) => {
-  // Always normalize email
-  const normalizedEmail = normalizeEmail(email);
-
-  // Find user and invalidate tokens
-  const user = await User.findOneAndUpdate(
-    { email: normalizedEmail },
-    {
-      $set: {
-        accessToken: null,
-        refreshToken: null,
-      },
-    }
-  );
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Log signout event
-  logger.info(`User signed out: ${user.email}`);
-
-  // Clear HTTP-only auth cookies on the response object
-  if (res) {
-    res.clearCookie("accessToken", cookieOptions(false));
-    res.clearCookie("refreshToken", cookieOptions(false));
-    res.clearCookie("encryptionKey", cookieOptions(false));
-  }
-
-  // Return the user or success indicator if needed
-  return user;
-};
-
 
 const resetPassword = async (req, res, next) => {
   try {
@@ -884,9 +906,12 @@ const resendResetPasswordCode = async (req, res, next) => {
 };
 
 const revoke = async (req, res, next) => {
+  await clearCookies(res);
+
   // revoke user account
   try {
     let userId = req.userId;
+
     if (req.parameters.userId && req.parameters.userId !== userId) { // request to revoke another user's profile
       // this test should be done in routing middleware, but doing it here allows for a more specific error message
       if (!await isAdministrator(userId)) { // check if request is from admin
@@ -907,12 +932,12 @@ const revoke = async (req, res, next) => {
       }
     }
     
-    const user = await User.findById(userId);
-    if (!user) {
-      return nextError(next, req.t("User not found"), 404);
-    }
+    await clearTokens({ userId });
 
-    await signoutOperations(user.email, res);
+    // const user = await User.findById(userId);
+    // if (!user) {
+    //   return nextError(next, req.t("User not found"), 404);
+    // }
 
     // TODO: decide if marking user as deleted, or really fully remove it...
 

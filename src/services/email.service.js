@@ -286,7 +286,6 @@ class EmailService {
       // inline css styles
       const templateContentRenderedInlined = inline(templateContentRendered);
 
-      //console.log("templateContentRenderedInlined:", templateContentRenderedInlined);
       return templateContentRenderedInlined;
     } catch (err) {
       throw new Error(err.message);

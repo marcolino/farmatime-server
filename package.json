@@ -12,6 +12,7 @@
   "main": "server.js",
   "scripts": {
     "start-dev": "NODE_ENV=development nodemon --ignore client/ -w '.' -w server.js",
+    "start-debug": "NODE_ENV=development node server.js",
     "start": "node server.js",
     "build": "echo 'No build step defined or necessary'",
     "inject": "node scripts/inject.js",
