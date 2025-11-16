@@ -422,9 +422,9 @@ const configBase = {
     },
     auth: {
       cookiesExpirationSeconds: 60 * 60 * 24 * ((7 * 2) + 1), // 2 week + 1 day TTL: should be longer than refreshTokenExpirationSeconds, to avoid cookie expiration before tokens inside expiration
-      accessTokenExpirationSeconds: 60, //60 * 30, // 30 minutes TTL: time after access token expires, and must be refreshed
-      refreshTokenExpirationSeconds: 120, //60 * 60 * 24 * 7 * 2, // 2 week TTL: time after refresh token expires, and user must sign in again (in case user did not check DontRememberMe)
-      refreshTokenExpirationDontRememberMeSeconds: 120, //3600, //60 * 60, // 1 hour TTL: time after refresh token expires, and user must sign in again (in case user did check DontRememberMe)
+      accessTokenExpirationSeconds: 60 * 30, // 30 minutes TTL: time after access token expires, and must be refreshed
+      refreshTokenExpirationSeconds: 60 * 60 * 24 * 7 * 2, // 2 week TTL: time after refresh token expires, and user must sign in again (in case user did not check DontRememberMe)
+      refreshTokenExpirationDontRememberMeSeconds: 60 * 60, // 1 hour TTL: time after refresh token expires, and user must sign in again (in case user did check DontRememberMe)
       notificationTokenExpirationSeconds: 60 * 60 * 1, // 6 hours TTL: time after notification token expires (in notifiction emails for example)
       verificationCodeExpirationSeconds: 60 * 60 * 1, // 1 hour TTL
       codeDeliveryMedium: "email", // "email" / "sms" / ...: the signup confirmation code delivery medium

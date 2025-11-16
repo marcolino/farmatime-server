@@ -1,5 +1,5 @@
 const Request = require("../models/request.model");
-const WebhookUUID = require("../models/WebhookUUID.model"); 
+const WebhookUUID = require("../models/webhookUUID.model"); 
 const { logger } = require("../controllers/logger.controller");
 const { audit } = require("../libs/messaging");
 const { nextError } = require("../libs/misc");

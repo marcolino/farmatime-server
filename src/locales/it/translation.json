@@ -39,7 +39,6 @@
   "Email Change Verification Code Resent": "Codice di Verifica Cambio Email Reinviato",
   "Email is mandatory": "L'email è obbligatoria",
   "Email is not valid": "L'email non è valida",
-  "Email is required to sign out": "L'email è necessaria per disconnettersi",
   "Email is unchanged": "L'email non è cambiata",
   "Email service is not initialized, please setup first": "Il servizio email non è inizializzato, per favore configurarlo prima",
   "Empty cart": "Carrello vuoto",
@@ -90,7 +89,6 @@
   "Error sending email to users: {{err}}": "Errore nell'invio dell'email agli utenti: {{err}}",
   "Error sending requests: {{err}}": "Errore nell'invio delle richieste: {{err}}",
   "Error sending verification code via {{medium}}: {{err}} ({{reason}})": "Errore nell'invio del codice di verifica tramite {{medium}}: {{err}} ({{reason}})",
-  "Error signing out user: {{err}}": "Errore durante la disconnessione dell'utente: {{err}}",
   "Error updating jobs email template: {{err}}": "Errore nell'aggiornamento del modello email delle attività",
   "Error updating notification preferences ({{err}})": "Errore nell'aggiornamento delle preferenze di notifica ({{err}})",
   "Error updating product to delete: {{err}}": "Errore nell'aggiornamento del prodotto da eliminare: {{err}}",
@@ -259,7 +257,6 @@
   "You must have admin role to get requests of another user": "Devi avere il ruolo di amministratore per ottenere le richieste di un altro utente",
   "You must have admin role to revoke another user's account": "Devi avere il ruolo di amministratore per revocare l'account di un altro utente",
   "You must have admin role to save notification preferences for another user": "Devi avere il ruolo di amministratore per salvare le preferenze di notifica per un altro utente",
-  "You must have admin role to signout another user's account": "Devi avere il ruolo di amministratore per disconnettere l'account di un altro utente",
   "You must have admin role to update a user's plan": "Devi avere ruolo 'amministratore' per aggiornare il piano di un altro utente",
   "Your password has been updated": "La tua password è stata aggiornata"
 }

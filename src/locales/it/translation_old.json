@@ -41,6 +41,7 @@
   "Deletion request includes the protected admin user and cannot be processed": "La richiesta di eliminazione include l'utente protetto admin e non può essere processata",
   "Early Hints": "",
   "Email is already in use": "L'email è già in uso",
+  "Email is required to sign out": "L'email è necessaria per disconnettersi",
   "Error adding watermark to image {{imageName}}: {{err}}": "Errore nell'aggiunta della filigrana all'immagine {{imageName}}: {{err}}",
   "Error checking outcome details from url {{url}}": "Errore nella verifica dei dettagli dei risultati dall'url {{url}}",
   "Error checking outcome url {{url}}": "Error nella verifica dei risultati dall'url {{url}}",
@@ -68,6 +69,7 @@
   "Error saving image {{imageName}}": "Errore nel salvare l'immagine {{imageName}}",
   "Error sending verification code": "Errore nell'invio del codice di verifica",
   "Error sending verification code via {{medium}}: {{err}}": "Errore nell'invio del codice di verifica tramite {{medium}}: {{err}}",
+  "Error signing out user: {{err}}": "Errore durante la disconnessione dell'utente: {{err}}",
   "Error updating notification preferences: {{err}}": "Errore nell'aggiornamento delle preferenze di notifica: {{err}}",
   "Error updating notification preferences: {{err1}}": "__STRING_NOT_TRANSLATED__",
   "Error updating user job: {{err}}": "Errore nell'aggiornamento dell'attività dell'utente: {{err}}",
@@ -247,6 +249,7 @@
   "You must have admin role to access this page": "Devi avere ruolo 'amministratore' per accedere a questa pagina",
   "You must have admin role to get another user's plan": "Devi avere ruolo admin per accedere al piano di un altro utente",
   "You must have admin role to get another user's roles": "Devi avere ruolo admin per accedere ai ruoli di un altro utente",
+  "You must have admin role to signout another user's account": "Devi avere il ruolo di amministratore per disconnettere l'account di un altro utente",
   "You must have admin role to update another user": "Devi avere ruolo 'amministratore' per aggiornare un altro utente",
   "You must have admin role to update another user's profile": "Devi avere ruolo 'amministratore' per aggiornare il profilo di un altro utente",
   "You must have admin role to update another user's roles": "Devi avere ruolo 'amministratore' per aggiornare i ruoli di un altro utente"

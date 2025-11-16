@@ -36,7 +36,6 @@
   "Email Change Verification Code Resent": "Email Change Verification Code Resent",
   "Email is mandatory": "Email is mandatory",
   "Email is not valid": "Email is not valid",
-  "Email is required to sign out": "Email is required to sign out",
   "Email is unchanged": "Email is unchanged",
   "Email service is not initialized, please setup first": "Email service is not initialized, please setup first",
   "Empty cart": "Empty cart",
@@ -87,7 +86,6 @@
   "Error sending email to users: {{err}}": "Error sending email to users: {{err}}",
   "Error sending requests: {{err}}": "Error sending requests: {{err}}",
   "Error sending verification code via {{medium}}: {{err}} ({{reason}})": "Error sending verification code via {{medium}}: {{err}} ({{reason}})",
-  "Error signing out user: {{err}}": "Error signing out user: {{err}}",
   "Error updating jobs email template: {{err}}": "Error updating jobs email template: {{err}}",
   "Error updating notification preferences ({{err}})": "Error updating notification preferences ({{err}})",
   "Error updating product to delete: {{err}}": "Error updating product to delete: {{err}}",
@@ -256,7 +254,6 @@
   "You must have admin role to get requests of another user": "You must have admin role to get requests of another user",
   "You must have admin role to revoke another user's account": "You must have admin role to revoke another user's account",
   "You must have admin role to save notification preferences for another user": "You must have admin role to save notification preferences for another user",
-  "You must have admin role to signout another user's account": "You must have admin role to signout another user's account",
   "You must have admin role to update a user's plan": "You must have admin role to update a user's plan",
   "Your password has been updated": "Your password has been updated"
 }

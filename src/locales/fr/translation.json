@@ -39,7 +39,6 @@
   "Email Change Verification Code Resent": "Code de vérification du changement d'adresse e-mail renvoyé",
   "Email is mandatory": "Email is mandatory",
   "Email is not valid": "L'email n'est pas valide",
-  "Email is required to sign out": "L'adresse e-mail est requise pour se déconnecter",
   "Email is unchanged": "Adresse e-mail inchangée",
   "Email service is not initialized, please setup first": "Email service is not initialized, please setup first",
   "Empty cart": "Panier vide",
@@ -90,7 +89,6 @@
   "Error sending email to users: {{err}}": "Erreur lors de l'envoi d'e-mails aux utilisateurs : {{err}}",
   "Error sending requests: {{err}}": "Erreur lors de l'envoi des requêtes\u00a0: {{err}}",
   "Error sending verification code via {{medium}}: {{err}} ({{reason}})": "Erreur lors de l'envoi du code de vérification via {{medium}} : {{err}} ({{reason}})",
-  "Error signing out user: {{err}}": "Erreur de déconnexion de l'utilisateur : {{err}}",
   "Error updating jobs email template: {{err}}": "Erreur lors de la mise à jour du modèle d'e-mail d'activités\u00a0: {{err}}",
   "Error updating notification preferences ({{err}})": "Erreur lors de la mise à jour des préférences de notification ({{err}})",
   "Error updating product to delete: {{err}}": "Erreur lors de la mise à jour du produit à supprimer: {{err}}",
@@ -259,7 +257,6 @@
   "You must have admin role to get requests of another user": "Vous devez avoir le rôle d'administrateur pour recevoir les demandes d'un autre utilisateur",
   "You must have admin role to revoke another user's account": "Vous devez avoir le rôle d'administrateur pour révoquer le compte d'un autre utilisateur",
   "You must have admin role to save notification preferences for another user": "Vous devez avoir le rôle d'administrateur pour enregistrer les préférences de notification pour un autre utilisateur",
-  "You must have admin role to signout another user's account": "Vous devez avoir le rôle d'administrateur pour déconnecter le compte d'un autre utilisateur",
   "You must have admin role to update a user's plan": "Vous devez avoir un rôle d'administrateur pour mettre à jour le plan d'un utilisateur",
   "Your password has been updated": "Votre mot de passe a été mis à jour"
 }
