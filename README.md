@@ -65,10 +65,16 @@ It is coupled with [farmatime-client](https://github.com/marcolino/farmatime-cli
 > Note: for tests we depend on chai 4.*, because it is the last version compatible with CommonJS, and the whole project is CommonJS.
 
 
-# Installation
- - npm install -g yarn
+# Installation (on Ubuntu 24.04)
+ # Install nodejs and yarn
+ - sudo apt install curl
+ - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+ - sudo apt install -y nodejs
+ - sudo corepack enable
+ - corepack prepare yarn@stable --activate
+ # Install dependencies
  - yarn
-...
+
 
 
 # Configuration

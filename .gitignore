@@ -19,5 +19,6 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
-**/.env*
+**/.env
+**/.env.copy
 .secrets-cache.json
