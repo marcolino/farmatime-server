@@ -290,7 +290,7 @@ const configBase = {
     webhook: {
       uuidRetentionDays: 365,
     },
-    dryrun: !!test, // if true, do not really send emails, use fake send
+    dryrun: !!test || !!development, // if true, do not really send emails, use fake send
     subject: {
       prefix: apiName,
     },

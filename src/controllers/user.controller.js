@@ -104,6 +104,7 @@ const getUsersJobs = async (req, res, next) => {
             userJob.userId = user._id;
             userJob.userFirstName = user.firstName;
             userJob.userLastName = user.lastName;
+            userJob.userEmail = user.email;
           }
           jobs.push(...userJobs);
         }
