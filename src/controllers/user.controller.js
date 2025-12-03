@@ -287,6 +287,8 @@ const updateUserJobs = async (req, res, next) => {
   try {
     const jobs = req.parameters.jobs;
 
+    //return nextError(next, req.t("Error updating user jobs: {{err}}", { err: "DEBUG ERROR" }), 400, null); // TODO: DEBUG ONLY!!!
+
     await updateUserJobsLocal(req, jobs);
     return res.json({message: req.t("User jobs updated successfully")});
   } catch (err) {

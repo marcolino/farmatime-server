@@ -228,7 +228,7 @@ app.get("*", (req, res) => {
   });
 });
 
-// Only apply JSON ETag middleware for APIs - TODO: do we really want this?
+// Only apply JSON ETag middleware for APIs
 app.use(withAutoJsonETag);
 
 // handle errors in API routes

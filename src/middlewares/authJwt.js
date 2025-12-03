@@ -19,17 +19,6 @@ const verifyAccessToken = (req, res, next) => {
   try {
     // extract the token from the cookies
     const accessToken = req.cookies.accessToken;
-
-    /* TODO: IS IT OK???
-    // Try to avoid "You must be authenticated for this action" when token is expired
-    if (!accessToken) {
-      return res.status(401).json({
-        message: req.t("You must be authenticated for this action"),
-        code: "NO_TOKEN",
-        action: "SIGNOUT",
-      });
-    }
-    */
     
     // verify the token
     jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_SECRET, (err, decoded) => {
