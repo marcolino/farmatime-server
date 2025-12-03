@@ -240,6 +240,7 @@
   "Webhook rejected: invalid secret": "Webhook rejeté\u00a0: secret non valide",
   "Worker request rejected, invalid worker key": "Demande de travailleur rejetée, clé de travailleur non valide",
   "You can log in.": "You can log in.",
+  "You must be authenticated for this action": "Vous devez être authentifié pour cette action",
   "You must be authenticated for this action (in refreshToken)": "__You must be authenticated for this action (in refreshToken)",
   "You must be authenticated for this action (in verifyAccessToken)": "__You must be authenticated for this action (in verifyAccessToken)",
   "You must be authenticated to access this page": "Vous devez être authentifié pour accéder à cette page",

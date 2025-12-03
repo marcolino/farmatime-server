@@ -250,7 +250,6 @@
   "You can log in": "Puoi accedere",
   "You did complete the email change procedure successfully": "Hai completato con successo la procedura di modifica dell'email",
   "You did complete the signup procedure successfully": "Hai completato con successo la procedura di registrazione",
-  "You must be authenticated for this action": "Devi essere autenticato per questa azione",
   "You must have admin role for this action": "Devi avere ruolo 'amministratore' per questa azione",
   "You must have admin role to access another user": "Devi avere ruolo 'amministratore' per accedere ad un altro utente",
   "You must have admin role to access another user's data": "Devi avere il ruolo di amministratore per accedere ai dati di un altro utente",

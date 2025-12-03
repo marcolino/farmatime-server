@@ -244,6 +244,7 @@
   "Webhook rejected: invalid secret": "Webhook rejected: invalid secret",
   "Worker request rejected, invalid worker key": "Worker request rejected, invalid worker key",
   "Worker request rejected: invalid worker key": "Worker request rejected: invalid worker key",
+  "You must be authenticated for this action": "You must be authenticated for this action",
   "You must be authenticated for this action (in refreshToken)": "You must be authenticated for this action (in refreshToken)",
   "You must be authenticated for this action (in verifyAccessToken)": "You must be authenticated for this action (in verifyAccessToken)",
   "You must be authenticated to access this page": "You must be authenticated to access this page",

@@ -241,6 +241,7 @@
   "Webhook rejected, invalid secret": "Webhook rifiutato, segreto non valido",
   "Webhook rejected: invalid secret": "Webhook rifiutato: segreto non valido",
   "Worker request rejected, invalid worker key": "Richiesta del worker rifiutata, chiave worker non valida",
+  "You must be authenticated for this action": "Devi essere autenticato per questa azione",
   "You must be authenticated for this action (in refreshToken)": "Devi essere autenticato per questa azione (in refreshToken)",
   "You must be authenticated for this action (in verifyAccessToken)": "Devi essere autenticato per questa azione (in verifyAccessToken)",
   "You must be authenticated to access this page": "Devi essere autenticato per accedere a questa pagina",
