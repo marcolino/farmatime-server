@@ -46,6 +46,8 @@ const RequestSchema = new mongoose.Schema({
     seenAt: { type: Date, default: null, set: normalizeDate },
     reason: { type: String },
   }],
+
+  lastSendDay: { type: Date },
 }, {
   versionKey: false, // No version keys
   timestamps: true, // Automatic timestamps
@@ -63,29 +65,12 @@ function normalizeDate(val) {
   return val; // fallback, mongoose will throw if invalid
 }
 
-// RequestSchema.pre(/^find|^count/, function () {
-//   //const operation = this.op; // we might need the effective operation matched
-//   const user = this;
-//   let condition = {};
-//   if (!this.options.allowDeleted) condition.isDeleted = false;
-//   if (!this.options.allowUnverified) condition.isVerified = true;
-//   user.where(condition);
-// });
-
-// RequestSchema.pre("save", function(next) {
-//   const user = this;
-
-//   if (!user.isModified("password")) return next();
-  
-//   user.hashPassword(user.password, async (err, hash) => {
-//     if (err) return next(err);
-//     user.password = hash;
-//     next();
-//   });
-// });
-
-// RequestSchema.methods.compareClearPassword = (passwordInput, passwordUser) => {
-//   return passwordInput === passwordUser;
-// };
+// Unique index on userId, patientEmsil, doctorEmail, and first events item at date
+RequestSchema.index({
+  userId: 1,
+  patientEmail: 1,
+  doctorEmail: 1,
+  lastSendDay: 1,
+}, { unique: true });
 
 module.exports = mongoose.model("Request", RequestSchema);

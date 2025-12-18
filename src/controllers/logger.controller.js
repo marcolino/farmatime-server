@@ -48,10 +48,16 @@ class LogtailStream extends stream.Writable {
 
     logMessage = decode(logMessage);
 
-    this.logtail
-      .log(logMessage, null)
-      .then(() => callback())
-      .catch(callback);
+    // // Fire and wait
+    // this.logtail
+    //   .log(logMessage, null)
+    //   .then(() => callback())
+    //   .catch(callback);
+    // Fire and forget: don't wait for Logtail
+    this.logtail.log(logMessage, null).catch((err) => {
+      // Log errors to console/file only, don't block
+      console.error("Logtail logging failed:", err); // eslint-disable-line no-console
+    });
   }
 }
 

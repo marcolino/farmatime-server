@@ -287,9 +287,7 @@ const updateUserJobs = async (req, res, next) => {
   try {
     const jobs = req.parameters.jobs;
 
-    //return nextError(next, req.t("Error updating user jobs: {{err}}", { err: "DEBUG ERROR" }), 400, null); // TODO: DEBUG ONLY!!!
-
-    await updateUserJobsLocal(req, jobs);
+    await updateUserJobsRaw(req, jobs);
     return res.json({message: req.t("User jobs updated successfully")});
   } catch (err) {
     return nextError(next, req.t("Error updating user jobs: {{err}}", { err: err.message }), 500, err.stack);
@@ -299,7 +297,7 @@ const updateUserJobs = async (req, res, next) => {
 /**
  * Update current user's jobs data (callable locally)
  */
-const updateUserJobsLocal = async (req, jobs) => {
+const updateUserJobsRaw = async (req, jobs) => {
   if (!req.userId) {
     //return res.status(400).json({ error: true, message: 'Jobs required' });
     return { error: true, status: 403, message: req.t("User id is required") };
@@ -320,18 +318,60 @@ const updateUserJobsLocal = async (req, jobs) => {
     return { error: true, status: 403, message: req.t("User encryption key not found") };
   }
 
+  // Check if any sinceDate did change for any medicine in jobs: in this case reset fieldLastDate, otherwise preserve it
+  const jobsOld = await decryptData(user.jobs, user.encryptionKey);
+  const jobsNew = preserveMedicineLastDateInJobs(jobsOld, jobs);
+
   // In development mode, store unencrypted jobs data, to debug in an easier way
   //if (config.mode.development) { TODO: enable this `if` when production is final
-  user.jobsCLEAN = jobs;
+  user.jobsCLEAN = jobsNew;
   //}
 
   // Encrypt job with encryptionKey
-  const encryptedJobs = await encryptData(jobs, user.encryptionKey);
+  const encryptedJobs = await encryptData(jobsNew, user.encryptionKey);
 
   user.jobs = encryptedJobs;
   await user.save();
 
   return true;
+};
+
+const preserveMedicineLastDateInJobs = (jobs, jobsNew) => {
+  // Create a map to easily find existing medicines and their lastDate
+  const existingMedicinesMap = new Map();
+  
+  // Build a nested map: jobId -> medicineName -> medicine object
+  jobs.forEach(job => {
+    const jobMap = new Map();
+    existingMedicinesMap.set(job.id, jobMap);
+      
+    job.medicines.forEach(medicine => {
+      jobMap.set(medicine.name, {
+        lastDate: medicine.lastDate,
+        sinceDate: medicine.sinceDate
+      });
+    });
+  });
+
+  // Process jobsNew, preserving lastDate when same job and medicine name have same sinceDate
+  jobsNew.forEach(newJob => {
+    const existingJobMap = existingMedicinesMap.get(newJob.id);
+      
+    if (existingJobMap) {
+      newJob.medicines.forEach(newMedicine => {
+        const existingMedicine = existingJobMap.get(newMedicine.name);
+              
+        // Check if medicine with same name exists in the same job
+        if (existingMedicine &&
+          existingMedicine.sinceDate === newMedicine.sinceDate) {
+          // Preserve the lastDate from the existing medicine
+          newMedicine.lastDate = existingMedicine.lastDate;
+        }
+      });
+    }
+  });
+
+  return jobsNew;
 };
 
 const updateUserEmailTemplate = async (req, res, next) => {
@@ -600,7 +640,7 @@ module.exports = {
   getUsersJobs,
   updateUser, 
   updateUserJobs,
-  updateUserJobsLocal,
+  updateUserJobsRaw,
   updateUserEmailTemplate,
   //_updateRoles,
   //_updatePlan,

@@ -190,7 +190,7 @@ const addRoleToUser = async (roleName, userEmail) => {
       // save the updated user
       await user.save();
  
-      logger.info(`added "${roleName}" role to "${userEmail}" user`);
+      //logger.info(`added "${roleName}" role to "${userEmail}" user`);
     }
   } catch (err) {
     logger.error(`error adding "${roleName}" role to "${userEmail}" user:`, err);

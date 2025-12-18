@@ -8,7 +8,6 @@ const helmet = require("helmet");
 const compression = require("compression");
 const { decode } = require("entities");
 const { logger } = require("./src/controllers/logger.controller");
-//const db = require("./src/models/db");
 const { initializeDatabase } = require("./src/models/db");
 const Env = require("./src/models/env.model");
 const { assertEnvironment } = require("./src/libs/environment");
