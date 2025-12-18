@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# this is too slow to do in pre-push, we call scripts/githubUploadSecrets.sh when publishing
+exit 0;
+
 # navigate to the repository root
 cd "$(git rev-parse --show-toplevel)"
 
