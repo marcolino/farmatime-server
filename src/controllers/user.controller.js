@@ -318,6 +318,7 @@ const updateUserJobsRaw = async (req, jobs) => {
     return { error: true, status: 403, message: req.t("User encryption key not found") };
   }
 
+  /*
   // Check if any sinceDate did change for any medicine in jobs: in this case reset fieldLastDate, otherwise preserve it
   const jobsOld = await decryptData(user.jobs, user.encryptionKey);
   const jobsNew = preserveMedicineLastDateInJobs(jobsOld, jobs);
@@ -326,16 +327,19 @@ const updateUserJobsRaw = async (req, jobs) => {
   //if (config.mode.development) { TODO: enable this `if` when production is final
   user.jobsCLEAN = jobsNew;
   //}
+  const encryptedJobs = await encryptData(jobsNew, user.encryptionKey);
+  */
 
   // Encrypt job with encryptionKey
-  const encryptedJobs = await encryptData(jobsNew, user.encryptionKey);
-
+  const encryptedJobs = await encryptData(jobs, user.encryptionKey);
+  
   user.jobs = encryptedJobs;
   await user.save();
 
   return true;
 };
 
+/*
 const preserveMedicineLastDateInJobs = (jobs, jobsNew) => {
   // Create a map to easily find existing medicines and their lastDate
   const existingMedicinesMap = new Map();
@@ -373,6 +377,7 @@ const preserveMedicineLastDateInJobs = (jobs, jobsNew) => {
 
   return jobsNew;
 };
+*/
 
 const updateUserEmailTemplate = async (req, res, next) => {
   const userId = req.userId;

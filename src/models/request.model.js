@@ -46,8 +46,6 @@ const RequestSchema = new mongoose.Schema({
     seenAt: { type: Date, default: null, set: normalizeDate },
     reason: { type: String },
   }],
-
-  lastSendDay: { type: Date },
 }, {
   versionKey: false, // No version keys
   timestamps: true, // Automatic timestamps
@@ -70,7 +68,6 @@ RequestSchema.index({
   userId: 1,
   patientEmail: 1,
   doctorEmail: 1,
-  lastSendDay: 1,
 }, { unique: true });
 
 module.exports = mongoose.model("Request", RequestSchema);

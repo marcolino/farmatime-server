@@ -130,3 +130,4 @@ NEWFEATURE:
 - aggiungere l'anno di riferimento ai prodotti stripe (quando saranno usati)
 - usare node builtin tests (see https://kashw1n.com/blog/nodejs-2025/)
 - complete socialRevoke in auth controller (for Facebook oauth2, when we will use it...)
+ 

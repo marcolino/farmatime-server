@@ -26,7 +26,7 @@ class LogtailStream extends stream.Writable {
     this.logtail = logtail;
   }
 
-  _write(info, encoding, callback) {
+  _write(info, _encoding, callback) {
     const { level, message } = info;
     const splatSymbol = Object.getOwnPropertySymbols(info).find(
       (sym) => sym.toString() === "Symbol(splat)"
@@ -58,6 +58,9 @@ class LogtailStream extends stream.Writable {
       // Log errors to console/file only, don't block
       console.error("Logtail logging failed:", err); // eslint-disable-line no-console
     });
+
+    // Immediately call callback to signal Winston we're done
+    callback();
   }
 }
 

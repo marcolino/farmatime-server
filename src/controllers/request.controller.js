@@ -76,10 +76,10 @@ const getRequests = async (req, res, next) => {
 //   };
 // }
 
-function isTodayAMultiple(startDate, frequencyDays) {
+function isTodayARecurrence(startDate, frequencyDays) {
   const today = DateTime.now().startOf("day");
   const daysDiff = today.diff(startDate, "days").days;
-  return daysDiff >= 0 && Math.floor(daysDiff) % frequencyDays === 0;
+  return daysDiff === 0 || daysDiff > 0 && Math.floor(daysDiff) % frequencyDays === 0;
 }
 
 const runJobs = async (req, res, next) => {
@@ -113,8 +113,8 @@ const runJobs = async (req, res, next) => {
         reason: "",
       };
 
-      // create request with lastSendDay set to today (midnight)
-      const today = DateTime.now().startOf("day").toJSDate();
+      // create request
+      //const today = DateTime.now().startOf("day").toJSDate();
       request = await Request.create({
         userFirstName: user.firstName,
         userLastName: user.lastName,
@@ -134,7 +134,7 @@ const runJobs = async (req, res, next) => {
         userId: user._id,
         jobId: job.id,
         events: [event],
-        lastSendDay: today,
+        //lastSendDay: today,
       });
 
       logger.info("New request created");
@@ -142,22 +142,23 @@ const runJobs = async (req, res, next) => {
       return nextError(next, err.message, 500, err.stack);
     }
 
-    // update lastDate for this medicine job data
-    const jobsNew = jobs.map((j) => {
-      if (j.id === job.id) {
-        j.medicines = j.medicines.map((med) => {
-          if (medicines.some((medicine) => medicine.name === med.name)) {
-            med.fieldLastDate = DateTime.now().toUTC().toISODate();
-          }
-          return med;
-        });
-      }
-      return j;
-    });
+    // // update lastDate for this medicine job data
+    // const jobsNew = jobs.map((j) => {
+    //   if (j.id === job.id) {
+    //     j.medicines = j.medicines.map((med) => {
+    //       if (medicines.some((medicine) => medicine.name === med.name)) {
+    //         med.fieldLastDate = DateTime.now().toUTC().toISODate();
+    //       }
+    //       return med;
+    //     });
+    //   }
+    //   return j;
+    // });
 
     // Update medicine last request date
     req.userId = user._id;
-    response = await updateUserJobsRaw(req, jobsNew);
+    //response = await updateUserJobsRaw(req, jobsNew);
+    response = await updateUserJobsRaw(req, jobs);
     if (response.error) {
       return nextError(next, response.message, response.status ?? 500);
     } else {
@@ -248,26 +249,24 @@ const runJobs = async (req, res, next) => {
           logger.info(`     Medicine sinceDate is ${sinceDate.toISODate()}`);
           logger.info(`     Medicine has a frequency of ${frequencyDays} days`);
 
-          let lastDate, nextDate;
-
-          if (medicine.fieldLastDate) {
-            lastDate = DateTime.fromJSDate(new Date(medicine.fieldLastDate)).startOf("day");
-            logger.info(`     Medicine lastDate is ${lastDate.toISODate()}`);
-            if (sinceDate > lastDate) { // This could happen if user postpones sinceDate after lastDate
-              lastDate = null;
-              nextDate = sinceDate;
-              logger.info(`     Medicine sinceDate is after lastDate, ignoring lastDate to calculate nextDate...`);
-            } else {
-              nextDate = lastDate.plus({ days: frequencyDays });
-              logger.info(`     Medicine nextDate set to lastDate (${lastDate.toISODate()}) + frequencyDays (${frequencyDays}) ...`);
-            }
-          } else {
-            lastDate = null;
-            nextDate = sinceDate;
-            logger.info(`     Medicine has no lastDate, it was never requested`);
-          }
-
-          logger.info(`     Medicine nextDate is ${nextDate.toISODate()}`);
+          // let lastDate, nextDate;
+          // if (medicine.fieldLastDate) {
+          //   lastDate = DateTime.fromJSDate(new Date(medicine.fieldLastDate)).startOf("day");
+          //   logger.info(`     Medicine lastDate is ${lastDate.toISODate()}`);
+          //   if (sinceDate > lastDate) { // This could happen if user postpones sinceDate after lastDate
+          //     lastDate = null;
+          //     nextDate = sinceDate;
+          //     logger.info(`     Medicine sinceDate is after lastDate, ignoring lastDate to calculate nextDate...`);
+          //   } else {
+          //     nextDate = lastDate.plus({ days: frequencyDays });
+          //     logger.info(`     Medicine nextDate set to lastDate (${lastDate.toISODate()}) + frequencyDays (${frequencyDays}) ...`);
+          //   }
+          // } else {
+          //   lastDate = null;
+          //   nextDate = sinceDate;
+          //   logger.info(`     Medicine has no lastDate, it was never requested`);
+          // }
+          //logger.info(`     Medicine nextDate is ${nextDate.toISODate()}`);
 
           if (sinceDate > today) {
             logger.info(`     Medicine sinceDate is in the future, skipping it`);
@@ -276,6 +275,7 @@ const runJobs = async (req, res, next) => {
 
           let isDue = false;
 
+          /*
           if (nextDate < today) {
             if (!lastDate && isTodayAMultiple(sinceDate, frequencyDays)) {
               isDue = true;
@@ -295,6 +295,14 @@ const runJobs = async (req, res, next) => {
           } else {
             isDue = false;
             logger.info(`     Medicine next date is in the future, not due`);
+          }
+          */
+          if (isTodayARecurrence(sinceDate, frequencyDays)) {
+            isDue = true;
+            logger.info(`     Medicine is due today`);
+          } else {
+            isDue = false;
+            logger.info(`     Medicine is not due`);
           }
 
           if (isDue) {

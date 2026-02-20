@@ -80,7 +80,7 @@ It is coupled with [farmatime-client](https://github.com/marcolino/farmatime-cli
 # Configuration
 
  - Copy .env.template to .env, and insert all keys values; if you prefer to use different services, feel free to change corresponding keys, and relevant code too.
- - Use `scripts/githubUploadSecrets.js` to upload .env secrets to github, so that github actions can complete.
+ - Use `scripts/githubUploadSecrets.sh` to upload .env secrets to github, so that github actions can complete.
 
 
 # Tests Coverage

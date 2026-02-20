@@ -32,7 +32,7 @@
     "checks": "yarn env-copy-check && yarn test-quiet && yarn i18n-check && yarn deps-check && yarn lint && echo \"All checks passed\"",
     "client-build": "cd ../farmatime-client && yarn build",
     "build-info-produce": "node scripts/build-info-produce.mjs",
-    "github-upload-secrets": "scripts/buildEnvTemplate.sh && node scripts/githubUploadSecrets",
+    "github-upload-secrets": "scripts/buildEnvTemplate.sh && scripts/githubUploadSecrets.sh",
     "finish-ok": "date && ffplay -loglevel 0 -autoexit -nodisp dev/sounds/trumpet.wav",
     "finish-ko": "ffplay -loglevel 0 -autoexit -nodisp dev/sounds/finish.wav",
     "run-jobs-dev": "curl -X POST -s http://localhost:5000/api/request/runJobs && echo",
