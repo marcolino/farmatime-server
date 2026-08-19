@@ -44,8 +44,8 @@ async function translateText(text, targetLanguageName = languages.find(l => l.so
     });
 
     return response.choices[0].message.content.trim();
-  } catch (error) {
-    console.error(`Error during translation: ${error.message}`);
+  } catch (err) {
+    console.error(`Error during translation: ${err.message}`);
     return text; // return original text in case of error
   }
 }

@@ -1,6 +1,7 @@
 #yarn.lock
 #client/
 #logs/
+.git
 package-lock.json
 node_modules/
 .yarn/
@@ -16,3 +17,4 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 **/.env*
+data/assets/products

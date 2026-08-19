@@ -48,8 +48,8 @@ describe("Abstract payment gateway", () => {
       let errorCaught = null;
       try {
         await gateway.createCheckoutSession(req, res, next);
-      } catch (error) {
-        errorCaught = error;
+      } catch (err) {
+        errorCaught = err;
       }
       expect(errorCaught).to.be.an("error");
       expect(errorCaught.message).to.equal("createCheckoutSession() not implemented");
@@ -82,8 +82,8 @@ describe("Abstract payment gateway", () => {
       let errorCaught = null;
       try {
         await gateway.paymentSuccess(req, res, next);
-      } catch (error) {
-        errorCaught = error;
+      } catch (err) {
+        errorCaught = err;
       }
       expect(errorCaught).to.be.an("error");
       expect(errorCaught.message).to.equal("paymentSuccess() not implemented");
@@ -116,8 +116,8 @@ describe("Abstract payment gateway", () => {
       let errorCaught = null;
       try {
         await gateway.paymentCancel(req, res, next);
-      } catch (error) {
-        errorCaught = error;
+      } catch (err) {
+        errorCaught = err;
       }
       expect(errorCaught).to.be.an("error");
       expect(errorCaught.message).to.equal("paymentCancel() not implemented");

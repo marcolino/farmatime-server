@@ -116,8 +116,8 @@ ProductSchema.pre(/^find|^count/, function(next) {
 //   // trap regular expression errors...
 //   try {
 //     next();
-//   } catch (error) {
-//     next(error);
+//   } catch (err) {
+//     next(err);
 //   }
 // });
 

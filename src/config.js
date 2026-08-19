@@ -228,7 +228,7 @@ const configBase = {
     baseUrlClient,
     baseUrlClientPreview,
     urlPublicNaked,
-  ])],
+  ].filter(Boolean))],
   clientEmailUnsubscribeUrl: `${baseUrlClient}/email-unsubscribe`,
   clientEmailPreferencesUrl: `${baseUrlClient}/email-preferences`,
   clientPushNotificationsUnsubscribeUrl: `${baseUrlClient}/push-notifications-unsubscribe`,

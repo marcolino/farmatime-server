@@ -24,6 +24,7 @@ const sendTestEmail = async (req, res, next) => {
     });
     res.send(true);
   } catch (err) {
+    // TODO: handle email send errors
     return nextError(next, err.message, 500, err.stack);
   }
 };

@@ -61,8 +61,8 @@ app.get('/preview/:template', (req, res) => {
   
   try {
     res.render(req.params.template, commonVariables);
-  } catch (error) {
-    res.send(`Error rendering template: ${error.message}`);
+  } catch (err) {
+    res.send(`Error rendering template: ${err.message}`);
   }
 });
 
