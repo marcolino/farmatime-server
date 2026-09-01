@@ -117,7 +117,12 @@ app.use(cors({
     if (!origin || config.clientDomains.includes(origin)) {
       callback(null, origin);
     } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS; allowed origins are: ${config.clientDomains}`));
+      //callback(new Error(`Origin ${origin} not allowed by CORS; allowed origins are: ${config.clientDomains}`));
+      const error = new Error(
+        `Origin ${origin} not allowed by CORS; allowed origins are: ${config.clientDomains}`,
+      );
+      error.status = 403; // Avoid default 500 error status, to avoid receiving an email for each CORS exception.
+      callback(error);
     }
   },
   methods: ["GET", "POST", "OPTIONS"], // allowed methods
