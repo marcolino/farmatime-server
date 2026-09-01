@@ -1,6 +1,5 @@
 #yarn.lock
 #client/
-#logs/
 .git
 package-lock.json
 node_modules/
@@ -18,3 +17,4 @@ npm-debug.*
 *.orig.*
 **/.env*
 data/assets/products
+logs/
